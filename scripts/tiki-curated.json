@@ -1,0 +1,2007 @@
+[
+ {
+  "name": "Ronaldo",
+  "country": "brazil",
+  "clubs": [
+   "psv",
+   "barcelona",
+   "inter",
+   "realmadrid",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ballon"
+  ],
+  "aliases": [
+   "Ronaldo Nazario",
+   "R9"
+  ]
+ },
+ {
+  "name": "Ronaldinho",
+  "country": "brazil",
+  "clubs": [
+   "psg",
+   "barcelona",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ballon",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Kaká",
+  "country": "brazil",
+  "clubs": [
+   "milan",
+   "realmadrid"
+  ],
+  "badges": [
+   "wc",
+   "ballon",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Rivaldo",
+  "country": "brazil",
+  "clubs": [
+   "barcelona",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ballon"
+  ]
+ },
+ {
+  "name": "Roberto Carlos",
+  "country": "brazil",
+  "clubs": [
+   "inter",
+   "realmadrid",
+   "fenerbahce"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Cafu",
+  "country": "brazil",
+  "clubs": [
+   "roma",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Neymar",
+  "country": "brazil",
+  "clubs": [
+   "barcelona",
+   "psg"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Dani Alves",
+  "country": "brazil",
+  "clubs": [
+   "sevilla",
+   "barcelona",
+   "juventus",
+   "psg"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Thiago Silva",
+  "country": "brazil",
+  "clubs": [
+   "milan",
+   "psg",
+   "chelsea"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "David Luiz",
+  "country": "brazil",
+  "clubs": [
+   "benfica",
+   "chelsea",
+   "psg",
+   "arsenal"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Philippe Coutinho",
+  "country": "brazil",
+  "clubs": [
+   "inter",
+   "liverpool",
+   "barcelona",
+   "bayern"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Alisson",
+  "country": "brazil",
+  "clubs": [
+   "roma",
+   "liverpool"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Fabinho",
+  "country": "brazil",
+  "clubs": [
+   "monaco",
+   "liverpool"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Firmino",
+  "country": "brazil",
+  "clubs": [
+   "liverpool"
+  ],
+  "badges": [
+   "ucl"
+  ],
+  "aliases": [
+   "Roberto Firmino"
+  ]
+ },
+ {
+  "name": "Gabriel Jesus",
+  "country": "brazil",
+  "clubs": [
+   "mancity",
+   "arsenal"
+  ]
+ },
+ {
+  "name": "Casemiro",
+  "country": "brazil",
+  "clubs": [
+   "realmadrid",
+   "manutd"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Marcelo",
+  "country": "brazil",
+  "clubs": [
+   "realmadrid"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Lionel Messi",
+  "country": "argentina",
+  "clubs": [
+   "barcelona",
+   "psg"
+  ],
+  "badges": [
+   "wc",
+   "ballon",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Diego Maradona",
+  "country": "argentina",
+  "clubs": [
+   "barcelona",
+   "napoli"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Sergio Agüero",
+  "country": "argentina",
+  "clubs": [
+   "atletico",
+   "mancity",
+   "barcelona"
+  ]
+ },
+ {
+  "name": "Ángel Di María",
+  "country": "argentina",
+  "clubs": [
+   "benfica",
+   "realmadrid",
+   "manutd",
+   "psg",
+   "juventus"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Gonzalo Higuaín",
+  "country": "argentina",
+  "clubs": [
+   "realmadrid",
+   "napoli",
+   "juventus",
+   "milan"
+  ]
+ },
+ {
+  "name": "Javier Mascherano",
+  "country": "argentina",
+  "clubs": [
+   "liverpool",
+   "barcelona"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Carlos Tévez",
+  "country": "argentina",
+  "clubs": [
+   "manutd",
+   "mancity",
+   "juventus"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Juan Román Riquelme",
+  "country": "argentina",
+  "clubs": [
+   "barcelona",
+   "villarreal"
+  ]
+ },
+ {
+  "name": "Hernán Crespo",
+  "country": "argentina",
+  "clubs": [
+   "inter",
+   "chelsea",
+   "milan"
+  ]
+ },
+ {
+  "name": "Emiliano Martínez",
+  "country": "argentina",
+  "clubs": [
+   "arsenal"
+  ],
+  "badges": [
+   "wc"
+  ],
+  "aliases": [
+   "Dibu Martinez"
+  ]
+ },
+ {
+  "name": "Julián Álvarez",
+  "country": "argentina",
+  "clubs": [
+   "mancity",
+   "atletico"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Rodrigo De Paul",
+  "country": "argentina",
+  "clubs": [
+   "valencia",
+   "atletico"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Mauro Icardi",
+  "country": "argentina",
+  "clubs": [
+   "inter",
+   "psg",
+   "galatasaray"
+  ]
+ },
+ {
+  "name": "Ever Banega",
+  "country": "argentina",
+  "clubs": [
+   "valencia",
+   "sevilla",
+   "inter"
+  ]
+ },
+ {
+  "name": "Zinedine Zidane",
+  "country": "france",
+  "clubs": [
+   "juventus",
+   "realmadrid"
+  ],
+  "badges": [
+   "wc",
+   "ballon",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Thierry Henry",
+  "country": "france",
+  "clubs": [
+   "monaco",
+   "juventus",
+   "arsenal",
+   "barcelona"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Kylian Mbappé",
+  "country": "france",
+  "clubs": [
+   "monaco",
+   "psg",
+   "realmadrid"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Karim Benzema",
+  "country": "france",
+  "clubs": [
+   "lyon",
+   "realmadrid"
+  ],
+  "badges": [
+   "ballon",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Patrick Vieira",
+  "country": "france",
+  "clubs": [
+   "milan",
+   "arsenal",
+   "juventus",
+   "inter",
+   "mancity"
+  ],
+  "badges": [
+   "wc",
+   "euro"
+  ]
+ },
+ {
+  "name": "Franck Ribéry",
+  "country": "france",
+  "clubs": [
+   "marseille",
+   "bayern",
+   "fiorentina"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Paul Pogba",
+  "country": "france",
+  "clubs": [
+   "manutd",
+   "juventus"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "N'Golo Kanté",
+  "country": "france",
+  "clubs": [
+   "leicester",
+   "chelsea"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Antoine Griezmann",
+  "country": "france",
+  "clubs": [
+   "realsociedad",
+   "atletico",
+   "barcelona"
+  ]
+ },
+ {
+  "name": "Olivier Giroud",
+  "country": "france",
+  "clubs": [
+   "arsenal",
+   "chelsea",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Hugo Lloris",
+  "country": "france",
+  "clubs": [
+   "lyon",
+   "tottenham"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Raphaël Varane",
+  "country": "france",
+  "clubs": [
+   "realmadrid",
+   "manutd"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Djibril Cissé",
+  "country": "france",
+  "clubs": [
+   "liverpool",
+   "marseille",
+   "lazio"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Bacary Sagna",
+  "country": "france",
+  "clubs": [
+   "arsenal",
+   "mancity"
+  ]
+ },
+ {
+  "name": "Cristiano Ronaldo",
+  "country": "portugal",
+  "clubs": [
+   "sporting",
+   "manutd",
+   "realmadrid",
+   "juventus"
+  ],
+  "badges": [
+   "ballon",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Luís Figo",
+  "country": "portugal",
+  "clubs": [
+   "sporting",
+   "barcelona",
+   "realmadrid",
+   "inter"
+  ],
+  "badges": [
+   "ballon",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Rui Costa",
+  "country": "portugal",
+  "clubs": [
+   "benfica",
+   "fiorentina",
+   "milan"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Deco",
+  "country": "portugal",
+  "clubs": [
+   "porto",
+   "barcelona",
+   "chelsea"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Ricardo Carvalho",
+  "country": "portugal",
+  "clubs": [
+   "porto",
+   "chelsea",
+   "realmadrid"
+  ],
+  "badges": [
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Pepe",
+  "country": "portugal",
+  "clubs": [
+   "porto",
+   "realmadrid"
+  ],
+  "badges": [
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Bruno Fernandes",
+  "country": "portugal",
+  "clubs": [
+   "sporting",
+   "manutd"
+  ]
+ },
+ {
+  "name": "Bernardo Silva",
+  "country": "portugal",
+  "clubs": [
+   "benfica",
+   "monaco",
+   "mancity"
+  ],
+  "badges": [
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "João Félix",
+  "country": "portugal",
+  "clubs": [
+   "benfica",
+   "atletico",
+   "chelsea",
+   "barcelona"
+  ]
+ },
+ {
+  "name": "Rúben Dias",
+  "country": "portugal",
+  "clubs": [
+   "benfica",
+   "mancity"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Nani",
+  "country": "portugal",
+  "clubs": [
+   "sporting",
+   "manutd",
+   "fenerbahce"
+  ],
+  "badges": [
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Xavi",
+  "country": "spain",
+  "clubs": [
+   "barcelona"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Andrés Iniesta",
+  "country": "spain",
+  "clubs": [
+   "barcelona"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Sergio Ramos",
+  "country": "spain",
+  "clubs": [
+   "sevilla",
+   "realmadrid",
+   "psg"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Sergio Busquets",
+  "country": "spain",
+  "clubs": [
+   "barcelona"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Fernando Torres",
+  "country": "spain",
+  "clubs": [
+   "atletico",
+   "liverpool",
+   "chelsea",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "David Villa",
+  "country": "spain",
+  "clubs": [
+   "valencia",
+   "barcelona",
+   "atletico"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "David Silva",
+  "country": "spain",
+  "clubs": [
+   "valencia",
+   "mancity",
+   "realsociedad"
+  ],
+  "badges": [
+   "wc",
+   "euro"
+  ]
+ },
+ {
+  "name": "Cesc Fàbregas",
+  "country": "spain",
+  "clubs": [
+   "arsenal",
+   "barcelona",
+   "chelsea"
+  ],
+  "badges": [
+   "wc",
+   "euro"
+  ]
+ },
+ {
+  "name": "Iker Casillas",
+  "country": "spain",
+  "clubs": [
+   "realmadrid",
+   "porto"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Gerard Piqué",
+  "country": "spain",
+  "clubs": [
+   "manutd",
+   "barcelona"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Carles Puyol",
+  "country": "spain",
+  "clubs": [
+   "barcelona"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Fernando Hierro",
+  "country": "spain",
+  "clubs": [
+   "realmadrid",
+   "bolton"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Raúl",
+  "country": "spain",
+  "clubs": [
+   "realmadrid",
+   "schalke"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Juan Mata",
+  "country": "spain",
+  "clubs": [
+   "valencia",
+   "chelsea",
+   "manutd"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Álvaro Morata",
+  "country": "spain",
+  "clubs": [
+   "realmadrid",
+   "juventus",
+   "chelsea",
+   "atletico"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Thiago Alcântara",
+  "country": "spain",
+  "clubs": [
+   "barcelona",
+   "bayern",
+   "liverpool"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Pedro",
+  "country": "spain",
+  "clubs": [
+   "barcelona",
+   "chelsea",
+   "roma"
+  ],
+  "badges": [
+   "wc",
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Miroslav Klose",
+  "country": "germany",
+  "clubs": [
+   "werder",
+   "bayern",
+   "lazio"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Bastian Schweinsteiger",
+  "country": "germany",
+  "clubs": [
+   "bayern",
+   "manutd"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Philipp Lahm",
+  "country": "germany",
+  "clubs": [
+   "bayern"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Toni Kroos",
+  "country": "germany",
+  "clubs": [
+   "bayern",
+   "realmadrid"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Mesut Özil",
+  "country": "germany",
+  "clubs": [
+   "werder",
+   "realmadrid",
+   "arsenal",
+   "fenerbahce"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Manuel Neuer",
+  "country": "germany",
+  "clubs": [
+   "schalke",
+   "bayern"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Thomas Müller",
+  "country": "germany",
+  "clubs": [
+   "bayern"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Jérôme Boateng",
+  "country": "germany",
+  "clubs": [
+   "mancity",
+   "bayern",
+   "lyon"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Sami Khedira",
+  "country": "germany",
+  "clubs": [
+   "stuttgart",
+   "realmadrid",
+   "juventus"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Michael Ballack",
+  "country": "germany",
+  "clubs": [
+   "leverkusen",
+   "bayern",
+   "chelsea"
+  ]
+ },
+ {
+  "name": "İlkay Gündoğan",
+  "country": "germany",
+  "clubs": [
+   "dortmund",
+   "mancity",
+   "barcelona"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Leroy Sané",
+  "country": "germany",
+  "clubs": [
+   "schalke",
+   "mancity",
+   "bayern"
+  ]
+ },
+ {
+  "name": "Marco Reus",
+  "country": "germany",
+  "clubs": [
+   "dortmund"
+  ]
+ },
+ {
+  "name": "Mario Götze",
+  "country": "germany",
+  "clubs": [
+   "dortmund",
+   "bayern"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Andrea Pirlo",
+  "country": "italy",
+  "clubs": [
+   "inter",
+   "milan",
+   "juventus"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Francesco Totti",
+  "country": "italy",
+  "clubs": [
+   "roma"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Alessandro Del Piero",
+  "country": "italy",
+  "clubs": [
+   "juventus"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Paolo Maldini",
+  "country": "italy",
+  "clubs": [
+   "milan"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Gianluigi Buffon",
+  "country": "italy",
+  "clubs": [
+   "parma",
+   "juventus",
+   "psg"
+  ],
+  "badges": [
+   "wc"
+  ]
+ },
+ {
+  "name": "Fabio Cannavaro",
+  "country": "italy",
+  "clubs": [
+   "parma",
+   "inter",
+   "juventus",
+   "realmadrid"
+  ],
+  "badges": [
+   "wc",
+   "ballon"
+  ]
+ },
+ {
+  "name": "Alessandro Nesta",
+  "country": "italy",
+  "clubs": [
+   "lazio",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Gennaro Gattuso",
+  "country": "italy",
+  "clubs": [
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Filippo Inzaghi",
+  "country": "italy",
+  "clubs": [
+   "juventus",
+   "milan"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Marco Materazzi",
+  "country": "italy",
+  "clubs": [
+   "everton",
+   "inter"
+  ],
+  "badges": [
+   "wc",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Giorgio Chiellini",
+  "country": "italy",
+  "clubs": [
+   "juventus"
+  ],
+  "badges": [
+   "euro"
+  ]
+ },
+ {
+  "name": "Leonardo Bonucci",
+  "country": "italy",
+  "clubs": [
+   "juventus",
+   "milan"
+  ],
+  "badges": [
+   "euro"
+  ]
+ },
+ {
+  "name": "Ciro Immobile",
+  "country": "italy",
+  "clubs": [
+   "dortmund",
+   "sevilla",
+   "lazio"
+  ],
+  "badges": [
+   "euro"
+  ]
+ },
+ {
+  "name": "Jorginho",
+  "country": "italy",
+  "clubs": [
+   "napoli",
+   "chelsea",
+   "arsenal"
+  ],
+  "badges": [
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Arjen Robben",
+  "country": "netherlands",
+  "clubs": [
+   "psv",
+   "chelsea",
+   "realmadrid",
+   "bayern"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Robin van Persie",
+  "country": "netherlands",
+  "clubs": [
+   "arsenal",
+   "manutd",
+   "fenerbahce"
+  ]
+ },
+ {
+  "name": "Wesley Sneijder",
+  "country": "netherlands",
+  "clubs": [
+   "ajax",
+   "realmadrid",
+   "inter",
+   "galatasaray"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Ruud van Nistelrooy",
+  "country": "netherlands",
+  "clubs": [
+   "psv",
+   "manutd",
+   "realmadrid"
+  ]
+ },
+ {
+  "name": "Rafael van der Vaart",
+  "country": "netherlands",
+  "clubs": [
+   "ajax",
+   "realmadrid",
+   "tottenham"
+  ]
+ },
+ {
+  "name": "Virgil van Dijk",
+  "country": "netherlands",
+  "clubs": [
+   "celtic",
+   "southampton",
+   "liverpool"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Georginio Wijnaldum",
+  "country": "netherlands",
+  "clubs": [
+   "psv",
+   "liverpool",
+   "psg"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Memphis Depay",
+  "country": "netherlands",
+  "clubs": [
+   "psv",
+   "manutd",
+   "lyon",
+   "barcelona",
+   "atletico"
+  ]
+ },
+ {
+  "name": "Frenkie de Jong",
+  "country": "netherlands",
+  "clubs": [
+   "ajax",
+   "barcelona"
+  ]
+ },
+ {
+  "name": "Clarence Seedorf",
+  "country": "netherlands",
+  "clubs": [
+   "ajax",
+   "realmadrid",
+   "inter",
+   "milan"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Edgar Davids",
+  "country": "netherlands",
+  "clubs": [
+   "ajax",
+   "milan",
+   "juventus",
+   "inter",
+   "tottenham"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Wayne Rooney",
+  "country": "england",
+  "clubs": [
+   "everton",
+   "manutd"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Steven Gerrard",
+  "country": "england",
+  "clubs": [
+   "liverpool"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Frank Lampard",
+  "country": "england",
+  "clubs": [
+   "chelsea",
+   "mancity"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "David Beckham",
+  "country": "england",
+  "clubs": [
+   "manutd",
+   "realmadrid",
+   "milan",
+   "psg"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "John Terry",
+  "country": "england",
+  "clubs": [
+   "chelsea"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Ashley Cole",
+  "country": "england",
+  "clubs": [
+   "arsenal",
+   "chelsea",
+   "roma"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Rio Ferdinand",
+  "country": "england",
+  "clubs": [
+   "leeds",
+   "manutd"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Harry Kane",
+  "country": "england",
+  "clubs": [
+   "tottenham",
+   "bayern"
+  ]
+ },
+ {
+  "name": "Raheem Sterling",
+  "country": "england",
+  "clubs": [
+   "liverpool",
+   "mancity",
+   "chelsea"
+  ]
+ },
+ {
+  "name": "Jude Bellingham",
+  "country": "england",
+  "clubs": [
+   "dortmund",
+   "realmadrid"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Michael Owen",
+  "country": "england",
+  "clubs": [
+   "liverpool",
+   "realmadrid",
+   "manutd"
+  ],
+  "badges": [
+   "ballon"
+  ]
+ },
+ {
+  "name": "Eden Hazard",
+  "country": "belgium",
+  "clubs": [
+   "lille",
+   "chelsea",
+   "realmadrid"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Kevin De Bruyne",
+  "country": "belgium",
+  "clubs": [
+   "chelsea",
+   "werder",
+   "mancity"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Romelu Lukaku",
+  "country": "belgium",
+  "clubs": [
+   "chelsea",
+   "everton",
+   "manutd",
+   "inter",
+   "roma"
+  ]
+ },
+ {
+  "name": "Thibaut Courtois",
+  "country": "belgium",
+  "clubs": [
+   "atletico",
+   "chelsea",
+   "realmadrid"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Vincent Kompany",
+  "country": "belgium",
+  "clubs": [
+   "mancity",
+   "bayern"
+  ]
+ },
+ {
+  "name": "Toby Alderweireld",
+  "country": "belgium",
+  "clubs": [
+   "ajax",
+   "atletico",
+   "tottenham"
+  ]
+ },
+ {
+  "name": "Luka Modrić",
+  "country": "croatia",
+  "clubs": [
+   "tottenham",
+   "realmadrid"
+  ],
+  "badges": [
+   "ballon",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Ivan Rakitić",
+  "country": "croatia",
+  "clubs": [
+   "schalke",
+   "sevilla",
+   "barcelona"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Mario Mandžukić",
+  "country": "croatia",
+  "clubs": [
+   "bayern",
+   "atletico",
+   "juventus",
+   "milan"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Mateo Kovačić",
+  "country": "croatia",
+  "clubs": [
+   "inter",
+   "realmadrid",
+   "chelsea",
+   "mancity"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Nemanja Vidić",
+  "country": "serbia",
+  "clubs": [
+   "manutd",
+   "inter"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Nemanja Matić",
+  "country": "serbia",
+  "clubs": [
+   "chelsea",
+   "manutd",
+   "roma"
+  ]
+ },
+ {
+  "name": "Dejan Stanković",
+  "country": "serbia",
+  "clubs": [
+   "lazio",
+   "inter"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Robert Lewandowski",
+  "country": "poland",
+  "clubs": [
+   "dortmund",
+   "bayern",
+   "barcelona"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Zlatan Ibrahimović",
+  "country": "sweden",
+  "clubs": [
+   "ajax",
+   "juventus",
+   "inter",
+   "barcelona",
+   "milan",
+   "psg",
+   "manutd"
+  ]
+ },
+ {
+  "name": "Andriy Shevchenko",
+  "country": "ukraine",
+  "clubs": [
+   "milan",
+   "chelsea"
+  ],
+  "badges": [
+   "ballon",
+   "ucl"
+  ]
+ },
+ {
+  "name": "Erling Haaland",
+  "country": "norway",
+  "clubs": [
+   "salzburg",
+   "dortmund",
+   "mancity"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Gareth Bale",
+  "country": "wales",
+  "clubs": [
+   "tottenham",
+   "realmadrid"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Samuel Eto'o",
+  "country": "cameroon",
+  "clubs": [
+   "realmadrid",
+   "mallorca",
+   "barcelona",
+   "inter",
+   "chelsea"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Didier Drogba",
+  "country": "ivorycoast",
+  "clubs": [
+   "marseille",
+   "chelsea",
+   "galatasaray"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Yaya Touré",
+  "country": "ivorycoast",
+  "clubs": [
+   "barcelona",
+   "mancity"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Mohamed Salah",
+  "country": "egypt",
+  "clubs": [
+   "chelsea",
+   "roma",
+   "liverpool"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Sadio Mané",
+  "country": "senegal",
+  "clubs": [
+   "salzburg",
+   "southampton",
+   "liverpool",
+   "bayern"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Michael Essien",
+  "country": "ghana",
+  "clubs": [
+   "lyon",
+   "chelsea",
+   "realmadrid",
+   "milan"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Riyad Mahrez",
+  "country": "algeria",
+  "clubs": [
+   "leicester",
+   "mancity"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Kalidou Koulibaly",
+  "country": "senegal",
+  "clubs": [
+   "napoli",
+   "chelsea"
+  ]
+ },
+ {
+  "name": "James Rodríguez",
+  "country": "colombia",
+  "clubs": [
+   "porto",
+   "monaco",
+   "realmadrid",
+   "bayern",
+   "everton"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Radamel Falcao",
+  "country": "colombia",
+  "clubs": [
+   "porto",
+   "atletico",
+   "monaco",
+   "manutd",
+   "chelsea",
+   "galatasaray"
+  ]
+ },
+ {
+  "name": "Juan Cuadrado",
+  "country": "colombia",
+  "clubs": [
+   "fiorentina",
+   "chelsea",
+   "juventus",
+   "inter"
+  ]
+ },
+ {
+  "name": "Alexis Sánchez",
+  "country": "chile",
+  "clubs": [
+   "udinese",
+   "barcelona",
+   "arsenal",
+   "manutd",
+   "inter",
+   "marseille"
+  ]
+ },
+ {
+  "name": "Arturo Vidal",
+  "country": "chile",
+  "clubs": [
+   "leverkusen",
+   "juventus",
+   "bayern",
+   "barcelona",
+   "inter"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Luis Suárez",
+  "country": "uruguay",
+  "clubs": [
+   "ajax",
+   "liverpool",
+   "barcelona",
+   "atletico"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Edinson Cavani",
+  "country": "uruguay",
+  "clubs": [
+   "napoli",
+   "psg",
+   "manutd"
+  ]
+ },
+ {
+  "name": "Diego Forlán",
+  "country": "uruguay",
+  "clubs": [
+   "manutd",
+   "villarreal",
+   "atletico",
+   "inter"
+  ]
+ },
+ {
+  "name": "Giovani dos Santos",
+  "country": "mexico",
+  "clubs": [
+   "barcelona",
+   "tottenham"
+  ]
+ },
+ {
+  "name": "Hirving Lozano",
+  "country": "mexico",
+  "clubs": [
+   "psv",
+   "napoli"
+  ]
+ },
+ {
+  "name": "Hakan Şükür",
+  "country": "turkey",
+  "clubs": [
+   "galatasaray",
+   "inter",
+   "parma"
+  ]
+ },
+ {
+  "name": "Emre Belözoğlu",
+  "country": "turkey",
+  "clubs": [
+   "galatasaray",
+   "inter",
+   "newcastle",
+   "fenerbahce",
+   "atletico"
+  ]
+ },
+ {
+  "name": "Arda Turan",
+  "country": "turkey",
+  "clubs": [
+   "galatasaray",
+   "atletico",
+   "barcelona"
+  ]
+ },
+ {
+  "name": "Hakan Çalhanoğlu",
+  "country": "turkey",
+  "clubs": [
+   "leverkusen",
+   "milan",
+   "inter"
+  ]
+ },
+ {
+  "name": "Nihat Kahveci",
+  "country": "turkey",
+  "clubs": [
+   "besiktas",
+   "realsociedad",
+   "villarreal"
+  ]
+ },
+ {
+  "name": "Rüştü Reçber",
+  "country": "turkey",
+  "clubs": [
+   "fenerbahce",
+   "barcelona",
+   "besiktas"
+  ]
+ },
+ {
+  "name": "Alex de Souza",
+  "country": "brazil",
+  "clubs": [
+   "fenerbahce"
+  ],
+  "aliases": [
+   "Alex"
+  ]
+ },
+ {
+  "name": "Mario Jardel",
+  "country": "brazil",
+  "clubs": [
+   "porto",
+   "galatasaray",
+   "sporting",
+   "besiktas"
+  ]
+ },
+ {
+  "name": "Elano",
+  "country": "brazil",
+  "clubs": [
+   "shakhtar",
+   "mancity",
+   "galatasaray"
+  ]
+ },
+ {
+  "name": "Burak Yılmaz",
+  "country": "turkey",
+  "clubs": [
+   "galatasaray",
+   "besiktas",
+   "trabzonspor",
+   "lille"
+  ]
+ },
+ {
+  "name": "Pierre van Hooijdonk",
+  "country": "netherlands",
+  "clubs": [
+   "celtic",
+   "benfica",
+   "fenerbahce"
+  ]
+ },
+ {
+  "name": "Guti",
+  "country": "spain",
+  "clubs": [
+   "realmadrid",
+   "besiktas"
+  ],
+  "badges": [
+   "ucl"
+  ]
+ },
+ {
+  "name": "Ricardo Quaresma",
+  "country": "portugal",
+  "clubs": [
+   "barcelona",
+   "porto",
+   "inter",
+   "besiktas"
+  ],
+  "badges": [
+   "ucl",
+   "euro"
+  ]
+ },
+ {
+  "name": "Demba Ba",
+  "country": "senegal",
+  "clubs": [
+   "chelsea",
+   "besiktas",
+   "trabzonspor"
+  ]
+ },
+ {
+  "name": "Robinho",
+  "country": "brazil",
+  "clubs": [
+   "realmadrid",
+   "mancity",
+   "milan",
+   "santos"
+  ]
+ },
+ {
+  "name": "Fernandão",
+  "country": "brazil",
+  "clubs": [
+   "fenerbahce"
+  ]
+ }
+]
