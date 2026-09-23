@@ -95,6 +95,7 @@ public/                        # statik dosyalar (görseller buraya)
 | `matches-turkiye.ts` | Milli takım + Avrupa geceleri |
 | `matches-derbiler.ts` + `matches-derbiler-eski.ts` | GS/FB/BJK derbileri (2005–2026) |
 | `matches-turkiye-kupasi.ts` | 2005–2024 Türkiye Kupası finalleri |
+| `matches-ligler.ts` | La Liga / Premier Lig / Serie A / Bundesliga derbileri + dev maçları ve Trabzonspor–3 büyükler (2005+, TM; Süper Lig kayıtları `turkiye` etiketli) |
 
 `Match` tipi `src/lib/types.ts`'te. **Önemli konvansiyon:** `lineup` dizisi
 GK'den başlar ve formasyon slot sırasına göre dizilir; **dörtlü savunmada sıra
@@ -123,6 +124,19 @@ User-Agent header yeterli, ~1.3–1.8 sn arayla).
 - `node scripts/fetch-lineup.mjs "2005 UEFA Champions League final"` — Wikipedia'dan ilk 11.
 - `node scripts/build-derbies.mjs` — GS/FB/BJK derbilerini TM maç kağıtlarından üretir
   (env: `TAKE`, `YMIN`, `YMAX` ile aralık; kazananın 11'i, dörtlü savunmada CB sırası düzeltilir).
+- `fetch-tm.mjs`, `derbies-to-ts.mjs`, `list-derbies.mjs` — yardımcılar.
+- `node scripts/build-league-derbies.mjs [laliga premier seriea bundesliga superlig]` —
+  4 büyük lig + Trabzonspor eşleşmelerini TM'den üretir → `data-drafts/league-<lig>.json`.
+  Çiftler/takımlar/formalar/yarışma adları `scripts/lib/leagues.mjs`'te (yeni derbi eklemek
+  için oraya bir `{a, b, take, derby}` satırı yeter). Her çift, 2005'ten bugüne **yıllara
+  eşit yayılmış** `take` maç seçer. Çekilen maç kâğıtları `scripts/.cache/tm/`'de
+  önbelleklenir (yeniden çalıştırmak ucuz); TM ~15 istekte bir 403 verir, script bekleyip
+  devam eder (`TM_GAP_MS` ile istek aralığı). Env: `PAIR=rma_fcb`, `TAKE=5`, `YMIN=2005`.
+  Ardından `node scripts/leagues-to-ts.mjs` → `src/data/matches-ligler.ts` (mevcut
+  maçlarla aynı tarih+takım çakışmalarını eler, en fazla 3 adet 0-0 bırakır).
+- `scripts/lib/tm.mjs` — iki derbi script'inin ortak kodu (TM fetch, maç kâğıdı parser'ı,
+  formasyon eşleyici `arrange`, cevap üretimi `answerFor`: "De Bruyne" → `DE BRUYNE`,
+  "Vinicius Junior" → `VINICIUS`, aynı kadroda iki García → `ERIC GARCIA`).
 - `fetch-tm.mjs`, `derbies-to-ts.mjs`, `list-derbies.mjs` — yardımcılar.
 
 **Tiki Taka Toe futbolcu havuzu (2 adım):**

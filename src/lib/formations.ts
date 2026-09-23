@@ -48,6 +48,13 @@ export const FORMATIONS: Record<FormationKey, { x: number; y: number }[]> = {
     { x: 50, y: 38 },
     { x: 63, y: 21 }, { x: 37, y: 21 },
   ],
+  // Modern back three: wing-backs, two central midfielders, front three
+  "3-4-3": [
+    { x: 50, y: 92 },
+    { x: 74, y: 76 }, { x: 50, y: 78 }, { x: 26, y: 76 },
+    { x: 90, y: 54 }, { x: 62, y: 58 }, { x: 38, y: 58 }, { x: 10, y: 54 },
+    { x: 82, y: 25 }, { x: 50, y: 21 }, { x: 18, y: 25 },
+  ],
   // Ajax '95 style: three at the back, diamond midfield, wide wingers
   "3-4-3d": [
     { x: 50, y: 92 },

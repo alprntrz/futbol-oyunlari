@@ -47,3 +47,6 @@ next-env.d.ts
 
 # intermediate data drafts (not used by the app)
 /data-drafts
+
+# Transfermarkt match-sheet cache (scripts/build-league-derbies.mjs)
+scripts/.cache/tm/

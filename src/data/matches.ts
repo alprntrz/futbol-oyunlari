@@ -6,7 +6,7 @@ import { MATCHES_DERBILER } from "./matches-derbiler";
 import { MATCHES_GLOBAL } from "./matches-global";
 import { MATCHES_KNOCKOUTS } from "./matches-knockouts";
 import { MATCHES_TURKIYE_KUPASI } from "./matches-turkiye-kupasi";
-import { MATCHES_DERBILER_ESKI } from "./matches-derbiler-eski";
+import { MATCHES_LIGLER } from "./matches-ligler";
 
 /**
  * Curated starting-XI dataset. Lineups are factual public data
@@ -389,7 +389,7 @@ export const MATCHES: Match[] = [
   ...MATCHES_GLOBAL,
   ...MATCHES_KNOCKOUTS,
   ...MATCHES_TURKIYE_KUPASI,
-  ...MATCHES_DERBILER_ESKI,
+  ...MATCHES_LIGLER,
 ];
 
 export function getMatchById(id: string): Match | undefined {
