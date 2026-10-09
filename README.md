@@ -45,9 +45,16 @@ Gereksinim: **Node.js 22.18 veya üstü** (24 LTS önerilir; `.nvmrc` var →
 veri scriptleri doğrudan `.ts` dosyası import ettiği için 22.18+ ister.
 
 ```bash
+git clone https://github.com/alprntrz/futbol-oyunlari.git
+cd futbol-oyunlari
 npm ci
 npm run dev      # http://localhost:3000  (node server.js — Next + Socket.IO)
 ```
+
+Depo gizli: erişim için depo sahibinin sizi *Settings → Collaborators* üzerinden
+eklemesi gerekir. Her push ve pull request'te GitHub Actions `tsc`, `lint` ve
+`build` çalıştırır (`.github/workflows/ci.yml`). Claude Code kullanıyorsanız proje
+notları `CLAUDE.md`'de.
 
 Production:
 
