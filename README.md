@@ -27,11 +27,12 @@ var, aşağıda açıklandı).
    kişisel bir site için risk düşük; **gelir getiren bir ürün için yayından önce
    karar verilmeli** (Wikipedia/Wikidata ile yeniden doğrulama ya da lisanslı bir
    futbol veri API'si).
-3. **Mobil uygulama planı.** Hedef, aynı kodu Capacitor ile App Store / Google Play
-   uygulamasına çevirmek; uygulamada tarayıcı arayüzü (adres çubuğu vb.) görünmemeli.
-   Kabaca: sunucuyu yayına almak → statik export'a uyum (`/eksik-11/oda/[code]`
-   dinamik rotası `?code=` parametresine dönmeli) → mobil cila (seçim/zoom/
-   pull-to-refresh kapatma, safe-area, splash, haptik) → mağaza hazırlığı.
+3. **Mobil uygulama (`mobile/`).** Expo + React Native ile native iOS/Android
+   uygulaması (WebView değil). Oyun mantığı ve veri web projesiyle ortak
+   (`src/lib`, `src/data`); ekranlar native olarak yeniden yazıldı. Çalıştırma:
+   `cd mobile && npm ci && npx expo start --ios`. Online yarış için `server.js`'in
+   yayında olması ve `EXPO_PUBLIC_SOCKET_URL` ile adresinin verilmesi gerekir.
+   Kalanlar: sunucuyu yayına almak, uygulama ikonu/splash, mağaza hazırlığı (EAS).
 
 İlk gün yapılacaklar: aşağıdaki "Hızlı başlangıç"ı çalıştır, iki oyunu da bir tur
 oyna, sonra "Proje yapısı" ve "Veri modeli" bölümlerini oku.
@@ -118,7 +119,7 @@ src/
     formations.ts              # 13 formasyonun saha koordinatları (slot sırası = lineup sırası)
     daily.ts                   # günlük seçim + globalMatches() / turkishMatches() havuzları
     wordle.ts                  # tahmin değerlendirme + normalizeAnswer
-    i18n.tsx                   # TR/EN sözlük (yeni metin iki dile de eklenmeli)
+    strings.ts, i18n.tsx       # TR/EN sözlük (web + mobil ortak; yeni metin iki dile de eklenmeli)
     tiki.ts                    # Tiki Taka kriterleri (CLUBS/COUNTRIES/BADGES) + ızgara/arama
     socket.ts, stats.ts
   data/                        # OYUN VERİSİ (aşağıya bak)

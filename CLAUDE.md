@@ -16,6 +16,21 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
   saved progress; two tabs for the online race).
 - Node 22.18+ (`.nvmrc` = 24): the data scripts import `.ts` files directly.
 
+## Mobile app (`mobile/`)
+
+Native iOS/Android app in Expo (SDK 57, Expo Router, React Native) — real native
+UI, not a WebView. It reuses the web project's game logic and data directly:
+`@/…` in `mobile/` resolves to `../src/…` (tsconfig paths + `watchFolders` in
+`mobile/metro.config.js`); the app's own code is imported as `~/…`.
+
+- Shared, keep platform-free: `src/lib/{types,wordle,formations,daily,tiki,strings}.ts`
+  and `src/data/*`. No DOM/`localStorage`/React in these.
+- UI strings live in `src/lib/strings.ts` (used by both apps).
+- `cd mobile && npx expo start --ios` (Expo Go on the simulator). Online race
+  talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
+- `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
+- Read `mobile/AGENTS.md`: Expo APIs change per SDK, check the versioned docs.
+
 ## Conventions that are easy to break
 
 - `Match.lineup` is ordered by `FORMATIONS[formation]` slots in
@@ -30,6 +45,6 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
     `scripts/leagues-to-ts.mjs`
 - The daily puzzle is `MATCHES[hash(day) % MATCHES.length]`: adding or removing
   matches reshuffles future days.
-- Every new UI string goes into both `tr` and `en` in `src/lib/i18n.tsx`.
+- Every new UI string goes into both `tr` and `en` in `src/lib/strings.ts`.
 - Scrapers hit Transfermarkt; keep the request gap (`TM_GAP_MS`, ≥ 2.2 s) and the
   on-disk cache. Their data is under Transfermarkt's terms — see README.

@@ -1,0 +1,14 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      // Shared web code (game logic + data). The shared files import each
+      // other as "@/lib/..." / "@/data/...", so "@/" must point at ../src.
+      "@/*": ["../src/*"],
+      // This app's own code
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+}
