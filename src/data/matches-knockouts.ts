@@ -5,7 +5,8 @@ import type { Match } from "@/lib/types";
  * quarter-/semi-finals, Europa League / UEFA Cup semi-finals, and the
  * Europa-era finals not already covered. Two-legged ties use the 2nd leg;
  * winner's XI (home XI on a draw). Auto-generated from Transfermarkt match
- * sheets (scripts/scrape). No "turkiye" tag -> global practice pool.
+ * sheets by a one-off scraper (not in this repo). No "turkiye" tag -> global
+ * practice pool.
  */
 export const MATCHES_KNOCKOUTS: Match[] = [
   {

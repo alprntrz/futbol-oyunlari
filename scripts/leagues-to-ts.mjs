@@ -4,7 +4,8 @@
  * data files:
  *   src/data/matches-ligler.ts   ← laliga, premier, seriea, bundesliga, superlig
  *   src/data/matches-derbiler.ts ← derbiler (Galatasaray / Fenerbahçe / Beşiktaş)
- * A target is only rewritten when at least one of its drafts exists.
+ * A target is only rewritten when ALL of its drafts exist (the drafts are
+ * committed, so a fresh checkout regenerates the same files).
  *
  * - drops matches already present in the *other* data files (same date + a
  *   shared team), e.g. a cup final that is also a curated match
@@ -68,8 +69,11 @@ const only = process.argv.slice(2);
 for (const target of TARGETS) {
   if (only.length && !only.some((o) => target.out.includes(o))) continue;
   const files = target.leagues.map((k) => [k, `data-drafts/league-${k}.json`]);
-  if (!files.some(([, f]) => existsSync(f))) {
-    console.error(`${target.out}: no drafts yet — left untouched`);
+  const missing = files.filter(([, f]) => !existsSync(f)).map(([, f]) => f);
+  if (missing.length) {
+    // writing from a partial set would silently drop the other leagues' matches
+    console.error(`${target.out}: left untouched — missing ${missing.join(", ")}`);
+    process.exitCode = 1;
     continue;
   }
   const seen = new Set();
@@ -77,10 +81,6 @@ for (const target of TARGETS) {
   const perLeague = {};
   let dupes = 0, boring = 0;
   for (const [key, file] of files) {
-    if (!existsSync(file)) {
-      console.error(`missing ${file} — skipped`);
-      continue;
-    }
     for (const d of JSON.parse(readFileSync(file, "utf8"))) {
       if (seen.has(d.id)) continue;
       seen.add(d.id);

@@ -1,0 +1,4901 @@
+[
+ {
+  "id": "superlig-2026-09-19-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2026/27",
+  "date": "19.09.2026",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "4-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "André Onana",
+    "answer": "ONANA",
+    "number": 24
+   },
+   {
+    "name": "Wagner Pina",
+    "answer": "PINA",
+    "number": 20
+   },
+   {
+    "name": "Chibuike Nwaiwu",
+    "answer": "NWAIWU",
+    "number": 27
+   },
+   {
+    "name": "Stefan Savić",
+    "answer": "SAVIC",
+    "number": 15
+   },
+   {
+    "name": "Mustafa Eskihellaç",
+    "answer": "ESKIHELLAC",
+    "number": 19
+   },
+   {
+    "name": "Melih Kabasakal",
+    "answer": "KABASAKAL",
+    "number": 57
+   },
+   {
+    "name": "Fabinho",
+    "answer": "FABINHO",
+    "number": 6
+   },
+   {
+    "name": "Mohamed Salah",
+    "answer": "SALAH",
+    "number": 10,
+    "goals": 3
+   },
+   {
+    "name": "Ernest Muci",
+    "answer": "MUCI",
+    "number": 7
+   },
+   {
+    "name": "Noah Saviolo",
+    "answer": "SAVIOLO",
+    "number": 70,
+    "goals": 1
+   },
+   {
+    "name": "Franculino",
+    "answer": "FRANCULINO",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "superlig-2026-01-05-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · TFF Süper Kupa",
+   "en": "Trabzonspor – Galatasaray · Turkish Super Cup"
+  },
+  "season": "2025/26",
+  "date": "05.01.2026",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "4-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "Roland Sallai",
+    "answer": "SALLAI",
+    "number": 7
+   },
+   {
+    "name": "Davinson Sánchez",
+    "answer": "SANCHEZ",
+    "number": 6
+   },
+   {
+    "name": "Abdülkerim Bardakcı",
+    "answer": "BARDAKCI",
+    "number": 42
+   },
+   {
+    "name": "Eren Elmalı",
+    "answer": "ELMALI",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Gabriel Sara",
+    "answer": "SARA",
+    "number": 8
+   },
+   {
+    "name": "İlkay Gündoğan",
+    "answer": "GUNDOGAN",
+    "number": 20
+   },
+   {
+    "name": "Leroy Sané",
+    "answer": "SANE",
+    "number": 10
+   },
+   {
+    "name": "Yunus Akgün",
+    "answer": "AKGUN",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Barış Alper Yılmaz",
+    "answer": "YILMAZ",
+    "number": 53,
+    "goals": 1
+   },
+   {
+    "name": "Mauro Icardi",
+    "answer": "ICARDI",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2025-05-10-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2024/25",
+  "date": "10.05.2025",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Fernando Muslera",
+    "answer": "MUSLERA",
+    "number": 1
+   },
+   {
+    "name": "Roland Sallai",
+    "answer": "SALLAI",
+    "number": 7
+   },
+   {
+    "name": "Davinson Sánchez",
+    "answer": "SANCHEZ",
+    "number": 6
+   },
+   {
+    "name": "Abdülkerim Bardakcı",
+    "answer": "BARDAKCI",
+    "number": 42,
+    "goals": 1
+   },
+   {
+    "name": "Ismail Jakobs",
+    "answer": "JAKOBS",
+    "number": 4
+   },
+   {
+    "name": "Lucas Torreira",
+    "answer": "TORREIRA",
+    "number": 34
+   },
+   {
+    "name": "Mario Lemina",
+    "answer": "LEMINA",
+    "number": 99
+   },
+   {
+    "name": "Yunus Akgün",
+    "answer": "AKGUN",
+    "number": 11
+   },
+   {
+    "name": "Gabriel Sara",
+    "answer": "SARA",
+    "number": 20
+   },
+   {
+    "name": "Barış Alper Yılmaz",
+    "answer": "YILMAZ",
+    "number": 53
+   },
+   {
+    "name": "Victor Osimhen",
+    "answer": "OSIMHEN",
+    "number": 45
+   }
+  ]
+ },
+ {
+  "id": "superlig-2024-01-21-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2023/24",
+  "date": "21.01.2024",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "5-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Fernando Muslera",
+    "answer": "MUSLERA",
+    "number": 1
+   },
+   {
+    "name": "Sacha Boey",
+    "answer": "BOEY",
+    "number": 93
+   },
+   {
+    "name": "Victor Nelsson",
+    "answer": "NELSSON",
+    "number": 25
+   },
+   {
+    "name": "Abdülkerim Bardakcı",
+    "answer": "BARDAKCI",
+    "number": 42
+   },
+   {
+    "name": "Kaan Ayhan",
+    "answer": "AYHAN",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Kerem Demirbay",
+    "answer": "DEMIRBAY",
+    "number": 8
+   },
+   {
+    "name": "Lucas Torreira",
+    "answer": "TORREIRA",
+    "number": 34
+   },
+   {
+    "name": "Barış Alper Yılmaz",
+    "answer": "YILMAZ",
+    "number": 53
+   },
+   {
+    "name": "Dries Mertens",
+    "answer": "MERTENS",
+    "number": 10
+   },
+   {
+    "name": "Kerem Aktürkoğlu",
+    "answer": "AKTURKOGLU",
+    "number": 7,
+    "goals": 2
+   },
+   {
+    "name": "Wilfried Zaha",
+    "answer": "ZAHA",
+    "number": 14,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "superlig-2022-08-28-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2022/23",
+  "date": "28.08.2022",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Taha Tepe",
+    "answer": "TEPE",
+    "number": 54
+   },
+   {
+    "name": "Jens Stryger",
+    "answer": "STRYGER",
+    "number": 19
+   },
+   {
+    "name": "Marc Bartra",
+    "answer": "BARTRA",
+    "number": 3
+   },
+   {
+    "name": "Vitor Hugo",
+    "answer": "HUGO",
+    "number": 13
+   },
+   {
+    "name": "Eren Elmalı",
+    "answer": "ELMALI",
+    "number": 18
+   },
+   {
+    "name": "Dorukhan Toköz",
+    "answer": "TOKOZ",
+    "number": 8
+   },
+   {
+    "name": "Manolis Siopis",
+    "answer": "SIOPIS",
+    "number": 6
+   },
+   {
+    "name": "Djaniny",
+    "answer": "DJANINY",
+    "number": 21
+   },
+   {
+    "name": "Enis Bardhi",
+    "answer": "BARDHI",
+    "number": 29
+   },
+   {
+    "name": "Trezeguet",
+    "answer": "TREZEGUET",
+    "number": 27
+   },
+   {
+    "name": "Andreas Cornelius",
+    "answer": "CORNELIUS",
+    "number": 14
+   }
+  ]
+ },
+ {
+  "id": "superlig-2021-09-12-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2021/22",
+  "date": "12.09.2021",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "2-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "Bruno Peres",
+    "answer": "PERES",
+    "number": 33
+   },
+   {
+    "name": "Edgar Ié",
+    "answer": "IE",
+    "number": 32
+   },
+   {
+    "name": "Vitor Hugo",
+    "answer": "HUGO",
+    "number": 13
+   },
+   {
+    "name": "İsmail Köybaşı",
+    "answer": "KOYBASI",
+    "number": 23
+   },
+   {
+    "name": "Marek Hamsik",
+    "answer": "HAMSIK",
+    "number": 17
+   },
+   {
+    "name": "Berat Özdemir",
+    "answer": "OZDEMIR",
+    "number": 5
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 10
+   },
+   {
+    "name": "Anastasios Bakasetas",
+    "answer": "BAKASETAS",
+    "number": 11
+   },
+   {
+    "name": "Anthony Nwakaeme",
+    "answer": "NWAKAEME",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Andreas Cornelius",
+    "answer": "CORNELIUS",
+    "number": 14,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2020-07-05-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2020/21",
+  "date": "05.07.2020",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "Kamil Ahmet Çörekçi",
+    "answer": "COREKCI",
+    "number": 2
+   },
+   {
+    "name": "Hüseyin Türkmen",
+    "answer": "TURKMEN",
+    "number": 4
+   },
+   {
+    "name": "Manuel da Costa",
+    "answer": "DA COSTA",
+    "number": 27
+   },
+   {
+    "name": "Filip Novak",
+    "answer": "NOVAK",
+    "number": 77,
+    "goals": 1
+   },
+   {
+    "name": "Abdulkadir Parmak",
+    "answer": "PARMAK",
+    "number": 61
+   },
+   {
+    "name": "José Sosa",
+    "answer": "SOSA",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 10
+   },
+   {
+    "name": "Badou Ndiaye",
+    "answer": "NDIAYE",
+    "number": 15
+   },
+   {
+    "name": "Caleb Ekuban",
+    "answer": "EKUBAN",
+    "number": 18
+   },
+   {
+    "name": "Alexander Sørloth",
+    "answer": "SRLOTH",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2019-02-10-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2018/19",
+  "date": "10.02.2019",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "3-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Fernando Muslera",
+    "answer": "MUSLERA",
+    "number": 1
+   },
+   {
+    "name": "Martin Linnes",
+    "answer": "LINNES",
+    "number": 14
+   },
+   {
+    "name": "Christian Luyindama",
+    "answer": "LUYINDAMA",
+    "number": 27
+   },
+   {
+    "name": "Marcão",
+    "answer": "MARCAO",
+    "number": 45
+   },
+   {
+    "name": "Yuto Nagatomo",
+    "answer": "NAGATOMO",
+    "number": 55
+   },
+   {
+    "name": "Ryan Donk",
+    "answer": "DONK",
+    "number": 15
+   },
+   {
+    "name": "Sofiane Feghouli",
+    "answer": "FEGHOULI",
+    "number": 89
+   },
+   {
+    "name": "Badou Ndiaye",
+    "answer": "NDIAYE",
+    "number": 17
+   },
+   {
+    "name": "Younès Belhanda",
+    "answer": "BELHANDA",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Henry Onyekuru",
+    "answer": "ONYEKURU",
+    "number": 21
+   },
+   {
+    "name": "Mbaye Diagne",
+    "answer": "DIAGNE",
+    "number": 91,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2017-10-29-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2017/18",
+  "date": "29.10.2017",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 1
+   },
+   {
+    "name": "João Pereira",
+    "answer": "PEREIRA",
+    "number": 47
+   },
+   {
+    "name": "Uğur Demirok",
+    "answer": "DEMIROK",
+    "number": 15
+   },
+   {
+    "name": "Jan Durica",
+    "answer": "DURICA",
+    "number": 4
+   },
+   {
+    "name": "Mustafa Akbaş",
+    "answer": "AKBAS",
+    "number": 25
+   },
+   {
+    "name": "Okay Yokuşlu",
+    "answer": "YOKUSLU",
+    "number": 5
+   },
+   {
+    "name": "Ogenyi Onazi",
+    "answer": "ONAZI",
+    "number": 20
+   },
+   {
+    "name": "Matus Bero",
+    "answer": "BERO",
+    "number": 21
+   },
+   {
+    "name": "Yusuf Yazıcı",
+    "answer": "YAZICI",
+    "number": 97,
+    "goals": 1
+   },
+   {
+    "name": "Olcay Şahan",
+    "answer": "SAHAN",
+    "number": 10
+   },
+   {
+    "name": "Dame N'Doye",
+    "answer": "NDOYE",
+    "number": 14,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2016-10-22-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2016/17",
+  "date": "22.10.2016",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 1
+   },
+   {
+    "name": "Zeki Yavru",
+    "answer": "YAVRU",
+    "number": 2
+   },
+   {
+    "name": "Uğur Demirok",
+    "answer": "DEMIROK",
+    "number": 15
+   },
+   {
+    "name": "Jan Durica",
+    "answer": "DURICA",
+    "number": 4
+   },
+   {
+    "name": "Mustafa Akbaş",
+    "answer": "AKBAS",
+    "number": 25
+   },
+   {
+    "name": "Ogenyi Onazi",
+    "answer": "ONAZI",
+    "number": 17
+   },
+   {
+    "name": "Okay Yokuşlu",
+    "answer": "YOKUSLU",
+    "number": 5
+   },
+   {
+    "name": "Matus Bero",
+    "answer": "BERO",
+    "number": 21
+   },
+   {
+    "name": "Mehmet Ekici",
+    "answer": "EKICI",
+    "number": 8
+   },
+   {
+    "name": "Fabián Castillo",
+    "answer": "CASTILLO",
+    "number": 11
+   },
+   {
+    "name": "Dame N'Doye",
+    "answer": "NDOYE",
+    "number": 14,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2015-04-19-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2014/15",
+  "date": "19.04.2015",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Hakan Arıkan",
+    "answer": "ARIKAN",
+    "number": 12
+   },
+   {
+    "name": "Salih Dursun",
+    "answer": "DURSUN",
+    "number": 38
+   },
+   {
+    "name": "Bosingwa",
+    "answer": "BOSINGWA",
+    "number": 3
+   },
+   {
+    "name": "Uğur Demirok",
+    "answer": "DEMIROK",
+    "number": 15
+   },
+   {
+    "name": "Mustafa Akbaş",
+    "answer": "AKBAS",
+    "number": 14
+   },
+   {
+    "name": "Mehmet Ekici",
+    "answer": "EKICI",
+    "number": 8
+   },
+   {
+    "name": "Carl Medjani",
+    "answer": "MEDJANI",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Deniz Yılmaz",
+    "answer": "YILMAZ",
+    "number": 18
+   },
+   {
+    "name": "Özer Hurmacı",
+    "answer": "HURMACI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Erkan Zengin",
+    "answer": "ZENGIN",
+    "number": 99
+   },
+   {
+    "name": "Óscar Cardozo",
+    "answer": "CARDOZO",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "superlig-2014-05-11-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2013/14",
+  "date": "11.05.2014",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "4-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Fernando Muslera",
+    "answer": "MUSLERA",
+    "number": 25
+   },
+   {
+    "name": "Semih Kaya",
+    "answer": "KAYA",
+    "number": 26
+   },
+   {
+    "name": "Aurélien Chedjou",
+    "answer": "CHEDJOU",
+    "number": 21
+   },
+   {
+    "name": "Hakan Balta",
+    "answer": "BALTA",
+    "number": 22
+   },
+   {
+    "name": "Sabri Sarıoğlu",
+    "answer": "SARIOGLU",
+    "number": 55
+   },
+   {
+    "name": "Felipe Melo",
+    "answer": "MELO",
+    "number": 3
+   },
+   {
+    "name": "Wesley Sneijder",
+    "answer": "SNEIJDER",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Yekta Kurtuluş",
+    "answer": "KURTULUS",
+    "number": 35
+   },
+   {
+    "name": "Alex Telles",
+    "answer": "TELLES",
+    "number": 15
+   },
+   {
+    "name": "Burak Yılmaz",
+    "answer": "YILMAZ",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "superlig-2012-12-23-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2012/13",
+  "date": "23.12.2012",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 1
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Giray Kaçar",
+    "answer": "KACAR",
+    "number": 23
+   },
+   {
+    "name": "Ondrej Celustka",
+    "answer": "CELUSTKA",
+    "number": 28
+   },
+   {
+    "name": "Émerson Conceição",
+    "answer": "CONCEICAO",
+    "number": 86
+   },
+   {
+    "name": "Marek Sapara",
+    "answer": "SAPARA",
+    "number": 27
+   },
+   {
+    "name": "Didier Zokora",
+    "answer": "ZOKORA",
+    "number": 15
+   },
+   {
+    "name": "Halil Altıntop",
+    "answer": "ALTINTOP",
+    "number": 21
+   },
+   {
+    "name": "Adrian Mierzejewski",
+    "answer": "MIERZEJEWSKI",
+    "number": 10
+   },
+   {
+    "name": "Olcan Adın",
+    "answer": "ADIN",
+    "number": 92
+   },
+   {
+    "name": "Paulo Henrique",
+    "answer": "HENRIQUE",
+    "number": 12
+   }
+  ]
+ },
+ {
+  "id": "superlig-2011-12-11-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2011/12",
+  "date": "11.12.2011",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "3-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Fernando Muslera",
+    "answer": "MUSLERA",
+    "number": 25
+   },
+   {
+    "name": "Emmanuel Eboué",
+    "answer": "EBOUE",
+    "number": 27
+   },
+   {
+    "name": "Tomas Ujfalusi",
+    "answer": "UJFALUSI",
+    "number": 17
+   },
+   {
+    "name": "Semih Kaya",
+    "answer": "KAYA",
+    "number": 26
+   },
+   {
+    "name": "Hakan Balta",
+    "answer": "BALTA",
+    "number": 22
+   },
+   {
+    "name": "Colin Kazım-Richards",
+    "answer": "RICHARDS",
+    "number": 80
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Felipe Melo",
+    "answer": "MELO",
+    "number": 10
+   },
+   {
+    "name": "Emre Çolak",
+    "answer": "COLAK",
+    "number": 52
+   },
+   {
+    "name": "Milan Baros",
+    "answer": "BAROS",
+    "number": 15
+   },
+   {
+    "name": "Johan Elmander",
+    "answer": "ELMANDER",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2010-03-21-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2009/10",
+  "date": "21.03.2010",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 35
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Rigobert Song",
+    "answer": "SONG",
+    "number": 4
+   },
+   {
+    "name": "Giray Kaçar",
+    "answer": "KACAR",
+    "number": 23
+   },
+   {
+    "name": "Hrvoje Cale",
+    "answer": "CALE",
+    "number": 3
+   },
+   {
+    "name": "Gustavo Colman",
+    "answer": "COLMAN",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Ceyhun Gülselam",
+    "answer": "GULSELAM",
+    "number": 6
+   },
+   {
+    "name": "Burak Yılmaz",
+    "answer": "YILMAZ",
+    "number": 17
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8
+   },
+   {
+    "name": "Alanzinho",
+    "answer": "ALANZINHO",
+    "number": 25
+   },
+   {
+    "name": "Umut Bulut",
+    "answer": "BULUT",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "superlig-2009-10-18-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2009/10",
+  "date": "18.10.2009",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "4-3",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Leo Franco",
+    "answer": "FRANCO",
+    "number": 25
+   },
+   {
+    "name": "Sabri Sarıoğlu",
+    "answer": "SARIOGLU",
+    "number": 55
+   },
+   {
+    "name": "Gökhan Zan",
+    "answer": "ZAN",
+    "number": 5
+   },
+   {
+    "name": "Servet Çetin",
+    "answer": "CETIN",
+    "number": 76,
+    "goals": 1
+   },
+   {
+    "name": "Hakan Balta",
+    "answer": "BALTA",
+    "number": 22
+   },
+   {
+    "name": "Ayhan Akman",
+    "answer": "AKMAN",
+    "number": 18
+   },
+   {
+    "name": "Mustafa Sarp",
+    "answer": "SARP",
+    "number": 16
+   },
+   {
+    "name": "Abdul Kader Keita",
+    "answer": "KEITA",
+    "number": 11
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Harry Kewell",
+    "answer": "KEWELL",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Milan Baros",
+    "answer": "BAROS",
+    "number": 15,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2008-04-12-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2007/08",
+  "date": "12.04.2008",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Aykut Erçetin",
+    "answer": "ERCETIN",
+    "number": 1
+   },
+   {
+    "name": "Sabri Sarıoğlu",
+    "answer": "SARIOGLU",
+    "number": 55
+   },
+   {
+    "name": "Emre Güngör",
+    "answer": "GUNGOR",
+    "number": 2
+   },
+   {
+    "name": "Servet Çetin",
+    "answer": "CETIN",
+    "number": 76
+   },
+   {
+    "name": "Volkan Yaman",
+    "answer": "YAMAN",
+    "number": 74
+   },
+   {
+    "name": "Okan Buruk",
+    "answer": "BURUK",
+    "number": 7
+   },
+   {
+    "name": "Ayhan Akman",
+    "answer": "AKMAN",
+    "number": 18
+   },
+   {
+    "name": "Mehmet Topal",
+    "answer": "TOPAL",
+    "number": 14
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 66,
+    "goals": 1
+   },
+   {
+    "name": "Hakan Şükür",
+    "answer": "SUKUR",
+    "number": 9
+   },
+   {
+    "name": "Ümit Karan",
+    "answer": "KARAN",
+    "number": 99
+   }
+  ]
+ },
+ {
+  "id": "superlig-2007-03-11-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2006/07",
+  "date": "11.03.2007",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "2-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Aykut Erçetin",
+    "answer": "ERCETIN",
+    "number": 12
+   },
+   {
+    "name": "Sabri Sarıoğlu",
+    "answer": "SARIOGLU",
+    "number": 55
+   },
+   {
+    "name": "Stjepan Tomas",
+    "answer": "TOMAS",
+    "number": 2
+   },
+   {
+    "name": "Emre Aşık",
+    "answer": "ASIK",
+    "number": 21
+   },
+   {
+    "name": "Ergün Penbe",
+    "answer": "PENBE",
+    "number": 67
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 66,
+    "goals": 1
+   },
+   {
+    "name": "Ayhan Akman",
+    "answer": "AKMAN",
+    "number": 18
+   },
+   {
+    "name": "Junichi Inamoto",
+    "answer": "INAMOTO",
+    "number": 23
+   },
+   {
+    "name": "Sasa Ilic",
+    "answer": "ILIC",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Necati Ateş",
+    "answer": "ATES",
+    "number": 10
+   },
+   {
+    "name": "Hakan Şükür",
+    "answer": "SUKUR",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "superlig-2005-10-02-galatasaray-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2005/06",
+  "date": "02.10.2005",
+  "team": "Galatasaray",
+  "opponent": "Trabzonspor",
+  "score": "4-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#a32638",
+   "sleeves": "#fdb912",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Faryd Mondragón",
+    "answer": "MONDRAGON",
+    "number": 1
+   },
+   {
+    "name": "Uğur Uçar",
+    "answer": "UCAR",
+    "number": 33
+   },
+   {
+    "name": "Rigobert Song",
+    "answer": "SONG",
+    "number": 4
+   },
+   {
+    "name": "Stjepan Tomas",
+    "answer": "TOMAS",
+    "number": 2
+   },
+   {
+    "name": "Orhan Ak",
+    "answer": "AK",
+    "number": 5
+   },
+   {
+    "name": "Hasan Şaş",
+    "answer": "SAS",
+    "number": 11
+   },
+   {
+    "name": "Alioum Saidou",
+    "answer": "SAIDOU",
+    "number": 7
+   },
+   {
+    "name": "Marek Heinz",
+    "answer": "HEINZ",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Ümit Karan",
+    "answer": "KARAN",
+    "number": 99,
+    "goals": 1
+   },
+   {
+    "name": "Necati Ateş",
+    "answer": "ATES",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Hakan Şükür",
+    "answer": "SUKUR",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2005-04-10-trabzonspor-galatasaray",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Galatasaray · Süper Lig",
+   "en": "Trabzonspor – Galatasaray · Süper Lig"
+  },
+  "season": "2004/05",
+  "date": "10.04.2005",
+  "team": "Trabzonspor",
+  "opponent": "Galatasaray",
+  "score": "2-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Michael Petkovic",
+    "answer": "PETKOVIC",
+    "number": 1
+   },
+   {
+    "name": "Emrah Eren",
+    "answer": "EREN",
+    "number": 34
+   },
+   {
+    "name": "Erdinç Yavuz",
+    "answer": "YAVUZ",
+    "number": 38
+   },
+   {
+    "name": "Tolga Seyhan",
+    "answer": "SEYHAN",
+    "number": 28
+   },
+   {
+    "name": "Celaleddin Koçak",
+    "answer": "KOCAK",
+    "number": 99
+   },
+   {
+    "name": "Gökdeniz Karadeniz",
+    "answer": "KARADENIZ",
+    "number": 61,
+    "goals": 1
+   },
+   {
+    "name": "Miroslaw Szymkowiak",
+    "answer": "SZYMKOWIAK",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Hüseyin Çimşir",
+    "answer": "CIMSIR",
+    "number": 5
+   },
+   {
+    "name": "Eul-yong Lee",
+    "answer": "LEE",
+    "number": 13
+   },
+   {
+    "name": "İbrahim Yattara",
+    "answer": "YATTARA",
+    "number": 11
+   },
+   {
+    "name": "Fatih Tekke",
+    "answer": "TEKKE",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "superlig-2026-02-14-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2025/26",
+  "date": "14.02.2026",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "3-2",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Ederson",
+    "answer": "EDERSON",
+    "number": 31
+   },
+   {
+    "name": "Nélson Semedo",
+    "answer": "SEMEDO",
+    "number": 27
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37
+   },
+   {
+    "name": "Jayden Oosterwolde",
+    "answer": "OOSTERWOLDE",
+    "number": 24
+   },
+   {
+    "name": "Mert Müldür",
+    "answer": "MULDUR",
+    "number": 18
+   },
+   {
+    "name": "N'Golo Kanté",
+    "answer": "KANTE",
+    "number": 17
+   },
+   {
+    "name": "Mattéo Guendouzi",
+    "answer": "GUENDOUZI",
+    "number": 6
+   },
+   {
+    "name": "İsmail Yüksek",
+    "answer": "YUKSEK",
+    "number": 5
+   },
+   {
+    "name": "Marco Asensio",
+    "answer": "ASENSIO",
+    "number": 21,
+    "goals": 1
+   },
+   {
+    "name": "Talisca",
+    "answer": "TALISCA",
+    "number": 94,
+    "goals": 1
+   },
+   {
+    "name": "Kerem Aktürkoğlu",
+    "answer": "AKTURKOGLU",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2025-04-06-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2024/25",
+  "date": "06.04.2025",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "4-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Dominik Livakovic",
+    "answer": "LIVAKOVIC",
+    "number": 40
+   },
+   {
+    "name": "Bright Osayi-Samuel",
+    "answer": "OSAYISAMUEL",
+    "number": 21
+   },
+   {
+    "name": "Alexander Djiku",
+    "answer": "DJIKU",
+    "number": 6
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37,
+    "goals": 1
+   },
+   {
+    "name": "Mert Müldür",
+    "answer": "MULDUR",
+    "number": 16
+   },
+   {
+    "name": "Fred",
+    "answer": "FRED",
+    "number": 13
+   },
+   {
+    "name": "Sofyan Amrabat",
+    "answer": "AMRABAT",
+    "number": 34
+   },
+   {
+    "name": "Dusan Tadic",
+    "answer": "TADIC",
+    "number": 10
+   },
+   {
+    "name": "Sebastian Szymański",
+    "answer": "SZYMANSKI",
+    "number": 53
+   },
+   {
+    "name": "Allan Saint-Maximin",
+    "answer": "MAXIMIN",
+    "number": 97
+   },
+   {
+    "name": "Edin Dzeko",
+    "answer": "DZEKO",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "superlig-2023-11-04-trabzonspor-fenerbahce",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2023/24",
+  "date": "04.11.2023",
+  "team": "Trabzonspor",
+  "opponent": "Fenerbahçe",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "Mehmet Aydin",
+    "answer": "AYDIN",
+    "number": 50
+   },
+   {
+    "name": "Rayyan Baniya",
+    "answer": "BANIYA",
+    "number": 2
+   },
+   {
+    "name": "Stefano Denswil",
+    "answer": "DENSWIL",
+    "number": 24
+   },
+   {
+    "name": "Eren Elmalı",
+    "answer": "ELMALI",
+    "number": 18
+   },
+   {
+    "name": "Batista Mendy",
+    "answer": "MENDY",
+    "number": 6
+   },
+   {
+    "name": "Berat Özdemir",
+    "answer": "OZDEMIR",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Nicolas Pépé",
+    "answer": "PEPE",
+    "number": 29,
+    "goals": 1
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 10
+   },
+   {
+    "name": "Edin Visca",
+    "answer": "VISCA",
+    "number": 7
+   },
+   {
+    "name": "Paul Onuachu",
+    "answer": "ONUACHU",
+    "number": 30,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2022-12-24-trabzonspor-fenerbahce",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2022/23",
+  "date": "24.12.2022",
+  "team": "Trabzonspor",
+  "opponent": "Fenerbahçe",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "Jens Stryger",
+    "answer": "STRYGER",
+    "number": 19
+   },
+   {
+    "name": "Marc Bartra",
+    "answer": "BARTRA",
+    "number": 3
+   },
+   {
+    "name": "Vitor Hugo",
+    "answer": "HUGO",
+    "number": 13
+   },
+   {
+    "name": "Eren Elmalı",
+    "answer": "ELMALI",
+    "number": 18
+   },
+   {
+    "name": "Anastasios Bakasetas",
+    "answer": "BAKASETAS",
+    "number": 11
+   },
+   {
+    "name": "Manolis Siopis",
+    "answer": "SIOPIS",
+    "number": 6
+   },
+   {
+    "name": "Edin Visca",
+    "answer": "VISCA",
+    "number": 7
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 10
+   },
+   {
+    "name": "Trezeguet",
+    "answer": "TREZEGUET",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "Maxi Gómez",
+    "answer": "GOMEZ",
+    "number": 30,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2021-02-28-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2020/21",
+  "date": "28.02.2021",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Altay Bayındır",
+    "answer": "BAYINDIR",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Marcel Tisserand",
+    "answer": "TISSERAND",
+    "number": 26
+   },
+   {
+    "name": "Serdar Aziz",
+    "answer": "AZIZ",
+    "number": 4
+   },
+   {
+    "name": "Attila Szalai",
+    "answer": "SZALAI",
+    "number": 41
+   },
+   {
+    "name": "José Sosa",
+    "answer": "SOSA",
+    "number": 5
+   },
+   {
+    "name": "Mert Hakan Yandaş",
+    "answer": "YANDAS",
+    "number": 8
+   },
+   {
+    "name": "Bright Osayi-Samuel",
+    "answer": "OSAYISAMUEL",
+    "number": 21
+   },
+   {
+    "name": "Mesut Özil",
+    "answer": "OZIL",
+    "number": 67
+   },
+   {
+    "name": "Dimitrios Pelkas",
+    "answer": "PELKAS",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Mame Thiam",
+    "answer": "THIAM",
+    "number": 27
+   }
+  ]
+ },
+ {
+  "id": "superlig-2020-06-16-trabzonspor-fenerbahce",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Türkiye Kupası",
+   "en": "Trabzonspor – Fenerbahçe · Turkish Cup"
+  },
+  "season": "2019/20",
+  "date": "16.06.2020",
+  "team": "Trabzonspor",
+  "opponent": "Fenerbahçe",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "João Pereira",
+    "answer": "PEREIRA",
+    "number": 47
+   },
+   {
+    "name": "Majid Hosseini",
+    "answer": "HOSSEINI",
+    "number": 5
+   },
+   {
+    "name": "Gastón Campi",
+    "answer": "CAMPI",
+    "number": 22
+   },
+   {
+    "name": "Filip Novak",
+    "answer": "NOVAK",
+    "number": 77,
+    "goals": 1
+   },
+   {
+    "name": "Badou Ndiaye",
+    "answer": "NDIAYE",
+    "number": 15
+   },
+   {
+    "name": "Abdulkadir Parmak",
+    "answer": "PARMAK",
+    "number": 61
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 10
+   },
+   {
+    "name": "Caleb Ekuban",
+    "answer": "EKUBAN",
+    "number": 18
+   },
+   {
+    "name": "Anthony Nwakaeme",
+    "answer": "NWAKAEME",
+    "number": 9
+   },
+   {
+    "name": "Alexander Sørloth",
+    "answer": "SRLOTH",
+    "number": 11,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "superlig-2019-09-01-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2019/20",
+  "date": "01.09.2019",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Altay Bayındır",
+    "answer": "BAYINDIR",
+    "number": 98
+   },
+   {
+    "name": "Ozan Tufan",
+    "answer": "TUFAN",
+    "number": 7
+   },
+   {
+    "name": "Jailson",
+    "answer": "JAILSON",
+    "number": 25
+   },
+   {
+    "name": "Zanka",
+    "answer": "ZANKA",
+    "number": 32
+   },
+   {
+    "name": "Nabil Dirar",
+    "answer": "DIRAR",
+    "number": 17
+   },
+   {
+    "name": "Emre Belözoğlu",
+    "answer": "BELOZOGLU",
+    "number": 5
+   },
+   {
+    "name": "Tolga Ciğerci",
+    "answer": "CIGERCI",
+    "number": 14
+   },
+   {
+    "name": "Deniz Türüç",
+    "answer": "TURUC",
+    "number": 23
+   },
+   {
+    "name": "Max Kruse",
+    "answer": "KRUSE",
+    "number": 10
+   },
+   {
+    "name": "Garry Rodrigues",
+    "answer": "RODRIGUES",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Vedat Muriqi",
+    "answer": "MURIQI",
+    "number": 94
+   }
+  ]
+ },
+ {
+  "id": "superlig-2018-11-25-trabzonspor-fenerbahce",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2018/19",
+  "date": "25.11.2018",
+  "team": "Trabzonspor",
+  "opponent": "Fenerbahçe",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 96
+   },
+   {
+    "name": "João Pereira",
+    "answer": "PEREIRA",
+    "number": 47
+   },
+   {
+    "name": "Hüseyin Türkmen",
+    "answer": "TURKMEN",
+    "number": 4
+   },
+   {
+    "name": "Zargo Touré",
+    "answer": "TOURE",
+    "number": 15
+   },
+   {
+    "name": "Filip Novak",
+    "answer": "NOVAK",
+    "number": 77,
+    "goals": 1
+   },
+   {
+    "name": "José Sosa",
+    "answer": "SOSA",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Ogenyi Onazi",
+    "answer": "ONAZI",
+    "number": 20
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 61
+   },
+   {
+    "name": "Yusuf Yazıcı",
+    "answer": "YAZICI",
+    "number": 97
+   },
+   {
+    "name": "Anthony Nwakaeme",
+    "answer": "NWAKAEME",
+    "number": 99
+   },
+   {
+    "name": "Hugo Rodallega",
+    "answer": "RODALLEGA",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "superlig-2017-08-20-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2017/18",
+  "date": "20.08.2017",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "2-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Volkan Demirel",
+    "answer": "DEMIREL",
+    "number": 1
+   },
+   {
+    "name": "Mauricio Isla",
+    "answer": "ISLA",
+    "number": 4
+   },
+   {
+    "name": "Martin Skrtel",
+    "answer": "SKRTEL",
+    "number": 37
+   },
+   {
+    "name": "Roman Neustädter",
+    "answer": "NEUSTADTER",
+    "number": 33
+   },
+   {
+    "name": "İsmail Köybaşı",
+    "answer": "KOYBASI",
+    "number": 6
+   },
+   {
+    "name": "Souza",
+    "answer": "SOUZA",
+    "number": 89
+   },
+   {
+    "name": "Mehmet Topal",
+    "answer": "TOPAL",
+    "number": 5
+   },
+   {
+    "name": "Nabil Dirar",
+    "answer": "DIRAR",
+    "number": 17
+   },
+   {
+    "name": "Alper Potuk",
+    "answer": "POTUK",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Mathieu Valbuena",
+    "answer": "VALBUENA",
+    "number": 28,
+    "goals": 1
+   },
+   {
+    "name": "Robin van Persie",
+    "answer": "VAN PERSIE",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "superlig-2016-04-24-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2015/16",
+  "date": "24.04.2016",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "4-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Volkan Demirel",
+    "answer": "DEMIREL",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Simon Kjaer",
+    "answer": "KJAER",
+    "number": 4
+   },
+   {
+    "name": "Bruno Alves",
+    "answer": "ALVES",
+    "number": 22
+   },
+   {
+    "name": "Hasan Ali Kaldırım",
+    "answer": "KALDIRIM",
+    "number": 3
+   },
+   {
+    "name": "Alper Potuk",
+    "answer": "POTUK",
+    "number": 26,
+    "goals": 1
+   },
+   {
+    "name": "Souza",
+    "answer": "SOUZA",
+    "number": 6
+   },
+   {
+    "name": "Mehmet Topal",
+    "answer": "TOPAL",
+    "number": 5
+   },
+   {
+    "name": "Volkan Şen",
+    "answer": "SEN",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Robin van Persie",
+    "answer": "VAN PERSIE",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Nani",
+    "answer": "NANI",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2015-02-07-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2014/15",
+  "date": "07.02.2015",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Volkan Demirel",
+    "answer": "DEMIREL",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Bruno Alves",
+    "answer": "ALVES",
+    "number": 22
+   },
+   {
+    "name": "Egemen Korkmaz",
+    "answer": "KORKMAZ",
+    "number": 2
+   },
+   {
+    "name": "Caner Erkin",
+    "answer": "ERKIN",
+    "number": 88
+   },
+   {
+    "name": "Mehmet Topal",
+    "answer": "TOPAL",
+    "number": 5
+   },
+   {
+    "name": "Selçuk Şahin",
+    "answer": "SAHIN",
+    "number": 21
+   },
+   {
+    "name": "Dirk Kuyt",
+    "answer": "KUYT",
+    "number": 11
+   },
+   {
+    "name": "Diego",
+    "answer": "DIEGO",
+    "number": 10
+   },
+   {
+    "name": "Alper Potuk",
+    "answer": "POTUK",
+    "number": 26
+   },
+   {
+    "name": "Emmanuel Emenike",
+    "answer": "EMENIKE",
+    "number": 29
+   }
+  ]
+ },
+ {
+  "id": "superlig-2013-10-06-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2013/14",
+  "date": "06.10.2013",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Volkan Demirel",
+    "answer": "DEMIREL",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Bekir İrtegün",
+    "answer": "IRTEGUN",
+    "number": 4
+   },
+   {
+    "name": "Egemen Korkmaz",
+    "answer": "KORKMAZ",
+    "number": 2
+   },
+   {
+    "name": "Caner Erkin",
+    "answer": "ERKIN",
+    "number": 88
+   },
+   {
+    "name": "Alper Potuk",
+    "answer": "POTUK",
+    "number": 26
+   },
+   {
+    "name": "Mehmet Topal",
+    "answer": "TOPAL",
+    "number": 5
+   },
+   {
+    "name": "Dirk Kuyt",
+    "answer": "KUYT",
+    "number": 11
+   },
+   {
+    "name": "Samuel Holmén",
+    "answer": "HOLMEN",
+    "number": 8
+   },
+   {
+    "name": "Moussa Sow",
+    "answer": "SOW",
+    "number": 7
+   },
+   {
+    "name": "Pierre Webó",
+    "answer": "WEBO",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "superlig-2013-02-17-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2012/13",
+  "date": "17.02.2013",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "3-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Volkan Demirel",
+    "answer": "DEMIREL",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77,
+    "goals": 1
+   },
+   {
+    "name": "Bekir İrtegün",
+    "answer": "IRTEGUN",
+    "number": 4
+   },
+   {
+    "name": "Egemen Korkmaz",
+    "answer": "KORKMAZ",
+    "number": 2
+   },
+   {
+    "name": "Hasan Ali Kaldırım",
+    "answer": "KALDIRIM",
+    "number": 3
+   },
+   {
+    "name": "Emre Belözoğlu",
+    "answer": "BELOZOGLU",
+    "number": 25
+   },
+   {
+    "name": "Mehmet Topal",
+    "answer": "TOPAL",
+    "number": 5
+   },
+   {
+    "name": "Dirk Kuyt",
+    "answer": "KUYT",
+    "number": 11
+   },
+   {
+    "name": "Cristian",
+    "answer": "CRISTIAN",
+    "number": 16,
+    "goals": 1
+   },
+   {
+    "name": "Moussa Sow",
+    "answer": "SOW",
+    "number": 7
+   },
+   {
+    "name": "Pierre Webó",
+    "answer": "WEBO",
+    "number": 99
+   }
+  ]
+ },
+ {
+  "id": "superlig-2012-04-01-trabzonspor-fenerbahce",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2011/12",
+  "date": "01.04.2012",
+  "team": "Trabzonspor",
+  "opponent": "Fenerbahçe",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Tolga Zengin",
+    "answer": "ZENGIN",
+    "number": 29
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Mustafa Yumlu",
+    "answer": "YUMLU",
+    "number": 22
+   },
+   {
+    "name": "Giray Kaçar",
+    "answer": "KACAR",
+    "number": 23
+   },
+   {
+    "name": "Ondrej Celustka",
+    "answer": "CELUSTKA",
+    "number": 28
+   },
+   {
+    "name": "Aykut Akgün",
+    "answer": "AKGUN",
+    "number": 24
+   },
+   {
+    "name": "Gustavo Colman",
+    "answer": "COLMAN",
+    "number": 20
+   },
+   {
+    "name": "Volkan Şen",
+    "answer": "SEN",
+    "number": 80
+   },
+   {
+    "name": "Alanzinho",
+    "answer": "ALANZINHO",
+    "number": 25
+   },
+   {
+    "name": "Olcan Adın",
+    "answer": "ADIN",
+    "number": 92
+   },
+   {
+    "name": "Burak Yılmaz",
+    "answer": "YILMAZ",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2010-08-23-trabzonspor-fenerbahce",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2010/11",
+  "date": "23.08.2010",
+  "team": "Trabzonspor",
+  "opponent": "Fenerbahçe",
+  "score": "3-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 35
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Arkadiusz Glowacki",
+    "answer": "GLOWACKI",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Egemen Korkmaz",
+    "answer": "KORKMAZ",
+    "number": 16
+   },
+   {
+    "name": "Hrvoje Cale",
+    "answer": "CALE",
+    "number": 3
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8
+   },
+   {
+    "name": "Ceyhun Gülselam",
+    "answer": "GULSELAM",
+    "number": 6
+   },
+   {
+    "name": "Gustavo Colman",
+    "answer": "COLMAN",
+    "number": 20
+   },
+   {
+    "name": "İbrahim Yattara",
+    "answer": "YATTARA",
+    "number": 61,
+    "goals": 1
+   },
+   {
+    "name": "Teófilo Gutiérrez",
+    "answer": "GUTIERREZ",
+    "number": 9
+   },
+   {
+    "name": "Alanzinho",
+    "answer": "ALANZINHO",
+    "number": 25
+   }
+  ]
+ },
+ {
+  "id": "superlig-2010-05-05-trabzonspor-fenerbahce",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Türkiye Kupası",
+   "en": "Trabzonspor – Fenerbahçe · Turkish Cup"
+  },
+  "season": "2009/10",
+  "date": "05.05.2010",
+  "team": "Trabzonspor",
+  "opponent": "Fenerbahçe",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 35
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Rigobert Song",
+    "answer": "SONG",
+    "number": 4
+   },
+   {
+    "name": "Egemen Korkmaz",
+    "answer": "KORKMAZ",
+    "number": 16
+   },
+   {
+    "name": "Hrvoje Cale",
+    "answer": "CALE",
+    "number": 3
+   },
+   {
+    "name": "Gustavo Colman",
+    "answer": "COLMAN",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8
+   },
+   {
+    "name": "Burak Yılmaz",
+    "answer": "YILMAZ",
+    "number": 17
+   },
+   {
+    "name": "Alanzinho",
+    "answer": "ALANZINHO",
+    "number": 25
+   },
+   {
+    "name": "Engin Baytar",
+    "answer": "BAYTAR",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Umut Bulut",
+    "answer": "BULUT",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2009-01-25-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2008/09",
+  "date": "25.01.2009",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Volkan Demirel",
+    "answer": "DEMIREL",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Edu Dracena",
+    "answer": "DRACENA",
+    "number": 4
+   },
+   {
+    "name": "Diego Lugano",
+    "answer": "LUGANO",
+    "number": 2
+   },
+   {
+    "name": "Roberto Carlos",
+    "answer": "CARLOS",
+    "number": 3
+   },
+   {
+    "name": "Emre Belözoğlu",
+    "answer": "BELOZOGLU",
+    "number": 5
+   },
+   {
+    "name": "Selçuk Şahin",
+    "answer": "SAHIN",
+    "number": 21
+   },
+   {
+    "name": "Deivid",
+    "answer": "DEIVID",
+    "number": 99
+   },
+   {
+    "name": "Alex",
+    "answer": "ALEX",
+    "number": 10
+   },
+   {
+    "name": "Uğur Boral",
+    "answer": "BORAL",
+    "number": 25
+   },
+   {
+    "name": "Dani Güiza",
+    "answer": "GUIZA",
+    "number": 14
+   }
+  ]
+ },
+ {
+  "id": "superlig-2007-12-22-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2007/08",
+  "date": "22.12.2007",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Volkan Demirel",
+    "answer": "DEMIREL",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Önder Turacı",
+    "answer": "TURACI",
+    "number": 19
+   },
+   {
+    "name": "Yasin Çakmak",
+    "answer": "CAKMAK",
+    "number": 5
+   },
+   {
+    "name": "Roberto Carlos",
+    "answer": "CARLOS",
+    "number": 3
+   },
+   {
+    "name": "Mehmet Aurélio",
+    "answer": "AURELIO",
+    "number": 15
+   },
+   {
+    "name": "Selçuk Şahin",
+    "answer": "SAHIN",
+    "number": 21
+   },
+   {
+    "name": "Deivid",
+    "answer": "DEIVID",
+    "number": 99,
+    "goals": 1
+   },
+   {
+    "name": "Alex",
+    "answer": "ALEX",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Uğur Boral",
+    "answer": "BORAL",
+    "number": 25
+   },
+   {
+    "name": "Semih Şentürk",
+    "answer": "SENTURK",
+    "number": 23,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2006-04-29-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2005/06",
+  "date": "29.04.2006",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Rüştü Reçber",
+    "answer": "RECBER",
+    "number": 34
+   },
+   {
+    "name": "Önder Turacı",
+    "answer": "TURACI",
+    "number": 19
+   },
+   {
+    "name": "Deniz Barış",
+    "answer": "BARIS",
+    "number": 24
+   },
+   {
+    "name": "Servet Çetin",
+    "answer": "CETIN",
+    "number": 3
+   },
+   {
+    "name": "Ümit Özat",
+    "answer": "OZAT",
+    "number": 5
+   },
+   {
+    "name": "Mehmet Aurélio",
+    "answer": "AURELIO",
+    "number": 15
+   },
+   {
+    "name": "Selçuk Şahin",
+    "answer": "SAHIN",
+    "number": 21
+   },
+   {
+    "name": "Tuncay Şanlı",
+    "answer": "SANLI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Stephen Appiah",
+    "answer": "APPIAH",
+    "number": 4
+   },
+   {
+    "name": "Alex",
+    "answer": "ALEX",
+    "number": 20
+   },
+   {
+    "name": "Nicolas Anelka",
+    "answer": "ANELKA",
+    "number": 39
+   }
+  ]
+ },
+ {
+  "id": "superlig-2005-04-30-fenerbahce-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Fenerbahçe · Süper Lig",
+   "en": "Trabzonspor – Fenerbahçe · Süper Lig"
+  },
+  "season": "2004/05",
+  "date": "30.04.2005",
+  "team": "Fenerbahçe",
+  "opponent": "Trabzonspor",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#163962",
+   "sleeves": "#ffed00",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Rüştü Reçber",
+    "answer": "RECBER",
+    "number": 34
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Önder Turacı",
+    "answer": "TURACI",
+    "number": 19
+   },
+   {
+    "name": "Fabio Luciano",
+    "answer": "LUCIANO",
+    "number": 2
+   },
+   {
+    "name": "Deniz Barış",
+    "answer": "BARIS",
+    "number": 24
+   },
+   {
+    "name": "Mehmet Aurélio",
+    "answer": "AURELIO",
+    "number": 15
+   },
+   {
+    "name": "Selçuk Şahin",
+    "answer": "SAHIN",
+    "number": 21
+   },
+   {
+    "name": "Nicolas Anelka",
+    "answer": "ANELKA",
+    "number": 39
+   },
+   {
+    "name": "Alex",
+    "answer": "ALEX",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Tuncay Şanlı",
+    "answer": "SANLI",
+    "number": 10
+   },
+   {
+    "name": "Mert Nobre",
+    "answer": "NOBRE",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2026-05-09-trabzonspor-besiktas",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2025/26",
+  "date": "09.05.2026",
+  "team": "Trabzonspor",
+  "opponent": "Beşiktaş",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "André Onana",
+    "answer": "ONANA",
+    "number": 24
+   },
+   {
+    "name": "Ozan Tufan",
+    "answer": "TUFAN",
+    "number": 11
+   },
+   {
+    "name": "Salih Malkoçoğlu",
+    "answer": "MALKOCOGLU",
+    "number": 74
+   },
+   {
+    "name": "Chibuike Nwaiwu",
+    "answer": "NWAIWU",
+    "number": 27
+   },
+   {
+    "name": "Mathias Løvik",
+    "answer": "LVIK",
+    "number": 14
+   },
+   {
+    "name": "Christ Inao Oulaï",
+    "answer": "OULAI",
+    "number": 42
+   },
+   {
+    "name": "Benjamin Bouchouari",
+    "answer": "BOUCHOUARI",
+    "number": 8
+   },
+   {
+    "name": "Oleksandr Zubkov",
+    "answer": "ZUBKOV",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Ernest Muci",
+    "answer": "MUCI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Anthony Nwakaeme",
+    "answer": "NWAKAEME",
+    "number": 9
+   },
+   {
+    "name": "Umut Nayir",
+    "answer": "NAYIR",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "superlig-2025-02-15-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2024/25",
+  "date": "15.02.2025",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Mert Günok",
+    "answer": "GUNOK",
+    "number": 34
+   },
+   {
+    "name": "Jonas Svensson",
+    "answer": "SVENSSON",
+    "number": 2
+   },
+   {
+    "name": "Emirhan Topçu",
+    "answer": "TOPCU",
+    "number": 53
+   },
+   {
+    "name": "Felix Uduokhai",
+    "answer": "UDUOKHAI",
+    "number": 14
+   },
+   {
+    "name": "Arthur Masuaku",
+    "answer": "MASUAKU",
+    "number": 26
+   },
+   {
+    "name": "Gedson Fernandes",
+    "answer": "FERNANDES",
+    "number": 83
+   },
+   {
+    "name": "Alex Oxlade-Chamberlain",
+    "answer": "CHAMBERLAIN",
+    "number": 15
+   },
+   {
+    "name": "Milot Rashica",
+    "answer": "RASHICA",
+    "number": 7
+   },
+   {
+    "name": "Rafa Silva",
+    "answer": "SILVA",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "João Mário",
+    "answer": "MARIO",
+    "number": 18
+   },
+   {
+    "name": "Ciro Immobile",
+    "answer": "IMMOBILE",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "superlig-2024-02-04-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2023/24",
+  "date": "04.02.2024",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "2-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Mert Günok",
+    "answer": "GUNOK",
+    "number": 34
+   },
+   {
+    "name": "Jonas Svensson",
+    "answer": "SVENSSON",
+    "number": 2
+   },
+   {
+    "name": "Necip Uysal",
+    "answer": "UYSAL",
+    "number": 20
+   },
+   {
+    "name": "Bakhtiyor Zaynutdinov",
+    "answer": "ZAYNUTDINOV",
+    "number": 22
+   },
+   {
+    "name": "Umut Meraş",
+    "answer": "MERAS",
+    "number": 77
+   },
+   {
+    "name": "Rachid Ghezzal",
+    "answer": "GHEZZAL",
+    "number": 18
+   },
+   {
+    "name": "Gedson Fernandes",
+    "answer": "FERNANDES",
+    "number": 83
+   },
+   {
+    "name": "Daniel Amartey",
+    "answer": "AMARTEY",
+    "number": 12
+   },
+   {
+    "name": "Cenk Tosun",
+    "answer": "TOSUN",
+    "number": 9
+   },
+   {
+    "name": "Milot Rashica",
+    "answer": "RASHICA",
+    "number": 11
+   },
+   {
+    "name": "Semih Kılıçsoy",
+    "answer": "KILICSOY",
+    "number": 90,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "superlig-2023-04-16-trabzonspor-besiktas",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2022/23",
+  "date": "16.04.2023",
+  "team": "Trabzonspor",
+  "opponent": "Beşiktaş",
+  "score": "0-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "Jens Stryger",
+    "answer": "STRYGER",
+    "number": 19
+   },
+   {
+    "name": "Hüseyin Türkmen",
+    "answer": "TURKMEN",
+    "number": 4
+   },
+   {
+    "name": "Stefano Denswil",
+    "answer": "DENSWIL",
+    "number": 24
+   },
+   {
+    "name": "Eren Elmalı",
+    "answer": "ELMALI",
+    "number": 18
+   },
+   {
+    "name": "Manolis Siopis",
+    "answer": "SIOPIS",
+    "number": 6
+   },
+   {
+    "name": "Bruno Peres",
+    "answer": "PERES",
+    "number": 33
+   },
+   {
+    "name": "Anastasios Bakasetas",
+    "answer": "BAKASETAS",
+    "number": 11
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 10
+   },
+   {
+    "name": "Lazar Markovic",
+    "answer": "MARKOVIC",
+    "number": 50
+   },
+   {
+    "name": "Maxi Gómez",
+    "answer": "GOMEZ",
+    "number": 30
+   }
+  ]
+ },
+ {
+  "id": "superlig-2022-04-03-trabzonspor-besiktas",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2021/22",
+  "date": "03.04.2022",
+  "team": "Trabzonspor",
+  "opponent": "Beşiktaş",
+  "score": "1-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "Dorukhan Toköz",
+    "answer": "TOKOZ",
+    "number": 8
+   },
+   {
+    "name": "Hüseyin Türkmen",
+    "answer": "TURKMEN",
+    "number": 4
+   },
+   {
+    "name": "Stefano Denswil",
+    "answer": "DENSWIL",
+    "number": 24
+   },
+   {
+    "name": "Tymoteusz Puchacz",
+    "answer": "PUCHACZ",
+    "number": 72
+   },
+   {
+    "name": "Manolis Siopis",
+    "answer": "SIOPIS",
+    "number": 6
+   },
+   {
+    "name": "Edin Visca",
+    "answer": "VISCA",
+    "number": 18
+   },
+   {
+    "name": "Abdülkadir Ömür",
+    "answer": "OMUR",
+    "number": 10
+   },
+   {
+    "name": "Anastasios Bakasetas",
+    "answer": "BAKASETAS",
+    "number": 11
+   },
+   {
+    "name": "Anthony Nwakaeme",
+    "answer": "NWAKAEME",
+    "number": 9
+   },
+   {
+    "name": "Djaniny",
+    "answer": "DJANINY",
+    "number": 21
+   }
+  ]
+ },
+ {
+  "id": "superlig-2020-09-13-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2020/21",
+  "date": "13.09.2020",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "3-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Ersin Destanoğlu",
+    "answer": "DESTANOGLU",
+    "number": 30
+   },
+   {
+    "name": "Necip Uysal",
+    "answer": "UYSAL",
+    "number": 20
+   },
+   {
+    "name": "Domagoj Vida",
+    "answer": "VIDA",
+    "number": 24
+   },
+   {
+    "name": "Welinton",
+    "answer": "WELINTON",
+    "number": 23
+   },
+   {
+    "name": "Fabrice N'Sakala",
+    "answer": "NSAKALA",
+    "number": 21
+   },
+   {
+    "name": "Oğuzhan Özyakup",
+    "answer": "OZYAKUP",
+    "number": 10
+   },
+   {
+    "name": "Atiba Hutchinson",
+    "answer": "HUTCHINSON",
+    "number": 13
+   },
+   {
+    "name": "Bernard Mensah",
+    "answer": "MENSAH",
+    "number": 43,
+    "goals": 1
+   },
+   {
+    "name": "Ajdin Hasic",
+    "answer": "HASIC",
+    "number": 19
+   },
+   {
+    "name": "Cyle Larin",
+    "answer": "LARIN",
+    "number": 17
+   },
+   {
+    "name": "Tyler Boyd",
+    "answer": "BOYD",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2019-09-29-trabzonspor-besiktas",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2019/20",
+  "date": "29.09.2019",
+  "team": "Trabzonspor",
+  "opponent": "Beşiktaş",
+  "score": "4-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Uğurcan Çakır",
+    "answer": "CAKIR",
+    "number": 1
+   },
+   {
+    "name": "João Pereira",
+    "answer": "PEREIRA",
+    "number": 47
+   },
+   {
+    "name": "Hüseyin Türkmen",
+    "answer": "TURKMEN",
+    "number": 4
+   },
+   {
+    "name": "Majid Hosseini",
+    "answer": "HOSSEINI",
+    "number": 5
+   },
+   {
+    "name": "Filip Novak",
+    "answer": "NOVAK",
+    "number": 77
+   },
+   {
+    "name": "Abdulkadir Parmak",
+    "answer": "PARMAK",
+    "number": 61
+   },
+   {
+    "name": "John Obi Mikel",
+    "answer": "MIKEL",
+    "number": 12
+   },
+   {
+    "name": "Kamil Ahmet Çörekçi",
+    "answer": "COREKCI",
+    "number": 2
+   },
+   {
+    "name": "José Sosa",
+    "answer": "SOSA",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Anthony Nwakaeme",
+    "answer": "NWAKAEME",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Alexander Sørloth",
+    "answer": "SRLOTH",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2018-03-05-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2017/18",
+  "date": "05.03.2018",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Fabri",
+    "answer": "FABRI",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Gary Medel",
+    "answer": "MEDEL",
+    "number": 12
+   },
+   {
+    "name": "Dusko Tosic",
+    "answer": "TOSIC",
+    "number": 6
+   },
+   {
+    "name": "Adriano",
+    "answer": "ADRIANO",
+    "number": 3
+   },
+   {
+    "name": "Tolgay Arslan",
+    "answer": "ARSLAN",
+    "number": 18
+   },
+   {
+    "name": "Atiba Hutchinson",
+    "answer": "HUTCHINSON",
+    "number": 13
+   },
+   {
+    "name": "Jeremain Lens",
+    "answer": "LENS",
+    "number": 17
+   },
+   {
+    "name": "Talisca",
+    "answer": "TALISCA",
+    "number": 94
+   },
+   {
+    "name": "Ryan Babel",
+    "answer": "BABEL",
+    "number": 8,
+    "goals": 2
+   },
+   {
+    "name": "Vágner Love",
+    "answer": "LOVE",
+    "number": 30
+   }
+  ]
+ },
+ {
+  "id": "superlig-2017-04-08-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2016/17",
+  "date": "08.04.2017",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "4-3",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Fabri",
+    "answer": "FABRI",
+    "number": 1
+   },
+   {
+    "name": "Gökhan Gönül",
+    "answer": "GONUL",
+    "number": 77
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 30
+   },
+   {
+    "name": "Dusko Tosic",
+    "answer": "TOSIC",
+    "number": 6
+   },
+   {
+    "name": "Adriano",
+    "answer": "ADRIANO",
+    "number": 3
+   },
+   {
+    "name": "Oğuzhan Özyakup",
+    "answer": "OZYAKUP",
+    "number": 15
+   },
+   {
+    "name": "Atiba Hutchinson",
+    "answer": "HUTCHINSON",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Ricardo Quaresma",
+    "answer": "QUARESMA",
+    "number": 7
+   },
+   {
+    "name": "Talisca",
+    "answer": "TALISCA",
+    "number": 94,
+    "goals": 1
+   },
+   {
+    "name": "Ryan Babel",
+    "answer": "BABEL",
+    "number": 49
+   },
+   {
+    "name": "Cenk Tosun",
+    "answer": "TOSUN",
+    "number": 23,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2016-03-15-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2015/16",
+  "date": "15.03.2016",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Tolga Zengin",
+    "answer": "ZENGIN",
+    "number": 29
+   },
+   {
+    "name": "Andreas Beck",
+    "answer": "BECK",
+    "number": 32
+   },
+   {
+    "name": "Necip Uysal",
+    "answer": "UYSAL",
+    "number": 20
+   },
+   {
+    "name": "Dusko Tosic",
+    "answer": "TOSIC",
+    "number": 6
+   },
+   {
+    "name": "İsmail Köybaşı",
+    "answer": "KOYBASI",
+    "number": 3
+   },
+   {
+    "name": "Oğuzhan Özyakup",
+    "answer": "OZYAKUP",
+    "number": 15
+   },
+   {
+    "name": "Atiba Hutchinson",
+    "answer": "HUTCHINSON",
+    "number": 13
+   },
+   {
+    "name": "Ricardo Quaresma",
+    "answer": "QUARESMA",
+    "number": 17
+   },
+   {
+    "name": "José Sosa",
+    "answer": "SOSA",
+    "number": 5
+   },
+   {
+    "name": "Kerim Frei",
+    "answer": "FREI",
+    "number": 21
+   },
+   {
+    "name": "Mario Gómez",
+    "answer": "GOMEZ",
+    "number": 33,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2014-12-07-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2014/15",
+  "date": "07.12.2014",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "3-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Tolga Zengin",
+    "answer": "ZENGIN",
+    "number": 29
+   },
+   {
+    "name": "Serdar Kurtuluş",
+    "answer": "KURTULUS",
+    "number": 2
+   },
+   {
+    "name": "Pedro Franco",
+    "answer": "FRANCO",
+    "number": 19
+   },
+   {
+    "name": "Ersan Gülüm",
+    "answer": "GULUM",
+    "number": 22
+   },
+   {
+    "name": "Ramon",
+    "answer": "RAMON",
+    "number": 31
+   },
+   {
+    "name": "Veli Kavlak",
+    "answer": "KAVLAK",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Atiba Hutchinson",
+    "answer": "HUTCHINSON",
+    "number": 13
+   },
+   {
+    "name": "Gökhan Töre",
+    "answer": "TORE",
+    "number": 7
+   },
+   {
+    "name": "José Sosa",
+    "answer": "SOSA",
+    "number": 5
+   },
+   {
+    "name": "Olcay Şahan",
+    "answer": "SAHAN",
+    "number": 10
+   },
+   {
+    "name": "Demba Ba",
+    "answer": "BA",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2013-08-18-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2013/14",
+  "date": "18.08.2013",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Tolga Zengin",
+    "answer": "ZENGIN",
+    "number": 29
+   },
+   {
+    "name": "Serdar Kurtuluş",
+    "answer": "KURTULUS",
+    "number": 27
+   },
+   {
+    "name": "Tomas Sivok",
+    "answer": "SIVOK",
+    "number": 6
+   },
+   {
+    "name": "Julien Escudé",
+    "answer": "ESCUDE",
+    "number": 14
+   },
+   {
+    "name": "Ersan Gülüm",
+    "answer": "GULUM",
+    "number": 22
+   },
+   {
+    "name": "Veli Kavlak",
+    "answer": "KAVLAK",
+    "number": 8
+   },
+   {
+    "name": "Atiba Hutchinson",
+    "answer": "HUTCHINSON",
+    "number": 13
+   },
+   {
+    "name": "Dentinho",
+    "answer": "DENTINHO",
+    "number": 7
+   },
+   {
+    "name": "Manuel Fernandes",
+    "answer": "FERNANDES",
+    "number": 4
+   },
+   {
+    "name": "Olcay Şahan",
+    "answer": "SAHAN",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Mustafa Pektemek",
+    "answer": "PEKTEMEK",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "superlig-2012-10-21-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2012/13",
+  "date": "21.10.2012",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Allan McGregor",
+    "answer": "MCGREGOR",
+    "number": 23
+   },
+   {
+    "name": "Roberto Hilbert",
+    "answer": "HILBERT",
+    "number": 13
+   },
+   {
+    "name": "Tomas Sivok",
+    "answer": "SIVOK",
+    "number": 6
+   },
+   {
+    "name": "Ersan Gülüm",
+    "answer": "GULUM",
+    "number": 22
+   },
+   {
+    "name": "Uğur Boral",
+    "answer": "BORAL",
+    "number": 25
+   },
+   {
+    "name": "Oğuzhan Özyakup",
+    "answer": "OZYAKUP",
+    "number": 15
+   },
+   {
+    "name": "İbrahim Toraman",
+    "answer": "TORAMAN",
+    "number": 5
+   },
+   {
+    "name": "Filip Holosko",
+    "answer": "HOLOSKO",
+    "number": 37
+   },
+   {
+    "name": "Manuel Fernandes",
+    "answer": "FERNANDES",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Hugo Almeida",
+    "answer": "ALMEIDA",
+    "number": 9
+   },
+   {
+    "name": "Batuhan Karadeniz",
+    "answer": "KARADENIZ",
+    "number": 34
+   }
+  ]
+ },
+ {
+  "id": "superlig-2011-03-06-trabzonspor-besiktas",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2010/11",
+  "date": "06.03.2011",
+  "team": "Trabzonspor",
+  "opponent": "Beşiktaş",
+  "score": "2-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 35
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Giray Kaçar",
+    "answer": "KACAR",
+    "number": 23
+   },
+   {
+    "name": "Arkadiusz Glowacki",
+    "answer": "GLOWACKI",
+    "number": 4
+   },
+   {
+    "name": "Hrvoje Cale",
+    "answer": "CALE",
+    "number": 3
+   },
+   {
+    "name": "Burak Yılmaz",
+    "answer": "YILMAZ",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Gustavo Colman",
+    "answer": "COLMAN",
+    "number": 20
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8
+   },
+   {
+    "name": "Piotr Brozek",
+    "answer": "BROZEK",
+    "number": 14
+   },
+   {
+    "name": "Jajá",
+    "answer": "JAJA",
+    "number": 50
+   },
+   {
+    "name": "Umut Bulut",
+    "answer": "BULUT",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "superlig-2010-10-03-trabzonspor-besiktas",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2010/11",
+  "date": "03.10.2010",
+  "team": "Trabzonspor",
+  "opponent": "Beşiktaş",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Onur Kıvrak",
+    "answer": "KIVRAK",
+    "number": 35
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Mustafa Yumlu",
+    "answer": "YUMLU",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Egemen Korkmaz",
+    "answer": "KORKMAZ",
+    "number": 16
+   },
+   {
+    "name": "Hrvoje Cale",
+    "answer": "CALE",
+    "number": 3
+   },
+   {
+    "name": "Gustavo Colman",
+    "answer": "COLMAN",
+    "number": 20
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8
+   },
+   {
+    "name": "Burak Yılmaz",
+    "answer": "YILMAZ",
+    "number": 17
+   },
+   {
+    "name": "Engin Baytar",
+    "answer": "BAYTAR",
+    "number": 5
+   },
+   {
+    "name": "İbrahim Yattara",
+    "answer": "YATTARA",
+    "number": 61
+   },
+   {
+    "name": "Teófilo Gutiérrez",
+    "answer": "GUTIERREZ",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "superlig-2009-02-15-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2008/09",
+  "date": "15.02.2009",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Rüştü Reçber",
+    "answer": "RECBER",
+    "number": 1
+   },
+   {
+    "name": "İbrahim Toraman",
+    "answer": "TORAMAN",
+    "number": 58
+   },
+   {
+    "name": "Gökhan Zan",
+    "answer": "ZAN",
+    "number": 5
+   },
+   {
+    "name": "Tomas Sivok",
+    "answer": "SIVOK",
+    "number": 6
+   },
+   {
+    "name": "İbrahim Üzülmez",
+    "answer": "UZULMEZ",
+    "number": 19
+   },
+   {
+    "name": "Fabian Ernst",
+    "answer": "ERNST",
+    "number": 28
+   },
+   {
+    "name": "Édouard Cissé",
+    "answer": "CISSE",
+    "number": 4
+   },
+   {
+    "name": "Serdar Özkan",
+    "answer": "OZKAN",
+    "number": 21
+   },
+   {
+    "name": "Yusuf Şimşek",
+    "answer": "SIMSEK",
+    "number": 29
+   },
+   {
+    "name": "Rodrigo Tello",
+    "answer": "TELLO",
+    "number": 14
+   },
+   {
+    "name": "Mert Nobre",
+    "answer": "NOBRE",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "superlig-2008-09-14-trabzonspor-besiktas",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2008/09",
+  "date": "14.09.2008",
+  "team": "Trabzonspor",
+  "opponent": "Beşiktaş",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#8d1b3d",
+   "sleeves": "#0a5db8",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Tolga Zengin",
+    "answer": "ZENGIN",
+    "number": 29
+   },
+   {
+    "name": "Tayfun Cora",
+    "answer": "CORA",
+    "number": 18
+   },
+   {
+    "name": "Rigobert Song",
+    "answer": "SONG",
+    "number": 4
+   },
+   {
+    "name": "Egemen Korkmaz",
+    "answer": "KORKMAZ",
+    "number": 16
+   },
+   {
+    "name": "Hrvoje Cale",
+    "answer": "CALE",
+    "number": 3
+   },
+   {
+    "name": "Selçuk İnan",
+    "answer": "INAN",
+    "number": 8
+   },
+   {
+    "name": "Hüseyin Çimşir",
+    "answer": "CIMSIR",
+    "number": 5
+   },
+   {
+    "name": "Serkan Balcı",
+    "answer": "BALCI",
+    "number": 30
+   },
+   {
+    "name": "Gustavo Colman",
+    "answer": "COLMAN",
+    "number": 20
+   },
+   {
+    "name": "Umut Bulut",
+    "answer": "BULUT",
+    "number": 10
+   },
+   {
+    "name": "Gökhan Ünal",
+    "answer": "UNAL",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "superlig-2007-10-20-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2007/08",
+  "date": "20.10.2007",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Rüştü Reçber",
+    "answer": "RECBER",
+    "number": 1
+   },
+   {
+    "name": "Ali Tandoğan",
+    "answer": "TANDOGAN",
+    "number": 22
+   },
+   {
+    "name": "Gökhan Zan",
+    "answer": "ZAN",
+    "number": 5
+   },
+   {
+    "name": "İbrahim Toraman",
+    "answer": "TORAMAN",
+    "number": 58
+   },
+   {
+    "name": "İbrahim Üzülmez",
+    "answer": "UZULMEZ",
+    "number": 19
+   },
+   {
+    "name": "Édouard Cissé",
+    "answer": "CISSE",
+    "number": 18
+   },
+   {
+    "name": "Serdar Kurtuluş",
+    "answer": "KURTULUS",
+    "number": 2
+   },
+   {
+    "name": "Burak Yılmaz",
+    "answer": "YILMAZ",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Matías Delgado",
+    "answer": "DELGADO",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Rodrigo Tello",
+    "answer": "TELLO",
+    "number": 14
+   },
+   {
+    "name": "Mert Nobre",
+    "answer": "NOBRE",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "superlig-2006-05-14-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2005/06",
+  "date": "14.05.2006",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Murat Şahin",
+    "answer": "SAHIN",
+    "number": 29
+   },
+   {
+    "name": "Mustafa Dogan",
+    "answer": "DOGAN",
+    "number": 4
+   },
+   {
+    "name": "İbrahim Toraman",
+    "answer": "TORAMAN",
+    "number": 58
+   },
+   {
+    "name": "Mehmet Sedef",
+    "answer": "SEDEF",
+    "number": 87
+   },
+   {
+    "name": "İbrahim Üzülmez",
+    "answer": "UZULMEZ",
+    "number": 19
+   },
+   {
+    "name": "Kléberson",
+    "answer": "KLEBERSON",
+    "number": 15
+   },
+   {
+    "name": "Koray Avcı",
+    "answer": "AVCI",
+    "number": 41
+   },
+   {
+    "name": "Okan Buruk",
+    "answer": "BURUK",
+    "number": 7
+   },
+   {
+    "name": "Tümer Metin",
+    "answer": "METIN",
+    "number": 11
+   },
+   {
+    "name": "Gökhan Güleç",
+    "answer": "GULEC",
+    "number": 24
+   },
+   {
+    "name": "Bobô",
+    "answer": "BOBO",
+    "number": 13,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "superlig-2005-03-19-besiktas-trabzonspor",
+  "tags": [
+   "turkiye",
+   "derbi",
+   "super-lig"
+  ],
+  "competition": {
+   "tr": "Trabzonspor – Beşiktaş · Süper Lig",
+   "en": "Trabzonspor – Beşiktaş · Süper Lig"
+  },
+  "season": "2004/05",
+  "date": "19.03.2005",
+  "team": "Beşiktaş",
+  "opponent": "Trabzonspor",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#000000",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Óscar Córdoba",
+    "answer": "CORDOBA",
+    "number": 1
+   },
+   {
+    "name": "Mustafa Dogan",
+    "answer": "DOGAN",
+    "number": 28
+   },
+   {
+    "name": "Koray Avcı",
+    "answer": "AVCI",
+    "number": 41
+   },
+   {
+    "name": "İbrahim Toraman",
+    "answer": "TORAMAN",
+    "number": 58
+   },
+   {
+    "name": "İbrahim Üzülmez",
+    "answer": "UZULMEZ",
+    "number": 19
+   },
+   {
+    "name": "Ali Güneş",
+    "answer": "GUNES",
+    "number": 30
+   },
+   {
+    "name": "Tayfur Havutçu",
+    "answer": "HAVUTCU",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Tümer Metin",
+    "answer": "METIN",
+    "number": 11
+   },
+   {
+    "name": "Ahmed Hassan",
+    "answer": "HASSAN",
+    "number": 77
+   },
+   {
+    "name": "İbrahim Akın",
+    "answer": "AKIN",
+    "number": 55
+   },
+   {
+    "name": "Ahmet Dursun",
+    "answer": "DURSUN",
+    "number": 33
+   }
+  ]
+ }
+]

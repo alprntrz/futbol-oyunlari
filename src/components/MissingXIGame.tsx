@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FORMATIONS } from "@/lib/formations";
 import { useI18n } from "@/lib/i18n";
 import type { Difficulty, Match, SlotState } from "@/lib/types";
@@ -47,10 +47,14 @@ export function MissingXIGame({
   const done = gaveUp || slots.every((s) => s.solved || s.failed);
   const won = !gaveUp && slots.every((s) => s.solved);
 
+  // Latest callbacks, kept in refs so the effects below don't re-run when a
+  // parent passes a new function. Declared first so it runs before them.
   const progressRef = useRef(onProgress);
-  progressRef.current = onProgress;
   const stateRef = useRef(onStateChange);
-  stateRef.current = onStateChange;
+  useEffect(() => {
+    progressRef.current = onProgress;
+    stateRef.current = onStateChange;
+  });
 
   useEffect(() => {
     progressRef.current?.({

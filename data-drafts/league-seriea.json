@@ -1,0 +1,8610 @@
+[
+ {
+  "id": "seriea-2026-03-08-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2025/26",
+  "date": "08.03.2026",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "1-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Mike Maignan",
+    "answer": "MAIGNAN",
+    "number": 16
+   },
+   {
+    "name": "Fikayo Tomori",
+    "answer": "TOMORI",
+    "number": 23
+   },
+   {
+    "name": "Koni De Winter",
+    "answer": "DE WINTER",
+    "number": 5
+   },
+   {
+    "name": "Strahinja Pavlović",
+    "answer": "PAVLOVIC",
+    "number": 31
+   },
+   {
+    "name": "Alexis Saelemaekers",
+    "answer": "SAELEMAEKERS",
+    "number": 56
+   },
+   {
+    "name": "Pervis Estupiñán",
+    "answer": "ESTUPINAN",
+    "number": 2,
+    "goals": 1
+   },
+   {
+    "name": "Youssouf Fofana",
+    "answer": "FOFANA",
+    "number": 19
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 14
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 12
+   },
+   {
+    "name": "Christian Pulisic",
+    "answer": "PULISIC",
+    "number": 11
+   },
+   {
+    "name": "Rafael Leão",
+    "answer": "LEAO",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2025-04-23-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · İtalya Kupası",
+   "en": "Milan Derby · Coppa Italia"
+  },
+  "season": "2024/25",
+  "date": "23.04.2025",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "3-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Mike Maignan",
+    "answer": "MAIGNAN",
+    "number": 16
+   },
+   {
+    "name": "Fikayo Tomori",
+    "answer": "TOMORI",
+    "number": 23
+   },
+   {
+    "name": "Matteo Gabbia",
+    "answer": "GABBIA",
+    "number": 46
+   },
+   {
+    "name": "Strahinja Pavlović",
+    "answer": "PAVLOVIC",
+    "number": 31
+   },
+   {
+    "name": "Theo Hernández",
+    "answer": "HERNANDEZ",
+    "number": 19
+   },
+   {
+    "name": "Tijjani Reijnders",
+    "answer": "REIJNDERS",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Youssouf Fofana",
+    "answer": "FOFANA",
+    "number": 29
+   },
+   {
+    "name": "Álex Jiménez",
+    "answer": "JIMENEZ",
+    "number": 20
+   },
+   {
+    "name": "Christian Pulisic",
+    "answer": "PULISIC",
+    "number": 11
+   },
+   {
+    "name": "Rafael Leão",
+    "answer": "LEAO",
+    "number": 10
+   },
+   {
+    "name": "Luka Jović",
+    "answer": "JOVIC",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "seriea-2025-01-06-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · İtalya Kupası",
+   "en": "Milan Derby · Coppa Italia"
+  },
+  "season": "2024/25",
+  "date": "06.01.2025",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "3-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Mike Maignan",
+    "answer": "MAIGNAN",
+    "number": 16
+   },
+   {
+    "name": "Emerson Royal",
+    "answer": "ROYAL",
+    "number": 22
+   },
+   {
+    "name": "Malick Thiaw",
+    "answer": "THIAW",
+    "number": 28
+   },
+   {
+    "name": "Fikayo Tomori",
+    "answer": "TOMORI",
+    "number": 23
+   },
+   {
+    "name": "Theo Hernández",
+    "answer": "HERNANDEZ",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Tijjani Reijnders",
+    "answer": "REIJNDERS",
+    "number": 14
+   },
+   {
+    "name": "Youssouf Fofana",
+    "answer": "FOFANA",
+    "number": 29
+   },
+   {
+    "name": "Yunus Musah",
+    "answer": "MUSAH",
+    "number": 80
+   },
+   {
+    "name": "Álex Jiménez",
+    "answer": "JIMENEZ",
+    "number": 20
+   },
+   {
+    "name": "Álvaro Morata",
+    "answer": "MORATA",
+    "number": 7
+   },
+   {
+    "name": "Christian Pulisic",
+    "answer": "PULISIC",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2024-04-22-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2023/24",
+  "date": "22.04.2024",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "2-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Benjamin Pavard",
+    "answer": "PAVARD",
+    "number": 28
+   },
+   {
+    "name": "Francesco Acerbi",
+    "answer": "ACERBI",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Matteo Darmian",
+    "answer": "DARMIAN",
+    "number": 36
+   },
+   {
+    "name": "Federico Dimarco",
+    "answer": "DIMARCO",
+    "number": 32
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 22
+   },
+   {
+    "name": "Hakan Çalhanoğlu",
+    "answer": "CALHANOGLU",
+    "number": 20
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Marcus Thuram",
+    "answer": "THURAM",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-05-10-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Şampiyonlar Ligi",
+   "en": "Milan Derby · Champions League"
+  },
+  "season": "2022/23",
+  "date": "10.05.2023",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "2-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "André Onana",
+    "answer": "ONANA",
+    "number": 24
+   },
+   {
+    "name": "Francesco Acerbi",
+    "answer": "ACERBI",
+    "number": 15
+   },
+   {
+    "name": "Matteo Darmian",
+    "answer": "DARMIAN",
+    "number": 36
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Denzel Dumfries",
+    "answer": "DUMFRIES",
+    "number": 2
+   },
+   {
+    "name": "Federico Dimarco",
+    "answer": "DIMARCO",
+    "number": 32
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Hakan Çalhanoğlu",
+    "answer": "CALHANOGLU",
+    "number": 20
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Edin Dzeko",
+    "answer": "DZEKO",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-01-18-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · İtalya Kupası",
+   "en": "Milan Derby · Coppa Italia"
+  },
+  "season": "2022/23",
+  "date": "18.01.2023",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "3-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "André Onana",
+    "answer": "ONANA",
+    "number": 24
+   },
+   {
+    "name": "Francesco Acerbi",
+    "answer": "ACERBI",
+    "number": 15
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Matteo Darmian",
+    "answer": "DARMIAN",
+    "number": 36
+   },
+   {
+    "name": "Federico Dimarco",
+    "answer": "DIMARCO",
+    "number": 32,
+    "goals": 1
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Hakan Çalhanoğlu",
+    "answer": "CALHANOGLU",
+    "number": 20
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 22
+   },
+   {
+    "name": "Edin Dzeko",
+    "answer": "DZEKO",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2022-04-19-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · İtalya Kupası",
+   "en": "Milan Derby · Coppa Italia"
+  },
+  "season": "2021/22",
+  "date": "19.04.2022",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "3-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Samir Handanovič",
+    "answer": "HANDANOVIC",
+    "number": 1
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37
+   },
+   {
+    "name": "Stefan de Vrij",
+    "answer": "DE VRIJ",
+    "number": 6
+   },
+   {
+    "name": "Matteo Darmian",
+    "answer": "DARMIAN",
+    "number": 36
+   },
+   {
+    "name": "Ivan Perisic",
+    "answer": "PERISIC",
+    "number": 14
+   },
+   {
+    "name": "Hakan Çalhanoğlu",
+    "answer": "CALHANOGLU",
+    "number": 20
+   },
+   {
+    "name": "Marcelo Brozovic",
+    "answer": "BROZOVIC",
+    "number": 77
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Joaquín Correa",
+    "answer": "CORREA",
+    "number": 19
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "seriea-2021-11-07-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2021/22",
+  "date": "07.11.2021",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Ciprian Tătărușanu",
+    "answer": "TATARUSANU",
+    "number": 1
+   },
+   {
+    "name": "Davide Calabria",
+    "answer": "CALABRIA",
+    "number": 2
+   },
+   {
+    "name": "Simon Kjaer",
+    "answer": "KJAER",
+    "number": 24
+   },
+   {
+    "name": "Fikayo Tomori",
+    "answer": "TOMORI",
+    "number": 23
+   },
+   {
+    "name": "Fodé Ballo-Touré",
+    "answer": "BALLOTOURE",
+    "number": 5
+   },
+   {
+    "name": "Sandro Tonali",
+    "answer": "TONALI",
+    "number": 8
+   },
+   {
+    "name": "Franck Kessié",
+    "answer": "KESSIE",
+    "number": 79
+   },
+   {
+    "name": "Brahim Díaz",
+    "answer": "DIAZ",
+    "number": 10
+   },
+   {
+    "name": "Rade Krunic",
+    "answer": "KRUNIC",
+    "number": 33
+   },
+   {
+    "name": "Rafael Leão",
+    "answer": "LEAO",
+    "number": 17
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2021-01-26-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · İtalya Kupası",
+   "en": "Milan Derby · Coppa Italia"
+  },
+  "season": "2020/21",
+  "date": "26.01.2021",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "2-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Samir Handanovič",
+    "answer": "HANDANOVIC",
+    "number": 1
+   },
+   {
+    "name": "Stefan de Vrij",
+    "answer": "DE VRIJ",
+    "number": 6
+   },
+   {
+    "name": "Aleksandar Kolarov",
+    "answer": "KOLAROV",
+    "number": 11
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37
+   },
+   {
+    "name": "Matteo Darmian",
+    "answer": "DARMIAN",
+    "number": 36
+   },
+   {
+    "name": "Ivan Perisic",
+    "answer": "PERISIC",
+    "number": 14
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Marcelo Brozovic",
+    "answer": "BROZOVIC",
+    "number": 77
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 22
+   },
+   {
+    "name": "Romelu Lukaku",
+    "answer": "LUKAKU",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Alexis Sánchez",
+    "answer": "SANCHEZ",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "seriea-2019-09-21-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2019/20",
+  "date": "21.09.2019",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "2-0",
+  "formation": "3-4-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Samir Handanovič",
+    "answer": "HANDANOVIC",
+    "number": 1
+   },
+   {
+    "name": "Stefan de Vrij",
+    "answer": "DE VRIJ",
+    "number": 6
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37
+   },
+   {
+    "name": "Danilo D'Ambrosio",
+    "answer": "DAMBROSIO",
+    "number": 33
+   },
+   {
+    "name": "Marcelo Brozovic",
+    "answer": "BROZOVIC",
+    "number": 77,
+    "goals": 1
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 18
+   },
+   {
+    "name": "Stefano Sensi",
+    "answer": "SENSI",
+    "number": 12
+   },
+   {
+    "name": "Romelu Lukaku",
+    "answer": "LUKAKU",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2018-10-21-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2018/19",
+  "date": "21.10.2018",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Samir Handanovič",
+    "answer": "HANDANOVIC",
+    "number": 1
+   },
+   {
+    "name": "Sime Vrsaljko",
+    "answer": "VRSALJKO",
+    "number": 2
+   },
+   {
+    "name": "Stefan de Vrij",
+    "answer": "DE VRIJ",
+    "number": 6
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 18
+   },
+   {
+    "name": "Marcelo Brozovic",
+    "answer": "BROZOVIC",
+    "number": 77
+   },
+   {
+    "name": "Matías Vecino",
+    "answer": "VECINO",
+    "number": 8
+   },
+   {
+    "name": "Matteo Politano",
+    "answer": "POLITANO",
+    "number": 16
+   },
+   {
+    "name": "Radja Nainggolan",
+    "answer": "NAINGGOLAN",
+    "number": 14
+   },
+   {
+    "name": "Ivan Perisic",
+    "answer": "PERISIC",
+    "number": 44
+   },
+   {
+    "name": "Mauro Icardi",
+    "answer": "ICARDI",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2017-12-27-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · İtalya Kupası",
+   "en": "Milan Derby · Coppa Italia"
+  },
+  "season": "2017/18",
+  "date": "27.12.2017",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Antonio Donnarumma",
+    "answer": "DONNARUMMA",
+    "number": 90
+   },
+   {
+    "name": "Ignazio Abate",
+    "answer": "ABATE",
+    "number": 20
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Alessio Romagnoli",
+    "answer": "ROMAGNOLI",
+    "number": 13
+   },
+   {
+    "name": "Ricardo Rodríguez",
+    "answer": "RODRIGUEZ",
+    "number": 68
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 73
+   },
+   {
+    "name": "Lucas Biglia",
+    "answer": "BIGLIA",
+    "number": 21
+   },
+   {
+    "name": "Franck Kessié",
+    "answer": "KESSIE",
+    "number": 79
+   },
+   {
+    "name": "Suso",
+    "answer": "SUSO",
+    "number": 8
+   },
+   {
+    "name": "Nikola Kalinić",
+    "answer": "KALINIC",
+    "number": 7
+   },
+   {
+    "name": "Giacomo Bonaventura",
+    "answer": "BONAVENTURA",
+    "number": 5
+   }
+  ]
+ },
+ {
+  "id": "seriea-2016-11-20-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2016/17",
+  "date": "20.11.2016",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "2-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Donnarumma",
+    "answer": "DONNARUMMA",
+    "number": 99
+   },
+   {
+    "name": "Ignazio Abate",
+    "answer": "ABATE",
+    "number": 20
+   },
+   {
+    "name": "Gabriel Paletta",
+    "answer": "PALETTA",
+    "number": 29
+   },
+   {
+    "name": "Gustavo Gómez",
+    "answer": "GOMEZ",
+    "number": 15
+   },
+   {
+    "name": "Mattia De Sciglio",
+    "answer": "DE SCIGLIO",
+    "number": 2
+   },
+   {
+    "name": "Juraj Kucka",
+    "answer": "KUCKA",
+    "number": 33
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 73
+   },
+   {
+    "name": "Giacomo Bonaventura",
+    "answer": "BONAVENTURA",
+    "number": 5
+   },
+   {
+    "name": "Suso",
+    "answer": "SUSO",
+    "number": 8,
+    "goals": 2
+   },
+   {
+    "name": "Carlos Bacca",
+    "answer": "BACCA",
+    "number": 70
+   },
+   {
+    "name": "M'Baye Niang",
+    "answer": "NIANG",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2015-09-13-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2015/16",
+  "date": "13.09.2015",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Samir Handanovič",
+    "answer": "HANDANOVIC",
+    "number": 1
+   },
+   {
+    "name": "Davide Santon",
+    "answer": "SANTON",
+    "number": 21
+   },
+   {
+    "name": "Gary Medel",
+    "answer": "MEDEL",
+    "number": 17
+   },
+   {
+    "name": "Jeison Murillo",
+    "answer": "MURILLO",
+    "number": 24
+   },
+   {
+    "name": "Juan Jesus",
+    "answer": "JESUS",
+    "number": 5
+   },
+   {
+    "name": "Fredy Guarín",
+    "answer": "GUARIN",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Felipe Melo",
+    "answer": "MELO",
+    "number": 83
+   },
+   {
+    "name": "Geoffrey Kondogbia",
+    "answer": "KONDOGBIA",
+    "number": 7
+   },
+   {
+    "name": "Ivan Perisic",
+    "answer": "PERISIC",
+    "number": 44
+   },
+   {
+    "name": "Stevan Jovetić",
+    "answer": "JOVETIC",
+    "number": 10
+   },
+   {
+    "name": "Mauro Icardi",
+    "answer": "ICARDI",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2014-11-23-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2014/15",
+  "date": "23.11.2014",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "1-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Diego López",
+    "answer": "LOPEZ",
+    "number": 23
+   },
+   {
+    "name": "Adil Rami",
+    "answer": "RAMI",
+    "number": 13
+   },
+   {
+    "name": "Cristian Zapata",
+    "answer": "ZAPATA",
+    "number": 17
+   },
+   {
+    "name": "Philippe Mexès",
+    "answer": "MEXES",
+    "number": 5
+   },
+   {
+    "name": "Mattia De Sciglio",
+    "answer": "DE SCIGLIO",
+    "number": 2
+   },
+   {
+    "name": "Sulley Muntari",
+    "answer": "MUNTARI",
+    "number": 4
+   },
+   {
+    "name": "Michael Essien",
+    "answer": "ESSIEN",
+    "number": 15
+   },
+   {
+    "name": "Giacomo Bonaventura",
+    "answer": "BONAVENTURA",
+    "number": 28
+   },
+   {
+    "name": "Jérémy Ménez",
+    "answer": "MENEZ",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Fernando Torres",
+    "answer": "TORRES",
+    "number": 9
+   },
+   {
+    "name": "Stephan El Shaarawy",
+    "answer": "EL SHAARAWY",
+    "number": 92
+   }
+  ]
+ },
+ {
+  "id": "seriea-2013-02-24-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2012/13",
+  "date": "24.02.2013",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "1-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Samir Handanovič",
+    "answer": "HANDANOVIC",
+    "number": 1
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Andrea Ranocchia",
+    "answer": "RANOCCHIA",
+    "number": 23
+   },
+   {
+    "name": "Juan Jesus",
+    "answer": "JESUS",
+    "number": 40
+   },
+   {
+    "name": "Yuto Nagatomo",
+    "answer": "NAGATOMO",
+    "number": 55
+   },
+   {
+    "name": "Fredy Guarín",
+    "answer": "GUARIN",
+    "number": 14
+   },
+   {
+    "name": "Esteban Cambiasso",
+    "answer": "CAMBIASSO",
+    "number": 19
+   },
+   {
+    "name": "Walter Gargano",
+    "answer": "GARGANO",
+    "number": 21
+   },
+   {
+    "name": "Ricardo Álvarez",
+    "answer": "ALVAREZ",
+    "number": 11
+   },
+   {
+    "name": "Antonio Cassano",
+    "answer": "CASSANO",
+    "number": 99
+   },
+   {
+    "name": "Rodrigo Palacio",
+    "answer": "PALACIO",
+    "number": 8
+   }
+  ]
+ },
+ {
+  "id": "seriea-2012-05-06-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2011/12",
+  "date": "06.05.2012",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "4-2",
+  "formation": "4-4-1-1",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Júlio César",
+    "answer": "CESAR",
+    "number": 1
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 6
+   },
+   {
+    "name": "Walter Samuel",
+    "answer": "SAMUEL",
+    "number": 25
+   },
+   {
+    "name": "Yuto Nagatomo",
+    "answer": "NAGATOMO",
+    "number": 55
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Esteban Cambiasso",
+    "answer": "CAMBIASSO",
+    "number": 19
+   },
+   {
+    "name": "Fredy Guarín",
+    "answer": "GUARIN",
+    "number": 14
+   },
+   {
+    "name": "Ricardo Álvarez",
+    "answer": "ALVAREZ",
+    "number": 11
+   },
+   {
+    "name": "Wesley Sneijder",
+    "answer": "SNEIJDER",
+    "number": 10
+   },
+   {
+    "name": "Diego Milito",
+    "answer": "MILITO",
+    "number": 22,
+    "goals": 3
+   }
+  ]
+ },
+ {
+  "id": "seriea-2011-04-02-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2010/11",
+  "date": "02.04.2011",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "3-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Christian Abbiati",
+    "answer": "ABBIATI",
+    "number": 32
+   },
+   {
+    "name": "Ignazio Abate",
+    "answer": "ABATE",
+    "number": 20
+   },
+   {
+    "name": "Alessandro Nesta",
+    "answer": "NESTA",
+    "number": 13
+   },
+   {
+    "name": "Thiago Silva",
+    "answer": "SILVA",
+    "number": 33
+   },
+   {
+    "name": "Gianluca Zambrotta",
+    "answer": "ZAMBROTTA",
+    "number": 19
+   },
+   {
+    "name": "Clarence Seedorf",
+    "answer": "SEEDORF",
+    "number": 10
+   },
+   {
+    "name": "Mark van Bommel",
+    "answer": "VAN BOMMEL",
+    "number": 4
+   },
+   {
+    "name": "Gennaro Gattuso",
+    "answer": "GATTUSO",
+    "number": 8
+   },
+   {
+    "name": "Kevin-Prince Boateng",
+    "answer": "BOATENG",
+    "number": 27
+   },
+   {
+    "name": "Robinho",
+    "answer": "ROBINHO",
+    "number": 70
+   },
+   {
+    "name": "Alexandre Pato",
+    "answer": "PATO",
+    "number": 7,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "seriea-2010-01-24-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2009/10",
+  "date": "24.01.2010",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "2-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Júlio César",
+    "answer": "CESAR",
+    "number": 12
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 6
+   },
+   {
+    "name": "Walter Samuel",
+    "answer": "SAMUEL",
+    "number": 25
+   },
+   {
+    "name": "Davide Santon",
+    "answer": "SANTON",
+    "number": 39
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Esteban Cambiasso",
+    "answer": "CAMBIASSO",
+    "number": 19
+   },
+   {
+    "name": "Sulley Muntari",
+    "answer": "MUNTARI",
+    "number": 11
+   },
+   {
+    "name": "Wesley Sneijder",
+    "answer": "SNEIJDER",
+    "number": 10
+   },
+   {
+    "name": "Goran Pandev",
+    "answer": "PANDEV",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "Diego Milito",
+    "answer": "MILITO",
+    "number": 22,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2009-02-15-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2008/09",
+  "date": "15.02.2009",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "2-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Júlio César",
+    "answer": "CESAR",
+    "number": 12
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13
+   },
+   {
+    "name": "Walter Samuel",
+    "answer": "SAMUEL",
+    "number": 25
+   },
+   {
+    "name": "Cristian Chivu",
+    "answer": "CHIVU",
+    "number": 26
+   },
+   {
+    "name": "Davide Santon",
+    "answer": "SANTON",
+    "number": 39
+   },
+   {
+    "name": "Sulley Muntari",
+    "answer": "MUNTARI",
+    "number": 20
+   },
+   {
+    "name": "Esteban Cambiasso",
+    "answer": "CAMBIASSO",
+    "number": 19
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Dejan Stanković",
+    "answer": "STANKOVIC",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Adriano",
+    "answer": "ADRIANO",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 8
+   }
+  ]
+ },
+ {
+  "id": "seriea-2007-12-23-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2007/08",
+  "date": "23.12.2007",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "2-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Júlio César",
+    "answer": "CESAR",
+    "number": 12
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13
+   },
+   {
+    "name": "Iván Córdoba",
+    "answer": "CORDOBA",
+    "number": 2
+   },
+   {
+    "name": "Walter Samuel",
+    "answer": "SAMUEL",
+    "number": 25
+   },
+   {
+    "name": "Maxwell",
+    "answer": "MAXWELL",
+    "number": 6
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Esteban Cambiasso",
+    "answer": "CAMBIASSO",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Cristian Chivu",
+    "answer": "CHIVU",
+    "number": 26
+   },
+   {
+    "name": "Luis Jiménez",
+    "answer": "JIMENEZ",
+    "number": 11
+   },
+   {
+    "name": "Julio Cruz",
+    "answer": "CRUZ",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 8
+   }
+  ]
+ },
+ {
+  "id": "seriea-2006-10-28-inter-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2006/07",
+  "date": "28.10.2006",
+  "team": "Inter",
+  "opponent": "AC Milan",
+  "score": "4-3",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Júlio César",
+    "answer": "CESAR",
+    "number": 12
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13
+   },
+   {
+    "name": "Iván Córdoba",
+    "answer": "CORDOBA",
+    "number": 2
+   },
+   {
+    "name": "Marco Materazzi",
+    "answer": "MATERAZZI",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Fabio Grosso",
+    "answer": "GROSSO",
+    "number": 11
+   },
+   {
+    "name": "Patrick Vieira",
+    "answer": "VIEIRA",
+    "number": 14
+   },
+   {
+    "name": "Olivier Dacourt",
+    "answer": "DACOURT",
+    "number": 15
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Dejan Stanković",
+    "answer": "STANKOVIC",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Hernán Crespo",
+    "answer": "CRESPO",
+    "number": 18,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2005-04-12-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Şampiyonlar Ligi",
+   "en": "Milan Derby · Champions League"
+  },
+  "season": "2004/05",
+  "date": "12.04.2005",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "3-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Dida",
+    "answer": "DIDA",
+    "number": 1
+   },
+   {
+    "name": "Cafu",
+    "answer": "CAFU",
+    "number": 2
+   },
+   {
+    "name": "Jaap Stam",
+    "answer": "STAM",
+    "number": 31
+   },
+   {
+    "name": "Alessandro Nesta",
+    "answer": "NESTA",
+    "number": 13
+   },
+   {
+    "name": "Paolo Maldini",
+    "answer": "MALDINI",
+    "number": 3
+   },
+   {
+    "name": "Massimo Ambrosini",
+    "answer": "AMBROSINI",
+    "number": 23
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Clarence Seedorf",
+    "answer": "SEEDORF",
+    "number": 20
+   },
+   {
+    "name": "Kaká",
+    "answer": "KAKA",
+    "number": 22
+   },
+   {
+    "name": "Andriy Shevchenko",
+    "answer": "SHEVCHENKO",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Hernán Crespo",
+    "answer": "CRESPO",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2005-02-27-acmilan-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Milano Derbisi · Serie A",
+   "en": "Milan Derby · Serie A"
+  },
+  "season": "2004/05",
+  "date": "27.02.2005",
+  "team": "AC Milan",
+  "opponent": "Inter",
+  "score": "1-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Dida",
+    "answer": "DIDA",
+    "number": 1
+   },
+   {
+    "name": "Cafu",
+    "answer": "CAFU",
+    "number": 2
+   },
+   {
+    "name": "Alessandro Nesta",
+    "answer": "NESTA",
+    "number": 13
+   },
+   {
+    "name": "Paolo Maldini",
+    "answer": "MALDINI",
+    "number": 3
+   },
+   {
+    "name": "Kakhaber Kaladze",
+    "answer": "KALADZE",
+    "number": 4
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Gennaro Gattuso",
+    "answer": "GATTUSO",
+    "number": 8
+   },
+   {
+    "name": "Kaká",
+    "answer": "KAKA",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Rui Costa",
+    "answer": "COSTA",
+    "number": 10
+   },
+   {
+    "name": "Clarence Seedorf",
+    "answer": "SEEDORF",
+    "number": 20
+   },
+   {
+    "name": "Hernán Crespo",
+    "answer": "CRESPO",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2026-02-14-inter-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2025/26",
+  "date": "14.02.2026",
+  "team": "Inter",
+  "opponent": "Juventus",
+  "score": "3-2",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Yann Bisseck",
+    "answer": "BISSECK",
+    "number": 31
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Manuel Akanji",
+    "answer": "AKANJI",
+    "number": 25
+   },
+   {
+    "name": "Luis Henrique",
+    "answer": "HENRIQUE",
+    "number": 11
+   },
+   {
+    "name": "Federico Dimarco",
+    "answer": "DIMARCO",
+    "number": 32
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Piotr Zielinski",
+    "answer": "ZIELINSKI",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Petar Sučić",
+    "answer": "SUCIC",
+    "number": 8
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10
+   },
+   {
+    "name": "Marcus Thuram",
+    "answer": "THURAM",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2024-10-27-inter-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2024/25",
+  "date": "27.10.2024",
+  "team": "Inter",
+  "opponent": "Juventus",
+  "score": "4-4",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Stefan de Vrij",
+    "answer": "DE VRIJ",
+    "number": 6
+   },
+   {
+    "name": "Benjamin Pavard",
+    "answer": "PAVARD",
+    "number": 28
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Denzel Dumfries",
+    "answer": "DUMFRIES",
+    "number": 2,
+    "goals": 1
+   },
+   {
+    "name": "Federico Dimarco",
+    "answer": "DIMARCO",
+    "number": 32
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Piotr Zielinski",
+    "answer": "ZIELINSKI",
+    "number": 7,
+    "goals": 2
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10
+   },
+   {
+    "name": "Marcus Thuram",
+    "answer": "THURAM",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-04-26-inter-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · İtalya Kupası",
+   "en": "Derby d'Italia · Coppa Italia"
+  },
+  "season": "2022/23",
+  "date": "26.04.2023",
+  "team": "Inter",
+  "opponent": "Juventus",
+  "score": "1-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "André Onana",
+    "answer": "ONANA",
+    "number": 24
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Matteo Darmian",
+    "answer": "DARMIAN",
+    "number": 36
+   },
+   {
+    "name": "Francesco Acerbi",
+    "answer": "ACERBI",
+    "number": 15
+   },
+   {
+    "name": "Denzel Dumfries",
+    "answer": "DUMFRIES",
+    "number": 2
+   },
+   {
+    "name": "Federico Dimarco",
+    "answer": "DIMARCO",
+    "number": 32,
+    "goals": 1
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Hakan Çalhanoğlu",
+    "answer": "CALHANOGLU",
+    "number": 20
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 22
+   },
+   {
+    "name": "Edin Dzeko",
+    "answer": "DZEKO",
+    "number": 9
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2022-11-06-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2022/23",
+  "date": "06.11.2022",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "2-0",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Bremer",
+    "answer": "BREMER",
+    "number": 3
+   },
+   {
+    "name": "Danilo",
+    "answer": "DANILO",
+    "number": 6
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 11
+   },
+   {
+    "name": "Filip Kostic",
+    "answer": "KOSTIC",
+    "number": 17
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25,
+    "goals": 1
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 5
+   },
+   {
+    "name": "Fabio Miretti",
+    "answer": "MIRETTI",
+    "number": 20
+   },
+   {
+    "name": "Nicolò Fagioli",
+    "answer": "FAGIOLI",
+    "number": 44,
+    "goals": 1
+   },
+   {
+    "name": "Arkadiusz Milik",
+    "answer": "MILIK",
+    "number": 14
+   }
+  ]
+ },
+ {
+  "id": "seriea-2022-01-12-inter-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · İtalya Kupası",
+   "en": "Derby d'Italia · Coppa Italia"
+  },
+  "season": "2021/22",
+  "date": "12.01.2022",
+  "team": "Inter",
+  "opponent": "Juventus",
+  "score": "2-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Samir Handanovič",
+    "answer": "HANDANOVIC",
+    "number": 1
+   },
+   {
+    "name": "Alessandro Bastoni",
+    "answer": "BASTONI",
+    "number": 95
+   },
+   {
+    "name": "Stefan de Vrij",
+    "answer": "DE VRIJ",
+    "number": 6
+   },
+   {
+    "name": "Milan Škriniar",
+    "answer": "SKRINIAR",
+    "number": 37
+   },
+   {
+    "name": "Denzel Dumfries",
+    "answer": "DUMFRIES",
+    "number": 2
+   },
+   {
+    "name": "Ivan Perisic",
+    "answer": "PERISIC",
+    "number": 14
+   },
+   {
+    "name": "Hakan Çalhanoğlu",
+    "answer": "CALHANOGLU",
+    "number": 20
+   },
+   {
+    "name": "Marcelo Brozovic",
+    "answer": "BROZOVIC",
+    "number": 77
+   },
+   {
+    "name": "Nicolò Barella",
+    "answer": "BARELLA",
+    "number": 23
+   },
+   {
+    "name": "Edin Dzeko",
+    "answer": "DZEKO",
+    "number": 9
+   },
+   {
+    "name": "Lautaro Martínez",
+    "answer": "MARTINEZ",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2021-02-09-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · İtalya Kupası",
+   "en": "Derby d'Italia · Coppa Italia"
+  },
+  "season": "2020/21",
+  "date": "09.02.2021",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "0-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 77
+   },
+   {
+    "name": "Danilo",
+    "answer": "DANILO",
+    "number": 13
+   },
+   {
+    "name": "Matthijs de Ligt",
+    "answer": "DE LIGT",
+    "number": 4
+   },
+   {
+    "name": "Merih Demiral",
+    "answer": "DEMIRAL",
+    "number": 28
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 16
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25
+   },
+   {
+    "name": "Rodrigo Bentancur",
+    "answer": "BENTANCUR",
+    "number": 30
+   },
+   {
+    "name": "Federico Bernardeschi",
+    "answer": "BERNARDESCHI",
+    "number": 33
+   },
+   {
+    "name": "Dejan Kulusevski",
+    "answer": "KULUSEVSKI",
+    "number": 44
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "seriea-2020-03-08-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2019/20",
+  "date": "08.03.2020",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 16
+   },
+   {
+    "name": "Matthijs de Ligt",
+    "answer": "DE LIGT",
+    "number": 4
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Blaise Matuidi",
+    "answer": "MATUIDI",
+    "number": 14
+   },
+   {
+    "name": "Rodrigo Bentancur",
+    "answer": "BENTANCUR",
+    "number": 30
+   },
+   {
+    "name": "Aaron Ramsey",
+    "answer": "RAMSEY",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Douglas Costa",
+    "answer": "COSTA",
+    "number": 11
+   },
+   {
+    "name": "Gonzalo Higuaín",
+    "answer": "HIGUAIN",
+    "number": 21
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "seriea-2018-12-07-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2018/19",
+  "date": "07.12.2018",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "João Cancelo",
+    "answer": "CANCELO",
+    "number": 20
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Mattia De Sciglio",
+    "answer": "DE SCIGLIO",
+    "number": 2
+   },
+   {
+    "name": "Blaise Matuidi",
+    "answer": "MATUIDI",
+    "number": 14
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5
+   },
+   {
+    "name": "Rodrigo Bentancur",
+    "answer": "BENTANCUR",
+    "number": 30
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 10
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2017-02-05-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2016/17",
+  "date": "05.02.2017",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 21
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   },
+   {
+    "name": "Gonzalo Higuaín",
+    "answer": "HIGUAIN",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2016-01-27-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · İtalya Kupası",
+   "en": "Derby d'Italia · Coppa Italia"
+  },
+  "season": "2015/16",
+  "date": "27.01.2016",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "3-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Neto",
+    "answer": "NETO",
+    "number": 25
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Martín Cáceres",
+    "answer": "CACERES",
+    "number": 4
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 16
+   },
+   {
+    "name": "Patrice Evra",
+    "answer": "EVRA",
+    "number": 33
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 10
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 22
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   },
+   {
+    "name": "Álvaro Morata",
+    "answer": "MORATA",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "seriea-2015-01-06-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2014/15",
+  "date": "06.01.2015",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "1-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Patrice Evra",
+    "answer": "EVRA",
+    "number": 33
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 6
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Carlos Tévez",
+    "answer": "TEVEZ",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Fernando Llorente",
+    "answer": "LLORENTE",
+    "number": 14
+   }
+  ]
+ },
+ {
+  "id": "seriea-2013-03-30-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2012/13",
+  "date": "30.03.2013",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "2-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Simone Padoin",
+    "answer": "PADOIN",
+    "number": 20
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 22
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Alessandro Matri",
+    "answer": "MATRI",
+    "number": 32,
+    "goals": 1
+   },
+   {
+    "name": "Fabio Quagliarella",
+    "answer": "QUAGLIARELLA",
+    "number": 27,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2011-10-29-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2011/12",
+  "date": "29.10.2011",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Simone Pepe",
+    "answer": "PEPE",
+    "number": 7
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 22
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Alessandro Matri",
+    "answer": "MATRI",
+    "number": 32
+   }
+  ]
+ },
+ {
+  "id": "seriea-2010-04-16-inter-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2009/10",
+  "date": "16.04.2010",
+  "team": "Inter",
+  "opponent": "Juventus",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Júlio César",
+    "answer": "CESAR",
+    "number": 12
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 6
+   },
+   {
+    "name": "Walter Samuel",
+    "answer": "SAMUEL",
+    "number": 25
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Esteban Cambiasso",
+    "answer": "CAMBIASSO",
+    "number": 19
+   },
+   {
+    "name": "Thiago Motta",
+    "answer": "MOTTA",
+    "number": 8
+   },
+   {
+    "name": "Samuel Eto'o",
+    "answer": "ETOO",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Wesley Sneijder",
+    "answer": "SNEIJDER",
+    "number": 10
+   },
+   {
+    "name": "Goran Pandev",
+    "answer": "PANDEV",
+    "number": 27
+   },
+   {
+    "name": "Diego Milito",
+    "answer": "MILITO",
+    "number": 22
+   }
+  ]
+ },
+ {
+  "id": "seriea-2009-04-18-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2008/09",
+  "date": "18.04.2009",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "1-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Zdenek Grygera",
+    "answer": "GRYGERA",
+    "number": 21,
+    "goals": 1
+   },
+   {
+    "name": "Nicola Legrottaglie",
+    "answer": "LEGROTTAGLIE",
+    "number": 33
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Cristian Molinaro",
+    "answer": "MOLINARO",
+    "number": 28
+   },
+   {
+    "name": "Marco Marchionni",
+    "answer": "MARCHIONNI",
+    "number": 32
+   },
+   {
+    "name": "Tiago Mendes",
+    "answer": "MENDES",
+    "number": 30
+   },
+   {
+    "name": "Christian Poulsen",
+    "answer": "POULSEN",
+    "number": 18
+   },
+   {
+    "name": "Pavel Nedved",
+    "answer": "NEDVED",
+    "number": 11
+   },
+   {
+    "name": "Alessandro Del Piero",
+    "answer": "DEL PIERO",
+    "number": 10
+   },
+   {
+    "name": "Vincenzo Iaquinta",
+    "answer": "IAQUINTA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2008-01-30-inter-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · İtalya Kupası",
+   "en": "Derby d'Italia · Coppa Italia"
+  },
+  "season": "2007/08",
+  "date": "30.01.2008",
+  "team": "Inter",
+  "opponent": "Juventus",
+  "score": "3-2",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Francesco Toldo",
+    "answer": "TOLDO",
+    "number": 1
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13
+   },
+   {
+    "name": "Nelson Rivas",
+    "answer": "RIVAS",
+    "number": 24
+   },
+   {
+    "name": "Iván Córdoba",
+    "answer": "CORDOBA",
+    "number": 2
+   },
+   {
+    "name": "Maxwell",
+    "answer": "MAXWELL",
+    "number": 6
+   },
+   {
+    "name": "Dejan Stanković",
+    "answer": "STANKOVIC",
+    "number": 5
+   },
+   {
+    "name": "Pelé",
+    "answer": "PELE",
+    "number": 30
+   },
+   {
+    "name": "Maniche",
+    "answer": "MANICHE",
+    "number": 28
+   },
+   {
+    "name": "Luis Jiménez",
+    "answer": "JIMENEZ",
+    "number": 11
+   },
+   {
+    "name": "Julio Cruz",
+    "answer": "CRUZ",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Mario Balotelli",
+    "answer": "BALOTELLI",
+    "number": 45,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "seriea-2006-02-12-juventus-inter",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2005/06",
+  "date": "12.02.2006",
+  "team": "Juventus",
+  "opponent": "Inter",
+  "score": "2-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Federico Balzaretti",
+    "answer": "BALZARETTI",
+    "number": 14
+   },
+   {
+    "name": "Lilian Thuram",
+    "answer": "THURAM",
+    "number": 21
+   },
+   {
+    "name": "Fabio Cannavaro",
+    "answer": "CANNAVARO",
+    "number": 28
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Mauro Camoranesi",
+    "answer": "CAMORANESI",
+    "number": 16
+   },
+   {
+    "name": "Emerson",
+    "answer": "EMERSON",
+    "number": 8
+   },
+   {
+    "name": "Patrick Vieira",
+    "answer": "VIEIRA",
+    "number": 4
+   },
+   {
+    "name": "Pavel Nedved",
+    "answer": "NEDVED",
+    "number": 11
+   },
+   {
+    "name": "David Trezeguet",
+    "answer": "TREZEGUET",
+    "number": 17
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2005-04-20-inter-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby d'Italia · Serie A",
+   "en": "Derby d'Italia · Serie A"
+  },
+  "season": "2004/05",
+  "date": "20.04.2005",
+  "team": "Inter",
+  "opponent": "Juventus",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#0068a8",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Francesco Toldo",
+    "answer": "TOLDO",
+    "number": 1
+   },
+   {
+    "name": "Javier Zanetti",
+    "answer": "JAVIER ZANETTI",
+    "number": 4
+   },
+   {
+    "name": "Iván Córdoba",
+    "answer": "CORDOBA",
+    "number": 2
+   },
+   {
+    "name": "Sinisa Mihajlovic",
+    "answer": "MIHAJLOVIC",
+    "number": 11
+   },
+   {
+    "name": "Giuseppe Favalli",
+    "answer": "FAVALLI",
+    "number": 16
+   },
+   {
+    "name": "Zé Maria",
+    "answer": "MARIA",
+    "number": 13
+   },
+   {
+    "name": "Esteban Cambiasso",
+    "answer": "CAMBIASSO",
+    "number": 19
+   },
+   {
+    "name": "Cristiano Zanetti",
+    "answer": "CRISTIANO ZANETTI",
+    "number": 6
+   },
+   {
+    "name": "Kily González",
+    "answer": "GONZALEZ",
+    "number": 18
+   },
+   {
+    "name": "Obafemi Martins",
+    "answer": "MARTINS",
+    "number": 30
+   },
+   {
+    "name": "Julio Cruz",
+    "answer": "CRUZ",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2026-09-06-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2026/27",
+  "date": "06.09.2026",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Guglielmo Vicario",
+    "answer": "VICARIO",
+    "number": 25
+   },
+   {
+    "name": "Pierre Kalulu",
+    "answer": "KALULU",
+    "number": 15
+   },
+   {
+    "name": "Bremer",
+    "answer": "BREMER",
+    "number": 3
+   },
+   {
+    "name": "Jhon Lucumí",
+    "answer": "LUCUMI",
+    "number": 26
+   },
+   {
+    "name": "Zeki Çelik",
+    "answer": "CELIK",
+    "number": 2
+   },
+   {
+    "name": "Douglas Luiz",
+    "answer": "LUIZ",
+    "number": 12
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 5
+   },
+   {
+    "name": "Francisco Conceição",
+    "answer": "CONCEICAO",
+    "number": 7
+   },
+   {
+    "name": "Nico González",
+    "answer": "GONZALEZ",
+    "number": 31
+   },
+   {
+    "name": "Kerim Alajbegovic",
+    "answer": "ALAJBEGOVIC",
+    "number": 17
+   },
+   {
+    "name": "Randal Kolo Muani",
+    "answer": "MUANI",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2025-01-18-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2024/25",
+  "date": "18.01.2025",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Michele Di Gregorio",
+    "answer": "DI GREGORIO",
+    "number": 29
+   },
+   {
+    "name": "Weston McKennie",
+    "answer": "MCKENNIE",
+    "number": 16
+   },
+   {
+    "name": "Federico Gatti",
+    "answer": "GATTI",
+    "number": 4
+   },
+   {
+    "name": "Pierre Kalulu",
+    "answer": "KALULU",
+    "number": 15
+   },
+   {
+    "name": "Andrea Cambiaso",
+    "answer": "CAMBIASO",
+    "number": 27
+   },
+   {
+    "name": "Khéphren Thuram",
+    "answer": "THURAM",
+    "number": 19
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 5
+   },
+   {
+    "name": "Kenan Yıldız",
+    "answer": "YILDIZ",
+    "number": 10
+   },
+   {
+    "name": "Teun Koopmeiners",
+    "answer": "KOOPMEINERS",
+    "number": 8
+   },
+   {
+    "name": "Samuel Mbangula",
+    "answer": "MBANGULA",
+    "number": 51,
+    "goals": 1
+   },
+   {
+    "name": "Nico González",
+    "answer": "GONZALEZ",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-10-22-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2023/24",
+  "date": "22.10.2023",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "1-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "Federico Gatti",
+    "answer": "GATTI",
+    "number": 4
+   },
+   {
+    "name": "Bremer",
+    "answer": "BREMER",
+    "number": 3
+   },
+   {
+    "name": "Daniele Rugani",
+    "answer": "RUGANI",
+    "number": 24
+   },
+   {
+    "name": "Timothy Weah",
+    "answer": "WEAH",
+    "number": 22
+   },
+   {
+    "name": "Filip Kostic",
+    "answer": "KOSTIC",
+    "number": 11
+   },
+   {
+    "name": "Weston McKennie",
+    "answer": "MCKENNIE",
+    "number": 16
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25
+   },
+   {
+    "name": "Arkadiusz Milik",
+    "answer": "MILIK",
+    "number": 14
+   },
+   {
+    "name": "Moise Kean",
+    "answer": "KEAN",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "seriea-2022-01-23-acmilan-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2021/22",
+  "date": "23.01.2022",
+  "team": "AC Milan",
+  "opponent": "Juventus",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Mike Maignan",
+    "answer": "MAIGNAN",
+    "number": 16
+   },
+   {
+    "name": "Davide Calabria",
+    "answer": "CALABRIA",
+    "number": 2
+   },
+   {
+    "name": "Pierre Kalulu",
+    "answer": "KALULU",
+    "number": 20
+   },
+   {
+    "name": "Alessio Romagnoli",
+    "answer": "ROMAGNOLI",
+    "number": 13
+   },
+   {
+    "name": "Theo Hernández",
+    "answer": "HERNANDEZ",
+    "number": 19
+   },
+   {
+    "name": "Rade Krunic",
+    "answer": "KRUNIC",
+    "number": 33
+   },
+   {
+    "name": "Sandro Tonali",
+    "answer": "TONALI",
+    "number": 8
+   },
+   {
+    "name": "Junior Messias",
+    "answer": "MESSIAS",
+    "number": 30
+   },
+   {
+    "name": "Brahim Díaz",
+    "answer": "DIAZ",
+    "number": 10
+   },
+   {
+    "name": "Rafael Leão",
+    "answer": "LEAO",
+    "number": 17
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2020-07-07-acmilan-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2020/21",
+  "date": "07.07.2020",
+  "team": "AC Milan",
+  "opponent": "Juventus",
+  "score": "4-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Donnarumma",
+    "answer": "DONNARUMMA",
+    "number": 99
+   },
+   {
+    "name": "Andrea Conti",
+    "answer": "CONTI",
+    "number": 12
+   },
+   {
+    "name": "Simon Kjaer",
+    "answer": "KJAER",
+    "number": 24
+   },
+   {
+    "name": "Alessio Romagnoli",
+    "answer": "ROMAGNOLI",
+    "number": 13
+   },
+   {
+    "name": "Theo Hernández",
+    "answer": "HERNANDEZ",
+    "number": 19
+   },
+   {
+    "name": "Ismaël Bennacer",
+    "answer": "BENNACER",
+    "number": 4
+   },
+   {
+    "name": "Franck Kessié",
+    "answer": "KESSIE",
+    "number": 79,
+    "goals": 1
+   },
+   {
+    "name": "Alexis Saelemaekers",
+    "answer": "SAELEMAEKERS",
+    "number": 56
+   },
+   {
+    "name": "Lucas Paquetá",
+    "answer": "PAQUETA",
+    "number": 39
+   },
+   {
+    "name": "Ante Rebić",
+    "answer": "REBIC",
+    "number": 18,
+    "goals": 1
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 21,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2019-11-10-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2019/20",
+  "date": "10.11.2019",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 16
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Matthijs de Ligt",
+    "answer": "DE LIGT",
+    "number": 4
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Blaise Matuidi",
+    "answer": "MATUIDI",
+    "number": 14
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5
+   },
+   {
+    "name": "Rodrigo Bentancur",
+    "answer": "BENTANCUR",
+    "number": 30
+   },
+   {
+    "name": "Federico Bernardeschi",
+    "answer": "BERNARDESCHI",
+    "number": 33
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   },
+   {
+    "name": "Gonzalo Higuaín",
+    "answer": "HIGUAIN",
+    "number": 21
+   }
+  ]
+ },
+ {
+  "id": "seriea-2018-05-09-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · İtalya Kupası",
+   "en": "Juventus – Milan · Coppa Italia"
+  },
+  "season": "2017/18",
+  "date": "09.05.2018",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "4-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 7
+   },
+   {
+    "name": "Medhi Benatia",
+    "answer": "BENATIA",
+    "number": 4,
+    "goals": 2
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 22
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 10
+   },
+   {
+    "name": "Douglas Costa",
+    "answer": "COSTA",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Blaise Matuidi",
+    "answer": "MATUIDI",
+    "number": 14
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2017-03-10-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2016/17",
+  "date": "10.03.2017",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Medhi Benatia",
+    "answer": "BENATIA",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 22
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 23
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 21,
+    "goals": 1
+   },
+   {
+    "name": "Marko Pjaca",
+    "answer": "PJACA",
+    "number": 20
+   },
+   {
+    "name": "Gonzalo Higuaín",
+    "answer": "HIGUAIN",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2016-05-21-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · İtalya Kupası",
+   "en": "Juventus – Milan · Coppa Italia"
+  },
+  "season": "2015/16",
+  "date": "21.05.2016",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "1-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Neto",
+    "answer": "NETO",
+    "number": 25
+   },
+   {
+    "name": "Daniele Rugani",
+    "answer": "RUGANI",
+    "number": 24
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Patrice Evra",
+    "answer": "EVRA",
+    "number": 33
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 10
+   },
+   {
+    "name": "Mario Lemina",
+    "answer": "LEMINA",
+    "number": 18
+   },
+   {
+    "name": "Hernanes",
+    "answer": "HERNANES",
+    "number": 11
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 21
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2015-02-07-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2014/15",
+  "date": "07.02.2015",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "3-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Simone Padoin",
+    "answer": "PADOIN",
+    "number": 20
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Patrice Evra",
+    "answer": "EVRA",
+    "number": 33
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 6
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Carlos Tévez",
+    "answer": "TEVEZ",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Álvaro Morata",
+    "answer": "MORATA",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2013-04-21-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2012/13",
+  "date": "21.04.2013",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "1-0",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 22
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 6
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2012-03-20-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · İtalya Kupası",
+   "en": "Juventus – Milan · Coppa Italia"
+  },
+  "season": "2011/12",
+  "date": "20.03.2012",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "2-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Marco Storari",
+    "answer": "STORARI",
+    "number": 30
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Paolo De Ceglie",
+    "answer": "DE CEGLIE",
+    "number": 11
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 22
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Emanuele Giaccherini",
+    "answer": "GIACCHERINI",
+    "number": 24
+   },
+   {
+    "name": "Simone Pepe",
+    "answer": "PEPE",
+    "number": 7
+   },
+   {
+    "name": "Alessandro Del Piero",
+    "answer": "DEL PIERO",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 14,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2011-03-05-acmilan-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2010/11",
+  "date": "05.03.2011",
+  "team": "AC Milan",
+  "opponent": "Juventus",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Christian Abbiati",
+    "answer": "ABBIATI",
+    "number": 32
+   },
+   {
+    "name": "Ignazio Abate",
+    "answer": "ABATE",
+    "number": 20
+   },
+   {
+    "name": "Alessandro Nesta",
+    "answer": "NESTA",
+    "number": 13
+   },
+   {
+    "name": "Thiago Silva",
+    "answer": "SILVA",
+    "number": 33
+   },
+   {
+    "name": "Marek Jankulovski",
+    "answer": "JANKULOVSKI",
+    "number": 18
+   },
+   {
+    "name": "Gennaro Gattuso",
+    "answer": "GATTUSO",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Mark van Bommel",
+    "answer": "VAN BOMMEL",
+    "number": 4
+   },
+   {
+    "name": "Mathieu Flamini",
+    "answer": "FLAMINI",
+    "number": 16
+   },
+   {
+    "name": "Kevin-Prince Boateng",
+    "answer": "BOATENG",
+    "number": 27
+   },
+   {
+    "name": "Antonio Cassano",
+    "answer": "CASSANO",
+    "number": 99
+   },
+   {
+    "name": "Zlatan Ibrahimović",
+    "answer": "IBRAHIMOVIC",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2010-01-10-acmilan-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2009/10",
+  "date": "10.01.2010",
+  "team": "AC Milan",
+  "opponent": "Juventus",
+  "score": "3-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Dida",
+    "answer": "DIDA",
+    "number": 1
+   },
+   {
+    "name": "Ignazio Abate",
+    "answer": "ABATE",
+    "number": 20
+   },
+   {
+    "name": "Thiago Silva",
+    "answer": "SILVA",
+    "number": 33
+   },
+   {
+    "name": "Alessandro Nesta",
+    "answer": "NESTA",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Luca Antonini",
+    "answer": "ANTONINI",
+    "number": 77
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "David Beckham",
+    "answer": "BECKHAM",
+    "number": 32
+   },
+   {
+    "name": "Massimo Ambrosini",
+    "answer": "AMBROSINI",
+    "number": 23
+   },
+   {
+    "name": "Gennaro Gattuso",
+    "answer": "GATTUSO",
+    "number": 8
+   },
+   {
+    "name": "Ronaldinho",
+    "answer": "RONALDINHO",
+    "number": 80,
+    "goals": 2
+   },
+   {
+    "name": "Marco Borriello",
+    "answer": "BORRIELLO",
+    "number": 22
+   }
+  ]
+ },
+ {
+  "id": "seriea-2007-12-01-acmilan-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2007/08",
+  "date": "01.12.2007",
+  "team": "AC Milan",
+  "opponent": "Juventus",
+  "score": "0-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#d50000",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Dida",
+    "answer": "DIDA",
+    "number": 1
+   },
+   {
+    "name": "Massimo Oddo",
+    "answer": "ODDO",
+    "number": 44
+   },
+   {
+    "name": "Alessandro Nesta",
+    "answer": "NESTA",
+    "number": 13
+   },
+   {
+    "name": "Kakhaber Kaladze",
+    "answer": "KALADZE",
+    "number": 4
+   },
+   {
+    "name": "Serginho",
+    "answer": "SERGINHO",
+    "number": 27
+   },
+   {
+    "name": "Andrea Pirlo",
+    "answer": "PIRLO",
+    "number": 21
+   },
+   {
+    "name": "Gennaro Gattuso",
+    "answer": "GATTUSO",
+    "number": 8
+   },
+   {
+    "name": "Kaká",
+    "answer": "KAKA",
+    "number": 22
+   },
+   {
+    "name": "Clarence Seedorf",
+    "answer": "SEEDORF",
+    "number": 10
+   },
+   {
+    "name": "Massimo Ambrosini",
+    "answer": "AMBROSINI",
+    "number": 23
+   },
+   {
+    "name": "Alberto Gilardino",
+    "answer": "GILARDINO",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2005-05-08-juventus-acmilan",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Juventus – Milan · Serie A",
+   "en": "Juventus – Milan · Serie A"
+  },
+  "season": "2004/05",
+  "date": "08.05.2005",
+  "team": "Juventus",
+  "opponent": "AC Milan",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Gianluca Pessotto",
+    "answer": "PESSOTTO",
+    "number": 7
+   },
+   {
+    "name": "Lilian Thuram",
+    "answer": "THURAM",
+    "number": 21
+   },
+   {
+    "name": "Fabio Cannavaro",
+    "answer": "CANNAVARO",
+    "number": 28
+   },
+   {
+    "name": "Gianluca Zambrotta",
+    "answer": "ZAMBROTTA",
+    "number": 19
+   },
+   {
+    "name": "Mauro Camoranesi",
+    "answer": "CAMORANESI",
+    "number": 16
+   },
+   {
+    "name": "Emerson",
+    "answer": "EMERSON",
+    "number": 8
+   },
+   {
+    "name": "Stephen Appiah",
+    "answer": "APPIAH",
+    "number": 18
+   },
+   {
+    "name": "Pavel Nedved",
+    "answer": "NEDVED",
+    "number": 11
+   },
+   {
+    "name": "Alessandro Del Piero",
+    "answer": "DEL PIERO",
+    "number": 10
+   },
+   {
+    "name": "David Trezeguet",
+    "answer": "TREZEGUET",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2026-05-17-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2025/26",
+  "date": "17.05.2026",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-0",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Mile Svilar",
+    "answer": "SVILAR",
+    "number": 99
+   },
+   {
+    "name": "Gianluca Mancini",
+    "answer": "MANCINI",
+    "number": 23,
+    "goals": 2
+   },
+   {
+    "name": "Mario Hermoso",
+    "answer": "HERMOSO",
+    "number": 22
+   },
+   {
+    "name": "Evan Ndicka",
+    "answer": "NDICKA",
+    "number": 5
+   },
+   {
+    "name": "Zeki Çelik",
+    "answer": "CELIK",
+    "number": 19
+   },
+   {
+    "name": "Wesley",
+    "answer": "WESLEY",
+    "number": 43
+   },
+   {
+    "name": "Neil El Aynaoui",
+    "answer": "EL AYNAOUI",
+    "number": 8
+   },
+   {
+    "name": "Bryan Cristante",
+    "answer": "CRISTANTE",
+    "number": 4
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 21
+   },
+   {
+    "name": "Niccolò Pisilli",
+    "answer": "PISILLI",
+    "number": 61
+   },
+   {
+    "name": "Donyell Malen",
+    "answer": "MALEN",
+    "number": 14
+   }
+  ]
+ },
+ {
+  "id": "seriea-2025-01-05-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2024/25",
+  "date": "05.01.2025",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-0",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Mile Svilar",
+    "answer": "SVILAR",
+    "number": 99
+   },
+   {
+    "name": "Gianluca Mancini",
+    "answer": "MANCINI",
+    "number": 23
+   },
+   {
+    "name": "Evan Ndicka",
+    "answer": "NDICKA",
+    "number": 5
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Alexis Saelemaekers",
+    "answer": "SAELEMAEKERS",
+    "number": 56,
+    "goals": 1
+   },
+   {
+    "name": "Angeliño",
+    "answer": "ANGELINO",
+    "number": 3
+   },
+   {
+    "name": "Manu Koné",
+    "answer": "KONE",
+    "number": 17
+   },
+   {
+    "name": "Leandro Paredes",
+    "answer": "PAREDES",
+    "number": 16
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 21
+   },
+   {
+    "name": "Lorenzo Pellegrini",
+    "answer": "PELLEGRINI",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Artem Dovbyk",
+    "answer": "DOVBYK",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-11-12-lazio-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2023/24",
+  "date": "12.11.2023",
+  "team": "Lazio",
+  "opponent": "Roma",
+  "score": "0-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#7fc6f0",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Ivan Provedel",
+    "answer": "PROVEDEL",
+    "number": 94
+   },
+   {
+    "name": "Manuel Lazzari",
+    "answer": "LAZZARI",
+    "number": 29
+   },
+   {
+    "name": "Patric",
+    "answer": "PATRIC",
+    "number": 4
+   },
+   {
+    "name": "Alessio Romagnoli",
+    "answer": "ROMAGNOLI",
+    "number": 13
+   },
+   {
+    "name": "Adam Marusic",
+    "answer": "MARUSIC",
+    "number": 77
+   },
+   {
+    "name": "Mattéo Guendouzi",
+    "answer": "GUENDOUZI",
+    "number": 8
+   },
+   {
+    "name": "Danilo Cataldi",
+    "answer": "CATALDI",
+    "number": 32
+   },
+   {
+    "name": "Luis Alberto",
+    "answer": "ALBERTO",
+    "number": 10
+   },
+   {
+    "name": "Felipe Anderson",
+    "answer": "ANDERSON",
+    "number": 7
+   },
+   {
+    "name": "Ciro Immobile",
+    "answer": "IMMOBILE",
+    "number": 17
+   },
+   {
+    "name": "Pedro",
+    "answer": "PEDRO",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2022-11-06-lazio-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2022/23",
+  "date": "06.11.2022",
+  "team": "Lazio",
+  "opponent": "Roma",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#7fc6f0",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Ivan Provedel",
+    "answer": "PROVEDEL",
+    "number": 94
+   },
+   {
+    "name": "Manuel Lazzari",
+    "answer": "LAZZARI",
+    "number": 29
+   },
+   {
+    "name": "Nicolò Casale",
+    "answer": "CASALE",
+    "number": 15
+   },
+   {
+    "name": "Alessio Romagnoli",
+    "answer": "ROMAGNOLI",
+    "number": 13
+   },
+   {
+    "name": "Adam Marusic",
+    "answer": "MARUSIC",
+    "number": 77
+   },
+   {
+    "name": "Matías Vecino",
+    "answer": "VECINO",
+    "number": 5
+   },
+   {
+    "name": "Danilo Cataldi",
+    "answer": "CATALDI",
+    "number": 32
+   },
+   {
+    "name": "Luis Alberto",
+    "answer": "ALBERTO",
+    "number": 10
+   },
+   {
+    "name": "Pedro",
+    "answer": "PEDRO",
+    "number": 9
+   },
+   {
+    "name": "Felipe Anderson",
+    "answer": "ANDERSON",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Mattia Zaccagni",
+    "answer": "ZACCAGNI",
+    "number": 20
+   }
+  ]
+ },
+ {
+  "id": "seriea-2021-05-15-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2020/21",
+  "date": "15.05.2021",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Daniel Fuzato",
+    "answer": "FUZATO",
+    "number": 87
+   },
+   {
+    "name": "Rick Karsdorp",
+    "answer": "KARSDORP",
+    "number": 2
+   },
+   {
+    "name": "Gianluca Mancini",
+    "answer": "MANCINI",
+    "number": 23
+   },
+   {
+    "name": "Roger Ibañez",
+    "answer": "IBANEZ",
+    "number": 3
+   },
+   {
+    "name": "Bruno Peres",
+    "answer": "PERES",
+    "number": 33
+   },
+   {
+    "name": "Bryan Cristante",
+    "answer": "CRISTANTE",
+    "number": 4
+   },
+   {
+    "name": "Ebrima Darboe",
+    "answer": "DARBOE",
+    "number": 55
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 77,
+    "goals": 1
+   },
+   {
+    "name": "Lorenzo Pellegrini",
+    "answer": "PELLEGRINI",
+    "number": 7
+   },
+   {
+    "name": "Stephan El Shaarawy",
+    "answer": "EL SHAARAWY",
+    "number": 92
+   },
+   {
+    "name": "Edin Dzeko",
+    "answer": "DZEKO",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2019-09-01-lazio-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2019/20",
+  "date": "01.09.2019",
+  "team": "Lazio",
+  "opponent": "Roma",
+  "score": "1-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#7fc6f0",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Thomas Strakosha",
+    "answer": "STRAKOSHA",
+    "number": 1
+   },
+   {
+    "name": "Francesco Acerbi",
+    "answer": "ACERBI",
+    "number": 33
+   },
+   {
+    "name": "Ștefan Radu",
+    "answer": "RADU",
+    "number": 26
+   },
+   {
+    "name": "Luiz Felipe",
+    "answer": "FELIPE",
+    "number": 3
+   },
+   {
+    "name": "Manuel Lazzari",
+    "answer": "LAZZARI",
+    "number": 29
+   },
+   {
+    "name": "Senad Lulic",
+    "answer": "LULIC",
+    "number": 19
+   },
+   {
+    "name": "Sergej Milinković-Savić",
+    "answer": "SAVIC",
+    "number": 21
+   },
+   {
+    "name": "Lucas Leiva",
+    "answer": "LEIVA",
+    "number": 6
+   },
+   {
+    "name": "Luis Alberto",
+    "answer": "ALBERTO",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Joaquín Correa",
+    "answer": "CORREA",
+    "number": 11
+   },
+   {
+    "name": "Ciro Immobile",
+    "answer": "IMMOBILE",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2018-04-15-lazio-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2017/18",
+  "date": "15.04.2018",
+  "team": "Lazio",
+  "opponent": "Roma",
+  "score": "0-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#7fc6f0",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Thomas Strakosha",
+    "answer": "STRAKOSHA",
+    "number": 1
+   },
+   {
+    "name": "Stefan de Vrij",
+    "answer": "DE VRIJ",
+    "number": 3
+   },
+   {
+    "name": "Ștefan Radu",
+    "answer": "RADU",
+    "number": 26
+   },
+   {
+    "name": "Luiz Felipe",
+    "answer": "FELIPE",
+    "number": 27
+   },
+   {
+    "name": "Adam Marusic",
+    "answer": "MARUSIC",
+    "number": 77
+   },
+   {
+    "name": "Senad Lulic",
+    "answer": "LULIC",
+    "number": 19
+   },
+   {
+    "name": "Sergej Milinković-Savić",
+    "answer": "SAVIC",
+    "number": 21
+   },
+   {
+    "name": "Lucas Leiva",
+    "answer": "LEIVA",
+    "number": 6
+   },
+   {
+    "name": "Marco Parolo",
+    "answer": "PAROLO",
+    "number": 16
+   },
+   {
+    "name": "Felipe Anderson",
+    "answer": "ANDERSON",
+    "number": 10
+   },
+   {
+    "name": "Ciro Immobile",
+    "answer": "IMMOBILE",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2017-04-04-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · İtalya Kupası",
+   "en": "Rome Derby · Coppa Italia"
+  },
+  "season": "2016/17",
+  "date": "04.04.2017",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "3-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Alisson",
+    "answer": "ALISSON",
+    "number": 19
+   },
+   {
+    "name": "Antonio Rüdiger",
+    "answer": "RUDIGER",
+    "number": 2
+   },
+   {
+    "name": "Konstantinos Manolas",
+    "answer": "MANOLAS",
+    "number": 44
+   },
+   {
+    "name": "Juan Jesus",
+    "answer": "JESUS",
+    "number": 3
+   },
+   {
+    "name": "Emerson",
+    "answer": "EMERSON",
+    "number": 33
+   },
+   {
+    "name": "Kevin Strootman",
+    "answer": "STROOTMAN",
+    "number": 6
+   },
+   {
+    "name": "Leandro Paredes",
+    "answer": "PAREDES",
+    "number": 5
+   },
+   {
+    "name": "Radja Nainggolan",
+    "answer": "NAINGGOLAN",
+    "number": 4
+   },
+   {
+    "name": "Mohamed Salah",
+    "answer": "SALAH",
+    "number": 11,
+    "goals": 2
+   },
+   {
+    "name": "Edin Dzeko",
+    "answer": "DZEKO",
+    "number": 9
+   },
+   {
+    "name": "Stephan El Shaarawy",
+    "answer": "EL SHAARAWY",
+    "number": 92,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2016-04-03-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2015/16",
+  "date": "03.04.2016",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "4-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 25
+   },
+   {
+    "name": "Alessandro Florenzi",
+    "answer": "FLORENZI",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Antonio Rüdiger",
+    "answer": "RUDIGER",
+    "number": 2
+   },
+   {
+    "name": "Konstantinos Manolas",
+    "answer": "MANOLAS",
+    "number": 44
+   },
+   {
+    "name": "Lucas Digne",
+    "answer": "DIGNE",
+    "number": 3
+   },
+   {
+    "name": "Seydou Keita",
+    "answer": "KEITA",
+    "number": 20
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 15
+   },
+   {
+    "name": "Radja Nainggolan",
+    "answer": "NAINGGOLAN",
+    "number": 4
+   },
+   {
+    "name": "Mohamed Salah",
+    "answer": "SALAH",
+    "number": 11
+   },
+   {
+    "name": "Diego Perotti",
+    "answer": "PEROTTI",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Stephan El Shaarawy",
+    "answer": "EL SHAARAWY",
+    "number": 22,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2015-05-25-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2014/15",
+  "date": "25.05.2015",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Morgan De Sanctis",
+    "answer": "DE SANCTIS",
+    "number": 26
+   },
+   {
+    "name": "Vasilios Torosidis",
+    "answer": "TOROSIDIS",
+    "number": 35
+   },
+   {
+    "name": "Mapou Yanga-Mbiwa",
+    "answer": "YANGAMBIWA",
+    "number": 2,
+    "goals": 1
+   },
+   {
+    "name": "Konstantinos Manolas",
+    "answer": "MANOLAS",
+    "number": 44
+   },
+   {
+    "name": "Jose Cholevas",
+    "answer": "CHOLEVAS",
+    "number": 25
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "Alessandro Florenzi",
+    "answer": "FLORENZI",
+    "number": 24
+   },
+   {
+    "name": "Seydou Keita",
+    "answer": "KEITA",
+    "number": 20
+   },
+   {
+    "name": "Radja Nainggolan",
+    "answer": "NAINGGOLAN",
+    "number": 4
+   },
+   {
+    "name": "Juan Iturbe",
+    "answer": "ITURBE",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Francesco Totti",
+    "answer": "TOTTI",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2013-09-22-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2013/14",
+  "date": "22.09.2013",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Morgan De Sanctis",
+    "answer": "DE SANCTIS",
+    "number": 26
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13
+   },
+   {
+    "name": "Medhi Benatia",
+    "answer": "BENATIA",
+    "number": 17
+   },
+   {
+    "name": "Leandro Castán",
+    "answer": "CASTAN",
+    "number": 5
+   },
+   {
+    "name": "Federico Balzaretti",
+    "answer": "BALZARETTI",
+    "number": 42,
+    "goals": 1
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "Gervinho",
+    "answer": "GERVINHO",
+    "number": 27
+   },
+   {
+    "name": "Kevin Strootman",
+    "answer": "STROOTMAN",
+    "number": 6
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 15
+   },
+   {
+    "name": "Alessandro Florenzi",
+    "answer": "FLORENZI",
+    "number": 24
+   },
+   {
+    "name": "Francesco Totti",
+    "answer": "TOTTI",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2012-11-11-lazio-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2012/13",
+  "date": "11.11.2012",
+  "team": "Lazio",
+  "opponent": "Roma",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#7fc6f0",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Federico Marchetti",
+    "answer": "MARCHETTI",
+    "number": 22
+   },
+   {
+    "name": "Abdoulay Konko",
+    "answer": "KONKO",
+    "number": 29
+   },
+   {
+    "name": "Giuseppe Biava",
+    "answer": "BIAVA",
+    "number": 20
+   },
+   {
+    "name": "André Dias",
+    "answer": "DIAS",
+    "number": 3
+   },
+   {
+    "name": "Senad Lulic",
+    "answer": "LULIC",
+    "number": 19
+   },
+   {
+    "name": "Cristian Ledesma",
+    "answer": "LEDESMA",
+    "number": 24
+   },
+   {
+    "name": "Álvaro González",
+    "answer": "GONZALEZ",
+    "number": 15
+   },
+   {
+    "name": "Antonio Candreva",
+    "answer": "CANDREVA",
+    "number": 87,
+    "goals": 1
+   },
+   {
+    "name": "Hernanes",
+    "answer": "HERNANES",
+    "number": 8
+   },
+   {
+    "name": "Stefano Mauri",
+    "answer": "MAURI",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Miroslav Klose",
+    "answer": "KLOSE",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2011-03-13-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2010/11",
+  "date": "13.03.2011",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Doni",
+    "answer": "DONI",
+    "number": 32
+   },
+   {
+    "name": "Nicolás Burdisso",
+    "answer": "BURDISSO",
+    "number": 29
+   },
+   {
+    "name": "Juan",
+    "answer": "JUAN",
+    "number": 4
+   },
+   {
+    "name": "Philippe Mexès",
+    "answer": "MEXES",
+    "number": 5
+   },
+   {
+    "name": "John Arne Riise",
+    "answer": "RIISE",
+    "number": 17
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "David Pizarro",
+    "answer": "PIZARRO",
+    "number": 7
+   },
+   {
+    "name": "Jérémy Ménez",
+    "answer": "MENEZ",
+    "number": 94
+   },
+   {
+    "name": "Simone Perrotta",
+    "answer": "PERROTTA",
+    "number": 20
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 9
+   },
+   {
+    "name": "Francesco Totti",
+    "answer": "TOTTI",
+    "number": 10,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "seriea-2010-04-18-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2009/10",
+  "date": "18.04.2010",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Júlio Sérgio",
+    "answer": "SERGIO",
+    "number": 27
+   },
+   {
+    "name": "Marco Cassetti",
+    "answer": "CASSETTI",
+    "number": 77
+   },
+   {
+    "name": "Juan",
+    "answer": "JUAN",
+    "number": 4
+   },
+   {
+    "name": "Nicolás Burdisso",
+    "answer": "BURDISSO",
+    "number": 29
+   },
+   {
+    "name": "John Arne Riise",
+    "answer": "RIISE",
+    "number": 17
+   },
+   {
+    "name": "David Pizarro",
+    "answer": "PIZARRO",
+    "number": 7
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "Francesco Totti",
+    "answer": "TOTTI",
+    "number": 10
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 9,
+    "goals": 2
+   },
+   {
+    "name": "Simone Perrotta",
+    "answer": "PERROTTA",
+    "number": 20
+   },
+   {
+    "name": "Luca Toni",
+    "answer": "TONI",
+    "number": 30
+   }
+  ]
+ },
+ {
+  "id": "seriea-2008-11-16-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2008/09",
+  "date": "16.11.2008",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Doni",
+    "answer": "DONI",
+    "number": 32
+   },
+   {
+    "name": "Christian Panucci",
+    "answer": "PANUCCI",
+    "number": 2
+   },
+   {
+    "name": "Philippe Mexès",
+    "answer": "MEXES",
+    "number": 5
+   },
+   {
+    "name": "Juan",
+    "answer": "JUAN",
+    "number": 4
+   },
+   {
+    "name": "Max Tonetto",
+    "answer": "TONETTO",
+    "number": 22
+   },
+   {
+    "name": "Simone Perrotta",
+    "answer": "PERROTTA",
+    "number": 20
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "Matteo Brighi",
+    "answer": "BRIGHI",
+    "number": 33
+   },
+   {
+    "name": "Júlio Baptista",
+    "answer": "BAPTISTA",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Francesco Totti",
+    "answer": "TOTTI",
+    "number": 10
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2007-10-31-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2007/08",
+  "date": "31.10.2007",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Doni",
+    "answer": "DONI",
+    "number": 32
+   },
+   {
+    "name": "Christian Panucci",
+    "answer": "PANUCCI",
+    "number": 2
+   },
+   {
+    "name": "Philippe Mexès",
+    "answer": "MEXES",
+    "number": 5
+   },
+   {
+    "name": "Juan",
+    "answer": "JUAN",
+    "number": 4
+   },
+   {
+    "name": "Marco Cassetti",
+    "answer": "CASSETTI",
+    "number": 77
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "David Pizarro",
+    "answer": "PIZARRO",
+    "number": 7
+   },
+   {
+    "name": "Mancini",
+    "answer": "MANCINI",
+    "number": 30,
+    "goals": 1
+   },
+   {
+    "name": "Simone Perrotta",
+    "answer": "PERROTTA",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Max Tonetto",
+    "answer": "TONETTO",
+    "number": 22
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2006-02-26-roma-lazio",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2005/06",
+  "date": "26.02.2006",
+  "team": "Roma",
+  "opponent": "Lazio",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Doni",
+    "answer": "DONI",
+    "number": 32
+   },
+   {
+    "name": "Christian Panucci",
+    "answer": "PANUCCI",
+    "number": 2
+   },
+   {
+    "name": "Philippe Mexès",
+    "answer": "MEXES",
+    "number": 5
+   },
+   {
+    "name": "Cristian Chivu",
+    "answer": "CHIVU",
+    "number": 13
+   },
+   {
+    "name": "Leandro Cufré",
+    "answer": "CUFRE",
+    "number": 25
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "Alberto Aquilani",
+    "answer": "AQUILANI",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Rodrigo Taddei",
+    "answer": "TADDEI",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Simone Perrotta",
+    "answer": "PERROTTA",
+    "number": 20
+   },
+   {
+    "name": "Mancini",
+    "answer": "MANCINI",
+    "number": 30
+   },
+   {
+    "name": "Vincenzo Montella",
+    "answer": "MONTELLA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2005-01-06-lazio-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Roma Derbisi · Serie A",
+   "en": "Rome Derby · Serie A"
+  },
+  "season": "2004/05",
+  "date": "06.01.2005",
+  "team": "Lazio",
+  "opponent": "Roma",
+  "score": "3-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#7fc6f0",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Angelo Peruzzi",
+    "answer": "PERUZZI",
+    "number": 1
+   },
+   {
+    "name": "Massimo Oddo",
+    "answer": "ODDO",
+    "number": 22
+   },
+   {
+    "name": "Giuliano Giannichedda",
+    "answer": "GIANNICHEDDA",
+    "number": 16
+   },
+   {
+    "name": "Leonardo Talamonti",
+    "answer": "TALAMONTI",
+    "number": 3
+   },
+   {
+    "name": "Emanuele Filippini",
+    "answer": "EMANUELE FILIPPINI",
+    "number": 14
+   },
+   {
+    "name": "Antonio Filippini",
+    "answer": "ANTONIO FILIPPINI",
+    "number": 7
+   },
+   {
+    "name": "Fabio Liverani",
+    "answer": "LIVERANI",
+    "number": 20
+   },
+   {
+    "name": "Ousmane Dabo",
+    "answer": "DABO",
+    "number": 6
+   },
+   {
+    "name": "César",
+    "answer": "CESAR",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Paolo Di Canio",
+    "answer": "DI CANIO",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Tommaso Rocchi",
+    "answer": "ROCCHI",
+    "number": 18,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2026-05-24-torino-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2025/26",
+  "date": "24.05.2026",
+  "team": "Torino",
+  "opponent": "Juventus",
+  "score": "2-2",
+  "formation": "3-4-1-2",
+  "kit": {
+   "body": "#8b1c2c",
+   "sleeves": "#8b1c2c",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Alberto Paleari",
+    "answer": "PALEARI",
+    "number": 1
+   },
+   {
+    "name": "Enzo Ebosse",
+    "answer": "EBOSSE",
+    "number": 77
+   },
+   {
+    "name": "Ardian Ismajli",
+    "answer": "ISMAJLI",
+    "number": 44
+   },
+   {
+    "name": "Saúl Coco",
+    "answer": "COCO",
+    "number": 23
+   },
+   {
+    "name": "Marcus Pedersen",
+    "answer": "PEDERSEN",
+    "number": 16
+   },
+   {
+    "name": "Gvidas Gineitis",
+    "answer": "GINEITIS",
+    "number": 66
+   },
+   {
+    "name": "Emirhan İlkhan",
+    "answer": "ILKHAN",
+    "number": 6
+   },
+   {
+    "name": "Rafa Obrador",
+    "answer": "OBRADOR",
+    "number": 33
+   },
+   {
+    "name": "Nikola Vlašić",
+    "answer": "VLASIC",
+    "number": 10
+   },
+   {
+    "name": "Duván Zapata",
+    "answer": "ZAPATA",
+    "number": 91
+   },
+   {
+    "name": "Giovanni Simeone",
+    "answer": "SIMEONE",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "seriea-2024-11-09-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2024/25",
+  "date": "09.11.2024",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Mattia Perin",
+    "answer": "PERIN",
+    "number": 1
+   },
+   {
+    "name": "Nicolò Savona",
+    "answer": "SAVONA",
+    "number": 37
+   },
+   {
+    "name": "Federico Gatti",
+    "answer": "GATTI",
+    "number": 4
+   },
+   {
+    "name": "Pierre Kalulu",
+    "answer": "KALULU",
+    "number": 15
+   },
+   {
+    "name": "Andrea Cambiaso",
+    "answer": "CAMBIASO",
+    "number": 27
+   },
+   {
+    "name": "Khéphren Thuram",
+    "answer": "THURAM",
+    "number": 19
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 5
+   },
+   {
+    "name": "Timothy Weah",
+    "answer": "WEAH",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Teun Koopmeiners",
+    "answer": "KOOPMEINERS",
+    "number": 8
+   },
+   {
+    "name": "Kenan Yıldız",
+    "answer": "YILDIZ",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Dušan Vlahović",
+    "answer": "VLAHOVIC",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-02-28-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2022/23",
+  "date": "28.02.2023",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "4-2",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "Bremer",
+    "answer": "BREMER",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Danilo",
+    "answer": "DANILO",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Filip Kostic",
+    "answer": "KOSTIC",
+    "number": 17
+   },
+   {
+    "name": "Enzo Barrenechea",
+    "answer": "BARRENECHEA",
+    "number": 45
+   },
+   {
+    "name": "Nicolò Fagioli",
+    "answer": "FAGIOLI",
+    "number": 44
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25,
+    "goals": 1
+   },
+   {
+    "name": "Ángel Di María",
+    "answer": "DI MARIA",
+    "number": 22
+   },
+   {
+    "name": "Dušan Vlahović",
+    "answer": "VLAHOVIC",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2021-10-02-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2021/22",
+  "date": "02.10.2021",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "Danilo",
+    "answer": "DANILO",
+    "number": 6
+   },
+   {
+    "name": "Matthijs de Ligt",
+    "answer": "DE LIGT",
+    "number": 4
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Federico Bernardeschi",
+    "answer": "BERNARDESCHI",
+    "number": 20
+   },
+   {
+    "name": "Weston McKennie",
+    "answer": "MCKENNIE",
+    "number": 14
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25
+   },
+   {
+    "name": "Federico Chiesa",
+    "answer": "CHIESA",
+    "number": 22
+   },
+   {
+    "name": "Moise Kean",
+    "answer": "KEAN",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "seriea-2020-07-04-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2020/21",
+  "date": "04.07.2020",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "4-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 77
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 16,
+    "goals": 1
+   },
+   {
+    "name": "Matthijs de Ligt",
+    "answer": "DE LIGT",
+    "number": 4
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Danilo",
+    "answer": "DANILO",
+    "number": 13
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5
+   },
+   {
+    "name": "Rodrigo Bentancur",
+    "answer": "BENTANCUR",
+    "number": 30
+   },
+   {
+    "name": "Federico Bernardeschi",
+    "answer": "BERNARDESCHI",
+    "number": 33
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2018-12-15-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2018/19",
+  "date": "15.12.2018",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Mattia Perin",
+    "answer": "PERIN",
+    "number": 22
+   },
+   {
+    "name": "Mattia De Sciglio",
+    "answer": "DE SCIGLIO",
+    "number": 2
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Blaise Matuidi",
+    "answer": "MATUIDI",
+    "number": 14
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5
+   },
+   {
+    "name": "Emre Can",
+    "answer": "CAN",
+    "number": 23
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 10
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2017-09-23-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2017/18",
+  "date": "23.09.2017",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "4-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Medhi Benatia",
+    "answer": "BENATIA",
+    "number": 4
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12,
+    "goals": 1
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 7
+   },
+   {
+    "name": "Blaise Matuidi",
+    "answer": "MATUIDI",
+    "number": 14
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Douglas Costa",
+    "answer": "COSTA",
+    "number": 11
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2016-03-20-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2015/16",
+  "date": "20.03.2016",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "4-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Daniele Rugani",
+    "answer": "RUGANI",
+    "number": 24
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Mario Lemina",
+    "answer": "LEMINA",
+    "number": 18
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Paulo Dybala",
+    "answer": "DYBALA",
+    "number": 21
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2015-04-26-torino-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2014/15",
+  "date": "26.04.2015",
+  "team": "Torino",
+  "opponent": "Juventus",
+  "score": "2-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#8b1c2c",
+   "sleeves": "#8b1c2c",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Daniele Padelli",
+    "answer": "PADELLI",
+    "number": 30
+   },
+   {
+    "name": "Emiliano Moretti",
+    "answer": "MORETTI",
+    "number": 24
+   },
+   {
+    "name": "Kamil Glik",
+    "answer": "GLIK",
+    "number": 25
+   },
+   {
+    "name": "Nikola Maksimović",
+    "answer": "MAKSIMOVIC",
+    "number": 19
+   },
+   {
+    "name": "Bruno Peres",
+    "answer": "PERES",
+    "number": 33
+   },
+   {
+    "name": "Matteo Darmian",
+    "answer": "DARMIAN",
+    "number": 36,
+    "goals": 1
+   },
+   {
+    "name": "Marco Benassi",
+    "answer": "BENASSI",
+    "number": 94
+   },
+   {
+    "name": "Alessandro Gazzi",
+    "answer": "GAZZI",
+    "number": 14
+   },
+   {
+    "name": "Omar El Kaddouri",
+    "answer": "EL KADDOURI",
+    "number": 7
+   },
+   {
+    "name": "Maxi López",
+    "answer": "LOPEZ",
+    "number": 11
+   },
+   {
+    "name": "Fabio Quagliarella",
+    "answer": "QUAGLIARELLA",
+    "number": 27,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2013-09-29-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2013/14",
+  "date": "29.09.2013",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "1-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Stephan Lichtsteiner",
+    "answer": "LICHTSTEINER",
+    "number": 26
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 22
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Sebastian Giovinco",
+    "answer": "GIOVINCO",
+    "number": 12
+   },
+   {
+    "name": "Carlos Tévez",
+    "answer": "TEVEZ",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "seriea-2009-03-07-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2008/09",
+  "date": "07.03.2009",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Jonathan Zebina",
+    "answer": "ZEBINA",
+    "number": 5
+   },
+   {
+    "name": "Olof Mellberg",
+    "answer": "MELLBERG",
+    "number": 4
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Cristian Molinaro",
+    "answer": "MOLINARO",
+    "number": 28
+   },
+   {
+    "name": "Hasan Salihamidzic",
+    "answer": "SALIHAMIDZIC",
+    "number": 7
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 19
+   },
+   {
+    "name": "Christian Poulsen",
+    "answer": "POULSEN",
+    "number": 18
+   },
+   {
+    "name": "Sebastian Giovinco",
+    "answer": "GIOVINCO",
+    "number": 20
+   },
+   {
+    "name": "Amauri",
+    "answer": "AMAURI",
+    "number": 8
+   },
+   {
+    "name": "Vincenzo Iaquinta",
+    "answer": "IAQUINTA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2007-09-30-juventus-torino",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Torino Derbisi · Serie A",
+   "en": "Turin Derby · Serie A"
+  },
+  "season": "2007/08",
+  "date": "30.09.2007",
+  "team": "Juventus",
+  "opponent": "Torino",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Zdenek Grygera",
+    "answer": "GRYGERA",
+    "number": 21
+   },
+   {
+    "name": "Nicola Legrottaglie",
+    "answer": "LEGROTTAGLIE",
+    "number": 33
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Cristian Molinaro",
+    "answer": "MOLINARO",
+    "number": 28
+   },
+   {
+    "name": "Pavel Nedved",
+    "answer": "NEDVED",
+    "number": 11
+   },
+   {
+    "name": "Antonio Nocerino",
+    "answer": "NOCERINO",
+    "number": 23
+   },
+   {
+    "name": "Cristiano Zanetti",
+    "answer": "ZANETTI",
+    "number": 6
+   },
+   {
+    "name": "Raffaele Palladino",
+    "answer": "PALLADINO",
+    "number": 20
+   },
+   {
+    "name": "Alessandro Del Piero",
+    "answer": "DEL PIERO",
+    "number": 10
+   },
+   {
+    "name": "David Trezeguet",
+    "answer": "TREZEGUET",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2026-02-15-napoli-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2025/26",
+  "date": "15.02.2026",
+  "team": "Napoli",
+  "opponent": "Roma",
+  "score": "2-2",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Vanja Milinković-Savić",
+    "answer": "SAVIC",
+    "number": 32
+   },
+   {
+    "name": "Sam Beukema",
+    "answer": "BEUKEMA",
+    "number": 31
+   },
+   {
+    "name": "Alessandro Buongiorno",
+    "answer": "BUONGIORNO",
+    "number": 4
+   },
+   {
+    "name": "Amir Rrahmani",
+    "answer": "RRAHMANI",
+    "number": 13
+   },
+   {
+    "name": "Miguel Gutiérrez",
+    "answer": "GUTIERREZ",
+    "number": 3
+   },
+   {
+    "name": "Leonardo Spinazzola",
+    "answer": "SPINAZZOLA",
+    "number": 37,
+    "goals": 1
+   },
+   {
+    "name": "Eljif Elmas",
+    "answer": "ELMAS",
+    "number": 20
+   },
+   {
+    "name": "Stanislav Lobotka",
+    "answer": "LOBOTKA",
+    "number": 68
+   },
+   {
+    "name": "Matteo Politano",
+    "answer": "POLITANO",
+    "number": 21
+   },
+   {
+    "name": "Antonio Vergara",
+    "answer": "VERGARA",
+    "number": 26
+   },
+   {
+    "name": "Rasmus Højlund",
+    "answer": "HJLUND",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-12-23-roma-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2023/24",
+  "date": "23.12.2023",
+  "team": "Roma",
+  "opponent": "Napoli",
+  "score": "2-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Rui Patrício",
+    "answer": "PATRICIO",
+    "number": 1
+   },
+   {
+    "name": "Evan Ndicka",
+    "answer": "NDICKA",
+    "number": 5
+   },
+   {
+    "name": "Diego Llorente",
+    "answer": "LLORENTE",
+    "number": 14
+   },
+   {
+    "name": "Gianluca Mancini",
+    "answer": "MANCINI",
+    "number": 23
+   },
+   {
+    "name": "Rasmus Nissen Kristensen",
+    "answer": "KRISTENSEN",
+    "number": 43
+   },
+   {
+    "name": "Nicola Zalewski",
+    "answer": "ZALEWSKI",
+    "number": 59
+   },
+   {
+    "name": "Bryan Cristante",
+    "answer": "CRISTANTE",
+    "number": 4
+   },
+   {
+    "name": "Leandro Paredes",
+    "answer": "PAREDES",
+    "number": 16
+   },
+   {
+    "name": "Edoardo Bove",
+    "answer": "BOVE",
+    "number": 52
+   },
+   {
+    "name": "Romelu Lukaku",
+    "answer": "LUKAKU",
+    "number": 90,
+    "goals": 1
+   },
+   {
+    "name": "Andrea Belotti",
+    "answer": "BELOTTI",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "seriea-2021-10-24-roma-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2021/22",
+  "date": "24.10.2021",
+  "team": "Roma",
+  "opponent": "Napoli",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Rui Patrício",
+    "answer": "PATRICIO",
+    "number": 1
+   },
+   {
+    "name": "Rick Karsdorp",
+    "answer": "KARSDORP",
+    "number": 2
+   },
+   {
+    "name": "Gianluca Mancini",
+    "answer": "MANCINI",
+    "number": 23
+   },
+   {
+    "name": "Roger Ibañez",
+    "answer": "IBANEZ",
+    "number": 3
+   },
+   {
+    "name": "Matías Viña",
+    "answer": "VINA",
+    "number": 5
+   },
+   {
+    "name": "Bryan Cristante",
+    "answer": "CRISTANTE",
+    "number": 4
+   },
+   {
+    "name": "Jordan Veretout",
+    "answer": "VERETOUT",
+    "number": 17
+   },
+   {
+    "name": "Nicolò Zaniolo",
+    "answer": "ZANIOLO",
+    "number": 22
+   },
+   {
+    "name": "Lorenzo Pellegrini",
+    "answer": "PELLEGRINI",
+    "number": 7
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 77
+   },
+   {
+    "name": "Tammy Abraham",
+    "answer": "ABRAHAM",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2019-03-31-napoli-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2018/19",
+  "date": "31.03.2019",
+  "team": "Napoli",
+  "opponent": "Roma",
+  "score": "4-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Alex Meret",
+    "answer": "MERET",
+    "number": 1
+   },
+   {
+    "name": "Elseid Hysaj",
+    "answer": "HYSAJ",
+    "number": 23
+   },
+   {
+    "name": "Nikola Maksimović",
+    "answer": "MAKSIMOVIC",
+    "number": 19
+   },
+   {
+    "name": "Kalidou Koulibaly",
+    "answer": "KOULIBALY",
+    "number": 26
+   },
+   {
+    "name": "Mário Rui",
+    "answer": "RUI",
+    "number": 6
+   },
+   {
+    "name": "José Callejón",
+    "answer": "CALLEJON",
+    "number": 7
+   },
+   {
+    "name": "Fabián Ruiz",
+    "answer": "RUIZ",
+    "number": 8
+   },
+   {
+    "name": "Allan",
+    "answer": "ALLAN",
+    "number": 5
+   },
+   {
+    "name": "Simone Verdi",
+    "answer": "VERDI",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Arkadiusz Milik",
+    "answer": "MILIK",
+    "number": 99,
+    "goals": 1
+   },
+   {
+    "name": "Dries Mertens",
+    "answer": "MERTENS",
+    "number": 14,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2017-03-04-napoli-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2016/17",
+  "date": "04.03.2017",
+  "team": "Napoli",
+  "opponent": "Roma",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Pepe Reina",
+    "answer": "REINA",
+    "number": 25
+   },
+   {
+    "name": "Elseid Hysaj",
+    "answer": "HYSAJ",
+    "number": 2
+   },
+   {
+    "name": "Kalidou Koulibaly",
+    "answer": "KOULIBALY",
+    "number": 26
+   },
+   {
+    "name": "Raúl Albiol",
+    "answer": "ALBIOL",
+    "number": 33
+   },
+   {
+    "name": "Faouzi Ghoulam",
+    "answer": "GHOULAM",
+    "number": 31
+   },
+   {
+    "name": "Marek Hamsik",
+    "answer": "HAMSIK",
+    "number": 17
+   },
+   {
+    "name": "Jorginho",
+    "answer": "JORGINHO",
+    "number": 8
+   },
+   {
+    "name": "Marko Rog",
+    "answer": "ROG",
+    "number": 30
+   },
+   {
+    "name": "José Callejón",
+    "answer": "CALLEJON",
+    "number": 7
+   },
+   {
+    "name": "Dries Mertens",
+    "answer": "MERTENS",
+    "number": 14,
+    "goals": 2
+   },
+   {
+    "name": "Lorenzo Insigne",
+    "answer": "INSIGNE",
+    "number": 24
+   }
+  ]
+ },
+ {
+  "id": "seriea-2014-11-01-napoli-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2014/15",
+  "date": "01.11.2014",
+  "team": "Napoli",
+  "opponent": "Roma",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Rafael Cabral",
+    "answer": "CABRAL",
+    "number": 1
+   },
+   {
+    "name": "Christian Maggio",
+    "answer": "MAGGIO",
+    "number": 11
+   },
+   {
+    "name": "Kalidou Koulibaly",
+    "answer": "KOULIBALY",
+    "number": 26
+   },
+   {
+    "name": "Raúl Albiol",
+    "answer": "ALBIOL",
+    "number": 33
+   },
+   {
+    "name": "Faouzi Ghoulam",
+    "answer": "GHOULAM",
+    "number": 31
+   },
+   {
+    "name": "David López",
+    "answer": "LOPEZ",
+    "number": 19
+   },
+   {
+    "name": "Jorginho",
+    "answer": "JORGINHO",
+    "number": 8
+   },
+   {
+    "name": "José Callejón",
+    "answer": "CALLEJON",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Marek Hamsik",
+    "answer": "HAMSIK",
+    "number": 17
+   },
+   {
+    "name": "Lorenzo Insigne",
+    "answer": "INSIGNE",
+    "number": 24
+   },
+   {
+    "name": "Gonzalo Higuaín",
+    "answer": "HIGUAIN",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2013-10-18-roma-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2013/14",
+  "date": "18.10.2013",
+  "team": "Roma",
+  "opponent": "Napoli",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Morgan De Sanctis",
+    "answer": "DE SANCTIS",
+    "number": 26
+   },
+   {
+    "name": "Maicon",
+    "answer": "MAICON",
+    "number": 13
+   },
+   {
+    "name": "Medhi Benatia",
+    "answer": "BENATIA",
+    "number": 17
+   },
+   {
+    "name": "Leandro Castán",
+    "answer": "CASTAN",
+    "number": 5
+   },
+   {
+    "name": "Dodô",
+    "answer": "DODO",
+    "number": 3
+   },
+   {
+    "name": "Kevin Strootman",
+    "answer": "STROOTMAN",
+    "number": 6
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 15,
+    "goals": 2
+   },
+   {
+    "name": "Alessandro Florenzi",
+    "answer": "FLORENZI",
+    "number": 24
+   },
+   {
+    "name": "Francesco Totti",
+    "answer": "TOTTI",
+    "number": 10
+   },
+   {
+    "name": "Gervinho",
+    "answer": "GERVINHO",
+    "number": 27
+   }
+  ]
+ },
+ {
+  "id": "seriea-2011-02-12-napoli-roma",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2010/11",
+  "date": "12.02.2011",
+  "team": "Napoli",
+  "opponent": "Roma",
+  "score": "2-0",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Morgan De Sanctis",
+    "answer": "DE SANCTIS",
+    "number": 26
+   },
+   {
+    "name": "Paolo Cannavaro",
+    "answer": "CANNAVARO",
+    "number": 28
+   },
+   {
+    "name": "Salvatore Aronica",
+    "answer": "ARONICA",
+    "number": 6
+   },
+   {
+    "name": "Hugo Campagnaro",
+    "answer": "CAMPAGNARO",
+    "number": 14
+   },
+   {
+    "name": "Christian Maggio",
+    "answer": "MAGGIO",
+    "number": 11
+   },
+   {
+    "name": "Andrea Dossena",
+    "answer": "DOSSENA",
+    "number": 8
+   },
+   {
+    "name": "Walter Gargano",
+    "answer": "GARGANO",
+    "number": 23
+   },
+   {
+    "name": "Michele Pazienza",
+    "answer": "PAZIENZA",
+    "number": 5
+   },
+   {
+    "name": "Marek Hamsik",
+    "answer": "HAMSIK",
+    "number": 17
+   },
+   {
+    "name": "Ezequiel Lavezzi",
+    "answer": "LAVEZZI",
+    "number": 22
+   },
+   {
+    "name": "Edinson Cavani",
+    "answer": "CAVANI",
+    "number": 7,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "seriea-2009-01-25-roma-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Derby del Sole · Serie A",
+   "en": "Derby del Sole · Serie A"
+  },
+  "season": "2008/09",
+  "date": "25.01.2009",
+  "team": "Roma",
+  "opponent": "Napoli",
+  "score": "3-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#9b1c31",
+   "sleeves": "#f0bc42",
+   "number": "#f0bc42"
+  },
+  "lineup": [
+   {
+    "name": "Doni",
+    "answer": "DONI",
+    "number": 32
+   },
+   {
+    "name": "Marco Cassetti",
+    "answer": "CASSETTI",
+    "number": 77
+   },
+   {
+    "name": "Philippe Mexès",
+    "answer": "MEXES",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Juan",
+    "answer": "JUAN",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "John Arne Riise",
+    "answer": "RIISE",
+    "number": 17
+   },
+   {
+    "name": "David Pizarro",
+    "answer": "PIZARRO",
+    "number": 7
+   },
+   {
+    "name": "Daniele De Rossi",
+    "answer": "DE ROSSI",
+    "number": 16
+   },
+   {
+    "name": "Matteo Brighi",
+    "answer": "BRIGHI",
+    "number": 33
+   },
+   {
+    "name": "Rodrigo Taddei",
+    "answer": "TADDEI",
+    "number": 11
+   },
+   {
+    "name": "Mirko Vučinić",
+    "answer": "VUCINIC",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Júlio Baptista",
+    "answer": "BAPTISTA",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "seriea-2026-01-25-juventus-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2025/26",
+  "date": "25.01.2026",
+  "team": "Juventus",
+  "opponent": "Napoli",
+  "score": "3-0",
+  "formation": "3-4-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Michele Di Gregorio",
+    "answer": "DI GREGORIO",
+    "number": 16
+   },
+   {
+    "name": "Bremer",
+    "answer": "BREMER",
+    "number": 3
+   },
+   {
+    "name": "Lloyd Kelly",
+    "answer": "KELLY",
+    "number": 6
+   },
+   {
+    "name": "Pierre Kalulu",
+    "answer": "KALULU",
+    "number": 15
+   },
+   {
+    "name": "Weston McKennie",
+    "answer": "MCKENNIE",
+    "number": 22
+   },
+   {
+    "name": "Khéphren Thuram",
+    "answer": "THURAM",
+    "number": 19
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 5
+   },
+   {
+    "name": "Andrea Cambiaso",
+    "answer": "CAMBIASO",
+    "number": 27
+   },
+   {
+    "name": "Francisco Conceição",
+    "answer": "CONCEICAO",
+    "number": 7
+   },
+   {
+    "name": "Jonathan David",
+    "answer": "DAVID",
+    "number": 30,
+    "goals": 1
+   },
+   {
+    "name": "Kenan Yıldız",
+    "answer": "YILDIZ",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2023-12-08-juventus-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2023/24",
+  "date": "08.12.2023",
+  "team": "Juventus",
+  "opponent": "Napoli",
+  "score": "1-0",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "Danilo",
+    "answer": "DANILO",
+    "number": 6
+   },
+   {
+    "name": "Bremer",
+    "answer": "BREMER",
+    "number": 3
+   },
+   {
+    "name": "Federico Gatti",
+    "answer": "GATTI",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Andrea Cambiaso",
+    "answer": "CAMBIASO",
+    "number": 27
+   },
+   {
+    "name": "Filip Kostic",
+    "answer": "KOSTIC",
+    "number": 11
+   },
+   {
+    "name": "Weston McKennie",
+    "answer": "MCKENNIE",
+    "number": 16
+   },
+   {
+    "name": "Manuel Locatelli",
+    "answer": "LOCATELLI",
+    "number": 5
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25
+   },
+   {
+    "name": "Dušan Vlahović",
+    "answer": "VLAHOVIC",
+    "number": 9
+   },
+   {
+    "name": "Federico Chiesa",
+    "answer": "CHIESA",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "seriea-2021-04-07-juventus-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2020/21",
+  "date": "07.04.2021",
+  "team": "Juventus",
+  "opponent": "Napoli",
+  "score": "2-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 77
+   },
+   {
+    "name": "Danilo",
+    "answer": "DANILO",
+    "number": 13
+   },
+   {
+    "name": "Matthijs de Ligt",
+    "answer": "DE LIGT",
+    "number": 4
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Juan Cuadrado",
+    "answer": "CUADRADO",
+    "number": 16
+   },
+   {
+    "name": "Adrien Rabiot",
+    "answer": "RABIOT",
+    "number": 25
+   },
+   {
+    "name": "Rodrigo Bentancur",
+    "answer": "BENTANCUR",
+    "number": 30
+   },
+   {
+    "name": "Federico Chiesa",
+    "answer": "CHIESA",
+    "number": 22
+   },
+   {
+    "name": "Álvaro Morata",
+    "answer": "MORATA",
+    "number": 9
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "seriea-2019-03-03-juventus-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2018/19",
+  "date": "03.03.2019",
+  "team": "Juventus",
+  "opponent": "Napoli",
+  "score": "2-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 1
+   },
+   {
+    "name": "João Cancelo",
+    "answer": "CANCELO",
+    "number": 20
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Alex Sandro",
+    "answer": "SANDRO",
+    "number": 12
+   },
+   {
+    "name": "Miralem Pjanić",
+    "answer": "PJANIC",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Emre Can",
+    "answer": "CAN",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Federico Bernardeschi",
+    "answer": "BERNARDESCHI",
+    "number": 33
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   },
+   {
+    "name": "Blaise Matuidi",
+    "answer": "MATUIDI",
+    "number": 14
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2017-04-02-napoli-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2016/17",
+  "date": "02.04.2017",
+  "team": "Napoli",
+  "opponent": "Juventus",
+  "score": "1-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Rafael Cabral",
+    "answer": "CABRAL",
+    "number": 1
+   },
+   {
+    "name": "Elseid Hysaj",
+    "answer": "HYSAJ",
+    "number": 2
+   },
+   {
+    "name": "Kalidou Koulibaly",
+    "answer": "KOULIBALY",
+    "number": 26
+   },
+   {
+    "name": "Raúl Albiol",
+    "answer": "ALBIOL",
+    "number": 33
+   },
+   {
+    "name": "Ivan Strinic",
+    "answer": "STRINIC",
+    "number": 3
+   },
+   {
+    "name": "Marek Hamsik",
+    "answer": "HAMSIK",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Jorginho",
+    "answer": "JORGINHO",
+    "number": 8
+   },
+   {
+    "name": "Allan",
+    "answer": "ALLAN",
+    "number": 5
+   },
+   {
+    "name": "José Callejón",
+    "answer": "CALLEJON",
+    "number": 7
+   },
+   {
+    "name": "Dries Mertens",
+    "answer": "MERTENS",
+    "number": 14
+   },
+   {
+    "name": "Lorenzo Insigne",
+    "answer": "INSIGNE",
+    "number": 24
+   }
+  ]
+ },
+ {
+  "id": "seriea-2015-05-23-juventus-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2014/15",
+  "date": "23.05.2015",
+  "team": "Juventus",
+  "opponent": "Napoli",
+  "score": "3-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Simone Padoin",
+    "answer": "PADOIN",
+    "number": 20
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Angelo Ogbonna",
+    "answer": "OGBONNA",
+    "number": 5
+   },
+   {
+    "name": "Kwadwo Asamoah",
+    "answer": "ASAMOAH",
+    "number": 22
+   },
+   {
+    "name": "Paul Pogba",
+    "answer": "POGBA",
+    "number": 6
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Stefano Sturaro",
+    "answer": "STURARO",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "Roberto Pereyra",
+    "answer": "PEREYRA",
+    "number": 37,
+    "goals": 1
+   },
+   {
+    "name": "Kingsley Coman",
+    "answer": "COMAN",
+    "number": 11
+   },
+   {
+    "name": "Álvaro Morata",
+    "answer": "MORATA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "seriea-2013-03-01-napoli-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2012/13",
+  "date": "01.03.2013",
+  "team": "Napoli",
+  "opponent": "Juventus",
+  "score": "1-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Morgan De Sanctis",
+    "answer": "DE SANCTIS",
+    "number": 1
+   },
+   {
+    "name": "Paolo Cannavaro",
+    "answer": "CANNAVARO",
+    "number": 28
+   },
+   {
+    "name": "Hugo Campagnaro",
+    "answer": "CAMPAGNARO",
+    "number": 14
+   },
+   {
+    "name": "Miguel Britos",
+    "answer": "BRITOS",
+    "number": 5
+   },
+   {
+    "name": "Christian Maggio",
+    "answer": "MAGGIO",
+    "number": 11
+   },
+   {
+    "name": "Camilo Zúñiga",
+    "answer": "ZUNIGA",
+    "number": 18
+   },
+   {
+    "name": "Gökhan Inler",
+    "answer": "INLER",
+    "number": 88,
+    "goals": 1
+   },
+   {
+    "name": "Valon Behrami",
+    "answer": "BEHRAMI",
+    "number": 85
+   },
+   {
+    "name": "Marek Hamsik",
+    "answer": "HAMSIK",
+    "number": 17
+   },
+   {
+    "name": "Goran Pandev",
+    "answer": "PANDEV",
+    "number": 19
+   },
+   {
+    "name": "Edinson Cavani",
+    "answer": "CAVANI",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "seriea-2011-05-22-juventus-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2010/11",
+  "date": "22.05.2011",
+  "team": "Juventus",
+  "opponent": "Napoli",
+  "score": "2-2",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Hasan Salihamidzic",
+    "answer": "SALIHAMIDZIC",
+    "number": 7
+   },
+   {
+    "name": "Leonardo Bonucci",
+    "answer": "BONUCCI",
+    "number": 19
+   },
+   {
+    "name": "Andrea Barzagli",
+    "answer": "BARZAGLI",
+    "number": 15
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Milos Krasic",
+    "answer": "KRASIC",
+    "number": 27
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 8
+   },
+   {
+    "name": "Alberto Aquilani",
+    "answer": "AQUILANI",
+    "number": 14
+   },
+   {
+    "name": "Simone Pepe",
+    "answer": "PEPE",
+    "number": 23
+   },
+   {
+    "name": "Alessandro Del Piero",
+    "answer": "DEL PIERO",
+    "number": 10
+   },
+   {
+    "name": "Luca Toni",
+    "answer": "TONI",
+    "number": 20
+   }
+  ]
+ },
+ {
+  "id": "seriea-2009-02-28-juventus-napoli",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · Serie A",
+   "en": "Napoli – Juventus · Serie A"
+  },
+  "season": "2008/09",
+  "date": "28.02.2009",
+  "team": "Juventus",
+  "opponent": "Napoli",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#111111",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Gianluigi Buffon",
+    "answer": "BUFFON",
+    "number": 1
+   },
+   {
+    "name": "Zdenek Grygera",
+    "answer": "GRYGERA",
+    "number": 21
+   },
+   {
+    "name": "Nicola Legrottaglie",
+    "answer": "LEGROTTAGLIE",
+    "number": 33
+   },
+   {
+    "name": "Giorgio Chiellini",
+    "answer": "CHIELLINI",
+    "number": 3
+   },
+   {
+    "name": "Cristian Molinaro",
+    "answer": "MOLINARO",
+    "number": 28
+   },
+   {
+    "name": "Marco Marchionni",
+    "answer": "MARCHIONNI",
+    "number": 32
+   },
+   {
+    "name": "Claudio Marchisio",
+    "answer": "MARCHISIO",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Christian Poulsen",
+    "answer": "POULSEN",
+    "number": 18
+   },
+   {
+    "name": "Sebastian Giovinco",
+    "answer": "GIOVINCO",
+    "number": 20
+   },
+   {
+    "name": "Alessandro Del Piero",
+    "answer": "DEL PIERO",
+    "number": 10
+   },
+   {
+    "name": "David Trezeguet",
+    "answer": "TREZEGUET",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "seriea-2006-08-27-napoli-juventus",
+  "tags": [
+   "derbi",
+   "serie-a"
+  ],
+  "competition": {
+   "tr": "Napoli – Juventus · İtalya Kupası",
+   "en": "Napoli – Juventus · Coppa Italia"
+  },
+  "season": "2006/07",
+  "date": "27.08.2006",
+  "team": "Napoli",
+  "opponent": "Juventus",
+  "score": "8-7",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#12a0d7",
+   "sleeves": "#12a0d7",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Gennaro Iezzo",
+    "answer": "IEZZO",
+    "number": 1
+   },
+   {
+    "name": "Gianluca Grava",
+    "answer": "GRAVA",
+    "number": 2
+   },
+   {
+    "name": "Paolo Cannavaro",
+    "answer": "CANNAVARO",
+    "number": 28,
+    "goals": 1
+   },
+   {
+    "name": "Maurizio Domizzi",
+    "answer": "DOMIZZI",
+    "number": 26
+   },
+   {
+    "name": "Mirko Savini",
+    "answer": "SAVINI",
+    "number": 19
+   },
+   {
+    "name": "Mariano Bogliacino",
+    "answer": "BOGLIACINO",
+    "number": 18
+   },
+   {
+    "name": "Samuele Dalla Bona",
+    "answer": "DALLA BONA",
+    "number": 24
+   },
+   {
+    "name": "Francesco Montervino",
+    "answer": "MONTERVINO",
+    "number": 4
+   },
+   {
+    "name": "Roberto De Zerbi",
+    "answer": "DE ZERBI",
+    "number": 20
+   },
+   {
+    "name": "Emanuele Calaiò",
+    "answer": "CALAIO",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Cristian Bucchi",
+    "answer": "BUCCHI",
+    "number": 29,
+    "goals": 1
+   }
+  ]
+ }
+]

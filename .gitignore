@@ -46,7 +46,10 @@ next-env.d.ts
 /.idea
 
 # intermediate data drafts (not used by the app)
-/data-drafts
+# scraper drafts: only the league drafts are kept (they are the source of
+# src/data/matches-ligler.ts and matches-derbiler.ts; see scripts/leagues-to-ts.mjs)
+/data-drafts/*
+!/data-drafts/league-*.json
 
 # Transfermarkt match-sheet cache (scripts/build-league-derbies.mjs)
 scripts/.cache/tm/

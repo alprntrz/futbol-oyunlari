@@ -1,0 +1,6613 @@
+[
+ {
+  "id": "bundesliga-2026-08-22-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Almanya Süper Kupası",
+   "en": "Der Klassiker · German Super Cup"
+  },
+  "season": "2026/27",
+  "date": "22.08.2026",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Konrad Laimer",
+    "answer": "LAIMER",
+    "number": 27
+   },
+   {
+    "name": "Jonathan Tah",
+    "answer": "TAH",
+    "number": 4
+   },
+   {
+    "name": "Min-jae Kim",
+    "answer": "KIM",
+    "number": 3
+   },
+   {
+    "name": "Josip Stanisic",
+    "answer": "STANISIC",
+    "number": 44
+   },
+   {
+    "name": "Aleksandar Pavlovic",
+    "answer": "PAVLOVIC",
+    "number": 45
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6
+   },
+   {
+    "name": "Michael Olise",
+    "answer": "OLISE",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Nathaniel Brown",
+    "answer": "BROWN",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Luis Díaz",
+    "answer": "DIAZ",
+    "number": 14
+   },
+   {
+    "name": "Harry Kane",
+    "answer": "KANE",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2025-04-12-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2024/25",
+  "date": "12.04.2025",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "2-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jonas Urbig",
+    "answer": "URBIG",
+    "number": 40
+   },
+   {
+    "name": "Konrad Laimer",
+    "answer": "LAIMER",
+    "number": 27
+   },
+   {
+    "name": "Eric Dier",
+    "answer": "DIER",
+    "number": 15
+   },
+   {
+    "name": "Min-jae Kim",
+    "answer": "KIM",
+    "number": 3
+   },
+   {
+    "name": "Josip Stanisic",
+    "answer": "STANISIC",
+    "number": 44
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6
+   },
+   {
+    "name": "Leon Goretzka",
+    "answer": "GORETZKA",
+    "number": 8
+   },
+   {
+    "name": "Michael Olise",
+    "answer": "OLISE",
+    "number": 17
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Leroy Sané",
+    "answer": "SANE",
+    "number": 10
+   },
+   {
+    "name": "Harry Kane",
+    "answer": "KANE",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2024-03-30-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2023/24",
+  "date": "30.03.2024",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Alexander Meyer",
+    "answer": "MEYER",
+    "number": 33
+   },
+   {
+    "name": "Julian Ryerson",
+    "answer": "RYERSON",
+    "number": 26,
+    "goals": 1
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Nico Schlotterbeck",
+    "answer": "SCHLOTTERBECK",
+    "number": 4
+   },
+   {
+    "name": "Ian Maatsen",
+    "answer": "MAATSEN",
+    "number": 22
+   },
+   {
+    "name": "Felix Nmecha",
+    "answer": "NMECHA",
+    "number": 8
+   },
+   {
+    "name": "Emre Can",
+    "answer": "CAN",
+    "number": 23
+   },
+   {
+    "name": "Julian Brandt",
+    "answer": "BRANDT",
+    "number": 19
+   },
+   {
+    "name": "Jadon Sancho",
+    "answer": "SANCHO",
+    "number": 10
+   },
+   {
+    "name": "Niclas Füllkrug",
+    "answer": "FULLKRUG",
+    "number": 14
+   },
+   {
+    "name": "Karim Adeyemi",
+    "answer": "ADEYEMI",
+    "number": 27,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2022-10-08-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2022/23",
+  "date": "08.10.2022",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "2-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Alexander Meyer",
+    "answer": "MEYER",
+    "number": 33
+   },
+   {
+    "name": "Niklas Süle",
+    "answer": "SULE",
+    "number": 25
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Nico Schlotterbeck",
+    "answer": "SCHLOTTERBECK",
+    "number": 4
+   },
+   {
+    "name": "Raphaël Guerreiro",
+    "answer": "GUERREIRO",
+    "number": 13
+   },
+   {
+    "name": "Salih Özcan",
+    "answer": "OZCAN",
+    "number": 6
+   },
+   {
+    "name": "Emre Can",
+    "answer": "CAN",
+    "number": 23
+   },
+   {
+    "name": "Jude Bellingham",
+    "answer": "BELLINGHAM",
+    "number": 22
+   },
+   {
+    "name": "Donyell Malen",
+    "answer": "MALEN",
+    "number": 21
+   },
+   {
+    "name": "Youssoufa Moukoko",
+    "answer": "MOUKOKO",
+    "number": 18,
+    "goals": 1
+   },
+   {
+    "name": "Julian Brandt",
+    "answer": "BRANDT",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2021-12-04-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2021/22",
+  "date": "04.12.2021",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Benjamin Pavard",
+    "answer": "PAVARD",
+    "number": 5
+   },
+   {
+    "name": "Dayot Upamecano",
+    "answer": "UPAMECANO",
+    "number": 2
+   },
+   {
+    "name": "Lucas Hernández",
+    "answer": "HERNANDEZ",
+    "number": 21
+   },
+   {
+    "name": "Alphonso Davies",
+    "answer": "DAVIES",
+    "number": 19
+   },
+   {
+    "name": "Leon Goretzka",
+    "answer": "GORETZKA",
+    "number": 8
+   },
+   {
+    "name": "Corentin Tolisso",
+    "answer": "TOLISSO",
+    "number": 24
+   },
+   {
+    "name": "Kingsley Coman",
+    "answer": "COMAN",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Leroy Sané",
+    "answer": "SANE",
+    "number": 10
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2020-11-07-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2020/21",
+  "date": "07.11.2020",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "3-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Bouna Sarr",
+    "answer": "SARR",
+    "number": 20
+   },
+   {
+    "name": "Jérôme Boateng",
+    "answer": "BOATENG",
+    "number": 17
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "Lucas Hernández",
+    "answer": "HERNANDEZ",
+    "number": 21
+   },
+   {
+    "name": "Leon Goretzka",
+    "answer": "GORETZKA",
+    "number": 18
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6
+   },
+   {
+    "name": "Kingsley Coman",
+    "answer": "COMAN",
+    "number": 29
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Serge Gnabry",
+    "answer": "GNABRY",
+    "number": 7
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2019-11-09-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2019/20",
+  "date": "09.11.2019",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "4-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Benjamin Pavard",
+    "answer": "PAVARD",
+    "number": 5
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Alphonso Davies",
+    "answer": "DAVIES",
+    "number": 19
+   },
+   {
+    "name": "Leon Goretzka",
+    "answer": "GORETZKA",
+    "number": 18
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 32
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Serge Gnabry",
+    "answer": "GNABRY",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 2
+   },
+   {
+    "name": "Kingsley Coman",
+    "answer": "COMAN",
+    "number": 29
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2019-04-06-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2018/19",
+  "date": "06.04.2019",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "5-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 32
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Niklas Süle",
+    "answer": "SULE",
+    "number": 4
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Thiago Alcántara",
+    "answer": "ALCANTARA",
+    "number": 6
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Serge Gnabry",
+    "answer": "GNABRY",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 2
+   },
+   {
+    "name": "Kingsley Coman",
+    "answer": "COMAN",
+    "number": 29
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2017-12-20-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Almanya Kupası",
+   "en": "Der Klassiker · DFB-Pokal"
+  },
+  "season": "2017/18",
+  "date": "20.12.2017",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Sven Ulreich",
+    "answer": "ULREICH",
+    "number": 26
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 32
+   },
+   {
+    "name": "Jérôme Boateng",
+    "answer": "BOATENG",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Niklas Süle",
+    "answer": "SULE",
+    "number": 4
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "James Rodríguez",
+    "answer": "RODRIGUEZ",
+    "number": 11
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25,
+    "goals": 1
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2017-08-05-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Almanya Süper Kupası",
+   "en": "Der Klassiker · German Super Cup"
+  },
+  "season": "2017/18",
+  "date": "05.08.2017",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "7-6",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Sven Ulreich",
+    "answer": "ULREICH",
+    "number": 26
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 32
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 5
+   },
+   {
+    "name": "Rafinha",
+    "answer": "RAFINHA",
+    "number": 13
+   },
+   {
+    "name": "Corentin Tolisso",
+    "answer": "TOLISSO",
+    "number": 24
+   },
+   {
+    "name": "Sebastian Rudy",
+    "answer": "RUDY",
+    "number": 19
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2016-11-19-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2016/17",
+  "date": "19.11.2016",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "1-0",
+  "formation": "3-2-4-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Bürki",
+    "answer": "BURKI",
+    "number": 38
+   },
+   {
+    "name": "Sokratis Papastathopoulos",
+    "answer": "PAPASTATHOPOULOS",
+    "number": 25
+   },
+   {
+    "name": "Marc Bartra",
+    "answer": "BARTRA",
+    "number": 5
+   },
+   {
+    "name": "Matthias Ginter",
+    "answer": "GINTER",
+    "number": 28
+   },
+   {
+    "name": "Julian Weigl",
+    "answer": "WEIGL",
+    "number": 33
+   },
+   {
+    "name": "André Schürrle",
+    "answer": "SCHURRLE",
+    "number": 21
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Mario Götze",
+    "answer": "GOTZE",
+    "number": 10
+   },
+   {
+    "name": "Adrián Ramos",
+    "answer": "RAMOS",
+    "number": 20
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Pierre-Emerick Aubameyang",
+    "answer": "AUBAMEYANG",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2016-03-05-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2015/16",
+  "date": "05.03.2016",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "0-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Bürki",
+    "answer": "BURKI",
+    "number": 38
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Sven Bender",
+    "answer": "BENDER",
+    "number": 6
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 10
+   },
+   {
+    "name": "Julian Weigl",
+    "answer": "WEIGL",
+    "number": 33
+   },
+   {
+    "name": "İlkay Gündoğan",
+    "answer": "GUNDOGAN",
+    "number": 8
+   },
+   {
+    "name": "Erik Durm",
+    "answer": "DURM",
+    "number": 37
+   },
+   {
+    "name": "Pierre-Emerick Aubameyang",
+    "answer": "AUBAMEYANG",
+    "number": 17
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2015-04-28-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Almanya Kupası",
+   "en": "Der Klassiker · DFB-Pokal"
+  },
+  "season": "2014/15",
+  "date": "28.04.2015",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "3-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Mitchell Langerak",
+    "answer": "LANGERAK",
+    "number": 22
+   },
+   {
+    "name": "Erik Durm",
+    "answer": "DURM",
+    "number": 37
+   },
+   {
+    "name": "Sokratis Papastathopoulos",
+    "answer": "PAPASTATHOPOULOS",
+    "number": 25
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "İlkay Gündoğan",
+    "answer": "GUNDOGAN",
+    "number": 8
+   },
+   {
+    "name": "Sven Bender",
+    "answer": "BENDER",
+    "number": 6
+   },
+   {
+    "name": "Jakub Blaszczykowski",
+    "answer": "BLASZCZYKOWSKI",
+    "number": 16
+   },
+   {
+    "name": "Pierre-Emerick Aubameyang",
+    "answer": "AUBAMEYANG",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Shinji Kagawa",
+    "answer": "KAGAWA",
+    "number": 7
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2014-08-13-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Almanya Süper Kupası",
+   "en": "Der Klassiker · German Super Cup"
+  },
+  "season": "2014/15",
+  "date": "13.08.2014",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Mitchell Langerak",
+    "answer": "LANGERAK",
+    "number": 22
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Sokratis Papastathopoulos",
+    "answer": "PAPASTATHOPOULOS",
+    "number": 25
+   },
+   {
+    "name": "Matthias Ginter",
+    "answer": "GINTER",
+    "number": 28
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Sebastian Kehl",
+    "answer": "KEHL",
+    "number": 5
+   },
+   {
+    "name": "Oliver Kirch",
+    "answer": "KIRCH",
+    "number": 21
+   },
+   {
+    "name": "Pierre-Emerick Aubameyang",
+    "answer": "AUBAMEYANG",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Jonas Hofmann",
+    "answer": "HOFMANN",
+    "number": 7
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Ciro Immobile",
+    "answer": "IMMOBILE",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2013-11-23-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2013/14",
+  "date": "23.11.2013",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "3-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Rafinha",
+    "answer": "RAFINHA",
+    "number": 13
+   },
+   {
+    "name": "Jérôme Boateng",
+    "answer": "BOATENG",
+    "number": 17
+   },
+   {
+    "name": "Dante",
+    "answer": "DANTE",
+    "number": 4
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25,
+    "goals": 1
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 39
+   },
+   {
+    "name": "Arjen Robben",
+    "answer": "ROBBEN",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2013-05-25-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Şampiyonlar Ligi",
+   "en": "Der Klassiker · Champions League"
+  },
+  "season": "2012/13",
+  "date": "25.05.2013",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Jérôme Boateng",
+    "answer": "BOATENG",
+    "number": 17
+   },
+   {
+    "name": "Dante",
+    "answer": "DANTE",
+    "number": 4
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8
+   },
+   {
+    "name": "Arjen Robben",
+    "answer": "ROBBEN",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2012-12-01-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2012/13",
+  "date": "01.12.2012",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Holger Badstuber",
+    "answer": "BADSTUBER",
+    "number": 28
+   },
+   {
+    "name": "Dante",
+    "answer": "DANTE",
+    "number": 4
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 39,
+    "goals": 1
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2012-05-12-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Almanya Kupası",
+   "en": "Der Klassiker · DFB-Pokal"
+  },
+  "season": "2011/12",
+  "date": "12.05.2012",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "5-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Neven Subotic",
+    "answer": "SUBOTIC",
+    "number": 4
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Sebastian Kehl",
+    "answer": "KEHL",
+    "number": 5
+   },
+   {
+    "name": "İlkay Gündoğan",
+    "answer": "GUNDOGAN",
+    "number": 21
+   },
+   {
+    "name": "Jakub Blaszczykowski",
+    "answer": "BLASZCZYKOWSKI",
+    "number": 16
+   },
+   {
+    "name": "Shinji Kagawa",
+    "answer": "KAGAWA",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Kevin Großkreutz",
+    "answer": "GROSSKREUTZ",
+    "number": 19
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 3
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2011-02-26-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2010/11",
+  "date": "26.02.2011",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Mitchell Langerak",
+    "answer": "LANGERAK",
+    "number": 20
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Neven Subotic",
+    "answer": "SUBOTIC",
+    "number": 4
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Nuri Şahin",
+    "answer": "SAHIN",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Sven Bender",
+    "answer": "BENDER",
+    "number": 22
+   },
+   {
+    "name": "Mario Götze",
+    "answer": "GOTZE",
+    "number": 31
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 7
+   },
+   {
+    "name": "Kevin Großkreutz",
+    "answer": "GROSSKREUTZ",
+    "number": 19
+   },
+   {
+    "name": "Lucas Barrios",
+    "answer": "BARRIOS",
+    "number": 18,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2009-09-12-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2009/10",
+  "date": "12.09.2009",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "5-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Hans Jörg Butt",
+    "answer": "BUTT",
+    "number": 22
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Daniel Van Buyten",
+    "answer": "VAN BUYTEN",
+    "number": 5
+   },
+   {
+    "name": "Holger Badstuber",
+    "answer": "BADSTUBER",
+    "number": 28
+   },
+   {
+    "name": "Edson Braafheid",
+    "answer": "BRAAFHEID",
+    "number": 4
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31,
+    "goals": 1
+   },
+   {
+    "name": "Anatoliy Tymoshchuk",
+    "answer": "TYMOSHCHUK",
+    "number": 44
+   },
+   {
+    "name": "Hamit Altıntop",
+    "answer": "ALTINTOP",
+    "number": 8
+   },
+   {
+    "name": "Arjen Robben",
+    "answer": "ROBBEN",
+    "number": 10
+   },
+   {
+    "name": "Mario Gómez",
+    "answer": "GOMEZ",
+    "number": 33,
+    "goals": 1
+   },
+   {
+    "name": "Ivica Olic",
+    "answer": "OLIC",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2008-08-23-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2008/09",
+  "date": "23.08.2008",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "1-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Marc Ziegler",
+    "answer": "ZIEGLER",
+    "number": 20
+   },
+   {
+    "name": "Antonio Rukavina",
+    "answer": "RUKAVINA",
+    "number": 14
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Neven Subotic",
+    "answer": "SUBOTIC",
+    "number": 4
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Jakub Blaszczykowski",
+    "answer": "BLASZCZYKOWSKI",
+    "number": 16,
+    "goals": 1
+   },
+   {
+    "name": "Sebastian Kehl",
+    "answer": "KEHL",
+    "number": 5
+   },
+   {
+    "name": "Tamás Hajnal",
+    "answer": "HAJNAL",
+    "number": 30
+   },
+   {
+    "name": "Florian Kringe",
+    "answer": "KRINGE",
+    "number": 6
+   },
+   {
+    "name": "Mohamed Zidan",
+    "answer": "ZIDAN",
+    "number": 10
+   },
+   {
+    "name": "Nelson Valdez",
+    "answer": "VALDEZ",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2007-10-28-borussiadortmund-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2007/08",
+  "date": "28.10.2007",
+  "team": "Borussia Dortmund",
+  "opponent": "Bayern Münih",
+  "score": "0-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Philipp Degen",
+    "answer": "DEGEN",
+    "number": 23
+   },
+   {
+    "name": "Robert Kovac",
+    "answer": "KOVAC",
+    "number": 21
+   },
+   {
+    "name": "Markus Brzenska",
+    "answer": "BRZENSKA",
+    "number": 3
+   },
+   {
+    "name": "Dedê",
+    "answer": "DEDE",
+    "number": 17
+   },
+   {
+    "name": "Florian Kringe",
+    "answer": "KRINGE",
+    "number": 6
+   },
+   {
+    "name": "Tinga",
+    "answer": "TINGA",
+    "number": 7
+   },
+   {
+    "name": "Jakub Blaszczykowski",
+    "answer": "BLASZCZYKOWSKI",
+    "number": 16
+   },
+   {
+    "name": "Nelson Valdez",
+    "answer": "VALDEZ",
+    "number": 9
+   },
+   {
+    "name": "Mladen Petric",
+    "answer": "PETRIC",
+    "number": 10
+   },
+   {
+    "name": "Delron Buckley",
+    "answer": "BUCKLEY",
+    "number": 26
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2006-08-11-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2006/07",
+  "date": "11.08.2006",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "2-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Oliver Kahn",
+    "answer": "KAHN",
+    "number": 1
+   },
+   {
+    "name": "Willy Sagnol",
+    "answer": "SAGNOL",
+    "number": 2
+   },
+   {
+    "name": "Daniel Van Buyten",
+    "answer": "VAN BUYTEN",
+    "number": 5
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 3
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Hasan Salihamidzic",
+    "answer": "SALIHAMIDZIC",
+    "number": 20
+   },
+   {
+    "name": "Owen Hargreaves",
+    "answer": "HARGREAVES",
+    "number": 23
+   },
+   {
+    "name": "Andreas Ottl",
+    "answer": "OTTL",
+    "number": 39
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31,
+    "goals": 1
+   },
+   {
+    "name": "Roy Makaay",
+    "answer": "MAKAAY",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Roque Santa Cruz",
+    "answer": "CRUZ",
+    "number": 24
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2005-02-19-bayernmunih-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Der Klassiker · Bundesliga",
+   "en": "Der Klassiker · Bundesliga"
+  },
+  "season": "2004/05",
+  "date": "19.02.2005",
+  "team": "Bayern Münih",
+  "opponent": "Borussia Dortmund",
+  "score": "5-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Oliver Kahn",
+    "answer": "KAHN",
+    "number": 1
+   },
+   {
+    "name": "Willy Sagnol",
+    "answer": "SAGNOL",
+    "number": 2
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 3
+   },
+   {
+    "name": "Robert Kovac",
+    "answer": "KOVAC",
+    "number": 5
+   },
+   {
+    "name": "Bixente Lizarazu",
+    "answer": "LIZARAZU",
+    "number": 69
+   },
+   {
+    "name": "Hasan Salihamidzic",
+    "answer": "SALIHAMIDZIC",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Martín Demichelis",
+    "answer": "DEMICHELIS",
+    "number": 6
+   },
+   {
+    "name": "Zé Roberto",
+    "answer": "ROBERTO",
+    "number": 11
+   },
+   {
+    "name": "Mehmet Scholl",
+    "answer": "SCHOLL",
+    "number": 7
+   },
+   {
+    "name": "Roy Makaay",
+    "answer": "MAKAAY",
+    "number": 10,
+    "goals": 3
+   },
+   {
+    "name": "Claudio Pizarro",
+    "answer": "PIZARRO",
+    "number": 14,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2023-03-11-schalke04-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2022/23",
+  "date": "11.03.2023",
+  "team": "Schalke 04",
+  "opponent": "Borussia Dortmund",
+  "score": "2-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#004d9d",
+   "sleeves": "#004d9d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Ralf Fährmann",
+    "answer": "FAHRMANN",
+    "number": 1
+   },
+   {
+    "name": "Cédric Brunner",
+    "answer": "BRUNNER",
+    "number": 27
+   },
+   {
+    "name": "Maya Yoshida",
+    "answer": "YOSHIDA",
+    "number": 4
+   },
+   {
+    "name": "Moritz Jenz",
+    "answer": "JENZ",
+    "number": 25
+   },
+   {
+    "name": "Henning Matriciani",
+    "answer": "MATRICIANI",
+    "number": 41
+   },
+   {
+    "name": "Tom Krauß",
+    "answer": "KRAUSS",
+    "number": 6
+   },
+   {
+    "name": "Alex Král",
+    "answer": "KRAL",
+    "number": 30
+   },
+   {
+    "name": "Mehmet Aydin",
+    "answer": "AYDIN",
+    "number": 23
+   },
+   {
+    "name": "Rodrigo Zalazar",
+    "answer": "ZALAZAR",
+    "number": 10
+   },
+   {
+    "name": "Marius Bülter",
+    "answer": "BULTER",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Michael Frey",
+    "answer": "FREY",
+    "number": 26
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2021-02-20-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2020/21",
+  "date": "20.02.2021",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "4-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Marwin Hitz",
+    "answer": "HITZ",
+    "number": 35
+   },
+   {
+    "name": "Mateu Morey",
+    "answer": "MOREY",
+    "number": 2
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Emre Can",
+    "answer": "CAN",
+    "number": 23
+   },
+   {
+    "name": "Raphaël Guerreiro",
+    "answer": "GUERREIRO",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Thomas Delaney",
+    "answer": "DELANEY",
+    "number": 6
+   },
+   {
+    "name": "Mahmoud Dahoud",
+    "answer": "DAHOUD",
+    "number": 8
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11
+   },
+   {
+    "name": "Julian Brandt",
+    "answer": "BRANDT",
+    "number": 19
+   },
+   {
+    "name": "Jadon Sancho",
+    "answer": "SANCHO",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Erling Haaland",
+    "answer": "HAALAND",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2019-10-26-schalke04-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2019/20",
+  "date": "26.10.2019",
+  "team": "Schalke 04",
+  "opponent": "Borussia Dortmund",
+  "score": "0-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#004d9d",
+   "sleeves": "#004d9d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Alexander Nübel",
+    "answer": "NUBEL",
+    "number": 35
+   },
+   {
+    "name": "Jonjoe Kenny",
+    "answer": "KENNY",
+    "number": 20
+   },
+   {
+    "name": "Benjamin Stambouli",
+    "answer": "STAMBOULI",
+    "number": 17
+   },
+   {
+    "name": "Salif Sané",
+    "answer": "SANE",
+    "number": 26
+   },
+   {
+    "name": "Bastian Oczipka",
+    "answer": "OCZIPKA",
+    "number": 24
+   },
+   {
+    "name": "Daniel Caligiuri",
+    "answer": "CALIGIURI",
+    "number": 18
+   },
+   {
+    "name": "Omar Mascarell",
+    "answer": "MASCARELL",
+    "number": 6
+   },
+   {
+    "name": "Suat Serdar",
+    "answer": "SERDAR",
+    "number": 8
+   },
+   {
+    "name": "Amine Harit",
+    "answer": "HARIT",
+    "number": 25
+   },
+   {
+    "name": "Rabbi Matondo",
+    "answer": "MATONDO",
+    "number": 14
+   },
+   {
+    "name": "Guido Burgstaller",
+    "answer": "BURGSTALLER",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2018-12-08-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2018/19",
+  "date": "08.12.2018",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Bürki",
+    "answer": "BURKI",
+    "number": 1
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Manuel Akanji",
+    "answer": "AKANJI",
+    "number": 16
+   },
+   {
+    "name": "Abdou Diallo",
+    "answer": "DIALLO",
+    "number": 4
+   },
+   {
+    "name": "Achraf Hakimi",
+    "answer": "HAKIMI",
+    "number": 5
+   },
+   {
+    "name": "Thomas Delaney",
+    "answer": "DELANEY",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Axel Witsel",
+    "answer": "WITSEL",
+    "number": 28
+   },
+   {
+    "name": "Jadon Sancho",
+    "answer": "SANCHO",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11
+   },
+   {
+    "name": "Jacob Bruun Larsen",
+    "answer": "LARSEN",
+    "number": 34
+   },
+   {
+    "name": "Paco Alcácer",
+    "answer": "ALCACER",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2017-11-25-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2017/18",
+  "date": "25.11.2017",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "4-4",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Sokratis Papastathopoulos",
+    "answer": "PAPASTATHOPOULOS",
+    "number": 25
+   },
+   {
+    "name": "Ömer Toprak",
+    "answer": "TOPRAK",
+    "number": 36
+   },
+   {
+    "name": "Christian Pulisic",
+    "answer": "PULISIC",
+    "number": 22
+   },
+   {
+    "name": "Raphaël Guerreiro",
+    "answer": "GUERREIRO",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Nuri Şahin",
+    "answer": "SAHIN",
+    "number": 8
+   },
+   {
+    "name": "Julian Weigl",
+    "answer": "WEIGL",
+    "number": 33
+   },
+   {
+    "name": "Andriy Yarmolenko",
+    "answer": "YARMOLENKO",
+    "number": 9
+   },
+   {
+    "name": "Mario Götze",
+    "answer": "GOTZE",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Pierre-Emerick Aubameyang",
+    "answer": "AUBAMEYANG",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2016-04-10-schalke04-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2015/16",
+  "date": "10.04.2016",
+  "team": "Schalke 04",
+  "opponent": "Borussia Dortmund",
+  "score": "2-2",
+  "formation": "3-4-2-1",
+  "kit": {
+   "body": "#004d9d",
+   "sleeves": "#004d9d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Ralf Fährmann",
+    "answer": "FAHRMANN",
+    "number": 1
+   },
+   {
+    "name": "Sascha Riether",
+    "answer": "RIETHER",
+    "number": 27
+   },
+   {
+    "name": "Joël Matip",
+    "answer": "MATIP",
+    "number": 32
+   },
+   {
+    "name": "Roman Neustädter",
+    "answer": "NEUSTADTER",
+    "number": 33
+   },
+   {
+    "name": "Júnior Caiçara",
+    "answer": "CAICARA",
+    "number": 3
+   },
+   {
+    "name": "Sead Kolasinac",
+    "answer": "KOLASINAC",
+    "number": 6
+   },
+   {
+    "name": "Johannes Geis",
+    "answer": "GEIS",
+    "number": 5
+   },
+   {
+    "name": "Pierre-Emile Højbjerg",
+    "answer": "HJBJERG",
+    "number": 23
+   },
+   {
+    "name": "Leroy Sané",
+    "answer": "SANE",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Younès Belhanda",
+    "answer": "BELHANDA",
+    "number": 11
+   },
+   {
+    "name": "Klaas-Jan Huntelaar",
+    "answer": "HUNTELAAR",
+    "number": 25,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2015-02-28-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2014/15",
+  "date": "28.02.2015",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "3-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Oliver Kirch",
+    "answer": "KIRCH",
+    "number": 21
+   },
+   {
+    "name": "Neven Subotic",
+    "answer": "SUBOTIC",
+    "number": 4
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Nuri Şahin",
+    "answer": "SAHIN",
+    "number": 18
+   },
+   {
+    "name": "İlkay Gündoğan",
+    "answer": "GUNDOGAN",
+    "number": 8
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Shinji Kagawa",
+    "answer": "KAGAWA",
+    "number": 7
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Pierre-Emerick Aubameyang",
+    "answer": "AUBAMEYANG",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2014-03-25-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2013/14",
+  "date": "25.03.2014",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Sokratis Papastathopoulos",
+    "answer": "PAPASTATHOPOULOS",
+    "number": 25
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Erik Durm",
+    "answer": "DURM",
+    "number": 37
+   },
+   {
+    "name": "Nuri Şahin",
+    "answer": "SAHIN",
+    "number": 18
+   },
+   {
+    "name": "Sebastian Kehl",
+    "answer": "KEHL",
+    "number": 5
+   },
+   {
+    "name": "Kevin Großkreutz",
+    "answer": "GROSSKREUTZ",
+    "number": 19
+   },
+   {
+    "name": "Henrikh Mkhitaryan",
+    "answer": "MKHITARYAN",
+    "number": 10
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2012-10-20-schalke04-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2012/13",
+  "date": "20.10.2012",
+  "team": "Schalke 04",
+  "opponent": "Borussia Dortmund",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#004d9d",
+   "sleeves": "#004d9d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Lars Unnerstall",
+    "answer": "UNNERSTALL",
+    "number": 36
+   },
+   {
+    "name": "Atsuto Uchida",
+    "answer": "UCHIDA",
+    "number": 22
+   },
+   {
+    "name": "Joël Matip",
+    "answer": "MATIP",
+    "number": 32
+   },
+   {
+    "name": "Benedikt Höwedes",
+    "answer": "HOWEDES",
+    "number": 4
+   },
+   {
+    "name": "Christian Fuchs",
+    "answer": "FUCHS",
+    "number": 23
+   },
+   {
+    "name": "Roman Neustädter",
+    "answer": "NEUSTADTER",
+    "number": 33
+   },
+   {
+    "name": "Marco Höger",
+    "answer": "HOGER",
+    "number": 12,
+    "goals": 1
+   },
+   {
+    "name": "Jefferson Farfán",
+    "answer": "FARFAN",
+    "number": 17
+   },
+   {
+    "name": "Lewis Holtby",
+    "answer": "HOLTBY",
+    "number": 10
+   },
+   {
+    "name": "Ibrahim Afellay",
+    "answer": "AFELLAY",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Klaas-Jan Huntelaar",
+    "answer": "HUNTELAAR",
+    "number": 25
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2011-11-26-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2011/12",
+  "date": "26.11.2011",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Felipe Santana",
+    "answer": "SANTANA",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Sebastian Kehl",
+    "answer": "KEHL",
+    "number": 5
+   },
+   {
+    "name": "Moritz Leitner",
+    "answer": "LEITNER",
+    "number": 7
+   },
+   {
+    "name": "Jakub Blaszczykowski",
+    "answer": "BLASZCZYKOWSKI",
+    "number": 16
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Mario Götze",
+    "answer": "GOTZE",
+    "number": 11
+   },
+   {
+    "name": "Lucas Barrios",
+    "answer": "BARRIOS",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2011-02-04-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2010/11",
+  "date": "04.02.2011",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Lukasz Piszczek",
+    "answer": "PISZCZEK",
+    "number": 26
+   },
+   {
+    "name": "Felipe Santana",
+    "answer": "SANTANA",
+    "number": 27
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Marcel Schmelzer",
+    "answer": "SCHMELZER",
+    "number": 29
+   },
+   {
+    "name": "Nuri Şahin",
+    "answer": "SAHIN",
+    "number": 8
+   },
+   {
+    "name": "Sven Bender",
+    "answer": "BENDER",
+    "number": 22
+   },
+   {
+    "name": "Jakub Blaszczykowski",
+    "answer": "BLASZCZYKOWSKI",
+    "number": 16
+   },
+   {
+    "name": "Mario Götze",
+    "answer": "GOTZE",
+    "number": 31
+   },
+   {
+    "name": "Kevin Großkreutz",
+    "answer": "GROSSKREUTZ",
+    "number": 19
+   },
+   {
+    "name": "Lucas Barrios",
+    "answer": "BARRIOS",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2009-09-26-schalke04-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2009/10",
+  "date": "26.09.2009",
+  "team": "Schalke 04",
+  "opponent": "Borussia Dortmund",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#004d9d",
+   "sleeves": "#004d9d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Benedikt Höwedes",
+    "answer": "HOWEDES",
+    "number": 4
+   },
+   {
+    "name": "Carlos Zambrano",
+    "answer": "ZAMBRANO",
+    "number": 25
+   },
+   {
+    "name": "Marcelo Bordon",
+    "answer": "BORDON",
+    "number": 5
+   },
+   {
+    "name": "Heiko Westermann",
+    "answer": "WESTERMANN",
+    "number": 2
+   },
+   {
+    "name": "Rafinha",
+    "answer": "RAFINHA",
+    "number": 18
+   },
+   {
+    "name": "Christoph Moritz",
+    "answer": "MORITZ",
+    "number": 28
+   },
+   {
+    "name": "Lukas Schmitz",
+    "answer": "SCHMITZ",
+    "number": 21
+   },
+   {
+    "name": "Levan Kenia",
+    "answer": "KENIA",
+    "number": 30
+   },
+   {
+    "name": "Halil Altıntop",
+    "answer": "ALTINTOP",
+    "number": 19
+   },
+   {
+    "name": "Jefferson Farfán",
+    "answer": "FARFAN",
+    "number": 17,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2008-09-13-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2008/09",
+  "date": "13.09.2008",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "3-3",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Antonio Rukavina",
+    "answer": "RUKAVINA",
+    "number": 14
+   },
+   {
+    "name": "Neven Subotic",
+    "answer": "SUBOTIC",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 15
+   },
+   {
+    "name": "Young-pyo Lee",
+    "answer": "LEE",
+    "number": 3
+   },
+   {
+    "name": "Jakub Blaszczykowski",
+    "answer": "BLASZCZYKOWSKI",
+    "number": 16
+   },
+   {
+    "name": "Sebastian Kehl",
+    "answer": "KEHL",
+    "number": 5
+   },
+   {
+    "name": "Tamás Hajnal",
+    "answer": "HAJNAL",
+    "number": 30
+   },
+   {
+    "name": "Florian Kringe",
+    "answer": "KRINGE",
+    "number": 6
+   },
+   {
+    "name": "Mohamed Zidan",
+    "answer": "ZIDAN",
+    "number": 10
+   },
+   {
+    "name": "Nelson Valdez",
+    "answer": "VALDEZ",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2007-08-18-schalke04-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2007/08",
+  "date": "18.08.2007",
+  "team": "Schalke 04",
+  "opponent": "Borussia Dortmund",
+  "score": "4-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#004d9d",
+   "sleeves": "#004d9d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Rafinha",
+    "answer": "RAFINHA",
+    "number": 18
+   },
+   {
+    "name": "Mladen Krstajic",
+    "answer": "KRSTAJIC",
+    "number": 20
+   },
+   {
+    "name": "Marcelo Bordon",
+    "answer": "BORDON",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Christian Pander",
+    "answer": "PANDER",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Zlatan Bajramovic",
+    "answer": "BAJRAMOVIC",
+    "number": 25
+   },
+   {
+    "name": "Fabian Ernst",
+    "answer": "ERNST",
+    "number": 8
+   },
+   {
+    "name": "Levan Kobiashvili",
+    "answer": "KOBIASHVILI",
+    "number": 3
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 10
+   },
+   {
+    "name": "Gerald Asamoah",
+    "answer": "ASAMOAH",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Kevin Kuranyi",
+    "answer": "KURANYI",
+    "number": 22,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2006-02-04-schalke04-borussiadortmund",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2005/06",
+  "date": "04.02.2006",
+  "team": "Schalke 04",
+  "opponent": "Borussia Dortmund",
+  "score": "0-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#004d9d",
+   "sleeves": "#004d9d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Frank Rost",
+    "answer": "ROST",
+    "number": 1
+   },
+   {
+    "name": "Rafinha",
+    "answer": "RAFINHA",
+    "number": 18
+   },
+   {
+    "name": "Darío Rodríguez",
+    "answer": "RODRIGUEZ",
+    "number": 16
+   },
+   {
+    "name": "Marcelo Bordon",
+    "answer": "BORDON",
+    "number": 5
+   },
+   {
+    "name": "Mladen Krstajic",
+    "answer": "KRSTAJIC",
+    "number": 20
+   },
+   {
+    "name": "Fabian Ernst",
+    "answer": "ERNST",
+    "number": 8
+   },
+   {
+    "name": "Christian Poulsen",
+    "answer": "POULSEN",
+    "number": 2
+   },
+   {
+    "name": "Levan Kobiashvili",
+    "answer": "KOBIASHVILI",
+    "number": 3
+   },
+   {
+    "name": "Lincoln",
+    "answer": "LINCOLN",
+    "number": 10
+   },
+   {
+    "name": "Kevin Kuranyi",
+    "answer": "KURANYI",
+    "number": 22
+   },
+   {
+    "name": "Ebbe Sand",
+    "answer": "SAND",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2005-05-14-borussiadortmund-schalke04",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Revierderby · Bundesliga",
+   "en": "Revierderby · Bundesliga"
+  },
+  "season": "2004/05",
+  "date": "14.05.2005",
+  "team": "Borussia Dortmund",
+  "opponent": "Schalke 04",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#fde100",
+   "sleeves": "#fde100",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Roman Weidenfeller",
+    "answer": "WEIDENFELLER",
+    "number": 1
+   },
+   {
+    "name": "Christoph Metzelder",
+    "answer": "METZELDER",
+    "number": 21
+   },
+   {
+    "name": "Christian Wörns",
+    "answer": "WORNS",
+    "number": 4
+   },
+   {
+    "name": "Markus Brzenska",
+    "answer": "BRZENSKA",
+    "number": 35
+   },
+   {
+    "name": "Dedê",
+    "answer": "DEDE",
+    "number": 17
+   },
+   {
+    "name": "Florian Kringe",
+    "answer": "KRINGE",
+    "number": 6
+   },
+   {
+    "name": "Sebastian Kehl",
+    "answer": "KEHL",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Tomas Rosicky",
+    "answer": "ROSICKY",
+    "number": 10
+   },
+   {
+    "name": "Ewerthon",
+    "answer": "EWERTHON",
+    "number": 12
+   },
+   {
+    "name": "Jan Koller",
+    "answer": "KOLLER",
+    "number": 9
+   },
+   {
+    "name": "Lars Ricken",
+    "answer": "RICKEN",
+    "number": 18,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2026-04-22-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Almanya Kupası",
+   "en": "Bayern – Leverkusen · DFB-Pokal"
+  },
+  "season": "2025/26",
+  "date": "22.04.2026",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Josip Stanisic",
+    "answer": "STANISIC",
+    "number": 44
+   },
+   {
+    "name": "Dayot Upamecano",
+    "answer": "UPAMECANO",
+    "number": 2
+   },
+   {
+    "name": "Jonathan Tah",
+    "answer": "TAH",
+    "number": 4
+   },
+   {
+    "name": "Konrad Laimer",
+    "answer": "LAIMER",
+    "number": 27
+   },
+   {
+    "name": "Aleksandar Pavlovic",
+    "answer": "PAVLOVIC",
+    "number": 45
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6
+   },
+   {
+    "name": "Michael Olise",
+    "answer": "OLISE",
+    "number": 17
+   },
+   {
+    "name": "Jamal Musiala",
+    "answer": "MUSIALA",
+    "number": 10
+   },
+   {
+    "name": "Luis Díaz",
+    "answer": "DIAZ",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Harry Kane",
+    "answer": "KANE",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2025-02-15-bayerleverkusen-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2024/25",
+  "date": "15.02.2025",
+  "team": "Bayer Leverkusen",
+  "opponent": "Bayern Münih",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#e32221",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Lukas Hradecky",
+    "answer": "HRADECKY",
+    "number": 1
+   },
+   {
+    "name": "Nordi Mukiele",
+    "answer": "MUKIELE",
+    "number": 23
+   },
+   {
+    "name": "Edmond Tapsoba",
+    "answer": "TAPSOBA",
+    "number": 12
+   },
+   {
+    "name": "Jonathan Tah",
+    "answer": "TAH",
+    "number": 4
+   },
+   {
+    "name": "Piero Hincapié",
+    "answer": "HINCAPIE",
+    "number": 3
+   },
+   {
+    "name": "Granit Xhaka",
+    "answer": "XHAKA",
+    "number": 34
+   },
+   {
+    "name": "Exequiel Palacios",
+    "answer": "PALACIOS",
+    "number": 25
+   },
+   {
+    "name": "Jeremie Frimpong",
+    "answer": "FRIMPONG",
+    "number": 30
+   },
+   {
+    "name": "Florian Wirtz",
+    "answer": "WIRTZ",
+    "number": 10
+   },
+   {
+    "name": "Alejandro Grimaldo",
+    "answer": "GRIMALDO",
+    "number": 20
+   },
+   {
+    "name": "Nathan Tella",
+    "answer": "TELLA",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2023-09-15-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2023/24",
+  "date": "15.09.2023",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "2-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Sven Ulreich",
+    "answer": "ULREICH",
+    "number": 26
+   },
+   {
+    "name": "Konrad Laimer",
+    "answer": "LAIMER",
+    "number": 27
+   },
+   {
+    "name": "Dayot Upamecano",
+    "answer": "UPAMECANO",
+    "number": 2
+   },
+   {
+    "name": "Min-jae Kim",
+    "answer": "KIM",
+    "number": 3
+   },
+   {
+    "name": "Alphonso Davies",
+    "answer": "DAVIES",
+    "number": 19
+   },
+   {
+    "name": "Leon Goretzka",
+    "answer": "GORETZKA",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6
+   },
+   {
+    "name": "Leroy Sané",
+    "answer": "SANE",
+    "number": 10
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Serge Gnabry",
+    "answer": "GNABRY",
+    "number": 7
+   },
+   {
+    "name": "Harry Kane",
+    "answer": "KANE",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2021-04-20-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2020/21",
+  "date": "20.04.2021",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Benjamin Pavard",
+    "answer": "PAVARD",
+    "number": 5
+   },
+   {
+    "name": "Jérôme Boateng",
+    "answer": "BOATENG",
+    "number": 17
+   },
+   {
+    "name": "Lucas Hernández",
+    "answer": "HERNANDEZ",
+    "number": 21
+   },
+   {
+    "name": "Alphonso Davies",
+    "answer": "DAVIES",
+    "number": 19
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Kingsley Coman",
+    "answer": "COMAN",
+    "number": 29
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Jamal Musiala",
+    "answer": "MUSIALA",
+    "number": 42
+   },
+   {
+    "name": "Eric-Maxim Choupo-Moting",
+    "answer": "MOTING",
+    "number": 13,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2019-11-30-bayerleverkusen-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2019/20",
+  "date": "30.11.2019",
+  "team": "Bayer Leverkusen",
+  "opponent": "Bayern Münih",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#e32221",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Lukas Hradecky",
+    "answer": "HRADECKY",
+    "number": 1
+   },
+   {
+    "name": "Lars Bender",
+    "answer": "LARS BENDER",
+    "number": 8
+   },
+   {
+    "name": "Sven Bender",
+    "answer": "SVEN BENDER",
+    "number": 5
+   },
+   {
+    "name": "Jonathan Tah",
+    "answer": "TAH",
+    "number": 4
+   },
+   {
+    "name": "Wendell",
+    "answer": "WENDELL",
+    "number": 18
+   },
+   {
+    "name": "Charles Aránguiz",
+    "answer": "ARANGUIZ",
+    "number": 20
+   },
+   {
+    "name": "Julian Baumgartlinger",
+    "answer": "BAUMGARTLINGER",
+    "number": 15
+   },
+   {
+    "name": "Moussa Diaby",
+    "answer": "DIABY",
+    "number": 19
+   },
+   {
+    "name": "Nadiem Amiri",
+    "answer": "AMIRI",
+    "number": 11
+   },
+   {
+    "name": "Leon Bailey",
+    "answer": "BAILEY",
+    "number": 9,
+    "goals": 2
+   },
+   {
+    "name": "Kevin Volland",
+    "answer": "VOLLAND",
+    "number": 31
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2017-08-18-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2017/18",
+  "date": "18.08.2017",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "3-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Sven Ulreich",
+    "answer": "ULREICH",
+    "number": 26
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 32
+   },
+   {
+    "name": "Niklas Süle",
+    "answer": "SULE",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 5
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Corentin Tolisso",
+    "answer": "TOLISSO",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Sebastian Rudy",
+    "answer": "RUDY",
+    "number": 19
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2015-08-29-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2015/16",
+  "date": "29.08.2015",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "3-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Juan Bernat",
+    "answer": "BERNAT",
+    "number": 18
+   },
+   {
+    "name": "Thiago Alcántara",
+    "answer": "ALCANTARA",
+    "number": 6
+   },
+   {
+    "name": "Arturo Vidal",
+    "answer": "VIDAL",
+    "number": 23
+   },
+   {
+    "name": "Arjen Robben",
+    "answer": "ROBBEN",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25,
+    "goals": 2
+   },
+   {
+    "name": "Douglas Costa",
+    "answer": "COSTA",
+    "number": 11
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2013-10-05-bayerleverkusen-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2013/14",
+  "date": "05.10.2013",
+  "team": "Bayer Leverkusen",
+  "opponent": "Bayern Münih",
+  "score": "1-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#e32221",
+   "sleeves": "#111111",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Bernd Leno",
+    "answer": "LENO",
+    "number": 1
+   },
+   {
+    "name": "Giulio Donati",
+    "answer": "DONATI",
+    "number": 26
+   },
+   {
+    "name": "Emir Spahic",
+    "answer": "SPAHIC",
+    "number": 5
+   },
+   {
+    "name": "Ömer Toprak",
+    "answer": "TOPRAK",
+    "number": 21
+   },
+   {
+    "name": "Sebastian Boenisch",
+    "answer": "BOENISCH",
+    "number": 17
+   },
+   {
+    "name": "Stefan Reinartz",
+    "answer": "REINARTZ",
+    "number": 3
+   },
+   {
+    "name": "Lars Bender",
+    "answer": "BENDER",
+    "number": 8
+   },
+   {
+    "name": "Sidney Sam",
+    "answer": "SAM",
+    "number": 18,
+    "goals": 1
+   },
+   {
+    "name": "Emre Can",
+    "answer": "CAN",
+    "number": 10
+   },
+   {
+    "name": "Simon Rolfes",
+    "answer": "ROLFES",
+    "number": 6
+   },
+   {
+    "name": "Stefan Kießling",
+    "answer": "KIESSLING",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2011-09-24-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2011/12",
+  "date": "24.09.2011",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "3-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Rafinha",
+    "answer": "RAFINHA",
+    "number": 13
+   },
+   {
+    "name": "Daniel Van Buyten",
+    "answer": "VAN BUYTEN",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Holger Badstuber",
+    "answer": "BADSTUBER",
+    "number": 28
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31
+   },
+   {
+    "name": "Anatoliy Tymoshchuk",
+    "answer": "TYMOSHCHUK",
+    "number": 44
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25,
+    "goals": 1
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 39
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   },
+   {
+    "name": "Mario Gómez",
+    "answer": "GOMEZ",
+    "number": 33
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2009-05-12-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2008/09",
+  "date": "12.05.2009",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "3-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Hans Jörg Butt",
+    "answer": "BUTT",
+    "number": 22
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 3
+   },
+   {
+    "name": "Daniel Van Buyten",
+    "answer": "VAN BUYTEN",
+    "number": 5
+   },
+   {
+    "name": "Martín Demichelis",
+    "answer": "DEMICHELIS",
+    "number": 6
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "José Sosa",
+    "answer": "SOSA",
+    "number": 20
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31
+   },
+   {
+    "name": "Mark van Bommel",
+    "answer": "VAN BOMMEL",
+    "number": 17
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Lukas Podolski",
+    "answer": "PODOLSKI",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Luca Toni",
+    "answer": "TONI",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2007-09-29-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2007/08",
+  "date": "29.09.2007",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Michael Rensing",
+    "answer": "RENSING",
+    "number": 22
+   },
+   {
+    "name": "Christian Lell",
+    "answer": "LELL",
+    "number": 30
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 3
+   },
+   {
+    "name": "Martín Demichelis",
+    "answer": "DEMICHELIS",
+    "number": 6
+   },
+   {
+    "name": "Marcell Jansen",
+    "answer": "JANSEN",
+    "number": 23
+   },
+   {
+    "name": "Hamit Altıntop",
+    "answer": "ALTINTOP",
+    "number": 8
+   },
+   {
+    "name": "Zé Roberto",
+    "answer": "ROBERTO",
+    "number": 15
+   },
+   {
+    "name": "Mark van Bommel",
+    "answer": "VAN BOMMEL",
+    "number": 17
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   },
+   {
+    "name": "Luca Toni",
+    "answer": "TONI",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Miroslav Klose",
+    "answer": "KLOSE",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2005-02-05-bayernmunih-bayerleverkusen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Leverkusen · Bundesliga",
+   "en": "Bayern – Leverkusen · Bundesliga"
+  },
+  "season": "2004/05",
+  "date": "05.02.2005",
+  "team": "Bayern Münih",
+  "opponent": "Bayer Leverkusen",
+  "score": "2-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Oliver Kahn",
+    "answer": "KAHN",
+    "number": 1
+   },
+   {
+    "name": "Torsten Frings",
+    "answer": "FRINGS",
+    "number": 8
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 3
+   },
+   {
+    "name": "Robert Kovac",
+    "answer": "KOVAC",
+    "number": 5
+   },
+   {
+    "name": "Hasan Salihamidzic",
+    "answer": "SALIHAMIDZIC",
+    "number": 20
+   },
+   {
+    "name": "Owen Hargreaves",
+    "answer": "HARGREAVES",
+    "number": 23
+   },
+   {
+    "name": "Michael Ballack",
+    "answer": "BALLACK",
+    "number": 13
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31
+   },
+   {
+    "name": "Zé Roberto",
+    "answer": "ROBERTO",
+    "number": 11
+   },
+   {
+    "name": "Paolo Guerrero",
+    "answer": "GUERRERO",
+    "number": 33,
+    "goals": 1
+   },
+   {
+    "name": "Roy Makaay",
+    "answer": "MAKAAY",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2026-03-06-bayernmunih-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2025/26",
+  "date": "06.03.2026",
+  "team": "Bayern Münih",
+  "opponent": "Mönchengladbach",
+  "score": "4-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Konrad Laimer",
+    "answer": "LAIMER",
+    "number": 27,
+    "goals": 1
+   },
+   {
+    "name": "Dayot Upamecano",
+    "answer": "UPAMECANO",
+    "number": 2
+   },
+   {
+    "name": "Min-jae Kim",
+    "answer": "KIM",
+    "number": 3
+   },
+   {
+    "name": "Tom Bischof",
+    "answer": "BISCHOF",
+    "number": 20
+   },
+   {
+    "name": "Leon Goretzka",
+    "answer": "GORETZKA",
+    "number": 8
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6
+   },
+   {
+    "name": "Lennart Karl",
+    "answer": "KARL",
+    "number": 42
+   },
+   {
+    "name": "Jamal Musiala",
+    "answer": "MUSIALA",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Luis Díaz",
+    "answer": "DIAZ",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Nicolas Jackson",
+    "answer": "JACKSON",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2023-09-02-bayernmunih-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2023/24",
+  "date": "02.09.2023",
+  "team": "Bayern Münih",
+  "opponent": "Mönchengladbach",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Sven Ulreich",
+    "answer": "ULREICH",
+    "number": 26
+   },
+   {
+    "name": "Noussair Mazraoui",
+    "answer": "MAZRAOUI",
+    "number": 40
+   },
+   {
+    "name": "Dayot Upamecano",
+    "answer": "UPAMECANO",
+    "number": 2
+   },
+   {
+    "name": "Min-jae Kim",
+    "answer": "KIM",
+    "number": 3
+   },
+   {
+    "name": "Alphonso Davies",
+    "answer": "DAVIES",
+    "number": 19
+   },
+   {
+    "name": "Leon Goretzka",
+    "answer": "GORETZKA",
+    "number": 8
+   },
+   {
+    "name": "Joshua Kimmich",
+    "answer": "KIMMICH",
+    "number": 6
+   },
+   {
+    "name": "Leroy Sané",
+    "answer": "SANE",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Kingsley Coman",
+    "answer": "COMAN",
+    "number": 11
+   },
+   {
+    "name": "Harry Kane",
+    "answer": "KANE",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2021-08-13-monchengladbach-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2021/22",
+  "date": "13.08.2021",
+  "team": "Mönchengladbach",
+  "opponent": "Bayern Münih",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Stefan Lainer",
+    "answer": "LAINER",
+    "number": 18
+   },
+   {
+    "name": "Matthias Ginter",
+    "answer": "GINTER",
+    "number": 28
+   },
+   {
+    "name": "Nico Elvedi",
+    "answer": "ELVEDI",
+    "number": 30
+   },
+   {
+    "name": "Joe Scally",
+    "answer": "SCALLY",
+    "number": 29
+   },
+   {
+    "name": "Florian Neuhaus",
+    "answer": "NEUHAUS",
+    "number": 32
+   },
+   {
+    "name": "Christoph Kramer",
+    "answer": "KRAMER",
+    "number": 6
+   },
+   {
+    "name": "Patrick Herrmann",
+    "answer": "HERRMANN",
+    "number": 7
+   },
+   {
+    "name": "Lars Stindl",
+    "answer": "STINDL",
+    "number": 13
+   },
+   {
+    "name": "Hannes Wolf",
+    "answer": "WOLF",
+    "number": 11
+   },
+   {
+    "name": "Alassane Pléa",
+    "answer": "PLEA",
+    "number": 14,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2019-12-07-monchengladbach-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2019/20",
+  "date": "07.12.2019",
+  "team": "Mönchengladbach",
+  "opponent": "Bayern Münih",
+  "score": "2-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Stefan Lainer",
+    "answer": "LAINER",
+    "number": 18
+   },
+   {
+    "name": "Matthias Ginter",
+    "answer": "GINTER",
+    "number": 28
+   },
+   {
+    "name": "Nico Elvedi",
+    "answer": "ELVEDI",
+    "number": 30
+   },
+   {
+    "name": "Ramy Bensebaini",
+    "answer": "BENSEBAINI",
+    "number": 25,
+    "goals": 2
+   },
+   {
+    "name": "Jonas Hofmann",
+    "answer": "HOFMANN",
+    "number": 23
+   },
+   {
+    "name": "Denis Zakaria",
+    "answer": "ZAKARIA",
+    "number": 8
+   },
+   {
+    "name": "László Bénes",
+    "answer": "BENES",
+    "number": 22
+   },
+   {
+    "name": "Lars Stindl",
+    "answer": "STINDL",
+    "number": 13
+   },
+   {
+    "name": "Alassane Pléa",
+    "answer": "PLEA",
+    "number": 14
+   },
+   {
+    "name": "Marcus Thuram",
+    "answer": "THURAM",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2017-03-19-bayernmunih-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2016/17",
+  "date": "19.03.2017",
+  "team": "Bayern Münih",
+  "opponent": "Mönchengladbach",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 8
+   },
+   {
+    "name": "Mats Hummels",
+    "answer": "HUMMELS",
+    "number": 5
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Thiago Alcántara",
+    "answer": "ALCANTARA",
+    "number": 6
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14
+   },
+   {
+    "name": "Arjen Robben",
+    "answer": "ROBBEN",
+    "number": 10
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25,
+    "goals": 1
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2014-10-26-monchengladbach-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2014/15",
+  "date": "26.10.2014",
+  "team": "Mönchengladbach",
+  "opponent": "Bayern Münih",
+  "score": "0-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Julian Korb",
+    "answer": "KORB",
+    "number": 27
+   },
+   {
+    "name": "Martin Stranzl",
+    "answer": "STRANZL",
+    "number": 39
+   },
+   {
+    "name": "Álvaro Domínguez",
+    "answer": "DOMINGUEZ",
+    "number": 15
+   },
+   {
+    "name": "Oscar Wendt",
+    "answer": "WENDT",
+    "number": 17
+   },
+   {
+    "name": "André Hahn",
+    "answer": "HAHN",
+    "number": 28
+   },
+   {
+    "name": "Granit Xhaka",
+    "answer": "XHAKA",
+    "number": 34
+   },
+   {
+    "name": "Christoph Kramer",
+    "answer": "KRAMER",
+    "number": 23
+   },
+   {
+    "name": "Patrick Herrmann",
+    "answer": "HERRMANN",
+    "number": 7
+   },
+   {
+    "name": "Max Kruse",
+    "answer": "KRUSE",
+    "number": 10
+   },
+   {
+    "name": "Raffael",
+    "answer": "RAFFAEL",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2012-03-21-bayernmunih-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Almanya Kupası",
+   "en": "Bayern – Mönchengladbach · DFB-Pokal"
+  },
+  "season": "2011/12",
+  "date": "21.03.2012",
+  "team": "Bayern Münih",
+  "opponent": "Mönchengladbach",
+  "score": "4-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Manuel Neuer",
+    "answer": "NEUER",
+    "number": 1
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Jérôme Boateng",
+    "answer": "BOATENG",
+    "number": 17
+   },
+   {
+    "name": "Holger Badstuber",
+    "answer": "BADSTUBER",
+    "number": 28
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 27
+   },
+   {
+    "name": "Luiz Gustavo",
+    "answer": "GUSTAVO",
+    "number": 30
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 39
+   },
+   {
+    "name": "Arjen Robben",
+    "answer": "ROBBEN",
+    "number": 10
+   },
+   {
+    "name": "Thomas Müller",
+    "answer": "MULLER",
+    "number": 25
+   },
+   {
+    "name": "Franck Ribéry",
+    "answer": "RIBERY",
+    "number": 7
+   },
+   {
+    "name": "Mario Gómez",
+    "answer": "GOMEZ",
+    "number": 33
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2010-11-06-monchengladbach-bayernmunih",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2010/11",
+  "date": "06.11.2010",
+  "team": "Mönchengladbach",
+  "opponent": "Bayern Münih",
+  "score": "3-3",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Christofer Heimeroth",
+    "answer": "HEIMEROTH",
+    "number": 1
+   },
+   {
+    "name": "Tobias Levels",
+    "answer": "LEVELS",
+    "number": 22
+   },
+   {
+    "name": "Bamba Anderson",
+    "answer": "ANDERSON",
+    "number": 5
+   },
+   {
+    "name": "Filip Daems",
+    "answer": "DAEMS",
+    "number": 3
+   },
+   {
+    "name": "Sebastian Schachten",
+    "answer": "SCHACHTEN",
+    "number": 2
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Michael Bradley",
+    "answer": "BRADLEY",
+    "number": 26
+   },
+   {
+    "name": "Roman Neustädter",
+    "answer": "NEUSTADTER",
+    "number": 13
+   },
+   {
+    "name": "Patrick Herrmann",
+    "answer": "HERRMANN",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Mohamadou Idrissou",
+    "answer": "IDRISSOU",
+    "number": 25
+   },
+   {
+    "name": "Raúl Bobadilla",
+    "answer": "BOBADILLA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2007-10-31-bayernmunih-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Almanya Kupası",
+   "en": "Bayern – Mönchengladbach · DFB-Pokal"
+  },
+  "season": "2007/08",
+  "date": "31.10.2007",
+  "team": "Bayern Münih",
+  "opponent": "Mönchengladbach",
+  "score": "3-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Michael Rensing",
+    "answer": "RENSING",
+    "number": 22
+   },
+   {
+    "name": "Philipp Lahm",
+    "answer": "LAHM",
+    "number": 21
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 3
+   },
+   {
+    "name": "Martín Demichelis",
+    "answer": "DEMICHELIS",
+    "number": 6
+   },
+   {
+    "name": "Marcell Jansen",
+    "answer": "JANSEN",
+    "number": 23
+   },
+   {
+    "name": "Hamit Altıntop",
+    "answer": "ALTINTOP",
+    "number": 8
+   },
+   {
+    "name": "Zé Roberto",
+    "answer": "ROBERTO",
+    "number": 15
+   },
+   {
+    "name": "Andreas Ottl",
+    "answer": "OTTL",
+    "number": 16
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31
+   },
+   {
+    "name": "Lukas Podolski",
+    "answer": "PODOLSKI",
+    "number": 11
+   },
+   {
+    "name": "Luca Toni",
+    "answer": "TONI",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2005-04-09-bayernmunih-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Bayern – Mönchengladbach · Bundesliga",
+   "en": "Bayern – Mönchengladbach · Bundesliga"
+  },
+  "season": "2004/05",
+  "date": "09.04.2005",
+  "team": "Bayern Münih",
+  "opponent": "Mönchengladbach",
+  "score": "2-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#dc052d",
+   "sleeves": "#dc052d",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Oliver Kahn",
+    "answer": "KAHN",
+    "number": 1
+   },
+   {
+    "name": "Willy Sagnol",
+    "answer": "SAGNOL",
+    "number": 2
+   },
+   {
+    "name": "Lúcio",
+    "answer": "LUCIO",
+    "number": 3
+   },
+   {
+    "name": "Robert Kovac",
+    "answer": "KOVAC",
+    "number": 5
+   },
+   {
+    "name": "Bixente Lizarazu",
+    "answer": "LIZARAZU",
+    "number": 69
+   },
+   {
+    "name": "Hasan Salihamidzic",
+    "answer": "SALIHAMIDZIC",
+    "number": 20
+   },
+   {
+    "name": "Martín Demichelis",
+    "answer": "DEMICHELIS",
+    "number": 6
+   },
+   {
+    "name": "Bastian Schweinsteiger",
+    "answer": "SCHWEINSTEIGER",
+    "number": 31
+   },
+   {
+    "name": "Michael Ballack",
+    "answer": "BALLACK",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Roy Makaay",
+    "answer": "MAKAAY",
+    "number": 10
+   },
+   {
+    "name": "Paolo Guerrero",
+    "answer": "GUERRERO",
+    "number": 33
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2026-04-18-werderbremen-hamburg",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2025/26",
+  "date": "18.04.2026",
+  "team": "Werder Bremen",
+  "opponent": "Hamburg",
+  "score": "3-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#1d9053",
+   "sleeves": "#1d9053",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Mio Backhaus",
+    "answer": "BACKHAUS",
+    "number": 30
+   },
+   {
+    "name": "Yukinari Sugawara",
+    "answer": "SUGAWARA",
+    "number": 3
+   },
+   {
+    "name": "Amos Pieper",
+    "answer": "PIEPER",
+    "number": 5
+   },
+   {
+    "name": "Karim Coulibaly",
+    "answer": "COULIBALY",
+    "number": 31
+   },
+   {
+    "name": "Olivier Deman",
+    "answer": "DEMAN",
+    "number": 2
+   },
+   {
+    "name": "Jens Stage",
+    "answer": "STAGE",
+    "number": 6,
+    "goals": 2
+   },
+   {
+    "name": "Senne Lynen",
+    "answer": "LYNEN",
+    "number": 14
+   },
+   {
+    "name": "Cameron Puertas",
+    "answer": "PUERTAS",
+    "number": 18,
+    "goals": 1
+   },
+   {
+    "name": "Justin Njinmah",
+    "answer": "NJINMAH",
+    "number": 11
+   },
+   {
+    "name": "Jovan Milosevic",
+    "answer": "MILOSEVIC",
+    "number": 19
+   },
+   {
+    "name": "Romano Schmid",
+    "answer": "SCHMID",
+    "number": 20
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2017-09-30-hamburg-werderbremen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2017/18",
+  "date": "30.09.2017",
+  "team": "Hamburg",
+  "opponent": "Werder Bremen",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#0a3a82",
+   "number": "#0a3a82"
+  },
+  "lineup": [
+   {
+    "name": "Christian Mathenia",
+    "answer": "MATHENIA",
+    "number": 1
+   },
+   {
+    "name": "Dennis Diekmeier",
+    "answer": "DIEKMEIER",
+    "number": 2
+   },
+   {
+    "name": "Gideon Jung",
+    "answer": "JUNG",
+    "number": 28
+   },
+   {
+    "name": "Kyriakos Papadopoulos",
+    "answer": "PAPADOPOULOS",
+    "number": 9
+   },
+   {
+    "name": "Gotoku Sakai",
+    "answer": "SAKAI",
+    "number": 24
+   },
+   {
+    "name": "Albin Ekdal",
+    "answer": "EKDAL",
+    "number": 20
+   },
+   {
+    "name": "Vasilije Janjicic",
+    "answer": "JANJICIC",
+    "number": 16
+   },
+   {
+    "name": "André Hahn",
+    "answer": "HAHN",
+    "number": 11
+   },
+   {
+    "name": "Aaron Hunt",
+    "answer": "HUNT",
+    "number": 14
+   },
+   {
+    "name": "Tatsuya Ito",
+    "answer": "ITO",
+    "number": 43
+   },
+   {
+    "name": "Bobby Wood",
+    "answer": "WOOD",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2016-04-22-hamburg-werderbremen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2015/16",
+  "date": "22.04.2016",
+  "team": "Hamburg",
+  "opponent": "Werder Bremen",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#0a3a82",
+   "number": "#0a3a82"
+  },
+  "lineup": [
+   {
+    "name": "Jaroslav Drobný",
+    "answer": "DROBNY",
+    "number": 1
+   },
+   {
+    "name": "Gotoku Sakai",
+    "answer": "SAKAI",
+    "number": 24
+   },
+   {
+    "name": "Emir Spahic",
+    "answer": "SPAHIC",
+    "number": 4
+   },
+   {
+    "name": "Johan Djourou",
+    "answer": "DJOUROU",
+    "number": 5
+   },
+   {
+    "name": "Matthias Ostrzolek",
+    "answer": "OSTRZOLEK",
+    "number": 22
+   },
+   {
+    "name": "Lewis Holtby",
+    "answer": "HOLTBY",
+    "number": 8
+   },
+   {
+    "name": "Gideon Jung",
+    "answer": "JUNG",
+    "number": 28
+   },
+   {
+    "name": "Nicolai Müller",
+    "answer": "MULLER",
+    "number": 27
+   },
+   {
+    "name": "Michael Gregoritsch",
+    "answer": "GREGORITSCH",
+    "number": 23
+   },
+   {
+    "name": "Ivo Ilicevic",
+    "answer": "ILICEVIC",
+    "number": 7
+   },
+   {
+    "name": "Pierre-Michel Lasogga",
+    "answer": "LASOGGA",
+    "number": 10,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2014-03-01-werderbremen-hamburg",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2013/14",
+  "date": "01.03.2014",
+  "team": "Werder Bremen",
+  "opponent": "Hamburg",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#1d9053",
+   "sleeves": "#1d9053",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Raphael Wolf",
+    "answer": "WOLF",
+    "number": 20
+   },
+   {
+    "name": "Aleksandar Ignjovski",
+    "answer": "IGNJOVSKI",
+    "number": 17
+   },
+   {
+    "name": "Sebastian Prödl",
+    "answer": "PRODL",
+    "number": 15
+   },
+   {
+    "name": "Assani Lukimya",
+    "answer": "LUKIMYA",
+    "number": 5
+   },
+   {
+    "name": "Santiago García",
+    "answer": "GARCIA",
+    "number": 2
+   },
+   {
+    "name": "Zlatko Junuzovic",
+    "answer": "JUNUZOVIC",
+    "number": 16,
+    "goals": 1
+   },
+   {
+    "name": "Philipp Bargfrede",
+    "answer": "BARGFREDE",
+    "number": 44
+   },
+   {
+    "name": "Ludovic Obraniak",
+    "answer": "OBRANIAK",
+    "number": 7
+   },
+   {
+    "name": "Aaron Hunt",
+    "answer": "HUNT",
+    "number": 14
+   },
+   {
+    "name": "Franco Di Santo",
+    "answer": "DI SANTO",
+    "number": 9
+   },
+   {
+    "name": "Nils Petersen",
+    "answer": "PETERSEN",
+    "number": 24
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2012-09-01-werderbremen-hamburg",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2012/13",
+  "date": "01.09.2012",
+  "team": "Werder Bremen",
+  "opponent": "Hamburg",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#1d9053",
+   "sleeves": "#1d9053",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Sebastian Mielitz",
+    "answer": "MIELITZ",
+    "number": 1
+   },
+   {
+    "name": "Theodor Gebre Selassie",
+    "answer": "SELASSIE",
+    "number": 23
+   },
+   {
+    "name": "Sokratis Papastathopoulos",
+    "answer": "PAPASTATHOPOULOS",
+    "number": 22
+   },
+   {
+    "name": "Sebastian Prödl",
+    "answer": "PRODL",
+    "number": 15
+   },
+   {
+    "name": "Clemens Fritz",
+    "answer": "FRITZ",
+    "number": 8
+   },
+   {
+    "name": "Aaron Hunt",
+    "answer": "HUNT",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Zlatko Junuzovic",
+    "answer": "JUNUZOVIC",
+    "number": 16
+   },
+   {
+    "name": "Kevin De Bruyne",
+    "answer": "DE BRUYNE",
+    "number": 6
+   },
+   {
+    "name": "Marko Arnautovic",
+    "answer": "ARNAUTOVIC",
+    "number": 7
+   },
+   {
+    "name": "Nils Petersen",
+    "answer": "PETERSEN",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Eljero Elia",
+    "answer": "ELIA",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2011-02-19-hamburg-werderbremen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2010/11",
+  "date": "19.02.2011",
+  "team": "Hamburg",
+  "opponent": "Werder Bremen",
+  "score": "4-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#0a3a82",
+   "number": "#0a3a82"
+  },
+  "lineup": [
+   {
+    "name": "Frank Rost",
+    "answer": "ROST",
+    "number": 1
+   },
+   {
+    "name": "Guy Demel",
+    "answer": "DEMEL",
+    "number": 20
+   },
+   {
+    "name": "Gojko Kacar",
+    "answer": "KACAR",
+    "number": 44
+   },
+   {
+    "name": "Joris Mathijsen",
+    "answer": "MATHIJSEN",
+    "number": 5
+   },
+   {
+    "name": "Dennis Aogo",
+    "answer": "AOGO",
+    "number": 6
+   },
+   {
+    "name": "Jonathan Pitroipa",
+    "answer": "PITROIPA",
+    "number": 21
+   },
+   {
+    "name": "Zé Roberto",
+    "answer": "ROBERTO",
+    "number": 8
+   },
+   {
+    "name": "Heiko Westermann",
+    "answer": "WESTERMANN",
+    "number": 4
+   },
+   {
+    "name": "Heung-min Son",
+    "answer": "SON",
+    "number": 40
+   },
+   {
+    "name": "Mladen Petric",
+    "answer": "PETRIC",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Paolo Guerrero",
+    "answer": "GUERRERO",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2009-12-20-hamburg-werderbremen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2009/10",
+  "date": "20.12.2009",
+  "team": "Hamburg",
+  "opponent": "Werder Bremen",
+  "score": "2-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#0a3a82",
+   "number": "#0a3a82"
+  },
+  "lineup": [
+   {
+    "name": "Frank Rost",
+    "answer": "ROST",
+    "number": 1
+   },
+   {
+    "name": "Guy Demel",
+    "answer": "DEMEL",
+    "number": 20
+   },
+   {
+    "name": "Jérôme Boateng",
+    "answer": "BOATENG",
+    "number": 17
+   },
+   {
+    "name": "Joris Mathijsen",
+    "answer": "MATHIJSEN",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Dennis Aogo",
+    "answer": "AOGO",
+    "number": 6
+   },
+   {
+    "name": "Tunay Torun",
+    "answer": "TORUN",
+    "number": 35
+   },
+   {
+    "name": "David Jarolím",
+    "answer": "JAROLIM",
+    "number": 14
+   },
+   {
+    "name": "Tomás Rincón",
+    "answer": "RINCON",
+    "number": 25
+   },
+   {
+    "name": "Marcell Jansen",
+    "answer": "JANSEN",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Mladen Petric",
+    "answer": "PETRIC",
+    "number": 10
+   },
+   {
+    "name": "Eljero Elia",
+    "answer": "ELIA",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2008-05-07-werderbremen-hamburg",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2007/08",
+  "date": "07.05.2008",
+  "team": "Werder Bremen",
+  "opponent": "Hamburg",
+  "score": "1-0",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#1d9053",
+   "sleeves": "#1d9053",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Tim Wiese",
+    "answer": "WIESE",
+    "number": 1
+   },
+   {
+    "name": "Clemens Fritz",
+    "answer": "FRITZ",
+    "number": 8
+   },
+   {
+    "name": "Naldo",
+    "answer": "NALDO",
+    "number": 4
+   },
+   {
+    "name": "Per Mertesacker",
+    "answer": "MERTESACKER",
+    "number": 29
+   },
+   {
+    "name": "Petri Pasanen",
+    "answer": "PASANEN",
+    "number": 3
+   },
+   {
+    "name": "Daniel Jensen",
+    "answer": "JENSEN",
+    "number": 20
+   },
+   {
+    "name": "Frank Baumann",
+    "answer": "BAUMANN",
+    "number": 6
+   },
+   {
+    "name": "Tim Borowski",
+    "answer": "BOROWSKI",
+    "number": 24
+   },
+   {
+    "name": "Diego",
+    "answer": "DIEGO",
+    "number": 10
+   },
+   {
+    "name": "Hugo Almeida",
+    "answer": "ALMEIDA",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Markus Rosenberg",
+    "answer": "ROSENBERG",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2006-09-23-hamburg-werderbremen",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2006/07",
+  "date": "23.09.2006",
+  "team": "Hamburg",
+  "opponent": "Werder Bremen",
+  "score": "1-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#0a3a82",
+   "number": "#0a3a82"
+  },
+  "lineup": [
+   {
+    "name": "Sascha Kirschstein",
+    "answer": "KIRSCHSTEIN",
+    "number": 12
+   },
+   {
+    "name": "Mehdi Mahdavikia",
+    "answer": "MAHDAVIKIA",
+    "number": 7
+   },
+   {
+    "name": "Bastian Reinhardt",
+    "answer": "REINHARDT",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Vincent Kompany",
+    "answer": "KOMPANY",
+    "number": 10
+   },
+   {
+    "name": "Joris Mathijsen",
+    "answer": "MATHIJSEN",
+    "number": 5
+   },
+   {
+    "name": "David Jarolím",
+    "answer": "JAROLIM",
+    "number": 14
+   },
+   {
+    "name": "Nigel de Jong",
+    "answer": "DE JONG",
+    "number": 28
+   },
+   {
+    "name": "Juan Pablo Sorín",
+    "answer": "SORIN",
+    "number": 2
+   },
+   {
+    "name": "Piotr Trochowski",
+    "answer": "TROCHOWSKI",
+    "number": 15
+   },
+   {
+    "name": "Danijel Ljuboja",
+    "answer": "LJUBOJA",
+    "number": 38
+   },
+   {
+    "name": "Boubacar Sanogo",
+    "answer": "SANOGO",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2005-04-09-werderbremen-hamburg",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Kuzey Derbisi · Bundesliga",
+   "en": "Nordderby · Bundesliga"
+  },
+  "season": "2004/05",
+  "date": "09.04.2005",
+  "team": "Werder Bremen",
+  "opponent": "Hamburg",
+  "score": "2-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#1d9053",
+   "sleeves": "#1d9053",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Andreas Reinke",
+    "answer": "REINKE",
+    "number": 1
+   },
+   {
+    "name": "Paul Stalteri",
+    "answer": "STALTERI",
+    "number": 7
+   },
+   {
+    "name": "Petri Pasanen",
+    "answer": "PASANEN",
+    "number": 3
+   },
+   {
+    "name": "Frank Fahrenhorst",
+    "answer": "FAHRENHORST",
+    "number": 2
+   },
+   {
+    "name": "Ludovic Magnin",
+    "answer": "MAGNIN",
+    "number": 23
+   },
+   {
+    "name": "Daniel Jensen",
+    "answer": "JENSEN",
+    "number": 20
+   },
+   {
+    "name": "Fabian Ernst",
+    "answer": "ERNST",
+    "number": 4
+   },
+   {
+    "name": "Tim Borowski",
+    "answer": "BOROWSKI",
+    "number": 24
+   },
+   {
+    "name": "Johan Micoud",
+    "answer": "MICOUD",
+    "number": 10
+   },
+   {
+    "name": "Ivan Klasnic",
+    "answer": "KLASNIC",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Miroslav Klose",
+    "answer": "KLOSE",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2026-03-21-koln-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2025/26",
+  "date": "21.03.2026",
+  "team": "Köln",
+  "opponent": "Mönchengladbach",
+  "score": "3-3",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ed1c24",
+   "number": "#ed1c24"
+  },
+  "lineup": [
+   {
+    "name": "Marvin Schwäbe",
+    "answer": "SCHWABE",
+    "number": 1
+   },
+   {
+    "name": "Cenny Neumann",
+    "answer": "NEUMANN",
+    "number": 36
+   },
+   {
+    "name": "Rav van den Berg",
+    "answer": "VAN DEN BERG",
+    "number": 33
+   },
+   {
+    "name": "Cenk Özkacar",
+    "answer": "OZKACAR",
+    "number": 39
+   },
+   {
+    "name": "Kristoffer Lund",
+    "answer": "LUND",
+    "number": 32
+   },
+   {
+    "name": "Ísak Jóhannesson",
+    "answer": "JOHANNESSON",
+    "number": 18
+   },
+   {
+    "name": "Eric Martel",
+    "answer": "MARTEL",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Linton Maina",
+    "answer": "MAINA",
+    "number": 37
+   },
+   {
+    "name": "Jakub Kamiński",
+    "answer": "KAMINSKI",
+    "number": 16
+   },
+   {
+    "name": "Said El Mala",
+    "answer": "EL MALA",
+    "number": 13,
+    "goals": 1
+   },
+   {
+    "name": "Ragnar Ache",
+    "answer": "ACHE",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2023-10-22-koln-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2023/24",
+  "date": "22.10.2023",
+  "team": "Köln",
+  "opponent": "Mönchengladbach",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ed1c24",
+   "number": "#ed1c24"
+  },
+  "lineup": [
+   {
+    "name": "Marvin Schwäbe",
+    "answer": "SCHWABE",
+    "number": 1
+   },
+   {
+    "name": "Rasmus Carstensen",
+    "answer": "CARSTENSEN",
+    "number": 18
+   },
+   {
+    "name": "Timo Hübers",
+    "answer": "HUBERS",
+    "number": 4
+   },
+   {
+    "name": "Jeff Chabot",
+    "answer": "CHABOT",
+    "number": 24
+   },
+   {
+    "name": "Leart Paçarada",
+    "answer": "PACARADA",
+    "number": 17
+   },
+   {
+    "name": "Eric Martel",
+    "answer": "MARTEL",
+    "number": 6
+   },
+   {
+    "name": "Dejan Ljubicic",
+    "answer": "LJUBICIC",
+    "number": 7
+   },
+   {
+    "name": "Linton Maina",
+    "answer": "MAINA",
+    "number": 37
+   },
+   {
+    "name": "Florian Kainz",
+    "answer": "KAINZ",
+    "number": 11,
+    "goals": 2
+   },
+   {
+    "name": "Luca Waldschmidt",
+    "answer": "WALDSCHMIDT",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Davie Selke",
+    "answer": "SELKE",
+    "number": 27
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2022-04-16-koln-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2021/22",
+  "date": "16.04.2022",
+  "team": "Köln",
+  "opponent": "Mönchengladbach",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ed1c24",
+   "number": "#ed1c24"
+  },
+  "lineup": [
+   {
+    "name": "Marvin Schwäbe",
+    "answer": "SCHWABE",
+    "number": 20
+   },
+   {
+    "name": "Kingsley Ehizibue",
+    "answer": "EHIZIBUE",
+    "number": 19
+   },
+   {
+    "name": "Luca Kilian",
+    "answer": "KILIAN",
+    "number": 15
+   },
+   {
+    "name": "Timo Hübers",
+    "answer": "HUBERS",
+    "number": 4
+   },
+   {
+    "name": "Jonas Hector",
+    "answer": "HECTOR",
+    "number": 14
+   },
+   {
+    "name": "Salih Özcan",
+    "answer": "OZCAN",
+    "number": 6
+   },
+   {
+    "name": "Ellyes Skhiri",
+    "answer": "SKHIRI",
+    "number": 28
+   },
+   {
+    "name": "Dejan Ljubicic",
+    "answer": "LJUBICIC",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Mark Uth",
+    "answer": "UTH",
+    "number": 13
+   },
+   {
+    "name": "Florian Kainz",
+    "answer": "KAINZ",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Anthony Modeste",
+    "answer": "MODESTE",
+    "number": 27,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2020-03-11-monchengladbach-koln",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2019/20",
+  "date": "11.03.2020",
+  "team": "Mönchengladbach",
+  "opponent": "Köln",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Stefan Lainer",
+    "answer": "LAINER",
+    "number": 18
+   },
+   {
+    "name": "Matthias Ginter",
+    "answer": "GINTER",
+    "number": 28
+   },
+   {
+    "name": "Nico Elvedi",
+    "answer": "ELVEDI",
+    "number": 30
+   },
+   {
+    "name": "Oscar Wendt",
+    "answer": "WENDT",
+    "number": 17
+   },
+   {
+    "name": "Christoph Kramer",
+    "answer": "KRAMER",
+    "number": 6
+   },
+   {
+    "name": "Tobias Strobl",
+    "answer": "STROBL",
+    "number": 5
+   },
+   {
+    "name": "Patrick Herrmann",
+    "answer": "HERRMANN",
+    "number": 7
+   },
+   {
+    "name": "Breel Embolo",
+    "answer": "EMBOLO",
+    "number": 36,
+    "goals": 1
+   },
+   {
+    "name": "Marcus Thuram",
+    "answer": "THURAM",
+    "number": 10
+   },
+   {
+    "name": "Alassane Pléa",
+    "answer": "PLEA",
+    "number": 14
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2017-08-20-monchengladbach-koln",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2017/18",
+  "date": "20.08.2017",
+  "team": "Mönchengladbach",
+  "opponent": "Köln",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Nico Elvedi",
+    "answer": "ELVEDI",
+    "number": 30,
+    "goals": 1
+   },
+   {
+    "name": "Matthias Ginter",
+    "answer": "GINTER",
+    "number": 28
+   },
+   {
+    "name": "Jannik Vestergaard",
+    "answer": "VESTERGAARD",
+    "number": 4
+   },
+   {
+    "name": "Oscar Wendt",
+    "answer": "WENDT",
+    "number": 17
+   },
+   {
+    "name": "Ibrahima Traoré",
+    "answer": "TRAORE",
+    "number": 16
+   },
+   {
+    "name": "Christoph Kramer",
+    "answer": "KRAMER",
+    "number": 6
+   },
+   {
+    "name": "Denis Zakaria",
+    "answer": "ZAKARIA",
+    "number": 8
+   },
+   {
+    "name": "Thorgan Hazard",
+    "answer": "HAZARD",
+    "number": 10
+   },
+   {
+    "name": "Lars Stindl",
+    "answer": "STINDL",
+    "number": 13
+   },
+   {
+    "name": "Raffael",
+    "answer": "RAFFAEL",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2016-02-20-monchengladbach-koln",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2015/16",
+  "date": "20.02.2016",
+  "team": "Mönchengladbach",
+  "opponent": "Köln",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Yann Sommer",
+    "answer": "SOMMER",
+    "number": 1
+   },
+   {
+    "name": "Nico Elvedi",
+    "answer": "ELVEDI",
+    "number": 30
+   },
+   {
+    "name": "Håvard Nordtveit",
+    "answer": "NORDTVEIT",
+    "number": 6
+   },
+   {
+    "name": "Andreas Christensen",
+    "answer": "CHRISTENSEN",
+    "number": 3
+   },
+   {
+    "name": "Oscar Wendt",
+    "answer": "WENDT",
+    "number": 17
+   },
+   {
+    "name": "Thorgan Hazard",
+    "answer": "HAZARD",
+    "number": 10
+   },
+   {
+    "name": "Granit Xhaka",
+    "answer": "XHAKA",
+    "number": 34
+   },
+   {
+    "name": "Mahmoud Dahoud",
+    "answer": "DAHOUD",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Fabian Johnson",
+    "answer": "JOHNSON",
+    "number": 19
+   },
+   {
+    "name": "Lars Stindl",
+    "answer": "STINDL",
+    "number": 13
+   },
+   {
+    "name": "Raffael",
+    "answer": "RAFFAEL",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2014-09-21-koln-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2014/15",
+  "date": "21.09.2014",
+  "team": "Köln",
+  "opponent": "Mönchengladbach",
+  "score": "0-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ed1c24",
+   "number": "#ed1c24"
+  },
+  "lineup": [
+   {
+    "name": "Timo Horn",
+    "answer": "HORN",
+    "number": 1
+   },
+   {
+    "name": "Miso Brecko",
+    "answer": "BRECKO",
+    "number": 2
+   },
+   {
+    "name": "Dominic Maroh",
+    "answer": "MAROH",
+    "number": 5
+   },
+   {
+    "name": "Kevin Wimmer",
+    "answer": "WIMMER",
+    "number": 28
+   },
+   {
+    "name": "Jonas Hector",
+    "answer": "HECTOR",
+    "number": 14
+   },
+   {
+    "name": "Paweł Olkowski",
+    "answer": "OLKOWSKI",
+    "number": 16
+   },
+   {
+    "name": "Kevin Vogt",
+    "answer": "VOGT",
+    "number": 6
+   },
+   {
+    "name": "Matthias Lehmann",
+    "answer": "LEHMANN",
+    "number": 33
+   },
+   {
+    "name": "Marcel Risse",
+    "answer": "RISSE",
+    "number": 7
+   },
+   {
+    "name": "Yuya Osako",
+    "answer": "OSAKO",
+    "number": 13
+   },
+   {
+    "name": "Anthony Ujah",
+    "answer": "UJAH",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2010-11-13-monchengladbach-koln",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2010/11",
+  "date": "13.11.2010",
+  "team": "Mönchengladbach",
+  "opponent": "Köln",
+  "score": "4-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Christofer Heimeroth",
+    "answer": "HEIMEROTH",
+    "number": 1
+   },
+   {
+    "name": "Tobias Levels",
+    "answer": "LEVELS",
+    "number": 22
+   },
+   {
+    "name": "Bamba Anderson",
+    "answer": "ANDERSON",
+    "number": 5
+   },
+   {
+    "name": "Roel Brouwers",
+    "answer": "BROUWERS",
+    "number": 4
+   },
+   {
+    "name": "Filip Daems",
+    "answer": "DAEMS",
+    "number": 3
+   },
+   {
+    "name": "Patrick Herrmann",
+    "answer": "HERRMANN",
+    "number": 15
+   },
+   {
+    "name": "Michael Bradley",
+    "answer": "BRADLEY",
+    "number": 26,
+    "goals": 1
+   },
+   {
+    "name": "Thorben Marx",
+    "answer": "MARX",
+    "number": 14
+   },
+   {
+    "name": "Marco Reus",
+    "answer": "REUS",
+    "number": 11
+   },
+   {
+    "name": "Igor de Camargo",
+    "answer": "DE CAMARGO",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Raúl Bobadilla",
+    "answer": "BOBADILLA",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2009-03-14-monchengladbach-koln",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2008/09",
+  "date": "14.03.2009",
+  "team": "Mönchengladbach",
+  "opponent": "Köln",
+  "score": "4-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#00a651",
+   "number": "#111111"
+  },
+  "lineup": [
+   {
+    "name": "Logan Bailly",
+    "answer": "BAILLY",
+    "number": 30
+   },
+   {
+    "name": "Paul Stalteri",
+    "answer": "STALTERI",
+    "number": 13
+   },
+   {
+    "name": "Roel Brouwers",
+    "answer": "BROUWERS",
+    "number": 4
+   },
+   {
+    "name": "Filip Daems",
+    "answer": "DAEMS",
+    "number": 3
+   },
+   {
+    "name": "Tobias Levels",
+    "answer": "LEVELS",
+    "number": 22
+   },
+   {
+    "name": "Tomas Galasek",
+    "answer": "GALASEK",
+    "number": 8
+   },
+   {
+    "name": "Michael Bradley",
+    "answer": "BRADLEY",
+    "number": 26,
+    "goals": 2
+   },
+   {
+    "name": "Karim Matmour",
+    "answer": "MATMOUR",
+    "number": 40,
+    "goals": 1
+   },
+   {
+    "name": "Alexander Baumjohann",
+    "answer": "BAUMJOHANN",
+    "number": 29
+   },
+   {
+    "name": "Marko Marin",
+    "answer": "MARIN",
+    "number": 11
+   },
+   {
+    "name": "Rob Friend",
+    "answer": "FRIEND",
+    "number": 16,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "bundesliga-2005-09-17-koln-monchengladbach",
+  "tags": [
+   "derbi",
+   "bundesliga"
+  ],
+  "competition": {
+   "tr": "Ren Derbisi · Bundesliga",
+   "en": "Rhine Derby · Bundesliga"
+  },
+  "season": "2005/06",
+  "date": "17.09.2005",
+  "team": "Köln",
+  "opponent": "Mönchengladbach",
+  "score": "2-1",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ed1c24",
+   "number": "#ed1c24"
+  },
+  "lineup": [
+   {
+    "name": "Stefan Wessels",
+    "answer": "WESSELS",
+    "number": 33
+   },
+   {
+    "name": "Alpay Özalan",
+    "answer": "OZALAN",
+    "number": 27
+   },
+   {
+    "name": "Lukas Sinkiewicz",
+    "answer": "SINKIEWICZ",
+    "number": 20
+   },
+   {
+    "name": "Björn Schlicke",
+    "answer": "SCHLICKE",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Christian Lell",
+    "answer": "LELL",
+    "number": 30
+   },
+   {
+    "name": "Christian Rahn",
+    "answer": "RAHN",
+    "number": 3
+   },
+   {
+    "name": "Andrew Sinkala",
+    "answer": "SINKALA",
+    "number": 6
+   },
+   {
+    "name": "Anthony Lurling",
+    "answer": "LURLING",
+    "number": 13
+   },
+   {
+    "name": "Youssef Mokhtari",
+    "answer": "MOKHTARI",
+    "number": 36
+   },
+   {
+    "name": "Lukas Podolski",
+    "answer": "PODOLSKI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Matthias Scherz",
+    "answer": "SCHERZ",
+    "number": 8
+   }
+  ]
+ }
+]

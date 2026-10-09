@@ -1,0 +1,7824 @@
+[
+ {
+  "id": "laliga-2026-05-10-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2025/26",
+  "date": "10.05.2026",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Joan García",
+    "answer": "JOAN GARCIA",
+    "number": 13
+   },
+   {
+    "name": "Eric García",
+    "answer": "ERIC GARCIA",
+    "number": 24
+   },
+   {
+    "name": "Pau Cubarsí",
+    "answer": "CUBARSI",
+    "number": 5
+   },
+   {
+    "name": "Gerard Martín",
+    "answer": "MARTIN",
+    "number": 18
+   },
+   {
+    "name": "João Cancelo",
+    "answer": "CANCELO",
+    "number": 2
+   },
+   {
+    "name": "Gavi",
+    "answer": "GAVI",
+    "number": 6
+   },
+   {
+    "name": "Pedri",
+    "answer": "PEDRI",
+    "number": 8
+   },
+   {
+    "name": "Marcus Rashford",
+    "answer": "RASHFORD",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Dani Olmo",
+    "answer": "OLMO",
+    "number": 20
+   },
+   {
+    "name": "Fermín López",
+    "answer": "LOPEZ",
+    "number": 16
+   },
+   {
+    "name": "Ferran Torres",
+    "answer": "TORRES",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2025-10-26-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2025/26",
+  "date": "26.10.2025",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 1
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 8
+   },
+   {
+    "name": "Éder Militão",
+    "answer": "MILITAO",
+    "number": 3
+   },
+   {
+    "name": "Dean Huijsen",
+    "answer": "HUIJSEN",
+    "number": 24
+   },
+   {
+    "name": "Álvaro Carreras",
+    "answer": "CARRERAS",
+    "number": 18
+   },
+   {
+    "name": "Aurélien Tchouaméni",
+    "answer": "TCHOUAMENI",
+    "number": 14
+   },
+   {
+    "name": "Eduardo Camavinga",
+    "answer": "CAMAVINGA",
+    "number": 6
+   },
+   {
+    "name": "Arda Güler",
+    "answer": "GULER",
+    "number": 15
+   },
+   {
+    "name": "Jude Bellingham",
+    "answer": "BELLINGHAM",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 7
+   },
+   {
+    "name": "Kylian Mbappé",
+    "answer": "MBAPPE",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2025-01-12-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · İspanya Süper Kupası",
+   "en": "El Clásico · Spanish Super Cup"
+  },
+  "season": "2024/25",
+  "date": "12.01.2025",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "5-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Wojciech Szczesny",
+    "answer": "SZCZESNY",
+    "number": 25
+   },
+   {
+    "name": "Jules Koundé",
+    "answer": "KOUNDE",
+    "number": 23
+   },
+   {
+    "name": "Pau Cubarsí",
+    "answer": "CUBARSI",
+    "number": 2
+   },
+   {
+    "name": "Iñigo Martínez",
+    "answer": "MARTINEZ",
+    "number": 5
+   },
+   {
+    "name": "Alejandro Balde",
+    "answer": "BALDE",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Gavi",
+    "answer": "GAVI",
+    "number": 6
+   },
+   {
+    "name": "Marc Casadó",
+    "answer": "CASADO",
+    "number": 17
+   },
+   {
+    "name": "Pedri",
+    "answer": "PEDRI",
+    "number": 8
+   },
+   {
+    "name": "Lamine Yamal",
+    "answer": "YAMAL",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Raphinha",
+    "answer": "RAPHINHA",
+    "number": 11,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2024-04-21-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2023/24",
+  "date": "21.04.2024",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "3-2",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Andriy Lunin",
+    "answer": "LUNIN",
+    "number": 13
+   },
+   {
+    "name": "Lucas Vázquez",
+    "answer": "VAZQUEZ",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Aurélien Tchouaméni",
+    "answer": "TCHOUAMENI",
+    "number": 18
+   },
+   {
+    "name": "Antonio Rüdiger",
+    "answer": "RUDIGER",
+    "number": 22
+   },
+   {
+    "name": "Eduardo Camavinga",
+    "answer": "CAMAVINGA",
+    "number": 12
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 10
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 15
+   },
+   {
+    "name": "Jude Bellingham",
+    "answer": "BELLINGHAM",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Rodrygo",
+    "answer": "RODRYGO",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2023-10-28-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2023/24",
+  "date": "28.10.2023",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Kepa Arrizabalaga",
+    "answer": "ARRIZABALAGA",
+    "number": 25
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2
+   },
+   {
+    "name": "Antonio Rüdiger",
+    "answer": "RUDIGER",
+    "number": 22
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 4
+   },
+   {
+    "name": "Ferland Mendy",
+    "answer": "MENDY",
+    "number": 23
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 15
+   },
+   {
+    "name": "Aurélien Tchouaméni",
+    "answer": "TCHOUAMENI",
+    "number": 18
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Jude Bellingham",
+    "answer": "BELLINGHAM",
+    "number": 5,
+    "goals": 2
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 7
+   },
+   {
+    "name": "Rodrygo",
+    "answer": "RODRYGO",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2023-03-19-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2022/23",
+  "date": "19.03.2023",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Ronald Araujo",
+    "answer": "ARAUJO",
+    "number": 4
+   },
+   {
+    "name": "Jules Koundé",
+    "answer": "KOUNDE",
+    "number": 23
+   },
+   {
+    "name": "Andreas Christensen",
+    "answer": "CHRISTENSEN",
+    "number": 15
+   },
+   {
+    "name": "Alejandro Balde",
+    "answer": "BALDE",
+    "number": 28
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Frenkie de Jong",
+    "answer": "DE JONG",
+    "number": 21
+   },
+   {
+    "name": "Raphinha",
+    "answer": "RAPHINHA",
+    "number": 22
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9
+   },
+   {
+    "name": "Gavi",
+    "answer": "GAVI",
+    "number": 6
+   }
+  ]
+ },
+ {
+  "id": "laliga-2022-10-16-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2022/23",
+  "date": "16.10.2022",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "3-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Andriy Lunin",
+    "answer": "LUNIN",
+    "number": 13
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2
+   },
+   {
+    "name": "Éder Militão",
+    "answer": "MILITAO",
+    "number": 3
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 4
+   },
+   {
+    "name": "Ferland Mendy",
+    "answer": "MENDY",
+    "number": 23
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 10
+   },
+   {
+    "name": "Aurélien Tchouaméni",
+    "answer": "TCHOUAMENI",
+    "number": 18
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 20
+   }
+  ]
+ },
+ {
+  "id": "laliga-2022-01-12-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · İspanya Süper Kupası",
+   "en": "El Clásico · Spanish Super Cup"
+  },
+  "season": "2021/22",
+  "date": "12.01.2022",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "3-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 1
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2
+   },
+   {
+    "name": "Éder Militão",
+    "answer": "MILITAO",
+    "number": 3
+   },
+   {
+    "name": "Nacho Fernández",
+    "answer": "FERNANDEZ",
+    "number": 6
+   },
+   {
+    "name": "Ferland Mendy",
+    "answer": "MENDY",
+    "number": 23
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Casemiro",
+    "answer": "CASEMIRO",
+    "number": 14
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 10
+   },
+   {
+    "name": "Marco Asensio",
+    "answer": "ASENSIO",
+    "number": 11
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 20,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2021-04-10-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2020/21",
+  "date": "10.04.2021",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 1
+   },
+   {
+    "name": "Lucas Vázquez",
+    "answer": "VAZQUEZ",
+    "number": 17
+   },
+   {
+    "name": "Nacho Fernández",
+    "answer": "FERNANDEZ",
+    "number": 6
+   },
+   {
+    "name": "Éder Militão",
+    "answer": "MILITAO",
+    "number": 3
+   },
+   {
+    "name": "Ferland Mendy",
+    "answer": "MENDY",
+    "number": 23
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Casemiro",
+    "answer": "CASEMIRO",
+    "number": 14
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 10
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 15
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 20
+   }
+  ]
+ },
+ {
+  "id": "laliga-2020-03-01-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2019/20",
+  "date": "01.03.2020",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 13
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2
+   },
+   {
+    "name": "Raphaël Varane",
+    "answer": "VARANE",
+    "number": 5
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12
+   },
+   {
+    "name": "Casemiro",
+    "answer": "CASEMIRO",
+    "number": 14
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 15
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Isco",
+    "answer": "ISCO",
+    "number": 22
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 25,
+    "goals": 1
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2019-02-27-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · Kral Kupası",
+   "en": "El Clásico · Copa del Rey"
+  },
+  "season": "2018/19",
+  "date": "27.02.2019",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "3-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Nélson Semedo",
+    "answer": "SEMEDO",
+    "number": 2
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Clément Lenglet",
+    "answer": "LENGLET",
+    "number": 15
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Ousmane Dembélé",
+    "answer": "DEMBELE",
+    "number": 11
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2018-10-28-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2018/19",
+  "date": "28.10.2018",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "5-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Clément Lenglet",
+    "answer": "LENGLET",
+    "number": 15
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Arthur Melo",
+    "answer": "MELO",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Rafinha",
+    "answer": "RAFINHA",
+    "number": 12
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9,
+    "goals": 3
+   },
+   {
+    "name": "Philippe Coutinho",
+    "answer": "COUTINHO",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2017-12-23-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2017/18",
+  "date": "23.12.2017",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "3-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Thomas Vermaelen",
+    "answer": "VERMAELEN",
+    "number": 25
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Paulinho",
+    "answer": "PAULINHO",
+    "number": 15
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2017-04-23-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2016/17",
+  "date": "23.04.2017",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "3-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Samuel Umtiti",
+    "answer": "UMTITI",
+    "number": 23
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9
+   },
+   {
+    "name": "Paco Alcácer",
+    "answer": "ALCACER",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "laliga-2016-04-02-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2015/16",
+  "date": "02.04.2016",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Keylor Navas",
+    "answer": "NAVAS",
+    "number": 1
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 15
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Casemiro",
+    "answer": "CASEMIRO",
+    "number": 14
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 19
+   },
+   {
+    "name": "Gareth Bale",
+    "answer": "BALE",
+    "number": 11
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2015-03-22-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2014/15",
+  "date": "22.03.2015",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Claudio Bravo",
+    "answer": "BRAVO",
+    "number": 13
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 22
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Jérémy Mathieu",
+    "answer": "MATHIEU",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Javier Mascherano",
+    "answer": "MASCHERANO",
+    "number": 14
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Neymar",
+    "answer": "NEYMAR",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2014-04-16-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · Kral Kupası",
+   "en": "El Clásico · Copa del Rey"
+  },
+  "season": "2013/14",
+  "date": "16.04.2014",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 15
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Fábio Coentrão",
+    "answer": "COENTRAO",
+    "number": 5
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 19
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14
+   },
+   {
+    "name": "Isco",
+    "answer": "ISCO",
+    "number": 23
+   },
+   {
+    "name": "Ángel Di María",
+    "answer": "DI MARIA",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9
+   },
+   {
+    "name": "Gareth Bale",
+    "answer": "BALE",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2013-03-02-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2012/13",
+  "date": "02.03.2013",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Diego López",
+    "answer": "LOPEZ",
+    "number": 25
+   },
+   {
+    "name": "Michael Essien",
+    "answer": "ESSIEN",
+    "number": 15
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Raphaël Varane",
+    "answer": "VARANE",
+    "number": 2
+   },
+   {
+    "name": "Fábio Coentrão",
+    "answer": "COENTRAO",
+    "number": 5
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 19
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "José Callejón",
+    "answer": "CALLEJON",
+    "number": 21
+   },
+   {
+    "name": "Kaká",
+    "answer": "KAKA",
+    "number": 8
+   },
+   {
+    "name": "Álvaro Morata",
+    "answer": "MORATA",
+    "number": 29
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2013-01-30-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · Kral Kupası",
+   "en": "El Clásico · Copa del Rey"
+  },
+  "season": "2012/13",
+  "date": "30.01.2013",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Diego López",
+    "answer": "LOPEZ",
+    "number": 25
+   },
+   {
+    "name": "Michael Essien",
+    "answer": "ESSIEN",
+    "number": 15
+   },
+   {
+    "name": "Ricardo Carvalho",
+    "answer": "CARVALHO",
+    "number": 11
+   },
+   {
+    "name": "Raphaël Varane",
+    "answer": "VARANE",
+    "number": 2,
+    "goals": 1
+   },
+   {
+    "name": "Álvaro Arbeloa",
+    "answer": "ARBELOA",
+    "number": 17
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6
+   },
+   {
+    "name": "José Callejón",
+    "answer": "CALLEJON",
+    "number": 21
+   },
+   {
+    "name": "Mesut Özil",
+    "answer": "OZIL",
+    "number": 10
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2012-08-29-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · İspanya Süper Kupası",
+   "en": "El Clásico · Spanish Super Cup"
+  },
+  "season": "2012/13",
+  "date": "29.08.2012",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Álvaro Arbeloa",
+    "answer": "ARBELOA",
+    "number": 17
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6
+   },
+   {
+    "name": "Ángel Di María",
+    "answer": "DI MARIA",
+    "number": 22
+   },
+   {
+    "name": "Mesut Özil",
+    "answer": "OZIL",
+    "number": 10
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Gonzalo Higuaín",
+    "answer": "HIGUAIN",
+    "number": 20,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2012-01-25-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · Kral Kupası",
+   "en": "El Clásico · Copa del Rey"
+  },
+  "season": "2011/12",
+  "date": "25.01.2012",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "2-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "José Manuel Pinto",
+    "answer": "PINTO",
+    "number": 13
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2,
+    "goals": 1
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 16
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "Cesc Fàbregas",
+    "answer": "FABREGAS",
+    "number": 4
+   },
+   {
+    "name": "Alexis Sánchez",
+    "answer": "SANCHEZ",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2011-12-10-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2011/12",
+  "date": "10.12.2011",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "3-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 16
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "Cesc Fàbregas",
+    "answer": "FABREGAS",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Alexis Sánchez",
+    "answer": "SANCHEZ",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2011-08-14-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · İspanya Süper Kupası",
+   "en": "El Clásico · Spanish Super Cup"
+  },
+  "season": "2011/12",
+  "date": "14.08.2011",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "2-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Ricardo Carvalho",
+    "answer": "CARVALHO",
+    "number": 2
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6
+   },
+   {
+    "name": "Ángel Di María",
+    "answer": "DI MARIA",
+    "number": 22
+   },
+   {
+    "name": "Mesut Özil",
+    "answer": "OZIL",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2011-04-27-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · Şampiyonlar Ligi",
+   "en": "El Clásico · Champions League"
+  },
+  "season": "2010/11",
+  "date": "27.04.2011",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2
+   },
+   {
+    "name": "Javier Mascherano",
+    "answer": "MASCHERANO",
+    "number": 14
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Seydou Keita",
+    "answer": "KEITA",
+    "number": 15
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 16
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 7
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Pedro",
+    "answer": "PEDRO",
+    "number": 17
+   }
+  ]
+ },
+ {
+  "id": "laliga-2010-11-29-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2010/11",
+  "date": "29.11.2010",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "5-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 16
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Pedro",
+    "answer": "PEDRO",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 7,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2009-11-29-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2009/10",
+  "date": "29.11.2009",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Seydou Keita",
+    "answer": "KEITA",
+    "number": 15
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 16
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "Thierry Henry",
+    "answer": "HENRY",
+    "number": 14
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   }
+  ]
+ },
+ {
+  "id": "laliga-2008-12-13-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2008/09",
+  "date": "13.12.2008",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 20
+   },
+   {
+    "name": "Rafa Márquez",
+    "answer": "MARQUEZ",
+    "number": 4
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6
+   },
+   {
+    "name": "Yaya Touré",
+    "answer": "TOURE",
+    "number": 24
+   },
+   {
+    "name": "Eidur Gudjohnsen",
+    "answer": "GUDJOHNSEN",
+    "number": 7
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Samuel Eto'o",
+    "answer": "ETOO",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Thierry Henry",
+    "answer": "HENRY",
+    "number": 14
+   }
+  ]
+ },
+ {
+  "id": "laliga-2007-12-23-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2007/08",
+  "date": "23.12.2007",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Fabio Cannavaro",
+    "answer": "CANNAVARO",
+    "number": 5
+   },
+   {
+    "name": "Gabriel Heinze",
+    "answer": "HEINZE",
+    "number": 16
+   },
+   {
+    "name": "Wesley Sneijder",
+    "answer": "SNEIJDER",
+    "number": 23
+   },
+   {
+    "name": "Mahamadou Diarra",
+    "answer": "DIARRA",
+    "number": 6
+   },
+   {
+    "name": "Júlio Baptista",
+    "answer": "BAPTISTA",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Raúl",
+    "answer": "RAUL",
+    "number": 7
+   },
+   {
+    "name": "Ruud van Nistelrooy",
+    "answer": "VAN NISTELROOY",
+    "number": 17
+   },
+   {
+    "name": "Robinho",
+    "answer": "ROBINHO",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "laliga-2006-04-02-barcelona-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2005/06",
+  "date": "02.04.2006",
+  "team": "Barcelona",
+  "opponent": "Real Madrid",
+  "score": "1-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Oleguer",
+    "answer": "OLEGUER",
+    "number": 23
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Thiago Motta",
+    "answer": "MOTTA",
+    "number": 3
+   },
+   {
+    "name": "Giovanni van Bronckhorst",
+    "answer": "VAN BRONCKHORST",
+    "number": 12
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 24
+   },
+   {
+    "name": "Mark van Bommel",
+    "answer": "VAN BOMMEL",
+    "number": 17
+   },
+   {
+    "name": "Deco",
+    "answer": "DECO",
+    "number": 20
+   },
+   {
+    "name": "Henrik Larsson",
+    "answer": "LARSSON",
+    "number": 7
+   },
+   {
+    "name": "Samuel Eto'o",
+    "answer": "ETOO",
+    "number": 9
+   },
+   {
+    "name": "Ronaldinho",
+    "answer": "RONALDINHO",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2005-04-10-realmadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "El Clásico · La Liga",
+   "en": "El Clásico · La Liga"
+  },
+  "season": "2004/05",
+  "date": "10.04.2005",
+  "team": "Real Madrid",
+  "opponent": "Barcelona",
+  "score": "4-2",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Míchel Salgado",
+    "answer": "SALGADO",
+    "number": 2
+   },
+   {
+    "name": "Iván Helguera",
+    "answer": "HELGUERA",
+    "number": 6
+   },
+   {
+    "name": "Francisco Pavón",
+    "answer": "PAVON",
+    "number": 22
+   },
+   {
+    "name": "Roberto Carlos",
+    "answer": "CARLOS",
+    "number": 3
+   },
+   {
+    "name": "David Beckham",
+    "answer": "BECKHAM",
+    "number": 23
+   },
+   {
+    "name": "Thomas Gravesen",
+    "answer": "GRAVESEN",
+    "number": 16
+   },
+   {
+    "name": "Zinédine Zidane",
+    "answer": "ZIDANE",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Raúl",
+    "answer": "RAUL",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Michael Owen",
+    "answer": "OWEN",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Ronaldo",
+    "answer": "RONALDO",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2026-09-20-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2026/27",
+  "date": "20.09.2026",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Marc Pubill",
+    "answer": "PUBILL",
+    "number": 18
+   },
+   {
+    "name": "Cristian Romero",
+    "answer": "ROMERO",
+    "number": 21
+   },
+   {
+    "name": "Dávid Hancko",
+    "answer": "HANCKO",
+    "number": 17
+   },
+   {
+    "name": "Alejandro Grimaldo",
+    "answer": "GRIMALDO",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Marcos Llorente",
+    "answer": "LLORENTE",
+    "number": 14
+   },
+   {
+    "name": "Johnny Cardoso",
+    "answer": "CARDOSO",
+    "number": 5
+   },
+   {
+    "name": "Giuliano Simeone",
+    "answer": "SIMEONE",
+    "number": 20
+   },
+   {
+    "name": "Kang-in Lee",
+    "answer": "LEE",
+    "number": 7
+   },
+   {
+    "name": "Álex Baena",
+    "answer": "BAENA",
+    "number": 10
+   },
+   {
+    "name": "Jonathan David",
+    "answer": "DAVID",
+    "number": 15,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2025-09-27-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2025/26",
+  "date": "27.09.2025",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "5-2",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Marcos Llorente",
+    "answer": "LLORENTE",
+    "number": 14
+   },
+   {
+    "name": "Robin Le Normand",
+    "answer": "LE NORMAND",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Clément Lenglet",
+    "answer": "LENGLET",
+    "number": 15
+   },
+   {
+    "name": "Dávid Hancko",
+    "answer": "HANCKO",
+    "number": 17
+   },
+   {
+    "name": "Giuliano Simeone",
+    "answer": "SIMEONE",
+    "number": 20
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "Pablo Barrios",
+    "answer": "BARRIOS",
+    "number": 8
+   },
+   {
+    "name": "Nico González",
+    "answer": "GONZALEZ",
+    "number": 23
+   },
+   {
+    "name": "Alexander Sørloth",
+    "answer": "SRLOTH",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Julián Alvarez",
+    "answer": "ALVAREZ",
+    "number": 19,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2024-09-29-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2024/25",
+  "date": "29.09.2024",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "1-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Nahuel Molina",
+    "answer": "MOLINA",
+    "number": 16
+   },
+   {
+    "name": "Robin Le Normand",
+    "answer": "LE NORMAND",
+    "number": 24
+   },
+   {
+    "name": "José María Giménez",
+    "answer": "GIMENEZ",
+    "number": 2
+   },
+   {
+    "name": "Reinildo Mandava",
+    "answer": "MANDAVA",
+    "number": 23
+   },
+   {
+    "name": "Rodrigo De Paul",
+    "answer": "DE PAUL",
+    "number": 5
+   },
+   {
+    "name": "Marcos Llorente",
+    "answer": "LLORENTE",
+    "number": 14
+   },
+   {
+    "name": "Conor Gallagher",
+    "answer": "GALLAGHER",
+    "number": 4
+   },
+   {
+    "name": "Julián Alvarez",
+    "answer": "ALVAREZ",
+    "number": 19
+   },
+   {
+    "name": "Antoine Griezmann",
+    "answer": "GRIEZMANN",
+    "number": 7
+   },
+   {
+    "name": "Alexander Sørloth",
+    "answer": "SRLOTH",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2024-01-10-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · İspanya Süper Kupası",
+   "en": "Madrid Derby · Spanish Super Cup"
+  },
+  "season": "2023/24",
+  "date": "10.01.2024",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "5-3",
+  "formation": "4-3-1-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Kepa Arrizabalaga",
+    "answer": "ARRIZABALAGA",
+    "number": 25
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2,
+    "goals": 1
+   },
+   {
+    "name": "Antonio Rüdiger",
+    "answer": "RUDIGER",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Nacho Fernández",
+    "answer": "FERNANDEZ",
+    "number": 6
+   },
+   {
+    "name": "Ferland Mendy",
+    "answer": "MENDY",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 10
+   },
+   {
+    "name": "Aurélien Tchouaméni",
+    "answer": "TCHOUAMENI",
+    "number": 18
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 15
+   },
+   {
+    "name": "Jude Bellingham",
+    "answer": "BELLINGHAM",
+    "number": 5
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 7
+   },
+   {
+    "name": "Rodrygo",
+    "answer": "RODRYGO",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2022-09-18-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2022/23",
+  "date": "18.09.2022",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 1
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2
+   },
+   {
+    "name": "Éder Militão",
+    "answer": "MILITAO",
+    "number": 3
+   },
+   {
+    "name": "David Alaba",
+    "answer": "ALABA",
+    "number": 4
+   },
+   {
+    "name": "Ferland Mendy",
+    "answer": "MENDY",
+    "number": 23
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 10
+   },
+   {
+    "name": "Aurélien Tchouaméni",
+    "answer": "TCHOUAMENI",
+    "number": 18
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Federico Valverde",
+    "answer": "VALVERDE",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Rodrygo",
+    "answer": "RODRYGO",
+    "number": 21,
+    "goals": 1
+   },
+   {
+    "name": "Vinicius Junior",
+    "answer": "VINICIUS",
+    "number": 20
+   }
+  ]
+ },
+ {
+  "id": "laliga-2021-03-07-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2020/21",
+  "date": "07.03.2021",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "1-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Kieran Trippier",
+    "answer": "TRIPPIER",
+    "number": 23
+   },
+   {
+    "name": "Stefan Savić",
+    "answer": "SAVIC",
+    "number": 15
+   },
+   {
+    "name": "Felipe",
+    "answer": "FELIPE",
+    "number": 18
+   },
+   {
+    "name": "Mario Hermoso",
+    "answer": "HERMOSO",
+    "number": 22
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "Ángel Correa",
+    "answer": "CORREA",
+    "number": 10
+   },
+   {
+    "name": "Thomas Lemar",
+    "answer": "LEMAR",
+    "number": 11
+   },
+   {
+    "name": "Marcos Llorente",
+    "answer": "LLORENTE",
+    "number": 14
+   },
+   {
+    "name": "Yannick Carrasco",
+    "answer": "CARRASCO",
+    "number": 21
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2019-09-28-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2019/20",
+  "date": "28.09.2019",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "0-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Kieran Trippier",
+    "answer": "TRIPPIER",
+    "number": 23
+   },
+   {
+    "name": "Stefan Savić",
+    "answer": "SAVIC",
+    "number": 15
+   },
+   {
+    "name": "José María Giménez",
+    "answer": "GIMENEZ",
+    "number": 2
+   },
+   {
+    "name": "Renan Lodi",
+    "answer": "LODI",
+    "number": 12
+   },
+   {
+    "name": "Vitolo",
+    "answer": "VITOLO",
+    "number": 20
+   },
+   {
+    "name": "Saúl Ñíguez",
+    "answer": "NIGUEZ",
+    "number": 8
+   },
+   {
+    "name": "Thomas Partey",
+    "answer": "PARTEY",
+    "number": 5
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "João Félix",
+    "answer": "FELIX",
+    "number": 7
+   },
+   {
+    "name": "Diego Costa",
+    "answer": "COSTA",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "laliga-2018-04-08-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2017/18",
+  "date": "08.04.2018",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "1-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Keylor Navas",
+    "answer": "NAVAS",
+    "number": 1
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2
+   },
+   {
+    "name": "Raphaël Varane",
+    "answer": "VARANE",
+    "number": 5
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12
+   },
+   {
+    "name": "Lucas Vázquez",
+    "answer": "VAZQUEZ",
+    "number": 17
+   },
+   {
+    "name": "Mateo Kovacic",
+    "answer": "KOVACIC",
+    "number": 23
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Marco Asensio",
+    "answer": "ASENSIO",
+    "number": 20
+   },
+   {
+    "name": "Gareth Bale",
+    "answer": "BALE",
+    "number": 11
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2017-04-08-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2016/17",
+  "date": "08.04.2017",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "1-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Keylor Navas",
+    "answer": "NAVAS",
+    "number": 1
+   },
+   {
+    "name": "Daniel Carvajal",
+    "answer": "CARVAJAL",
+    "number": 2
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12
+   },
+   {
+    "name": "Toni Kroos",
+    "answer": "KROOS",
+    "number": 8
+   },
+   {
+    "name": "Casemiro",
+    "answer": "CASEMIRO",
+    "number": 14
+   },
+   {
+    "name": "Luka Modrić",
+    "answer": "MODRIC",
+    "number": 19
+   },
+   {
+    "name": "Gareth Bale",
+    "answer": "BALE",
+    "number": 11
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "laliga-2016-02-27-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2015/16",
+  "date": "27.02.2016",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Juanfran Torres",
+    "answer": "JUANFRAN TORRES",
+    "number": 20
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "José María Giménez",
+    "answer": "GIMENEZ",
+    "number": 24
+   },
+   {
+    "name": "Filipe Luís",
+    "answer": "LUIS",
+    "number": 3
+   },
+   {
+    "name": "Saúl Ñíguez",
+    "answer": "NIGUEZ",
+    "number": 17
+   },
+   {
+    "name": "Gabi",
+    "answer": "GABI",
+    "number": 14
+   },
+   {
+    "name": "Augusto Fernández",
+    "answer": "FERNANDEZ",
+    "number": 12
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "Antoine Griezmann",
+    "answer": "GRIEZMANN",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Fernando Torres",
+    "answer": "FERNANDO TORRES",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2015-02-07-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2014/15",
+  "date": "07.02.2015",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "4-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Miguel Ángel Moyá",
+    "answer": "MOYA",
+    "number": 1
+   },
+   {
+    "name": "Juanfran Torres",
+    "answer": "TORRES",
+    "number": 20
+   },
+   {
+    "name": "Miranda",
+    "answer": "MIRANDA",
+    "number": 23
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "Guilherme Siqueira",
+    "answer": "SIQUEIRA",
+    "number": 3
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 10
+   },
+   {
+    "name": "Gabi",
+    "answer": "GABI",
+    "number": 14
+   },
+   {
+    "name": "Tiago Mendes",
+    "answer": "MENDES",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "Antoine Griezmann",
+    "answer": "GRIEZMANN",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2014-09-13-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2014/15",
+  "date": "13.09.2014",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "2-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Miguel Ángel Moyá",
+    "answer": "MOYA",
+    "number": 1
+   },
+   {
+    "name": "Juanfran Torres",
+    "answer": "TORRES",
+    "number": 20
+   },
+   {
+    "name": "Miranda",
+    "answer": "MIRANDA",
+    "number": 23
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "Guilherme Siqueira",
+    "answer": "SIQUEIRA",
+    "number": 3
+   },
+   {
+    "name": "Raúl García",
+    "answer": "GARCIA",
+    "number": 8
+   },
+   {
+    "name": "Tiago Mendes",
+    "answer": "MENDES",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Gabi",
+    "answer": "GABI",
+    "number": 14
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "Raúl Jiménez",
+    "answer": "JIMENEZ",
+    "number": 11
+   },
+   {
+    "name": "Mario Mandžukić",
+    "answer": "MANDZUKIC",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2014-03-02-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2013/14",
+  "date": "02.03.2014",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "2-2",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 13
+   },
+   {
+    "name": "Juanfran Torres",
+    "answer": "TORRES",
+    "number": 20
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "Miranda",
+    "answer": "MIRANDA",
+    "number": 23
+   },
+   {
+    "name": "Filipe Luís",
+    "answer": "LUIS",
+    "number": 3
+   },
+   {
+    "name": "Gabi",
+    "answer": "GABI",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Mario Suárez",
+    "answer": "SUAREZ",
+    "number": 4
+   },
+   {
+    "name": "Raúl García",
+    "answer": "GARCIA",
+    "number": 8
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 10
+   },
+   {
+    "name": "Diego Costa",
+    "answer": "COSTA",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "laliga-2013-09-28-atleticomadrid-realmadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2013/14",
+  "date": "28.09.2013",
+  "team": "Atlético Madrid",
+  "opponent": "Real Madrid",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 13
+   },
+   {
+    "name": "Juanfran Torres",
+    "answer": "TORRES",
+    "number": 20
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "Miranda",
+    "answer": "MIRANDA",
+    "number": 23
+   },
+   {
+    "name": "Filipe Luís",
+    "answer": "LUIS",
+    "number": 3
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 10
+   },
+   {
+    "name": "Tiago Mendes",
+    "answer": "MENDES",
+    "number": 5
+   },
+   {
+    "name": "Gabi",
+    "answer": "GABI",
+    "number": 14
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 9
+   },
+   {
+    "name": "Diego Costa",
+    "answer": "COSTA",
+    "number": 19,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2012-04-11-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2011/12",
+  "date": "11.04.2012",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "4-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Álvaro Arbeloa",
+    "answer": "ARBELOA",
+    "number": 17
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Fábio Coentrão",
+    "answer": "COENTRAO",
+    "number": 15
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 6
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14
+   },
+   {
+    "name": "Ángel Di María",
+    "answer": "DI MARIA",
+    "number": 22
+   },
+   {
+    "name": "Kaká",
+    "answer": "KAKA",
+    "number": 8
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 3
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2011-01-20-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · Kral Kupası",
+   "en": "Madrid Derby · Copa del Rey"
+  },
+  "season": "2010/11",
+  "date": "20.01.2011",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Ricardo Carvalho",
+    "answer": "CARVALHO",
+    "number": 2
+   },
+   {
+    "name": "Raúl Albiol",
+    "answer": "ALBIOL",
+    "number": 18
+   },
+   {
+    "name": "Álvaro Arbeloa",
+    "answer": "ARBELOA",
+    "number": 17
+   },
+   {
+    "name": "Sami Khedira",
+    "answer": "KHEDIRA",
+    "number": 24
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 14
+   },
+   {
+    "name": "Ángel Di María",
+    "answer": "DI MARIA",
+    "number": 22
+   },
+   {
+    "name": "Mesut Özil",
+    "answer": "OZIL",
+    "number": 23
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12
+   },
+   {
+    "name": "Cristiano Ronaldo",
+    "answer": "RONALDO",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2009-11-07-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2009/10",
+  "date": "07.11.2009",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "3-2",
+  "formation": "4-4-1-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Ezequiel Garay",
+    "answer": "GARAY",
+    "number": 19
+   },
+   {
+    "name": "Álvaro Arbeloa",
+    "answer": "ARBELOA",
+    "number": 2
+   },
+   {
+    "name": "Gonzalo Higuaín",
+    "answer": "HIGUAIN",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Lassana Diarra",
+    "answer": "DIARRA",
+    "number": 10
+   },
+   {
+    "name": "Xabi Alonso",
+    "answer": "ALONSO",
+    "number": 22
+   },
+   {
+    "name": "Marcelo",
+    "answer": "MARCELO",
+    "number": 12,
+    "goals": 1
+   },
+   {
+    "name": "Kaká",
+    "answer": "KAKA",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Karim Benzema",
+    "answer": "BENZEMA",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2008-01-20-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2007/08",
+  "date": "20.01.2008",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Sergio Ramos",
+    "answer": "RAMOS",
+    "number": 4
+   },
+   {
+    "name": "Pepe",
+    "answer": "PEPE",
+    "number": 3
+   },
+   {
+    "name": "Fabio Cannavaro",
+    "answer": "CANNAVARO",
+    "number": 5
+   },
+   {
+    "name": "Miguel Torres",
+    "answer": "TORRES",
+    "number": 22
+   },
+   {
+    "name": "Guti",
+    "answer": "GUTI",
+    "number": 14
+   },
+   {
+    "name": "Fernando Gago",
+    "answer": "GAGO",
+    "number": 8
+   },
+   {
+    "name": "Wesley Sneijder",
+    "answer": "SNEIJDER",
+    "number": 23
+   },
+   {
+    "name": "Raúl",
+    "answer": "RAUL",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Ruud van Nistelrooy",
+    "answer": "VAN NISTELROOY",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Robinho",
+    "answer": "ROBINHO",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "laliga-2006-03-05-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2005/06",
+  "date": "05.03.2006",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Míchel Salgado",
+    "answer": "SALGADO",
+    "number": 2
+   },
+   {
+    "name": "Iván Helguera",
+    "answer": "HELGUERA",
+    "number": 6
+   },
+   {
+    "name": "Raúl Bravo",
+    "answer": "BRAVO",
+    "number": 15
+   },
+   {
+    "name": "Roberto Carlos",
+    "answer": "CARLOS",
+    "number": 3
+   },
+   {
+    "name": "Guti",
+    "answer": "GUTI",
+    "number": 14
+   },
+   {
+    "name": "Thomas Gravesen",
+    "answer": "GRAVESEN",
+    "number": 16
+   },
+   {
+    "name": "David Beckham",
+    "answer": "BECKHAM",
+    "number": 23
+   },
+   {
+    "name": "Zinédine Zidane",
+    "answer": "ZIDANE",
+    "number": 5
+   },
+   {
+    "name": "Júlio Baptista",
+    "answer": "BAPTISTA",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Antonio Cassano",
+    "answer": "CASSANO",
+    "number": 18,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2005-01-09-realmadrid-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Madrid Derbisi · La Liga",
+   "en": "Madrid Derby · La Liga"
+  },
+  "season": "2004/05",
+  "date": "09.01.2005",
+  "team": "Real Madrid",
+  "opponent": "Atlético Madrid",
+  "score": "3-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#ffffff",
+   "number": "#1a1a1a"
+  },
+  "lineup": [
+   {
+    "name": "Iker Casillas",
+    "answer": "CASILLAS",
+    "number": 1
+   },
+   {
+    "name": "Álvaro Arbeloa",
+    "answer": "ARBELOA",
+    "number": 27
+   },
+   {
+    "name": "Iván Helguera",
+    "answer": "HELGUERA",
+    "number": 6
+   },
+   {
+    "name": "Francisco Pavón",
+    "answer": "PAVON",
+    "number": 22
+   },
+   {
+    "name": "Roberto Carlos",
+    "answer": "CARLOS",
+    "number": 3
+   },
+   {
+    "name": "Luís Figo",
+    "answer": "FIGO",
+    "number": 10
+   },
+   {
+    "name": "Zinédine Zidane",
+    "answer": "ZIDANE",
+    "number": 5
+   },
+   {
+    "name": "David Beckham",
+    "answer": "BECKHAM",
+    "number": 23
+   },
+   {
+    "name": "Santiago Solari",
+    "answer": "SOLARI",
+    "number": 21,
+    "goals": 1
+   },
+   {
+    "name": "Raúl",
+    "answer": "RAUL",
+    "number": 7
+   },
+   {
+    "name": "Ronaldo",
+    "answer": "RONALDO",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2026-04-14-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · Şampiyonlar Ligi",
+   "en": "Barcelona – Atlético · Champions League"
+  },
+  "season": "2025/26",
+  "date": "14.04.2026",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Joan García",
+    "answer": "JOAN GARCIA",
+    "number": 13
+   },
+   {
+    "name": "Jules Koundé",
+    "answer": "KOUNDE",
+    "number": 23
+   },
+   {
+    "name": "Eric García",
+    "answer": "ERIC GARCIA",
+    "number": 24
+   },
+   {
+    "name": "Gerard Martín",
+    "answer": "MARTIN",
+    "number": 18
+   },
+   {
+    "name": "João Cancelo",
+    "answer": "CANCELO",
+    "number": 2
+   },
+   {
+    "name": "Gavi",
+    "answer": "GAVI",
+    "number": 6
+   },
+   {
+    "name": "Pedri",
+    "answer": "PEDRI",
+    "number": 8
+   },
+   {
+    "name": "Lamine Yamal",
+    "answer": "YAMAL",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Dani Olmo",
+    "answer": "OLMO",
+    "number": 20
+   },
+   {
+    "name": "Fermín López",
+    "answer": "LOPEZ",
+    "number": 16
+   },
+   {
+    "name": "Ferran Torres",
+    "answer": "TORRES",
+    "number": 7,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2025-12-02-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2025/26",
+  "date": "02.12.2025",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Joan García",
+    "answer": "JOAN GARCIA",
+    "number": 13
+   },
+   {
+    "name": "Jules Koundé",
+    "answer": "KOUNDE",
+    "number": 23
+   },
+   {
+    "name": "Pau Cubarsí",
+    "answer": "CUBARSI",
+    "number": 5
+   },
+   {
+    "name": "Gerard Martín",
+    "answer": "MARTIN",
+    "number": 18
+   },
+   {
+    "name": "Alejandro Balde",
+    "answer": "BALDE",
+    "number": 3
+   },
+   {
+    "name": "Pedri",
+    "answer": "PEDRI",
+    "number": 8
+   },
+   {
+    "name": "Eric García",
+    "answer": "ERIC GARCIA",
+    "number": 24
+   },
+   {
+    "name": "Lamine Yamal",
+    "answer": "YAMAL",
+    "number": 10
+   },
+   {
+    "name": "Dani Olmo",
+    "answer": "OLMO",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Raphinha",
+    "answer": "RAPHINHA",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2024-12-21-atleticomadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2024/25",
+  "date": "21.12.2024",
+  "team": "Atlético Madrid",
+  "opponent": "Barcelona",
+  "score": "2-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Marcos Llorente",
+    "answer": "LLORENTE",
+    "number": 14
+   },
+   {
+    "name": "José María Giménez",
+    "answer": "GIMENEZ",
+    "number": 2
+   },
+   {
+    "name": "Clément Lenglet",
+    "answer": "LENGLET",
+    "number": 15
+   },
+   {
+    "name": "Javi Galán",
+    "answer": "GALAN",
+    "number": 21
+   },
+   {
+    "name": "Giuliano Simeone",
+    "answer": "SIMEONE",
+    "number": 22
+   },
+   {
+    "name": "Pablo Barrios",
+    "answer": "BARRIOS",
+    "number": 8
+   },
+   {
+    "name": "Rodrigo De Paul",
+    "answer": "DE PAUL",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Conor Gallagher",
+    "answer": "GALLAGHER",
+    "number": 4
+   },
+   {
+    "name": "Antoine Griezmann",
+    "answer": "GRIEZMANN",
+    "number": 7
+   },
+   {
+    "name": "Julián Alvarez",
+    "answer": "ALVAREZ",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "laliga-2022-02-06-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2021/22",
+  "date": "06.02.2022",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "4-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Ronald Araujo",
+    "answer": "ARAUJO",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18,
+    "goals": 1
+   },
+   {
+    "name": "Pedri",
+    "answer": "PEDRI",
+    "number": 16
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Frenkie de Jong",
+    "answer": "DE JONG",
+    "number": 21
+   },
+   {
+    "name": "Adama Traoré",
+    "answer": "TRAORE",
+    "number": 11
+   },
+   {
+    "name": "Ferran Torres",
+    "answer": "TORRES",
+    "number": 19
+   },
+   {
+    "name": "Gavi",
+    "answer": "GAVI",
+    "number": 30,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2020-01-09-atleticomadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · İspanya Süper Kupası",
+   "en": "Barcelona – Atlético · Spanish Super Cup"
+  },
+  "season": "2019/20",
+  "date": "09.01.2020",
+  "team": "Atlético Madrid",
+  "opponent": "Barcelona",
+  "score": "3-2",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Jan Oblak",
+    "answer": "OBLAK",
+    "number": 13
+   },
+   {
+    "name": "Kieran Trippier",
+    "answer": "TRIPPIER",
+    "number": 23
+   },
+   {
+    "name": "Stefan Savić",
+    "answer": "SAVIC",
+    "number": 15
+   },
+   {
+    "name": "Felipe",
+    "answer": "FELIPE",
+    "number": 18
+   },
+   {
+    "name": "Renan Lodi",
+    "answer": "LODI",
+    "number": 12
+   },
+   {
+    "name": "Ángel Correa",
+    "answer": "CORREA",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Héctor Herrera",
+    "answer": "HERRERA",
+    "number": 16
+   },
+   {
+    "name": "Thomas Partey",
+    "answer": "PARTEY",
+    "number": 5
+   },
+   {
+    "name": "Saúl Ñíguez",
+    "answer": "NIGUEZ",
+    "number": 8
+   },
+   {
+    "name": "João Félix",
+    "answer": "FELIX",
+    "number": 7
+   },
+   {
+    "name": "Álvaro Morata",
+    "answer": "MORATA",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2018-03-04-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2017/18",
+  "date": "04.03.2018",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Samuel Umtiti",
+    "answer": "UMTITI",
+    "number": 23
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Philippe Coutinho",
+    "answer": "COUTINHO",
+    "number": 14
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2016-09-21-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2016/17",
+  "date": "21.09.2016",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "1-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20
+   },
+   {
+    "name": "Javier Mascherano",
+    "answer": "MASCHERANO",
+    "number": 14
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9
+   },
+   {
+    "name": "Neymar",
+    "answer": "NEYMAR",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2015-05-17-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2014/15",
+  "date": "17.05.2015",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Claudio Bravo",
+    "answer": "BRAVO",
+    "number": 13
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 22
+   },
+   {
+    "name": "Javier Mascherano",
+    "answer": "MASCHERANO",
+    "number": 14
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Pedro",
+    "answer": "PEDRO",
+    "number": 7
+   },
+   {
+    "name": "Neymar",
+    "answer": "NEYMAR",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2014-04-09-atleticomadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · Şampiyonlar Ligi",
+   "en": "Barcelona – Atlético · Champions League"
+  },
+  "season": "2013/14",
+  "date": "09.04.2014",
+  "team": "Atlético Madrid",
+  "opponent": "Barcelona",
+  "score": "1-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 13
+   },
+   {
+    "name": "Juanfran Torres",
+    "answer": "TORRES",
+    "number": 20
+   },
+   {
+    "name": "Miranda",
+    "answer": "MIRANDA",
+    "number": 23
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "Filipe Luís",
+    "answer": "LUIS",
+    "number": 3
+   },
+   {
+    "name": "Raúl García",
+    "answer": "GARCIA",
+    "number": 8
+   },
+   {
+    "name": "Gabi",
+    "answer": "GABI",
+    "number": 14
+   },
+   {
+    "name": "Tiago Mendes",
+    "answer": "MENDES",
+    "number": 5
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 9
+   },
+   {
+    "name": "Adrián López",
+    "answer": "LOPEZ",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "laliga-2013-08-21-atleticomadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · İspanya Süper Kupası",
+   "en": "Barcelona – Atlético · Spanish Super Cup"
+  },
+  "season": "2013/14",
+  "date": "21.08.2013",
+  "team": "Atlético Madrid",
+  "opponent": "Barcelona",
+  "score": "1-1",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Thibaut Courtois",
+    "answer": "COURTOIS",
+    "number": 13
+   },
+   {
+    "name": "Juanfran Torres",
+    "answer": "TORRES",
+    "number": 20
+   },
+   {
+    "name": "Miranda",
+    "answer": "MIRANDA",
+    "number": 23
+   },
+   {
+    "name": "Diego Godín",
+    "answer": "GODIN",
+    "number": 2
+   },
+   {
+    "name": "Filipe Luís",
+    "answer": "LUIS",
+    "number": 3
+   },
+   {
+    "name": "Mario Suárez",
+    "answer": "SUAREZ",
+    "number": 4
+   },
+   {
+    "name": "Diego Costa",
+    "answer": "COSTA",
+    "number": 19
+   },
+   {
+    "name": "Koke",
+    "answer": "KOKE",
+    "number": 6
+   },
+   {
+    "name": "Gabi",
+    "answer": "GABI",
+    "number": 14
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 10
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2011-02-05-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2010/11",
+  "date": "05.02.2011",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "3-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Maxwell",
+    "answer": "MAXWELL",
+    "number": 19
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 16
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6
+   },
+   {
+    "name": "Pedro",
+    "answer": "PEDRO",
+    "number": 17
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 3
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "laliga-2009-01-14-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · Kral Kupası",
+   "en": "Barcelona – Atlético · Copa del Rey"
+  },
+  "season": "2008/09",
+  "date": "14.01.2009",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "José Manuel Pinto",
+    "answer": "PINTO",
+    "number": 13
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 20
+   },
+   {
+    "name": "Rafa Márquez",
+    "answer": "MARQUEZ",
+    "number": 4
+   },
+   {
+    "name": "Martín Cáceres",
+    "answer": "CACERES",
+    "number": 2
+   },
+   {
+    "name": "Sylvinho",
+    "answer": "SYLVINHO",
+    "number": 16
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 28
+   },
+   {
+    "name": "Yaya Touré",
+    "answer": "TOURE",
+    "number": 24
+   },
+   {
+    "name": "Bojan Krkic",
+    "answer": "KRKIC",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Eidur Gudjohnsen",
+    "answer": "GUDJOHNSEN",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Aleksandr Hleb",
+    "answer": "HLEB",
+    "number": 21
+   }
+  ]
+ },
+ {
+  "id": "laliga-2007-10-07-barcelona-atleticomadrid",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2007/08",
+  "date": "07.10.2007",
+  "team": "Barcelona",
+  "opponent": "Atlético Madrid",
+  "score": "3-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Oleguer",
+    "answer": "OLEGUER",
+    "number": 23
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Gabriel Milito",
+    "answer": "MILITO",
+    "number": 3
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Deco",
+    "answer": "DECO",
+    "number": 20,
+    "goals": 1
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Thierry Henry",
+    "answer": "HENRY",
+    "number": 14
+   },
+   {
+    "name": "Ronaldinho",
+    "answer": "RONALDINHO",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "laliga-2005-02-06-atleticomadrid-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Barcelona – Atlético · La Liga",
+   "en": "Barcelona – Atlético · La Liga"
+  },
+  "season": "2004/05",
+  "date": "06.02.2005",
+  "team": "Atlético Madrid",
+  "opponent": "Barcelona",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#cb3524",
+   "sleeves": "#272e61",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Leo Franco",
+    "answer": "FRANCO",
+    "number": 25
+   },
+   {
+    "name": "Francisco Molinero",
+    "answer": "MOLINERO",
+    "number": 26
+   },
+   {
+    "name": "Pablo Ibáñez",
+    "answer": "IBANEZ",
+    "number": 22
+   },
+   {
+    "name": "Luis Amaranto Perea",
+    "answer": "PEREA",
+    "number": 21
+   },
+   {
+    "name": "Antonio López",
+    "answer": "LOPEZ",
+    "number": 3
+   },
+   {
+    "name": "Marcelo Sosa",
+    "answer": "SOSA",
+    "number": 7
+   },
+   {
+    "name": "Gonzalo Colsa",
+    "answer": "COLSA",
+    "number": 4
+   },
+   {
+    "name": "Juan Carlos Aguilera",
+    "answer": "AGUILERA",
+    "number": 15
+   },
+   {
+    "name": "Ariel Ibagaza",
+    "answer": "IBAGAZA",
+    "number": 18
+   },
+   {
+    "name": "Jesper Grønkjær",
+    "answer": "GRNKJR",
+    "number": 11
+   },
+   {
+    "name": "Fernando Torres",
+    "answer": "TORRES",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2026-03-01-realbetis-sevilla",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2025/26",
+  "date": "01.03.2026",
+  "team": "Real Betis",
+  "opponent": "Sevilla",
+  "score": "2-2",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#0bb363",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Álvaro Valles",
+    "answer": "VALLES",
+    "number": 1
+   },
+   {
+    "name": "Aitor Ruibal",
+    "answer": "RUIBAL",
+    "number": 24
+   },
+   {
+    "name": "Diego Llorente",
+    "answer": "LLORENTE",
+    "number": 3
+   },
+   {
+    "name": "Natan",
+    "answer": "NATAN",
+    "number": 4
+   },
+   {
+    "name": "Ricardo Rodríguez",
+    "answer": "RODRIGUEZ",
+    "number": 12
+   },
+   {
+    "name": "Pablo Fornals",
+    "answer": "FORNALS",
+    "number": 8
+   },
+   {
+    "name": "Marc Roca",
+    "answer": "ROCA",
+    "number": 21
+   },
+   {
+    "name": "Álvaro Fidalgo",
+    "answer": "FIDALGO",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Antony",
+    "answer": "ANTONY",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Cucho Hernández",
+    "answer": "HERNANDEZ",
+    "number": 19
+   },
+   {
+    "name": "Abde Ezzalzouli",
+    "answer": "EZZALZOULI",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "laliga-2024-10-06-sevilla-realbetis",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2024/25",
+  "date": "06.10.2024",
+  "team": "Sevilla",
+  "opponent": "Real Betis",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#d4021d",
+   "number": "#d4021d"
+  },
+  "lineup": [
+   {
+    "name": "Ørjan Nyland",
+    "answer": "NYLAND",
+    "number": 13
+   },
+   {
+    "name": "José Ángel Carmona",
+    "answer": "CARMONA",
+    "number": 32
+   },
+   {
+    "name": "Loïc Badé",
+    "answer": "BADE",
+    "number": 22
+   },
+   {
+    "name": "Tanguy Nianzou",
+    "answer": "NIANZOU",
+    "number": 24
+   },
+   {
+    "name": "Adrià Pedrosa",
+    "answer": "PEDROSA",
+    "number": 3
+   },
+   {
+    "name": "Nemanja Gudelj",
+    "answer": "GUDELJ",
+    "number": 6
+   },
+   {
+    "name": "Lucien Agoumé",
+    "answer": "AGOUME",
+    "number": 18
+   },
+   {
+    "name": "Dodi Lukébakio",
+    "answer": "LUKEBAKIO",
+    "number": 11,
+    "goals": 1
+   },
+   {
+    "name": "Peque Fernández",
+    "answer": "FERNANDEZ",
+    "number": 14
+   },
+   {
+    "name": "Chidera Ejuke",
+    "answer": "EJUKE",
+    "number": 21
+   },
+   {
+    "name": "Isaac Romero",
+    "answer": "ROMERO",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "laliga-2023-05-21-sevilla-realbetis",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2022/23",
+  "date": "21.05.2023",
+  "team": "Sevilla",
+  "opponent": "Real Betis",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#d4021d",
+   "number": "#d4021d"
+  },
+  "lineup": [
+   {
+    "name": "Marko Dmitrovic",
+    "answer": "DMITROVIC",
+    "number": 1
+   },
+   {
+    "name": "Gonzalo Montiel",
+    "answer": "MONTIEL",
+    "number": 2
+   },
+   {
+    "name": "Nemanja Gudelj",
+    "answer": "GUDELJ",
+    "number": 6
+   },
+   {
+    "name": "Karim Rekik",
+    "answer": "REKIK",
+    "number": 4
+   },
+   {
+    "name": "Alex Telles",
+    "answer": "TELLES",
+    "number": 3
+   },
+   {
+    "name": "Pape Gueye",
+    "answer": "GUEYE",
+    "number": 18
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 10
+   },
+   {
+    "name": "Erik Lamela",
+    "answer": "LAMELA",
+    "number": 17
+   },
+   {
+    "name": "Óliver Torres",
+    "answer": "TORRES",
+    "number": 21
+   },
+   {
+    "name": "Papu Gómez",
+    "answer": "GOMEZ",
+    "number": 24
+   },
+   {
+    "name": "Rafa Mir",
+    "answer": "MIR",
+    "number": 12
+   }
+  ]
+ },
+ {
+  "id": "laliga-2022-01-16-realbetis-sevilla",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · Kral Kupası",
+   "en": "Seville Derby · Copa del Rey"
+  },
+  "season": "2021/22",
+  "date": "16.01.2022",
+  "team": "Real Betis",
+  "opponent": "Sevilla",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#0bb363",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Rui Silva",
+    "answer": "SILVA",
+    "number": 13
+   },
+   {
+    "name": "Héctor Bellerín",
+    "answer": "BELLERIN",
+    "number": 19
+   },
+   {
+    "name": "Germán Pezzella",
+    "answer": "PEZZELLA",
+    "number": 16
+   },
+   {
+    "name": "Edgar González",
+    "answer": "GONZALEZ",
+    "number": 3
+   },
+   {
+    "name": "Álex Moreno",
+    "answer": "MORENO",
+    "number": 15
+   },
+   {
+    "name": "William Carvalho",
+    "answer": "CARVALHO",
+    "number": 14
+   },
+   {
+    "name": "Guido Rodríguez",
+    "answer": "RODRIGUEZ",
+    "number": 21
+   },
+   {
+    "name": "Sergio Canales",
+    "answer": "CANALES",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Nabil Fekir",
+    "answer": "FEKIR",
+    "number": 8,
+    "goals": 1
+   },
+   {
+    "name": "Juanmi",
+    "answer": "JUANMI",
+    "number": 7
+   },
+   {
+    "name": "Borja Iglesias",
+    "answer": "IGLESIAS",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2021-03-14-sevilla-realbetis",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2020/21",
+  "date": "14.03.2021",
+  "team": "Sevilla",
+  "opponent": "Real Betis",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#d4021d",
+   "number": "#d4021d"
+  },
+  "lineup": [
+   {
+    "name": "Yassine Bounou",
+    "answer": "BOUNOU",
+    "number": 13
+   },
+   {
+    "name": "Jesús Navas",
+    "answer": "NAVAS",
+    "number": 16
+   },
+   {
+    "name": "Jules Koundé",
+    "answer": "KOUNDE",
+    "number": 12
+   },
+   {
+    "name": "Diego Carlos",
+    "answer": "CARLOS",
+    "number": 20
+   },
+   {
+    "name": "Marcos Acuña",
+    "answer": "ACUNA",
+    "number": 19
+   },
+   {
+    "name": "Joan Jordán",
+    "answer": "JORDAN",
+    "number": 8
+   },
+   {
+    "name": "Fernando",
+    "answer": "FERNANDO",
+    "number": 25
+   },
+   {
+    "name": "Papu Gómez",
+    "answer": "GOMEZ",
+    "number": 24
+   },
+   {
+    "name": "Suso",
+    "answer": "SUSO",
+    "number": 7
+   },
+   {
+    "name": "Youssef En-Nesyri",
+    "answer": "ENNESYRI",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Lucas Ocampos",
+    "answer": "OCAMPOS",
+    "number": 5
+   }
+  ]
+ },
+ {
+  "id": "laliga-2019-11-10-sevilla-realbetis",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2019/20",
+  "date": "10.11.2019",
+  "team": "Sevilla",
+  "opponent": "Real Betis",
+  "score": "2-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#d4021d",
+   "number": "#d4021d"
+  },
+  "lineup": [
+   {
+    "name": "Tomáš Vaclík",
+    "answer": "VACLIK",
+    "number": 1
+   },
+   {
+    "name": "Jesús Navas",
+    "answer": "NAVAS",
+    "number": 16
+   },
+   {
+    "name": "Jules Koundé",
+    "answer": "KOUNDE",
+    "number": 12
+   },
+   {
+    "name": "Diego Carlos",
+    "answer": "CARLOS",
+    "number": 20
+   },
+   {
+    "name": "Sergio Reguilón",
+    "answer": "REGUILON",
+    "number": 23
+   },
+   {
+    "name": "Éver Banega",
+    "answer": "BANEGA",
+    "number": 10
+   },
+   {
+    "name": "Fernando",
+    "answer": "FERNANDO",
+    "number": 25
+   },
+   {
+    "name": "Óliver Torres",
+    "answer": "TORRES",
+    "number": 21
+   },
+   {
+    "name": "Lucas Ocampos",
+    "answer": "OCAMPOS",
+    "number": 5,
+    "goals": 1
+   },
+   {
+    "name": "Luuk de Jong",
+    "answer": "DE JONG",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Nolito",
+    "answer": "NOLITO",
+    "number": 8
+   }
+  ]
+ },
+ {
+  "id": "laliga-2018-05-12-realbetis-sevilla",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2017/18",
+  "date": "12.05.2018",
+  "team": "Real Betis",
+  "opponent": "Sevilla",
+  "score": "2-2",
+  "formation": "3-5-2",
+  "kit": {
+   "body": "#0bb363",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Pedro López",
+    "answer": "LOPEZ",
+    "number": 31
+   },
+   {
+    "name": "Jordi Amat",
+    "answer": "AMAT",
+    "number": 5
+   },
+   {
+    "name": "Aïssa Mandi",
+    "answer": "MANDI",
+    "number": 23
+   },
+   {
+    "name": "Marc Bartra",
+    "answer": "BARTRA",
+    "number": 15,
+    "goals": 1
+   },
+   {
+    "name": "Antonio Barragán",
+    "answer": "BARRAGAN",
+    "number": 19
+   },
+   {
+    "name": "Riza Durmisi",
+    "answer": "DURMISI",
+    "number": 14
+   },
+   {
+    "name": "Andrés Guardado",
+    "answer": "GUARDADO",
+    "number": 18
+   },
+   {
+    "name": "Javi García",
+    "answer": "GARCIA",
+    "number": 3
+   },
+   {
+    "name": "Fabián Ruiz",
+    "answer": "RUIZ",
+    "number": 6
+   },
+   {
+    "name": "Joaquín",
+    "answer": "JOAQUIN",
+    "number": 17
+   },
+   {
+    "name": "Sergio León",
+    "answer": "LEON",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "laliga-2016-09-20-sevilla-realbetis",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2016/17",
+  "date": "20.09.2016",
+  "team": "Sevilla",
+  "opponent": "Real Betis",
+  "score": "1-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#d4021d",
+   "number": "#d4021d"
+  },
+  "lineup": [
+   {
+    "name": "Sergio Rico",
+    "answer": "RICO",
+    "number": 1
+   },
+   {
+    "name": "Mariano",
+    "answer": "MARIANO",
+    "number": 3
+   },
+   {
+    "name": "Gabriel Mercado",
+    "answer": "MERCADO",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Nicolás Pareja",
+    "answer": "PAREJA",
+    "number": 21
+   },
+   {
+    "name": "Sergio Escudero",
+    "answer": "ESCUDERO",
+    "number": 18
+   },
+   {
+    "name": "Steven Nzonzi",
+    "answer": "NZONZI",
+    "number": 15
+   },
+   {
+    "name": "Vitolo",
+    "answer": "VITOLO",
+    "number": 20
+   },
+   {
+    "name": "Franco Vázquez",
+    "answer": "VAZQUEZ",
+    "number": 22
+   },
+   {
+    "name": "Vicente Iborra",
+    "answer": "IBORRA",
+    "number": 8
+   },
+   {
+    "name": "Samir Nasri",
+    "answer": "NASRI",
+    "number": 10
+   },
+   {
+    "name": "Luciano Vietto",
+    "answer": "VIETTO",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2016-01-06-sevilla-realbetis",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · Kral Kupası",
+   "en": "Seville Derby · Copa del Rey"
+  },
+  "season": "2015/16",
+  "date": "06.01.2016",
+  "team": "Sevilla",
+  "opponent": "Real Betis",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#d4021d",
+   "number": "#d4021d"
+  },
+  "lineup": [
+   {
+    "name": "Sergio Rico",
+    "answer": "RICO",
+    "number": 1
+   },
+   {
+    "name": "Coke",
+    "answer": "COKE",
+    "number": 23
+   },
+   {
+    "name": "Adil Rami",
+    "answer": "RAMI",
+    "number": 3
+   },
+   {
+    "name": "Timothée Kolodziejczak",
+    "answer": "KOLODZIEJCZAK",
+    "number": 5
+   },
+   {
+    "name": "Benoît Trémoulinas",
+    "answer": "TREMOULINAS",
+    "number": 2
+   },
+   {
+    "name": "Sebastián Cristóforo",
+    "answer": "CRISTOFORO",
+    "number": 14
+   },
+   {
+    "name": "Grzegorz Krychowiak",
+    "answer": "KRYCHOWIAK",
+    "number": 4,
+    "goals": 1
+   },
+   {
+    "name": "Vitolo",
+    "answer": "VITOLO",
+    "number": 20
+   },
+   {
+    "name": "Éver Banega",
+    "answer": "BANEGA",
+    "number": 19
+   },
+   {
+    "name": "Michael Krohn-Dehli",
+    "answer": "KROHNDEHLI",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Ciro Immobile",
+    "answer": "IMMOBILE",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2014-03-20-sevilla-realbetis",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · Avrupa Ligi",
+   "en": "Seville Derby · Europa League"
+  },
+  "season": "2013/14",
+  "date": "20.03.2014",
+  "team": "Sevilla",
+  "opponent": "Real Betis",
+  "score": "4-3",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#ffffff",
+   "sleeves": "#d4021d",
+   "number": "#d4021d"
+  },
+  "lineup": [
+   {
+    "name": "Beto",
+    "answer": "BETO",
+    "number": 13
+   },
+   {
+    "name": "Diogo Figueiras",
+    "answer": "FIGUEIRAS",
+    "number": 5
+   },
+   {
+    "name": "Nicolás Pareja",
+    "answer": "PAREJA",
+    "number": 21
+   },
+   {
+    "name": "Federico Fazio",
+    "answer": "FAZIO",
+    "number": 2
+   },
+   {
+    "name": "Alberto Moreno",
+    "answer": "MORENO",
+    "number": 14
+   },
+   {
+    "name": "José Antonio Reyes",
+    "answer": "REYES",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 11
+   },
+   {
+    "name": "Stéphane Mbia",
+    "answer": "MBIA",
+    "number": 40
+   },
+   {
+    "name": "Marko Marin",
+    "answer": "MARIN",
+    "number": 7
+   },
+   {
+    "name": "Carlos Bacca",
+    "answer": "BACCA",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Kévin Gameiro",
+    "answer": "GAMEIRO",
+    "number": 18
+   }
+  ]
+ },
+ {
+  "id": "laliga-2013-04-12-realbetis-sevilla",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2012/13",
+  "date": "12.04.2013",
+  "team": "Real Betis",
+  "opponent": "Sevilla",
+  "score": "3-3",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#0bb363",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Adrián San Miguel",
+    "answer": "MIGUEL",
+    "number": 13
+   },
+   {
+    "name": "Javi Chica",
+    "answer": "CHICA",
+    "number": 2
+   },
+   {
+    "name": "Paulão",
+    "answer": "PAULAO",
+    "number": 12
+   },
+   {
+    "name": "Antonio Amaya",
+    "answer": "AMAYA",
+    "number": 4
+   },
+   {
+    "name": "Álex Martínez",
+    "answer": "MARTINEZ",
+    "number": 6
+   },
+   {
+    "name": "Joel Campbell",
+    "answer": "CAMPBELL",
+    "number": 15
+   },
+   {
+    "name": "Beñat Etxebarria",
+    "answer": "ETXEBARRIA",
+    "number": 10
+   },
+   {
+    "name": "José Alberto Cañas",
+    "answer": "CANAS",
+    "number": 21
+   },
+   {
+    "name": "Juankar",
+    "answer": "JUANKAR",
+    "number": 17
+   },
+   {
+    "name": "Dorlan Pabón",
+    "answer": "PABON",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Rubén Castro",
+    "answer": "CASTRO",
+    "number": 24,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2012-01-21-realbetis-sevilla",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2011/12",
+  "date": "21.01.2012",
+  "team": "Real Betis",
+  "opponent": "Sevilla",
+  "score": "1-1",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#0bb363",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Casto",
+    "answer": "CASTO",
+    "number": 13
+   },
+   {
+    "name": "Isidoro",
+    "answer": "ISIDORO",
+    "number": 2
+   },
+   {
+    "name": "José Alberto Cañas",
+    "answer": "CANAS",
+    "number": 21
+   },
+   {
+    "name": "Chechu Dorado",
+    "answer": "DORADO",
+    "number": 5
+   },
+   {
+    "name": "Nacho Pérez",
+    "answer": "PEREZ",
+    "number": 23
+   },
+   {
+    "name": "Juanma",
+    "answer": "JUANMA",
+    "number": 7
+   },
+   {
+    "name": "Beñat Etxebarria",
+    "answer": "ETXEBARRIA",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Iriney",
+    "answer": "IRINEY",
+    "number": 18
+   },
+   {
+    "name": "Jefferson Montero",
+    "answer": "MONTERO",
+    "number": 20
+   },
+   {
+    "name": "Rubén Castro",
+    "answer": "CASTRO",
+    "number": 24
+   },
+   {
+    "name": "Roque Santa Cruz",
+    "answer": "CRUZ",
+    "number": 16
+   }
+  ]
+ },
+ {
+  "id": "laliga-2005-05-07-realbetis-sevilla",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Sevilla Derbisi · La Liga",
+   "en": "Seville Derby · La Liga"
+  },
+  "season": "2004/05",
+  "date": "07.05.2005",
+  "team": "Real Betis",
+  "opponent": "Sevilla",
+  "score": "1-0",
+  "formation": "3-4-3",
+  "kit": {
+   "body": "#0bb363",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Toni Doblas",
+    "answer": "DOBLAS",
+    "number": 30
+   },
+   {
+    "name": "Melli",
+    "answer": "MELLI",
+    "number": 27
+   },
+   {
+    "name": "Juanito",
+    "answer": "JUANITO",
+    "number": 4
+   },
+   {
+    "name": "David Rivas",
+    "answer": "RIVAS",
+    "number": 5
+   },
+   {
+    "name": "Arzu",
+    "answer": "ARZU",
+    "number": 8
+   },
+   {
+    "name": "Marcos Assunção",
+    "answer": "ASSUNCAO",
+    "number": 20
+   },
+   {
+    "name": "Fernando",
+    "answer": "FERNANDO",
+    "number": 9
+   },
+   {
+    "name": "Luis Fernández",
+    "answer": "FERNANDEZ",
+    "number": 2
+   },
+   {
+    "name": "Joaquín",
+    "answer": "JOAQUIN",
+    "number": 17
+   },
+   {
+    "name": "Ricardo Oliveira",
+    "answer": "OLIVEIRA",
+    "number": 12,
+    "goals": 1
+   },
+   {
+    "name": "Denilson",
+    "answer": "DENILSON",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2026-03-04-realsociedad-athleticbilbao",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · Kral Kupası",
+   "en": "Basque Derby · Copa del Rey"
+  },
+  "season": "2025/26",
+  "date": "04.03.2026",
+  "team": "Real Sociedad",
+  "opponent": "Athletic Bilbao",
+  "score": "1-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#0067b1",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Unai Marrero",
+    "answer": "MARRERO",
+    "number": 13
+   },
+   {
+    "name": "Jon Aramburu",
+    "answer": "ARAMBURU",
+    "number": 2
+   },
+   {
+    "name": "Igor Zubeldia",
+    "answer": "ZUBELDIA",
+    "number": 5
+   },
+   {
+    "name": "Jon Martín",
+    "answer": "MARTIN",
+    "number": 31
+   },
+   {
+    "name": "Sergio Gómez",
+    "answer": "GOMEZ",
+    "number": 17
+   },
+   {
+    "name": "Jon Gorrotxategi",
+    "answer": "GORROTXATEGI",
+    "number": 4
+   },
+   {
+    "name": "Beñat Turrientes",
+    "answer": "TURRIENTES",
+    "number": 8
+   },
+   {
+    "name": "Gonçalo Guedes",
+    "answer": "GUEDES",
+    "number": 11
+   },
+   {
+    "name": "Carlos Soler",
+    "answer": "SOLER",
+    "number": 18
+   },
+   {
+    "name": "Ander Barrenetxea",
+    "answer": "BARRENETXEA",
+    "number": 7
+   },
+   {
+    "name": "Mikel Oyarzabal",
+    "answer": "OYARZABAL",
+    "number": 10,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2025-05-04-realsociedad-athleticbilbao",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2024/25",
+  "date": "04.05.2025",
+  "team": "Real Sociedad",
+  "opponent": "Athletic Bilbao",
+  "score": "0-0",
+  "formation": "4-1-4-1",
+  "kit": {
+   "body": "#0067b1",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Álex Remiro",
+    "answer": "REMIRO",
+    "number": 1
+   },
+   {
+    "name": "Hamari Traoré",
+    "answer": "TRAORE",
+    "number": 18
+   },
+   {
+    "name": "Jon Martín",
+    "answer": "MARTIN",
+    "number": 31
+   },
+   {
+    "name": "Nayef Aguerd",
+    "answer": "AGUERD",
+    "number": 21
+   },
+   {
+    "name": "Aihen Muñoz",
+    "answer": "MUNOZ",
+    "number": 3
+   },
+   {
+    "name": "Martín Zubimendi",
+    "answer": "ZUBIMENDI",
+    "number": 4
+   },
+   {
+    "name": "Takefusa Kubo",
+    "answer": "KUBO",
+    "number": 14
+   },
+   {
+    "name": "Brais Méndez",
+    "answer": "MENDEZ",
+    "number": 23
+   },
+   {
+    "name": "Pablo Marín",
+    "answer": "MARIN",
+    "number": 28
+   },
+   {
+    "name": "Sergio Gómez",
+    "answer": "GOMEZ",
+    "number": 17
+   },
+   {
+    "name": "Mikel Oyarzabal",
+    "answer": "OYARZABAL",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "laliga-2023-09-30-realsociedad-athleticbilbao",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2023/24",
+  "date": "30.09.2023",
+  "team": "Real Sociedad",
+  "opponent": "Athletic Bilbao",
+  "score": "3-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#0067b1",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Álex Remiro",
+    "answer": "REMIRO",
+    "number": 1
+   },
+   {
+    "name": "Hamari Traoré",
+    "answer": "TRAORE",
+    "number": 18
+   },
+   {
+    "name": "Igor Zubeldia",
+    "answer": "ZUBELDIA",
+    "number": 5
+   },
+   {
+    "name": "Robin Le Normand",
+    "answer": "LE NORMAND",
+    "number": 24,
+    "goals": 1
+   },
+   {
+    "name": "Kieran Tierney",
+    "answer": "TIERNEY",
+    "number": 17
+   },
+   {
+    "name": "Takefusa Kubo",
+    "answer": "KUBO",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Mikel Merino",
+    "answer": "MERINO",
+    "number": 8
+   },
+   {
+    "name": "Martín Zubimendi",
+    "answer": "ZUBIMENDI",
+    "number": 4
+   },
+   {
+    "name": "Ander Barrenetxea",
+    "answer": "BARRENETXEA",
+    "number": 7
+   },
+   {
+    "name": "Brais Méndez",
+    "answer": "MENDEZ",
+    "number": 23
+   },
+   {
+    "name": "Umar Sadiq",
+    "answer": "SADIQ",
+    "number": 19
+   }
+  ]
+ },
+ {
+  "id": "laliga-2021-10-31-realsociedad-athleticbilbao",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2021/22",
+  "date": "31.10.2021",
+  "team": "Real Sociedad",
+  "opponent": "Athletic Bilbao",
+  "score": "1-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#0067b1",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Álex Remiro",
+    "answer": "REMIRO",
+    "number": 1
+   },
+   {
+    "name": "Andoni Gorosabel",
+    "answer": "GOROSABEL",
+    "number": 18
+   },
+   {
+    "name": "Robin Le Normand",
+    "answer": "LE NORMAND",
+    "number": 24
+   },
+   {
+    "name": "Aritz Elustondo",
+    "answer": "ELUSTONDO",
+    "number": 6
+   },
+   {
+    "name": "Diego Rico",
+    "answer": "RICO",
+    "number": 15
+   },
+   {
+    "name": "Mikel Merino",
+    "answer": "MERINO",
+    "number": 8
+   },
+   {
+    "name": "David Silva",
+    "answer": "SILVA",
+    "number": 21
+   },
+   {
+    "name": "Martín Zubimendi",
+    "answer": "ZUBIMENDI",
+    "number": 3
+   },
+   {
+    "name": "Alexander Isak",
+    "answer": "ISAK",
+    "number": 19,
+    "goals": 1
+   },
+   {
+    "name": "Alexander Sørloth",
+    "answer": "SRLOTH",
+    "number": 23
+   },
+   {
+    "name": "Adnan Januzaj",
+    "answer": "JANUZAJ",
+    "number": 11
+   }
+  ]
+ },
+ {
+  "id": "laliga-2020-12-31-realsociedad-athleticbilbao",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2020/21",
+  "date": "31.12.2020",
+  "team": "Real Sociedad",
+  "opponent": "Athletic Bilbao",
+  "score": "1-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#0067b1",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Álex Remiro",
+    "answer": "REMIRO",
+    "number": 1
+   },
+   {
+    "name": "Andoni Gorosabel",
+    "answer": "GOROSABEL",
+    "number": 18
+   },
+   {
+    "name": "Robin Le Normand",
+    "answer": "LE NORMAND",
+    "number": 24
+   },
+   {
+    "name": "Igor Zubeldia",
+    "answer": "ZUBELDIA",
+    "number": 5
+   },
+   {
+    "name": "Nacho Monreal",
+    "answer": "MONREAL",
+    "number": 20
+   },
+   {
+    "name": "Jon Guridi",
+    "answer": "GURIDI",
+    "number": 14
+   },
+   {
+    "name": "Ander Guevara",
+    "answer": "GUEVARA",
+    "number": 16
+   },
+   {
+    "name": "Mikel Merino",
+    "answer": "MERINO",
+    "number": 8
+   },
+   {
+    "name": "Portu",
+    "answer": "PORTU",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Alexander Isak",
+    "answer": "ISAK",
+    "number": 19
+   },
+   {
+    "name": "Mikel Oyarzabal",
+    "answer": "OYARZABAL",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "laliga-2018-10-05-realsociedad-athleticbilbao",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2018/19",
+  "date": "05.10.2018",
+  "team": "Real Sociedad",
+  "opponent": "Athletic Bilbao",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#0067b1",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Miguel Ángel Moyá",
+    "answer": "MOYA",
+    "number": 13
+   },
+   {
+    "name": "Andoni Gorosabel",
+    "answer": "GOROSABEL",
+    "number": 18
+   },
+   {
+    "name": "Raúl Navas",
+    "answer": "NAVAS",
+    "number": 22
+   },
+   {
+    "name": "Aritz Elustondo",
+    "answer": "ELUSTONDO",
+    "number": 15
+   },
+   {
+    "name": "Kévin Rodrigues",
+    "answer": "RODRIGUES",
+    "number": 20
+   },
+   {
+    "name": "Igor Zubeldia",
+    "answer": "ZUBELDIA",
+    "number": 5
+   },
+   {
+    "name": "Asier Illarramendi",
+    "answer": "ILLARRAMENDI",
+    "number": 4
+   },
+   {
+    "name": "Mikel Oyarzabal",
+    "answer": "OYARZABAL",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Rubén Pardo",
+    "answer": "PARDO",
+    "number": 14
+   },
+   {
+    "name": "Luca Sangalli",
+    "answer": "SANGALLI",
+    "number": 23,
+    "goals": 1
+   },
+   {
+    "name": "Jon Bautista",
+    "answer": "BAUTISTA",
+    "number": 21
+   }
+  ]
+ },
+ {
+  "id": "laliga-2017-03-12-athleticbilbao-realsociedad",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2016/17",
+  "date": "12.03.2017",
+  "team": "Athletic Bilbao",
+  "opponent": "Real Sociedad",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ee2523",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Kepa Arrizabalaga",
+    "answer": "ARRIZABALAGA",
+    "number": 26
+   },
+   {
+    "name": "Eneko Bóveda",
+    "answer": "BOVEDA",
+    "number": 2
+   },
+   {
+    "name": "Yeray Álvarez",
+    "answer": "ALVAREZ",
+    "number": 27
+   },
+   {
+    "name": "Aymeric Laporte",
+    "answer": "LAPORTE",
+    "number": 4
+   },
+   {
+    "name": "Mikel Balenziaga",
+    "answer": "BALENZIAGA",
+    "number": 24
+   },
+   {
+    "name": "Beñat Etxebarria",
+    "answer": "ETXEBARRIA",
+    "number": 7
+   },
+   {
+    "name": "Mikel San José",
+    "answer": "JOSE",
+    "number": 6
+   },
+   {
+    "name": "Iñigo Lekue",
+    "answer": "LEKUE",
+    "number": 15
+   },
+   {
+    "name": "Raúl García",
+    "answer": "GARCIA",
+    "number": 22,
+    "goals": 1
+   },
+   {
+    "name": "Iker Muniain",
+    "answer": "MUNIAIN",
+    "number": 10
+   },
+   {
+    "name": "Iñaki Williams",
+    "answer": "WILLIAMS",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2015-04-28-athleticbilbao-realsociedad",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2014/15",
+  "date": "28.04.2015",
+  "team": "Athletic Bilbao",
+  "opponent": "Real Sociedad",
+  "score": "1-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ee2523",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Gorka Iraizoz",
+    "answer": "IRAIZOZ",
+    "number": 1
+   },
+   {
+    "name": "Andoni Iraola",
+    "answer": "IRAOLA",
+    "number": 15
+   },
+   {
+    "name": "Carlos Gurpegui",
+    "answer": "GURPEGUI",
+    "number": 18
+   },
+   {
+    "name": "Aymeric Laporte",
+    "answer": "LAPORTE",
+    "number": 4
+   },
+   {
+    "name": "Mikel Balenziaga",
+    "answer": "BALENZIAGA",
+    "number": 24
+   },
+   {
+    "name": "Beñat Etxebarria",
+    "answer": "ETXEBARRIA",
+    "number": 7
+   },
+   {
+    "name": "Mikel San José",
+    "answer": "JOSE",
+    "number": 6
+   },
+   {
+    "name": "Markel Susaeta",
+    "answer": "SUSAETA",
+    "number": 14
+   },
+   {
+    "name": "Ager Aketxe",
+    "answer": "AKETXE",
+    "number": 23
+   },
+   {
+    "name": "Iñaki Williams",
+    "answer": "WILLIAMS",
+    "number": 30
+   },
+   {
+    "name": "Aritz Aduriz",
+    "answer": "ADURIZ",
+    "number": 20,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2014-01-05-realsociedad-athleticbilbao",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2013/14",
+  "date": "05.01.2014",
+  "team": "Real Sociedad",
+  "opponent": "Athletic Bilbao",
+  "score": "2-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#0067b1",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Claudio Bravo",
+    "answer": "BRAVO",
+    "number": 1
+   },
+   {
+    "name": "Carlos Martínez",
+    "answer": "CARLOS MARTINEZ",
+    "number": 2
+   },
+   {
+    "name": "Ion Ansotegi",
+    "answer": "ANSOTEGI",
+    "number": 15
+   },
+   {
+    "name": "Iñigo Martínez",
+    "answer": "INIGO MARTINEZ",
+    "number": 6
+   },
+   {
+    "name": "Cote",
+    "answer": "COTE",
+    "number": 20
+   },
+   {
+    "name": "Markel Bergara",
+    "answer": "BERGARA",
+    "number": 5
+   },
+   {
+    "name": "Rubén Pardo",
+    "answer": "PARDO",
+    "number": 14,
+    "goals": 1
+   },
+   {
+    "name": "Carlos Vela",
+    "answer": "VELA",
+    "number": 11
+   },
+   {
+    "name": "Xabi Prieto",
+    "answer": "PRIETO",
+    "number": 10
+   },
+   {
+    "name": "Antoine Griezmann",
+    "answer": "GRIEZMANN",
+    "number": 7,
+    "goals": 1
+   },
+   {
+    "name": "Imanol Agirretxe",
+    "answer": "AGIRRETXE",
+    "number": 9
+   }
+  ]
+ },
+ {
+  "id": "laliga-2011-10-02-athleticbilbao-realsociedad",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Bask Derbisi · La Liga",
+   "en": "Basque Derby · La Liga"
+  },
+  "season": "2011/12",
+  "date": "02.10.2011",
+  "team": "Athletic Bilbao",
+  "opponent": "Real Sociedad",
+  "score": "2-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#ee2523",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Gorka Iraizoz",
+    "answer": "IRAIZOZ",
+    "number": 1
+   },
+   {
+    "name": "Andoni Iraola",
+    "answer": "IRAOLA",
+    "number": 15
+   },
+   {
+    "name": "Javi Martínez",
+    "answer": "MARTINEZ",
+    "number": 24
+   },
+   {
+    "name": "Fernando Amorebieta",
+    "answer": "AMOREBIETA",
+    "number": 5
+   },
+   {
+    "name": "Jon Aurtenetxe",
+    "answer": "AURTENETXE",
+    "number": 3
+   },
+   {
+    "name": "Óscar de Marcos",
+    "answer": "DE MARCOS",
+    "number": 10
+   },
+   {
+    "name": "Carlos Gurpegui",
+    "answer": "GURPEGUI",
+    "number": 18
+   },
+   {
+    "name": "Markel Susaeta",
+    "answer": "SUSAETA",
+    "number": 14
+   },
+   {
+    "name": "Iker Muniain",
+    "answer": "MUNIAIN",
+    "number": 19
+   },
+   {
+    "name": "Igor Gabilondo",
+    "answer": "GABILONDO",
+    "number": 11
+   },
+   {
+    "name": "Fernando Llorente",
+    "answer": "LLORENTE",
+    "number": 9,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2026-04-11-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2025/26",
+  "date": "11.04.2026",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "4-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Joan García",
+    "answer": "JOAN GARCIA",
+    "number": 13
+   },
+   {
+    "name": "Ronald Araujo",
+    "answer": "ARAUJO",
+    "number": 4
+   },
+   {
+    "name": "Pau Cubarsí",
+    "answer": "CUBARSI",
+    "number": 5
+   },
+   {
+    "name": "Gerard Martín",
+    "answer": "MARTIN",
+    "number": 18
+   },
+   {
+    "name": "Alejandro Balde",
+    "answer": "BALDE",
+    "number": 3
+   },
+   {
+    "name": "Pedri",
+    "answer": "PEDRI",
+    "number": 8
+   },
+   {
+    "name": "Eric García",
+    "answer": "ERIC GARCIA",
+    "number": 24
+   },
+   {
+    "name": "Lamine Yamal",
+    "answer": "YAMAL",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Fermín López",
+    "answer": "LOPEZ",
+    "number": 16
+   },
+   {
+    "name": "Gavi",
+    "answer": "GAVI",
+    "number": 6
+   },
+   {
+    "name": "Ferran Torres",
+    "answer": "TORRES",
+    "number": 7,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2022-12-31-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2022/23",
+  "date": "31.12.2022",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "1-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Sergi Roberto",
+    "answer": "ROBERTO",
+    "number": 20
+   },
+   {
+    "name": "Andreas Christensen",
+    "answer": "CHRISTENSEN",
+    "number": 15
+   },
+   {
+    "name": "Marcos Alonso",
+    "answer": "ALONSO",
+    "number": 17,
+    "goals": 1
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Pedri",
+    "answer": "PEDRI",
+    "number": 8
+   },
+   {
+    "name": "Frenkie de Jong",
+    "answer": "DE JONG",
+    "number": 21
+   },
+   {
+    "name": "Gavi",
+    "answer": "GAVI",
+    "number": 30
+   },
+   {
+    "name": "Raphinha",
+    "answer": "RAPHINHA",
+    "number": 22
+   },
+   {
+    "name": "Robert Lewandowski",
+    "answer": "LEWANDOWSKI",
+    "number": 9
+   },
+   {
+    "name": "Ansu Fati",
+    "answer": "FATI",
+    "number": 10
+   }
+  ]
+ },
+ {
+  "id": "laliga-2019-03-30-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2018/19",
+  "date": "30.03.2019",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Nélson Semedo",
+    "answer": "SEMEDO",
+    "number": 2
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Clément Lenglet",
+    "answer": "LENGLET",
+    "number": 15
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Arthur Melo",
+    "answer": "MELO",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9
+   },
+   {
+    "name": "Philippe Coutinho",
+    "answer": "COUTINHO",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "laliga-2017-09-09-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2017/18",
+  "date": "09.09.2017",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "5-0",
+  "formation": "4-4-2",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Nélson Semedo",
+    "answer": "SEMEDO",
+    "number": 2
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Samuel Umtiti",
+    "answer": "UMTITI",
+    "number": 23
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Gerard Deulofeu",
+    "answer": "DEULOFEU",
+    "number": 16
+   },
+   {
+    "name": "Ivan Rakitic",
+    "answer": "RAKITIC",
+    "number": 4
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 3
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2016-01-06-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · Kral Kupası",
+   "en": "Catalan Derby · Copa del Rey"
+  },
+  "season": "2015/16",
+  "date": "06.01.2016",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "4-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Marc ter Stegen",
+    "answer": "TER STEGEN",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 6
+   },
+   {
+    "name": "Javier Mascherano",
+    "answer": "MASCHERANO",
+    "number": 14
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3,
+    "goals": 1
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 5
+   },
+   {
+    "name": "Arda Turan",
+    "answer": "TURAN",
+    "number": 7
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10,
+    "goals": 2
+   },
+   {
+    "name": "Luis Suárez",
+    "answer": "SUAREZ",
+    "number": 9
+   },
+   {
+    "name": "Neymar",
+    "answer": "NEYMAR",
+    "number": 11,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2013-05-26-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2012/13",
+  "date": "26.05.2013",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "2-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2
+   },
+   {
+    "name": "Javier Mascherano",
+    "answer": "MASCHERANO",
+    "number": 14
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Jordi Alba",
+    "answer": "ALBA",
+    "number": 18
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Alex Song",
+    "answer": "SONG",
+    "number": 25
+   },
+   {
+    "name": "Thiago Alcántara",
+    "answer": "ALCANTARA",
+    "number": 11
+   },
+   {
+    "name": "Alexis Sánchez",
+    "answer": "SANCHEZ",
+    "number": 9,
+    "goals": 1
+   },
+   {
+    "name": "Cesc Fàbregas",
+    "answer": "FABREGAS",
+    "number": 4
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 7
+   }
+  ]
+ },
+ {
+  "id": "laliga-2010-12-18-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2010/11",
+  "date": "18.12.2010",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "5-1",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Dani Alves",
+    "answer": "ALVES",
+    "number": 2
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Gerard Piqué",
+    "answer": "PIQUE",
+    "number": 3
+   },
+   {
+    "name": "Éric Abidal",
+    "answer": "ABIDAL",
+    "number": 22
+   },
+   {
+    "name": "Andrés Iniesta",
+    "answer": "INIESTA",
+    "number": 8
+   },
+   {
+    "name": "Sergio Busquets",
+    "answer": "BUSQUETS",
+    "number": 16
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6,
+    "goals": 1
+   },
+   {
+    "name": "Pedro",
+    "answer": "PEDRO",
+    "number": 17,
+    "goals": 2
+   },
+   {
+    "name": "Lionel Messi",
+    "answer": "MESSI",
+    "number": 10
+   },
+   {
+    "name": "David Villa",
+    "answer": "VILLA",
+    "number": 7,
+    "goals": 2
+   }
+  ]
+ },
+ {
+  "id": "laliga-2009-01-21-espanyol-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · Kral Kupası",
+   "en": "Catalan Derby · Copa del Rey"
+  },
+  "season": "2008/09",
+  "date": "21.01.2009",
+  "team": "Espanyol",
+  "opponent": "Barcelona",
+  "score": "0-0",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#1b6fc6",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Carlos Kameni",
+    "answer": "KAMENI",
+    "number": 1
+   },
+   {
+    "name": "Sergio Sánchez",
+    "answer": "SANCHEZ",
+    "number": 5
+   },
+   {
+    "name": "Nicolás Pareja",
+    "answer": "PAREJA",
+    "number": 16
+   },
+   {
+    "name": "Dani Jarque",
+    "answer": "JARQUE",
+    "number": 21
+   },
+   {
+    "name": "Grégory Béranger",
+    "answer": "BERANGER",
+    "number": 12
+   },
+   {
+    "name": "Román Martínez",
+    "answer": "MARTINEZ",
+    "number": 6
+   },
+   {
+    "name": "Moisés Hurtado",
+    "answer": "HURTADO",
+    "number": 22
+   },
+   {
+    "name": "Valdo",
+    "answer": "VALDO",
+    "number": 7
+   },
+   {
+    "name": "Luis García",
+    "answer": "GARCIA",
+    "number": 10
+   },
+   {
+    "name": "Nenê",
+    "answer": "NENE",
+    "number": 17
+   },
+   {
+    "name": "José Callejón",
+    "answer": "CALLEJON",
+    "number": 8
+   }
+  ]
+ },
+ {
+  "id": "laliga-2007-01-14-espanyol-barcelona",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2006/07",
+  "date": "14.01.2007",
+  "team": "Espanyol",
+  "opponent": "Barcelona",
+  "score": "3-1",
+  "formation": "4-2-3-1",
+  "kit": {
+   "body": "#1b6fc6",
+   "sleeves": "#ffffff",
+   "number": "#ffffff"
+  },
+  "lineup": [
+   {
+    "name": "Carlos Kameni",
+    "answer": "KAMENI",
+    "number": 25
+   },
+   {
+    "name": "Juan Velasco",
+    "answer": "VELASCO",
+    "number": 12
+   },
+   {
+    "name": "Marc Torrejón",
+    "answer": "TORREJON",
+    "number": 19
+   },
+   {
+    "name": "Dani Jarque",
+    "answer": "JARQUE",
+    "number": 21
+   },
+   {
+    "name": "Javi Chica",
+    "answer": "CHICA",
+    "number": 30
+   },
+   {
+    "name": "Luis García",
+    "answer": "GARCIA",
+    "number": 10,
+    "goals": 1
+   },
+   {
+    "name": "Moisés Hurtado",
+    "answer": "HURTADO",
+    "number": 22
+   },
+   {
+    "name": "Francisco Rufete",
+    "answer": "RUFETE",
+    "number": 18,
+    "goals": 1
+   },
+   {
+    "name": "Iván de la Peña",
+    "answer": "DE LA PENA",
+    "number": 9
+   },
+   {
+    "name": "Albert Riera",
+    "answer": "RIERA",
+    "number": 11
+   },
+   {
+    "name": "Raúl Tamudo",
+    "answer": "TAMUDO",
+    "number": 23,
+    "goals": 1
+   }
+  ]
+ },
+ {
+  "id": "laliga-2005-03-01-barcelona-espanyol",
+  "tags": [
+   "derbi",
+   "la-liga"
+  ],
+  "competition": {
+   "tr": "Katalan Derbisi · La Liga",
+   "en": "Catalan Derby · La Liga"
+  },
+  "season": "2004/05",
+  "date": "01.03.2005",
+  "team": "Barcelona",
+  "opponent": "Espanyol",
+  "score": "0-0",
+  "formation": "4-3-3",
+  "kit": {
+   "body": "#004d98",
+   "sleeves": "#a50044",
+   "number": "#f6eb61"
+  },
+  "lineup": [
+   {
+    "name": "Víctor Valdés",
+    "answer": "VALDES",
+    "number": 1
+   },
+   {
+    "name": "Oleguer",
+    "answer": "OLEGUER",
+    "number": 23
+   },
+   {
+    "name": "Rafa Márquez",
+    "answer": "MARQUEZ",
+    "number": 4
+   },
+   {
+    "name": "Carles Puyol",
+    "answer": "PUYOL",
+    "number": 5
+   },
+   {
+    "name": "Giovanni van Bronckhorst",
+    "answer": "VAN BRONCKHORST",
+    "number": 12
+   },
+   {
+    "name": "Gerard López",
+    "answer": "GERARD LOPEZ",
+    "number": 14
+   },
+   {
+    "name": "Xavi",
+    "answer": "XAVI",
+    "number": 6
+   },
+   {
+    "name": "Deco",
+    "answer": "DECO",
+    "number": 20
+   },
+   {
+    "name": "Samuel Eto'o",
+    "answer": "ETOO",
+    "number": 9
+   },
+   {
+    "name": "Maxi López",
+    "answer": "MAXI LOPEZ",
+    "number": 11
+   },
+   {
+    "name": "Ronaldinho",
+    "answer": "RONALDINHO",
+    "number": 10
+   }
+  ]
+ }
+]
