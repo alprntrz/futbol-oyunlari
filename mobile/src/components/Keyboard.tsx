@@ -26,8 +26,8 @@ export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks
       {ROWS.map((row, ri) => (
         <View key={row} style={styles.row}>
           {ri === 2 && (
-            <Pressable onPress={() => press("ENTER")} style={({ pressed }) => [styles.key, styles.wide, { backgroundColor: C.green }, pressed && styles.pressed]}>
-              <Text allowFontScaling={false} style={[styles.label, { color: "white", fontSize: 18 }]}>{t("guess")}</Text>
+            <Pressable onPress={() => press("ENTER")} style={({ pressed }) => [styles.key, styles.enter, { backgroundColor: C.green }, pressed && styles.pressed]}>
+              <Text allowFontScaling={false} numberOfLines={1} style={[styles.label, { color: "white", fontSize: 15 }]}>{t("guess")}</Text>
             </Pressable>
           )}
           {row.split("").map((ch) => {
@@ -57,7 +57,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "center", gap: 5 },
   key: { height: 50, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: C.key },
   letter: { flex: 1, maxWidth: 38 },
-  wide: { flex: 1.7, maxWidth: 66 },
+  wide: { flex: 1.4, maxWidth: 54 },
+  /** sized by its label ("Tahmin Et" / "Guess"); the letter keys share what is left */
+  enter: { minWidth: 54, paddingHorizontal: 10 },
   label: { fontFamily: F.display, fontSize: 22 },
   pressed: { opacity: 0.6, transform: [{ scale: 0.94 }] },
 });
