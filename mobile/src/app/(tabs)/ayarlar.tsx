@@ -7,6 +7,7 @@ import { InfoSheet, MissingXISteps, TikiSteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
+import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
 import { play, setSoundsOn, soundsOn } from "~/lib/sound";
 import { C, T } from "~/lib/theme";
@@ -47,8 +48,8 @@ export default function SettingsTab() {
       <SectionLabel>{t("howToPlay")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
         <Row image={BRAND.icon.team} title={t("missingXI")} onPress={() => setSheet("xi")} />
-        <Row image={BRAND.icon.tiki} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} />
-        <Row icon="sparkles" iconFallback="✨" color={C.greenMid} soft={C.greenSoft} title={t("obReplay")} onPress={() => router.push("/onboarding")} last />
+        <Row image={BRAND.icon.tiki} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} last={!ONBOARDING} />
+        {ONBOARDING && <Row icon="sparkles" iconFallback="✨" color={C.greenMid} soft={C.greenSoft} title={t("obReplay")} onPress={() => router.push("/onboarding")} last />}
       </Card>
 
       <SectionLabel>{t("about")}</SectionLabel>

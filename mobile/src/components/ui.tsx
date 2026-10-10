@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3 },
   row: { flexDirection: "row", alignItems: "center", paddingLeft: 14, gap: 14 },
   badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  rowImage: { width: 48, height: 48 },
+  rowImage: { width: 44, height: 44, marginHorizontal: -2 },
   rowText: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 14, paddingRight: 14 },
   rowDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   segmented: { flexDirection: "row", backgroundColor: "#E8EBF0", borderRadius: 12, padding: 3 },

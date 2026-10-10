@@ -17,6 +17,30 @@ const handle = app.getRequestHandler();
 const rooms = new Map();
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+/**
+ * Nicknames are shown to strangers: strip control characters and swap anything
+ * offensive (Turkish and English, matched after folding accents and leetspeak)
+ * for a neutral name. App Store guideline 1.2 asks for this kind of filtering.
+ */
+const NICK_BLOCK = ["amk", "aq", "orospu", "orosbu", "pic", "piç", "sik", "sikis", "sikik", "yarak", "yarrak", "got", "göt", "ibne", "kahpe", "pezevenk", "amcik", "amcık", "siktir", "fuck", "shit", "bitch", "cunt", "dick", "pussy", "nigger", "nigga", "fag", "whore", "slut", "rape", "nazi", "hitler"];
+function cleanNick(nick) {
+  const raw = String(nick || "").replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 20);
+  const folded = raw
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/0/g, "o").replace(/1/g, "i").replace(/3/g, "e").replace(/4/g, "a").replace(/5/g, "s").replace(/7/g, "t").replace(/@/g, "a").replace(/\$/g, "s")
+    .replace(/[^a-z]/g, "");
+  const words = raw.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ı/g, "i").split(/[^a-z]+/);
+  // very short words only as whole words ("aq" in "aqua", "pic" in "picasso" are fine), the rest anywhere
+  const bad = NICK_BLOCK.some((w) => {
+    const f = w.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ı/g, "i");
+    return f.length <= 3 ? words.includes(f) : folded.includes(f);
+  });
+  return bad ? "player" + Math.floor(100 + Math.random() * 900) : raw;
+}
+
 function makeCode() {
   let code = "";
   for (let i = 0; i < 5; i++) {
@@ -428,7 +452,7 @@ app.prepare().then(() => {
 
     socket.on("pp:create", ({ nick, board }, cb) => {
       if (!Array.isArray(board) || board.length !== PP_HEXES) return cb?.({ ok: false, error: "bad_board" });
-      const room = ppNewRoom(ppCode(), board, [{ id: socket.id, nick: String(nick || "").slice(0, 20), mark: "X" }]);
+      const room = ppNewRoom(ppCode(), board, [{ id: socket.id, nick: cleanNick(nick), mark: "X" }]);
       ppRooms.set(room.code, room);
       ppJoinRoom(socket, room);
       cb?.({ ok: true, room: ppPublic(room) });
@@ -440,7 +464,7 @@ app.prepare().then(() => {
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
-        room.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), mark });
+        room.players.push({ id: socket.id, nick: cleanNick(nick), mark });
       }
       ppJoinRoom(socket, room);
       ppEmit(room);
@@ -500,12 +524,12 @@ app.prepare().then(() => {
       ppQueue = ppQueue.filter((w) => w.socket.connected && w.socket.id !== socket.id);
       const waiting = ppQueue.shift();
       if (!waiting) {
-        ppQueue.push({ socket, nick: String(nick || "").slice(0, 20), board });
+        ppQueue.push({ socket, nick: cleanNick(nick), board });
         return;
       }
       const room = ppNewRoom(ppCode(), waiting.board, [
         { id: waiting.socket.id, nick: waiting.nick, mark: "X" },
-        { id: socket.id, nick: String(nick || "").slice(0, 20), mark: "O" },
+        { id: socket.id, nick: cleanNick(nick), mark: "O" },
       ]);
       room.started = true;
       ppRooms.set(room.code, room);
@@ -568,7 +592,7 @@ app.prepare().then(() => {
         steals: steals ? { X: 3, O: 3 } : null,
         league: typeof league === "string" ? league.slice(0, 12) : "all",
         used: [],
-        players: [{ id: socket.id, nick: String(nick || "").slice(0, 20), mark: "X" }],
+        players: [{ id: socket.id, nick: cleanNick(nick), mark: "X" }],
       };
       htRooms.set(code, room);
       socket.data.htCode = code;
@@ -582,7 +606,7 @@ app.prepare().then(() => {
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
-        room.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), mark });
+        room.players.push({ id: socket.id, nick: cleanNick(nick), mark });
       }
       socket.data.htCode = room.code;
       socket.join("ht:" + room.code);
@@ -600,7 +624,7 @@ app.prepare().then(() => {
       const at = htQueue.findIndex((w) => w.league === lg);
       const waiting = at >= 0 ? htQueue.splice(at, 1)[0] : null;
       if (!waiting) {
-        htQueue.push({ socket, nick: String(nick || "").slice(0, 20), grid, league: lg });
+        htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg });
         return;
       }
       const code = htCode();
@@ -619,7 +643,7 @@ app.prepare().then(() => {
         used: [],
         players: [
           { id: waiting.socket.id, nick: waiting.nick, mark: "X" },
-          { id: socket.id, nick: String(nick || "").slice(0, 20), mark: "O" },
+          { id: socket.id, nick: cleanNick(nick), mark: "O" },
         ],
       };
       htRooms.set(code, room);
@@ -872,7 +896,7 @@ app.prepare().then(() => {
         deadline: null,
         timer: null,
         botTimers: [],
-        players: [{ id: socket.id, pid: socket.data.qzPid, nick: String(nick || "").slice(0, 20), score: 0 }],
+        players: [{ id: socket.id, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 }],
       };
       qzRooms.set(code, room);
       socket.data.qzCode = code;
@@ -914,7 +938,7 @@ app.prepare().then(() => {
       if (room.phase !== "lobby") return cb?.({ ok: false, error: "started" });
       if (room.players.length >= room.settings.maxPlayers) return cb?.({ ok: false, error: "full" });
       if (socket.data.qzCode) qzLeave();
-      room.players.push({ id: socket.id, pid: socket.data.qzPid, nick: String(nick || "").slice(0, 20), score: 0 });
+      room.players.push({ id: socket.id, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
       socket.data.qzCode = room.code;
       socket.join("qz:" + room.code);
       cb?.({ ok: true, room: qzPublic(room) });
@@ -929,7 +953,7 @@ app.prepare().then(() => {
       if (socket.data.qzCode) qzLeave();
       const open = qzOpenCode && qzRooms.get(qzOpenCode);
       if (open && open.phase === "lobby" && open.players.length < open.settings.maxPlayers) {
-        open.players.push({ id: socket.id, pid: socket.data.qzPid, nick: String(nick || "").slice(0, 20), score: 0 });
+        open.players.push({ id: socket.id, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
         socket.data.qzCode = open.code;
         socket.join("qz:" + open.code);
         cb?.({ ok: true, code: open.code });

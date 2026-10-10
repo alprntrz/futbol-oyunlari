@@ -11,6 +11,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
+import { ONBOARDING } from "~/lib/features";
 import { I18nProvider } from "~/lib/i18n";
 import { initSounds } from "~/lib/sound";
 import { C, F } from "~/lib/theme";
@@ -30,10 +31,11 @@ export default function RootLayout() {
     if (!loaded) return;
     SplashScreen.hideAsync();
     initSounds();
-    // First launch: show the intro once (key shared with app/onboarding.tsx)
-    AsyncStorage.getItem("onboarded-v1").then((done) => {
-      if (!done) router.push("/onboarding");
-    });
+    // Onboarding (app/onboarding.tsx) is held back for v2 (lib/features.ts)
+    if (ONBOARDING)
+      AsyncStorage.getItem("onboarded-v1").then((done) => {
+        if (!done) router.push("/onboarding");
+      });
   }, [loaded]);
 
   if (!loaded) return null;

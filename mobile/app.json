@@ -10,7 +10,10 @@
     "ios": {
       "icon": "./assets/brand/app-icon.png",
       "bundleIdentifier": "com.alprntrz.futboloyunlari",
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

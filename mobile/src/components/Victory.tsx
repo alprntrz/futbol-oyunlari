@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { REWARD } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { play } from "~/lib/sound";
-import { F } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 import { Confetti, useCountUp } from "./motion";
 import { Text } from "./Text";
@@ -21,8 +21,11 @@ export interface Reward {
   label: string;
 }
 
-const PITCH = "#15803D";
-const PITCH_DEEP = "#0E5E2C";
+// the app's own greens: a win on the pitch green, anything else on the deep green
+const PITCH = C.greenMid;
+const PITCH_DEEP = "#0B3A1F";
+const RIBBON_W = 290;
+const RIBBON_H = RIBBON_W * (172 / 900);
 const INK = "#5B3A06";
 
 // the ceremony's beats, in ms from opening
@@ -157,8 +160,8 @@ export function Victory({
       <ImageBackground
         source={REWARD.stars}
         resizeMode="repeat"
-        imageStyle={{ opacity: won ? 1 : 0.35 }}
-        style={[styles.screen, { backgroundColor: won ? PITCH : "#3F5247", paddingTop: insets.top + 18, paddingBottom: insets.bottom + 20 }]}
+        imageStyle={{ opacity: won ? 1 : 0.6 }}
+        style={[styles.screen, { backgroundColor: won ? PITCH : C.greenDark, paddingTop: insets.top + 18, paddingBottom: insets.bottom + 20 }]}
       >
         <StatusBar style="light" />
 
@@ -186,11 +189,15 @@ export function Victory({
             </View>
           </ImageBackground>
           {/* ribbon over the panel's top edge */}
-          <ImageBackground source={REWARD.ribbon} resizeMode="contain" style={styles.ribbon}>
-            <Text allowFontScaling={false} style={styles.ribbonText}>
-              {panelTitle}
-            </Text>
-          </ImageBackground>
+          <View style={styles.ribbon}>
+            <Image source={REWARD.ribbon} style={styles.ribbonImage} resizeMode="stretch" />
+            {/* the art's band covers the top 68% of the image (its tails hang below) */}
+            <View style={styles.ribbonBand}>
+              <Text allowFontScaling={false} style={styles.ribbonText} numberOfLines={1} adjustsFontSizeToFit>
+                {panelTitle}
+              </Text>
+            </View>
+          </View>
         </Animated.View>
 
         <Animated.View entering={FadeIn.delay(T_CARD + rewards.length * CARD_STEP + 200).duration(250)} style={styles.actions}>
@@ -224,10 +231,12 @@ const styles = StyleSheet.create({
   medalImage: { position: "absolute", top: 0, left: 0, width: 116, height: 116 },
   medalText: { fontFamily: F.black, fontSize: 40, lineHeight: 44, color: INK, marginTop: -10 },
   medalTrophy: { position: "absolute", bottom: 14, width: 26, height: 26 },
-  panelWrap: { alignSelf: "stretch", marginTop: 26 },
+  panelWrap: { alignSelf: "stretch", marginTop: 30 },
   panel: { paddingTop: 40, paddingBottom: 22, paddingHorizontal: 18 },
-  ribbon: { position: "absolute", top: -26, alignSelf: "center", width: 260, height: 54, alignItems: "center", justifyContent: "center" },
-  ribbonText: { fontFamily: F.black, fontSize: 20, color: "white", marginTop: -6, textShadowColor: PITCH_DEEP, textShadowOffset: { width: 0, height: 1.5 }, textShadowRadius: 0 },
+  ribbon: { position: "absolute", top: -RIBBON_H * 0.42, alignSelf: "center", width: RIBBON_W, height: RIBBON_H },
+  ribbonImage: { position: "absolute", top: 0, left: 0, width: RIBBON_W, height: RIBBON_H },
+  ribbonBand: { position: "absolute", top: 0, left: RIBBON_W * 0.2, right: RIBBON_W * 0.2, height: RIBBON_H * 0.68, alignItems: "center", justifyContent: "center" },
+  ribbonText: { fontFamily: F.black, fontSize: 20, lineHeight: 23, color: "white", textShadowColor: PITCH_DEEP, textShadowOffset: { width: 0, height: 1.5 }, textShadowRadius: 0 },
   cards: { flexDirection: "row", gap: 8 },
   card: { flex: 1, alignItems: "center", backgroundColor: "#FBE7B3", borderRadius: 16, paddingVertical: 10, paddingHorizontal: 4, gap: 1 },
   cardImage: { width: 54, height: 54, marginBottom: 2 },

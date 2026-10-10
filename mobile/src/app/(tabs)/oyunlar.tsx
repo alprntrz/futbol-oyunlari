@@ -163,7 +163,7 @@ export default function Games() {
                 {"image" in g ? (
                   <Image source={g.image} style={styles.rowImage} accessible={false} />
                 ) : (
-                  <Icon name={g.icon} size={24} color={g.color} fallback={g.fallback} />
+                  <Icon name={g.icon} size={26} color={g.color} fallback={g.fallback} />
                 )}
               </View>
               <View style={{ flex: 1 }}>
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
-  rowImage: { width: 52, height: 52 },
+  rowImage: { width: 44, height: 44 },
   rowTitle: {
     fontFamily: F.display,
     fontSize: 21,
