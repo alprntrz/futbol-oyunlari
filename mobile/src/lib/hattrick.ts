@@ -14,7 +14,7 @@ export const TURN_SECONDS = 45;
 export const SERIES_TARGET = 3;
 export type Series = Record<Mark, number>;
 /** pause on the result before the next game of a series deals in */
-export const NEXT_GAME_MS = 3500;
+export const NEXT_GAME_MS = 1800;
 
 export const LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
