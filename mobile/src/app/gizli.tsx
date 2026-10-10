@@ -2,11 +2,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Share, StyleSheet, TextInput, View } from "react-native";
-import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
+import Animated, { Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
 import { searchPlayers, type Criterion } from "@/lib/tiki";
 
+import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/components/ui";
@@ -148,7 +149,7 @@ export default function MysteryPlayer() {
       </View>
 
       {over ? (
-        <Animated.View entering={FadeIn.duration(200)}>
+        <Animated.View entering={SOFT_IN}>
           <Card style={[styles.result, { backgroundColor: won ? C.greenSoft : C.redSoft }]}>
             <Text style={[T.caption, { fontWeight: "700" }]}>{won ? t("myWon") : t("myLost")}</Text>
             <Text style={styles.answer}>{answer.name}</Text>
@@ -221,7 +222,7 @@ export default function MysteryPlayer() {
                 const p = findPlayer(g);
                 const f = p ? compare(p, answer) : null;
                 return (
-                  <Animated.View key={g} entering={FadeIn.duration(180)} style={styles.guess}>
+                  <Animated.View key={g} entering={SOFT_IN} style={styles.guess}>
                     <Icon name="xmark.circle.fill" size={18} color={C.red} fallback="×" />
                     <Text style={[T.headline, { flex: 1, fontSize: 15 }]} numberOfLines={1}>
                       {g}

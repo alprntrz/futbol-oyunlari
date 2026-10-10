@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { StyleSheet, useWindowDimensions, View, type StyleProp, type TextStyle } from "react-native";
 import Animated, {
   Easing,
+  Keyframe,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
@@ -123,3 +124,33 @@ export function PopNumber({ value, style }: { value: number | string; style?: St
 const styles = StyleSheet.create({
   piece: { position: "absolute", left: 0, top: 0, borderRadius: 2 },
 });
+
+/** Content arriving: a short fade with a few points of rise. No bounce. */
+export const SOFT_IN = new Keyframe({
+  0: { opacity: 0, transform: [{ translateY: 8 }] },
+  100: { opacity: 1, transform: [{ translateY: 0 }] },
+}).duration(240);
+
+/** The same, staggered: item i of a list or grid row i. */
+export const softIn = (i: number, step = 55) =>
+  new Keyframe({
+    0: { opacity: 0, transform: [{ translateY: 8 }] },
+    100: { opacity: 1, transform: [{ translateY: 0 }] },
+  })
+    .delay(i * step)
+    .duration(240);
+
+/** A bar that glides between values (timers tick 4×/s; this hides the steps). */
+export function SmoothBar({ fraction, color, height = 6 }: { fraction: number; color: string; height?: number }) {
+  const w = useSharedValue(fraction);
+  useEffect(() => {
+    // filling up again (new turn) is quick; running down is linear and continuous
+    w.set(withTiming(fraction, { duration: fraction > w.get() ? 300 : 260, easing: fraction > w.get() ? Easing.out(Easing.cubic) : Easing.linear }));
+  }, [fraction, w]);
+  const style = useAnimatedStyle(() => ({ width: `${Math.max(0, Math.min(1, w.get())) * 100}%` }));
+  return (
+    <View style={{ height, borderRadius: height / 2, backgroundColor: "#E2E6EC", overflow: "hidden" }}>
+      <Animated.View style={[{ height: "100%", borderRadius: height / 2, backgroundColor: color }, style]} />
+    </View>
+  );
+}

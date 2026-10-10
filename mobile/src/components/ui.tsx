@@ -1,5 +1,6 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { haptic } from "~/lib/haptics";
@@ -51,14 +52,17 @@ export function Page({ children, scroll = true, topInset = false }: { children: 
   if (!scroll) return <View style={[{ flex: 1, backgroundColor: C.bg }, pad]}>{children}</View>;
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
-    <ScrollView
-      style={{ flex: 1, backgroundColor: C.bg }}
-      contentContainerStyle={[pad, { flexGrow: 1, alignItems: "center" }]}
-      contentInsetAdjustmentBehavior="automatic"
-      keyboardShouldPersistTaps="handled"
-    >
-      <View style={{ width: "100%", maxWidth: 560 }}>{children}</View>
-    </ScrollView>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: C.bg }}
+        contentContainerStyle={[pad, { flexGrow: 1, alignItems: "center" }]}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* game screens fade their content in under the push; tabs appear as they are */}
+        <Animated.View entering={topInset ? undefined : FadeIn.duration(220)} style={{ width: "100%", maxWidth: 560 }}>
+          {children}
+        </Animated.View>
+      </ScrollView>
       {/* Tab screens have no header: keep scrolled content out from under the status bar */}
       {topInset && <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, height: insets.top, backgroundColor: C.bg }} />}
     </View>
@@ -86,13 +90,7 @@ export function Button({
     <Tap
       onPress={onPress}
       disabled={disabled}
-      style={[
-        styles.button,
-        { backgroundColor: bg },
-        kind === "secondary" && { borderWidth: 1, borderColor: C.border },
-        disabled && { opacity: 0.45 },
-        style,
-      ]}
+      style={[styles.button, { backgroundColor: bg }, kind === "secondary" && { borderWidth: 1, borderColor: C.border }, disabled && { opacity: 0.45 }, style]}
     >
       {icon ? <Icon name={icon} size={17} color={fg} /> : null}
       <Text style={[styles.buttonText, { color: fg }]}>{title}</Text>
@@ -127,9 +125,7 @@ export function Row({
       {image ? (
         <Image source={image} style={styles.rowImage} accessibilityIgnoresInvertColors accessible={false} />
       ) : (
-        <View style={[styles.badge, { backgroundColor: soft }]}>
-          {icon ? <Icon name={icon} size={20} color={color} fallback={iconFallback} /> : null}
-        </View>
+        <View style={[styles.badge, { backgroundColor: soft }]}>{icon ? <Icon name={icon} size={20} color={color} fallback={iconFallback} /> : null}</View>
       )}
       <View style={[styles.rowText, !last && styles.rowDivider]}>
         <View style={{ flex: 1 }}>
@@ -147,15 +143,7 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 /** iOS-style segmented control. */
-export function Segmented<T extends string>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (v: T) => void;
-}) {
+export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void }) {
   return (
     <View style={styles.segmented}>
       {options.map((o) => {

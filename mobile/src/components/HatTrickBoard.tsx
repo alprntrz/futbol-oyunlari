@@ -13,7 +13,7 @@ import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Flag } from "./Flag";
 import { Jersey } from "./Jersey";
-import { Confetti } from "./motion";
+import { Confetti, SmoothBar, SOFT_IN, softIn } from "./motion";
 import { Text } from "./Text";
 import { Button, Card, Icon, Tap } from "./ui";
 
@@ -78,7 +78,11 @@ export function ClubShirt({ c, size = 30 }: { c: Criterion; size?: number }) {
 export function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
   if (c.kind === "club") return <ClubShirt c={c} size={size} />;
   if (c.kind === "country") return <Flag id={c.id} width={size * 1.35} />;
-  return <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>{c.icon}</Text>;
+  return (
+    <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>
+      {c.icon}
+    </Text>
+  );
 }
 
 /** A placed name settles in with a barely-there bounce. */
@@ -153,6 +157,7 @@ export function HatTrickBoard({
   const canSteal = (cell: HtCell) => !!steals && cell.mark !== turn && steals[turn] > 0;
   const suggestions = useMemo(() => searchPlayers(input), [input]);
   const line = useMemo(() => winningLine(board), [board]);
+  const gridKey = [...grid.rows, ...grid.cols].map((c) => c.id).join(".");
 
   // Close the sheet when the turn moves on (timeout, or the other phone played)
   const sheetTurn = useRef(turn);
@@ -189,10 +194,12 @@ export function HatTrickBoard({
       {header ? (
         header
       ) : winner ? (
-        <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
-          <Icon name="trophy.fill" size={26} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
-          <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
-        </Card>
+        <Animated.View entering={SOFT_IN}>
+          <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
+            <Icon name="trophy.fill" size={26} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
+            <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
+          </Card>
+        </Animated.View>
       ) : (
         <Card style={{ padding: 14 }}>
           <View style={styles.players}>
@@ -219,16 +226,24 @@ export function HatTrickBoard({
               );
             })}
           </View>
-          <View style={styles.bar}>
-            <View style={{ height: "100%", width: `${(timeLeft / TURN_SECONDS) * 100}%`, backgroundColor: low ? C.red : MARK[turn].color, borderRadius: 3 }} />
+          <View style={{ marginTop: 12 }}>
+            <SmoothBar fraction={timeLeft / TURN_SECONDS} color={low ? C.red : MARK[turn].color} />
           </View>
-          <Text style={[T.body, { textAlign: "center", marginTop: 10, color: MARK[turn].color, fontWeight: "700" }]}>{status}</Text>
-          {flash ? <Text style={[T.caption, { textAlign: "center", color: C.red, marginTop: 4 }]}>{flash}</Text> : null}
+          {/* the turn line and any message cross-fade when they change */}
+          <Animated.View key={`${turn}-${status}`} entering={SOFT_IN}>
+            <Text style={[T.body, { textAlign: "center", marginTop: 10, color: MARK[turn].color, fontWeight: "700" }]}>{status}</Text>
+          </Animated.View>
+          {flash ? (
+            <Animated.View key={flash} entering={SOFT_IN}>
+              <Text style={[T.caption, { textAlign: "center", color: C.red, marginTop: 4 }]}>{flash}</Text>
+            </Animated.View>
+          ) : null}
         </Card>
       )}
 
       <View style={styles.grid} onLayout={(e) => setGridW(e.nativeEvent.layout.width)}>
-        <View style={styles.row}>
+        {/* a new grid deals in row by row */}
+        <Animated.View key={`${gridKey}-head`} entering={softIn(0)} style={styles.row}>
           <View style={[styles.corner, size(1.1)]} />
           {grid.cols.map((c, i) => (
             <View key={i} style={[styles.cell, styles.head, size(1)]}>
@@ -238,9 +253,9 @@ export function HatTrickBoard({
               </Text>
             </View>
           ))}
-        </View>
+        </Animated.View>
         {grid.rows.map((r, ri) => (
-          <View key={ri} style={styles.row}>
+          <Animated.View key={`${gridKey}-${ri}`} entering={softIn(ri + 1)} style={styles.row}>
             <View style={[styles.corner, styles.head, size(1.1)]}>
               <CriterionBadge c={r} />
               <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
@@ -282,7 +297,7 @@ export function HatTrickBoard({
                 </Tap>
               );
             })}
-          </View>
+          </Animated.View>
         ))}
       </View>
 
@@ -316,7 +331,8 @@ export function HatTrickBoard({
               </View>
             )}
             <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
-              {sheetCaption ?? `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
+              {sheetCaption ??
+                `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
             </Text>
             <View style={styles.inputWrap}>
               <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />

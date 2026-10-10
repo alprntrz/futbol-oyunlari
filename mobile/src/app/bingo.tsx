@@ -7,6 +7,7 @@ import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 import { dayNumber } from "@/lib/daily";
 import type { Criterion } from "@/lib/tiki";
 
+import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
@@ -163,7 +164,7 @@ export default function Bingo() {
 
       {/* Current footballer */}
       {current ? (
-        <Animated.View key={run.index} entering={FadeIn.duration(160)}>
+        <Animated.View key={run.index} entering={SOFT_IN}>
           <Card style={styles.player}>
             <View style={styles.avatar}>
               <Text allowFontScaling={false} style={styles.avatarText}>

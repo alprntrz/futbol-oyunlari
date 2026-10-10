@@ -13,7 +13,7 @@ import { POS, ROWS, type PpCell } from "~/lib/possession";
 import { C, F, shadow, T } from "~/lib/theme";
 
 import { CriterionBadge, MARK } from "./HatTrickBoard";
-import { Confetti } from "./motion";
+import { Confetti, SOFT_IN } from "./motion";
 import { PlayerSearchSheet } from "./PlayerSearchSheet";
 import { Text } from "./Text";
 import { Card, Icon, Tap } from "./ui";
@@ -109,10 +109,12 @@ export function PossessionBoard({
   return (
     <View style={{ width: "100%" }}>
       {winner ? (
-        <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
-          <Icon name="trophy.fill" size={24} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
-          <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
-        </Card>
+        <Animated.View entering={SOFT_IN}>
+          <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
+            <Icon name="trophy.fill" size={24} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
+            <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
+          </Card>
+        </Animated.View>
       ) : null}
 
       {/* Chess clocks and hex counts */}
@@ -134,11 +136,13 @@ export function PossessionBoard({
           );
         })}
       </View>
-      {!winner && (
-        <Text style={[T.body, { textAlign: "center", marginTop: 8, color: MARK[turn].color, fontWeight: "700" }]}>{status}</Text>
-      )}
+      {!winner && <Text style={[T.body, { textAlign: "center", marginTop: 8, color: MARK[turn].color, fontWeight: "700" }]}>{status}</Text>}
       <View style={{ height: 20, justifyContent: "center" }}>
-        {flash ? <Text style={[T.caption, { textAlign: "center", color: C.text2, fontWeight: "600" }]}>{flash}</Text> : null}
+        {flash ? (
+          <Animated.View key={flash} entering={SOFT_IN}>
+            <Text style={[T.caption, { textAlign: "center", color: C.text2, fontWeight: "600" }]}>{flash}</Text>
+          </Animated.View>
+        ) : null}
       </View>
 
       {/* Hexes */}
@@ -203,9 +207,7 @@ export function PossessionBoard({
             <View style={{ alignItems: "center", gap: 6 }}>
               <CriterionBadge c={board[open]} size={30} />
               <Text style={T.headline}>{label(board[open])}</Text>
-              <Text style={[T.caption, { textAlign: "center" }]}>
-                {t("ppNeighbours")}
-              </Text>
+              <Text style={[T.caption, { textAlign: "center" }]}>{t("ppNeighbours")}</Text>
             </View>
           ) : null
         }
