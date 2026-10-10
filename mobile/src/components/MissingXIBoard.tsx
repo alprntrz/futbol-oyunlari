@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming, ZoomIn } from "react-native-reanimated";
-import Svg, { Path } from "react-native-svg";
+import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 
 import { FORMATIONS } from "@/lib/formations";
 import type { Difficulty, LineupPlayer, Match, SlotState } from "@/lib/types";
@@ -19,6 +18,8 @@ import { Confetti, PopNumber } from "./motion";
 import { Button, Card, Icon, Tap } from "./ui";
 
 const SLOT_W = 86;
+/** Shirts drop in once when the board opens: short travel, one soft settle. */
+const SHIRT_ENTER = (i: number) => FadeInDown.delay(40 + i * 30).springify().damping(20).stiffness(220).withInitialValues({ transform: [{ translateY: -10 }] });
 const SLOT_H = 72;
 
 /** How long the sheet stays open after a slot resolves: the tile flip, then a beat. */
@@ -203,25 +204,9 @@ function Slot({
   const { t } = useI18n();
   const revealed = state.solved || done;
   const locked = done || state.solved || state.failed;
-  const scale = useSharedValue(1);
-  const wasSolved = useRef(state.solved);
-
-  useEffect(() => {
-    if (state.solved && !wasSolved.current) {
-      scale.set(
-        withDelay(
-          closeDelay(player.answer, true) - 150,
-          withSequence(withTiming(1.3, { duration: 160 }), withSpring(1, { damping: 6, stiffness: 180 }))
-        )
-      );
-    }
-    wasSolved.current = state.solved;
-  }, [state.solved, player.answer, scale]);
-
-  const pop = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
 
   return (
-    <Animated.View entering={ZoomIn.delay(80 + index * 55).springify().damping(12)} style={[styles.slot, { left, top }]}>
+    <Animated.View entering={SHIRT_ENTER(index)} style={[styles.slot, { left, top }]}>
       <Tap
         disabled={locked}
         onPress={onPress}
@@ -230,7 +215,7 @@ function Slot({
           revealed ? `${player.number}, ${player.name}` : `${player.number}, ${answerLetters(player.answer).length} ${t("letters")}`
         }
       >
-        <Animated.View style={pop}>
+        <View>
           <Jersey
             variant={kit.variant}
             body={kit.body}
@@ -241,7 +226,7 @@ function Slot({
             goals={player.goals}
             faded={state.failed && !done}
           />
-        </Animated.View>
+        </View>
         <View style={[styles.label, state.solved ? { backgroundColor: C.green } : state.failed ? { backgroundColor: C.red } : null]}>
           {revealed ? (
             <Text style={[styles.labelText, { color: state.solved || state.failed ? "white" : C.text }]} numberOfLines={1} adjustsFontSizeToFit>
@@ -261,29 +246,26 @@ function Slot({
 
 const BLANKS_W = SLOT_W - 14;
 
-/** Fill-in-the-blank squiggles, one wave per letter, with a gap between words. */
+/**
+ * One small rounded cell per letter, like a miniature of the guess tiles, with
+ * a wider gap between words ("DI MARIA" → ▢▢ ▢▢▢▢▢).
+ */
 function Blanks({ answer }: { answer: string }) {
   const letters = answer.replace(/ /g, "").length;
-  const gaps = answer.split(" ").length - 1;
-  const GAP = Math.min(4, Math.max(2, (BLANKS_W - letters * 5 - gaps * 6) / Math.max(letters - 1, 1)));
-  const WORD = 6;
-  const w = Math.max(3.5, Math.min(7, (BLANKS_W - (letters - 1) * GAP - gaps * WORD) / letters));
-  const h = 7;
-  let x = 1;
-  let d = "";
-  for (const ch of answer) {
-    if (ch === " ") {
-      x += WORD;
-      continue;
-    }
-    // one full wave per letter: up-bump then down-bump
-    d += `M${x} ${h / 2} q${w / 4} ${-h / 2.2} ${w / 2} 0 t${w / 2} 0 `;
-    x += w + GAP;
-  }
+  const words = answer.split(" ").length;
+  const GAP = 2;
+  const WORD = 5;
+  const w = Math.max(3, Math.min(7, (BLANKS_W - (letters - words) * GAP - (words - 1) * WORD) / letters));
   return (
-    <Svg width={x} height={h}>
-      <Path d={d} stroke={C.greenDark} strokeWidth={2} strokeLinecap="round" fill="none" />
-    </Svg>
+    <View style={{ flexDirection: "row", gap: WORD, alignItems: "center" }}>
+      {answer.split(" ").map((word, wi) => (
+        <View key={wi} style={{ flexDirection: "row", gap: GAP }}>
+          {word.split("").map((_, i) => (
+            <View key={i} style={[styles.cell, { width: w }]} />
+          ))}
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -308,6 +290,7 @@ const styles = StyleSheet.create({
   slot: { position: "absolute", width: SLOT_W, height: SLOT_H, alignItems: "center" },
   label: { maxWidth: SLOT_W, backgroundColor: "rgba(255,255,255,0.95)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
   labelText: { fontSize: 10, fontWeight: "700", textAlign: "center" },
+  cell: { height: 9, borderRadius: 2, backgroundColor: "#D3E4D9", borderBottomWidth: 2, borderBottomColor: C.greenMid },
   blanksRow: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 3 },
   tries: { fontFamily: F.display, fontSize: 11, color: "white", backgroundColor: C.text2, borderRadius: 6, paddingHorizontal: 4, overflow: "hidden" },
 });
