@@ -14,9 +14,12 @@ bağlarım.
 | Uygulama ikonu, açılış logosu | ✅ Evet | Uygulamanın yüzü |
 | Mod ikonları (Günün Kadrosu, Pratik, Takımını seç, Online Yarış, Tiki Taka) | ✅ Evet | Ana ekrandaki satırlar ve kartlar |
 | Boş durum / sonuç illüstrasyonları | ✅ Evet | İstatistik boşken, yarış beklerken, oyun bitince |
-| **Formalar** | ❌ Hayır (kodda kalıyor) | Her takımın renkleri farklı (45+ takım) ve forma numarası değişken. Görsel dosya bunu yapamaz; forma kodla (SVG) çiziliyor ve takım renklerine göre boyanıyor. İstersen sadece **şekil referansı** üretebilirsin (bkz. bölüm 6), ben onu vektöre çeviririm. |
-| Alt sekme ikonları (Oyunlar / İstatistik / Ayarlar) | ❌ Hayır | Apple'ın kendi SF Symbols ikonları; seçili/seçisiz renkleri ve iOS 26 cam görünümü otomatik. Özel görsel bunları bozar. |
-| Klavye, butonlar, oklar gibi arayüz ikonları | ❌ Hayır | Aynı sebep: sistem ikonları |
+| **Formalar** | ✅ Evet, **katmanlı** | Tek görsel 45+ takımın rengini alamaz. Bu yüzden **beyaz, gölgeli** bir forma üretiyorsun; ben gövde/kol/yaka alanlarını vektöre çevirip kodla takım renklerine boyuyorum, senin görseldeki gölge ve kumaş dokusu üstüne biniyor. Numara yine kodla yazılıyor. Bkz. 4-F. |
+| Alt sekme ikonları (Oyunlar / İstatistik / Ayarlar) | ✅ Evet, **düz silüet** olarak | iOS sekme çubuğu özel ikonları tek renkli şablon olarak kullanıyor; rengi sistem veriyor. Bu yüzden renkli/gölgeli değil, **düz siyah silüet** istiyoruz. Ben 25 pt'de keskin dursun diye vektöre yeniden çiziyorum. Bkz. 4-G. |
+| Klavye, butonlar, oklar gibi arayüz ikonları | ❌ Hayır | Kullanıcının zaten tanıdığı sistem ikonları; özelleştirmek "herkes anlasın" hedefine ters düşer. |
+
+**Öncelik sırası** (hepsini birden üretmek zorunda değilsin):
+uygulama ikonu → formalar → mod ikonları → illüstrasyonlar → sekme ikonları.
 
 ---
 
@@ -57,6 +60,9 @@ hissi ama abartısız). Keskin fotogerçekçilik yok, parlak plastik yok, neon y
 3. Hepsini **aynı sohbette** üret. Yeni sohbet stili kaydırır.
 
 ### Stil kartı prompt'u (önce bu)
+
+> Formalar (4-F) ve sekme ikonları (4-G) bu stil kartına bağlı değil; onları
+> **ayrı bir sohbette** üret, çünkü stilleri bilerek farklı (gri tonlu forma, düz siyah silüet).
 
 ```
 Create a style sheet of 5 app icons in a single row on a plain white background, same visual language for all:
@@ -156,6 +162,82 @@ Same style as the style sheet above. A friendly referee whistle in ink #0B1220 w
 Same style as the style sheet above, wider composition. A smartphone lying slightly tilted showing a green football pitch with a few plain white shirts on it, and above it a row of five rounded letter tiles: two green #22A55A, one amber #E9B10A, two grey #8D96A5, all tiles blank with no letters. Transparent background, no text.
 ```
 
+### F. Formalar (katmanlı) — `jersey-*.png`
+
+**Nasıl çalışacak:** Sen beyaz bir forma üretiyorsun. Ben:
+1. formanın dış hattından gövde, sol kol, sağ kol, yaka ve manşet alanlarını vektör olarak çıkarıyorum,
+2. bu alanları her maçın takım renkleriyle (gövde / kol / numara) boyuyorum,
+3. senin görselini üstüne **çarpma (multiply)** karışımıyla koyuyorum: beyaz yerler rengi aynen gösterir, gri gölgeler ve kıvrımlar rengi koyulaştırır.
+
+Bu yüzden görselin **sadece beyaz ve gri tonlarından** oluşması çok önemli. Renk, desen, logo veya numara olursa her takımın formasında görünür.
+
+**Teknik şartlar (her forma görseli için):**
+- 1024×1024 PNG, **şeffaf arka plan**
+- **Tam önden**, kusursuz **simetrik**, perspektif yok, hafif eğim bile yok
+- Forma kanvasın ortasında, kenarlarda ~%10 boşluk; tüm yaka varyantlarında **aynı boyut ve konum** (varyantları aynı sohbette, "same size and position" diyerek üret)
+- Gövde, kollar, yaka ve manşetler arasında **ince ama net dikiş çizgileri** (alanları bu çizgilerden ayıracağım)
+- Göğüs bölgesi **düz ve sakin** olsun: numara oraya kodla yazılacak
+
+**`jersey-vneck.png`** — V yaka (varsayılan)
+```
+A single football (soccer) shirt, front view, perfectly symmetric, flat-on with no perspective or tilt, centered on a fully transparent background with about 10% empty margin.
+The shirt is pure white fabric with soft, realistic grey shading only: gentle fabric folds at the sides and under the sleeves, a soft shadow inside the V-neck collar, subtle highlights on the shoulders. Short sleeves with slightly thicker cuffs.
+Clear thin seam lines separating the body, both sleeves, the V-neck collar and both cuffs.
+The chest area stays smooth and calm (a number will be printed there later).
+Strictly greyscale: white and light-to-mid greys only. No colour, no pattern, no stripes, no number, no text, no logo, no crest, no sponsor, no hanger, no mannequin, no background.
+```
+
+**`jersey-crew.png`** — Yuvarlak yaka
+```
+Same shirt, same size, same position and same lighting as the previous image, but with a round crew-neck collar instead of the V-neck. Everything else identical: strictly greyscale, transparent background, symmetric front view, clear seam lines, no number, no logo.
+```
+
+**`jersey-polo.png`** — Polo (düğmeli) yaka — klasik/eski maçlar için
+```
+Same shirt, same size, same position and same lighting as the previous images, but with a classic polo collar (fold-down collar with a short two-button placket). Everything else identical: strictly greyscale, transparent background, symmetric front view, clear seam lines, no number, no logo.
+```
+
+**`jersey-keeper.png`** — Kaleci (uzun kollu)
+```
+Same shirt, same size, same position and same lighting as the previous images, but long-sleeved like a goalkeeper jersey, with padded-looking elbow areas and cuffs at the wrists, crew-neck collar. Everything else identical: strictly greyscale, transparent background, symmetric front view, clear seam lines, no number, no logo.
+```
+
+> Not: Verimizde kaleci forma rengi yok. Kaleci formasını sabit bir kaleci
+> paletiyle (ör. yeşil, sarı, turuncu arasında) gösterebilirim; kalecinin ayırt
+> edilmesini kolaylaştırır. Yaka tipini maçın yılına göre seçebilirim
+> (ör. 2000 öncesi polo).
+
+### G. Alt sekme ikonları — `tab-*.png`
+
+**Nasıl çalışacak:** iOS sekme çubuğunda ikonun **sadece şekli** kullanılır,
+rengi sistem verir (seçiliyken yeşil, değilken gri). Bu yüzden düz, tek renk
+silüet istiyoruz. Üretilen görseli ben vektöre yeniden çizip 25 pt'de keskin
+hale getiriyorum; yani küçük kusurlar sorun değil, **şekil fikri** önemli.
+
+Her biri için iki hâl üret: **dolu** (seçili sekme) ve **çizgi** (seçili olmayan).
+
+**Ortak kurallar:** 1024×1024 PNG, şeffaf arka plan, **saf siyah (#000000) düz
+silüet**, gölge/gradyan/doku yok, kalın ve sade hatlar, yuvarlatılmış köşeler,
+25 piksele küçültüldüğünde bile tanınabilir. Üçü aynı çizgi kalınlığında ve aynı
+görsel ağırlıkta olsun.
+
+```
+Design a set of 3 tab bar icons for an iOS football (soccer) games app, shown side by side on a transparent background, each in two versions: filled (top row) and outline (bottom row).
+1) "Games": a football (soccer ball) with a simple, bold panel pattern.
+2) "Stats": a small podium or three rising rounded bars with a tiny star above the tallest.
+3) "Settings": a rounded gear with a football-pitch centre circle in the middle.
+Style: flat pure black (#000000) glyphs only, no shading, no gradient, no colour, no texture, consistent stroke weight across all icons (outline versions use the same stroke width), rounded corners and caps, bold and simple enough to be recognisable at 25 pixels, visually balanced like Apple SF Symbols. No text, no letters, no numbers.
+```
+
+Beğendiğin seti tek tek ayrı dosya olarak iste:
+
+```
+Now output only the [filled / outline] "[Games / Stats / Settings]" icon from that set, alone, centered on a transparent 1024x1024 canvas with about 15% margin, same style, pure black flat glyph.
+```
+
+Dosya adları: `tab-games-fill.png`, `tab-games-line.png`, `tab-stats-fill.png`,
+`tab-stats-line.png`, `tab-settings-fill.png`, `tab-settings-line.png`.
+
 ---
 
 ## 5. Teslim
@@ -176,19 +258,18 @@ illus-waiting-room.png
 illus-win.png
 illus-finish.png
 illus-howto.png
+jersey-vneck.png
+jersey-crew.png
+jersey-polo.png
+jersey-keeper.png
+tab-games-fill.png
+tab-games-line.png
+tab-stats-fill.png
+tab-stats-line.png
+tab-settings-fill.png
+tab-settings-line.png
 ```
 
 Bir kısmını üretip beğenmezsen sorun değil; olanları bağlarım, eksikler için
-mevcut sistem ikonları kalır.
+mevcut ikonlar ve kodla çizilen forma kalır.
 
----
-
-## 6. (İsteğe bağlı) Forma şekli referansı — `ref-jersey.png`
-
-Formadaki **şekli** değiştirmek istersen (V yaka yerine polo yaka, daha geniş
-kollar vb.) bunu üret. Renk ve numara yine kodla gelecek; ben bu görseli SVG
-çizime çeviririm.
-
-```
-Flat front-view football shirt silhouette as a design reference: solid white fill with a thin dark outline, short sleeves, polo-style collar, clear separate shapes for body, left sleeve, right sleeve, collar and sleeve cuffs. Perfectly symmetric, no shading, no number, no logo, no wrinkles, plain transparent background, 1024x1024.
-```
