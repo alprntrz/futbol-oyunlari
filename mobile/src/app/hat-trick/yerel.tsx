@@ -1,14 +1,17 @@
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
+import { View } from "react-native";
 
 import { generateGrid, type Grid } from "@/lib/tiki";
 
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
-import { Button, Page } from "~/components/ui";
+import { Text } from "~/components/Text";
+import { Button, Page, Segmented } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { other, resultOf, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { T } from "~/lib/theme";
 
 /** Hat-trick on one phone: X and O take turns. */
 export default function HatTrickLocal() {
@@ -20,6 +23,9 @@ export default function HatTrickLocal() {
   const [flash, setFlash] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(TURN_SECONDS);
   const [deadline, setDeadline] = useState(() => Date.now() + TURN_SECONDS * 1000);
+  const [stealMode, setStealMode] = useState(false);
+  const [steals, setSteals] = useState<Record<Mark, number>>({ X: 3, O: 3 });
+  const [usedNames, setUsedNames] = useState<string[]>([]);
 
   const nextTurn = (message: string | null) => {
     setFlash(message);
@@ -46,6 +52,8 @@ export default function HatTrickLocal() {
 
   const onMove = (cell: number, name: string | null) => {
     if (!name) return nextTurn(`${turn}: ${t("ttWrong")}`);
+    if (board[cell]) setSteals((s) => ({ ...s, [turn]: s[turn] - 1 }));
+    setUsedNames((u) => [...u, name]);
     const next = board.slice();
     next[cell] = { mark: turn, name };
     setBoard(next);
@@ -57,6 +65,8 @@ export default function HatTrickLocal() {
   };
 
   const newGrid = () => {
+    setSteals({ X: 3, O: 3 });
+    setUsedNames([]);
     setGrid(generateGrid());
     setBoard(Array(9).fill(null));
     setTurn("X");
@@ -69,7 +79,23 @@ export default function HatTrickLocal() {
   return (
     <Page>
       <Stack.Screen options={{ title: t("htLocal"), headerRight: () => <HelpButton game="tiki" /> }} />
+      <View style={{ marginBottom: 12 }}>
+        <Segmented
+          value={stealMode ? "on" : "off"}
+          onChange={(v) => {
+            setStealMode(v === "on");
+            newGrid();
+          }}
+          options={[
+            { value: "off", label: t("htClassic") },
+            { value: "on", label: t("htSteals") },
+          ]}
+        />
+        {stealMode && <Text style={[T.caption, { marginTop: 6, marginLeft: 4 }]}>{t("htStealsDesc")}</Text>}
+      </View>
       <HatTrickBoard
+        steals={stealMode ? steals : null}
+        usedNames={usedNames}
         grid={grid}
         board={board}
         turn={turn}

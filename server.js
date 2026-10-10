@@ -79,6 +79,8 @@ function htPublic(room) {
     winner: room.winner,
     flash: room.flash,
     remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : HT_TURN_MS,
+    steals: room.steals,
+    used: room.used,
     players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
   };
 }
@@ -86,6 +88,63 @@ function htPublic(room) {
 function htCode() {
   const code = makeCode();
   return htRooms.has(code) ? htCode() : code;
+}
+
+
+// ── Possession Play (31 hexes) online rooms ───────────────────────────────
+// The host's phone deals the board (criterion ids). The mover's phone works
+// out which hexes a footballer claims (both phones share the player list);
+// the server applies the move, runs both chess clocks and decides the result.
+const PP_HEXES = 31;
+const PP_CLOCK_MS = 120_000;
+/** code -> possession room */
+const ppRooms = new Map();
+/** players waiting for a random opponent: { socket, nick, board } */
+let ppQueue = [];
+
+function ppResult(owners) {
+  if (!owners.every(Boolean)) return null;
+  const x = owners.filter((o) => o.mark === "X").length;
+  return x === PP_HEXES - x ? "draw" : x > PP_HEXES - x ? "X" : "O";
+}
+
+function ppPublic(room) {
+  const clocks = { ...room.clocks };
+  if (room.started && !room.winner && room.turnStart) clocks[room.turn] = Math.max(0, clocks[room.turn] - (Date.now() - room.turnStart));
+  return {
+    code: room.code,
+    board: room.board,
+    started: room.started,
+    owners: room.owners,
+    turn: room.turn,
+    clocks,
+    winner: room.winner,
+    flash: room.flash,
+    used: room.used,
+    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
+  };
+}
+
+function ppNewRoom(code, board, players) {
+  return {
+    code,
+    board,
+    started: false,
+    owners: Array(PP_HEXES).fill(null),
+    turn: "X",
+    clocks: { X: PP_CLOCK_MS, O: PP_CLOCK_MS },
+    turnStart: null,
+    timer: null,
+    winner: null,
+    flash: null,
+    used: [],
+    players,
+  };
+}
+
+function ppCode() {
+  const code = makeCode();
+  return ppRooms.has(code) ? ppCode() : code;
 }
 
 app.prepare().then(() => {
@@ -192,6 +251,136 @@ app.prepare().then(() => {
       }
     });
 
+    // ── Possession Play ──
+    const ppEmit = (room) => io.to("pp:" + room.code).emit("pp:update", ppPublic(room));
+
+    // Start the current player's clock; when it runs out they lose
+    const ppStartTurn = (room) => {
+      clearTimeout(room.timer);
+      room.turnStart = Date.now();
+      room.timer = setTimeout(() => {
+        if (room.winner || !ppRooms.has(room.code)) return;
+        room.clocks[room.turn] = 0;
+        room.flash = { mark: room.turn, reason: "timeout" };
+        room.winner = room.turn === "X" ? "O" : "X";
+        room.turnStart = null;
+        ppEmit(room);
+      }, room.clocks[room.turn]);
+    };
+
+    const ppJoinRoom = (s, room) => {
+      s.data.ppCode = room.code;
+      s.join("pp:" + room.code);
+    };
+
+    socket.on("pp:create", ({ nick, board }, cb) => {
+      if (!Array.isArray(board) || board.length !== PP_HEXES) return cb?.({ ok: false, error: "bad_board" });
+      const room = ppNewRoom(ppCode(), board, [{ id: socket.id, nick: String(nick || "").slice(0, 20), mark: "X" }]);
+      ppRooms.set(room.code, room);
+      ppJoinRoom(socket, room);
+      cb?.({ ok: true, room: ppPublic(room) });
+    });
+
+    socket.on("pp:join", ({ code, nick }, cb) => {
+      const room = ppRooms.get(String(code || "").toUpperCase());
+      if (!room) return cb?.({ ok: false, error: "not_found" });
+      if (!room.players.some((p) => p.id === socket.id)) {
+        if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
+        const mark = room.players[0]?.mark === "X" ? "O" : "X";
+        room.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), mark });
+      }
+      ppJoinRoom(socket, room);
+      ppEmit(room);
+      cb?.({ ok: true, room: ppPublic(room) });
+    });
+
+    socket.on("pp:start", () => {
+      const room = ppRooms.get(socket.data.ppCode);
+      if (!room || room.started || room.players.length < 2 || room.players[0].id !== socket.id) return;
+      room.started = true;
+      ppStartTurn(room);
+      ppEmit(room);
+    });
+
+    // claims = hexes the named footballer takes (null name = wrong answer)
+    socket.on("pp:move", ({ name, claims }) => {
+      const room = ppRooms.get(socket.data.ppCode);
+      if (!room || !room.started || room.winner) return;
+      const me = room.players.find((p) => p.id === socket.id);
+      if (!me || me.mark !== room.turn) return;
+      room.clocks[me.mark] = Math.max(0, room.clocks[me.mark] - (Date.now() - room.turnStart));
+      if (name) {
+        const hexes = Array.isArray(claims) ? claims.map(Number).filter((i) => i >= 0 && i < PP_HEXES) : [];
+        // The first claim is the chosen hex and must be neutral; the name must be new
+        if (!hexes.length || room.owners[hexes[0]] || room.used.includes(name)) {
+          return socket.emit("pp:update", ppPublic(room));
+        }
+        const stolen = hexes.filter((i) => room.owners[i] && room.owners[i].mark !== me.mark).length;
+        for (const i of hexes) room.owners[i] = { mark: me.mark, name: String(name).slice(0, 60) };
+        room.used.push(String(name).slice(0, 60));
+        room.flash = { mark: me.mark, reason: "claim", name: String(name).slice(0, 60), count: hexes.length, stolen };
+        room.winner = ppResult(room.owners);
+      } else {
+        room.flash = { mark: me.mark, reason: "wrong" };
+      }
+      if (room.winner) {
+        clearTimeout(room.timer);
+        room.turnStart = null;
+      } else {
+        room.turn = room.turn === "X" ? "O" : "X";
+        ppStartTurn(room);
+      }
+      ppEmit(room);
+    });
+
+    socket.on("pp:rematch", ({ board }) => {
+      const room = ppRooms.get(socket.data.ppCode);
+      if (!room || !room.winner || room.players[0].id !== socket.id || !Array.isArray(board) || board.length !== PP_HEXES) return;
+      const players = room.players.map((p) => ({ ...p, mark: p.mark === "X" ? "O" : "X" }));
+      Object.assign(room, ppNewRoom(room.code, board, players), { started: true });
+      ppStartTurn(room);
+      ppEmit(room);
+    });
+
+    socket.on("pp:queue", ({ nick, board }) => {
+      if (!Array.isArray(board) || board.length !== PP_HEXES) return;
+      ppQueue = ppQueue.filter((w) => w.socket.connected && w.socket.id !== socket.id);
+      const waiting = ppQueue.shift();
+      if (!waiting) {
+        ppQueue.push({ socket, nick: String(nick || "").slice(0, 20), board });
+        return;
+      }
+      const room = ppNewRoom(ppCode(), waiting.board, [
+        { id: waiting.socket.id, nick: waiting.nick, mark: "X" },
+        { id: socket.id, nick: String(nick || "").slice(0, 20), mark: "O" },
+      ]);
+      room.started = true;
+      ppRooms.set(room.code, room);
+      ppJoinRoom(waiting.socket, room);
+      ppJoinRoom(socket, room);
+      ppStartTurn(room);
+      io.to("pp:" + room.code).emit("pp:matched", { code: room.code });
+    });
+
+    socket.on("pp:unqueue", () => {
+      ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
+      const room = ppRooms.get(socket.data.ppCode);
+      if (!room) return;
+      room.players = room.players.filter((p) => p.id !== socket.id);
+      clearTimeout(room.timer);
+      if (room.players.length === 0) {
+        ppRooms.delete(room.code);
+      } else {
+        room.started = false;
+        room.turnStart = null;
+        io.to("pp:" + room.code).emit("pp:peer-left", ppPublic(room));
+      }
+    });
+
     // ── Hat-trick ──
 
     const htEmit = (room) => io.to("ht:" + room.code).emit("ht:update", htPublic(room));
@@ -208,7 +397,7 @@ app.prepare().then(() => {
       }, HT_TURN_MS);
     };
 
-    socket.on("ht:create", ({ nick, grid }, cb) => {
+    socket.on("ht:create", ({ nick, grid, steals }, cb) => {
       if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return cb?.({ ok: false, error: "bad_grid" });
       const code = htCode();
       const room = {
@@ -221,6 +410,9 @@ app.prepare().then(() => {
         flash: null,
         deadline: null,
         timer: null,
+        // steal mode: 3 steals each, or null when off
+        steals: steals ? { X: 3, O: 3 } : null,
+        used: [],
         players: [{ id: socket.id, nick: String(nick || "").slice(0, 20), mark: "X" }],
       };
       htRooms.set(code, room);
@@ -264,6 +456,8 @@ app.prepare().then(() => {
         flash: null,
         deadline: null,
         timer: null,
+        steals: null,
+        used: [],
         players: [
           { id: waiting.socket.id, nick: waiting.nick, mark: "X" },
           { id: socket.id, nick: String(nick || "").slice(0, 20), mark: "O" },
@@ -298,11 +492,16 @@ app.prepare().then(() => {
       if (!me || me.mark !== room.turn) return;
       if (name) {
         const i = Number(cell);
-        // Taken square or a name already on the board: resync the sender only
-        if (!(i >= 0 && i < 9) || room.board[i] || room.board.some((c) => c && c.name === name)) {
+        const taken = i >= 0 && i < 9 ? room.board[i] : null;
+        // A taken square is only allowed as a steal of the opponent's square
+        const steal = !!taken && !!room.steals && taken.mark !== me.mark && room.steals[me.mark] > 0;
+        // Bad square or a name already on the board: resync the sender only
+        if (!(i >= 0 && i < 9) || (taken && !steal) || room.used.includes(name)) {
           return socket.emit("ht:update", htPublic(room));
         }
+        if (steal) room.steals[me.mark]--;
         room.board[i] = { mark: me.mark, name: String(name).slice(0, 60) };
+        room.used.push(room.board[i].name);
         room.flash = null;
         room.winner = htResult(room.board);
       } else {
@@ -327,6 +526,8 @@ app.prepare().then(() => {
       room.winner = null;
       room.flash = null;
       for (const p of room.players) p.mark = p.mark === "X" ? "O" : "X";
+      if (room.steals) room.steals = { X: 3, O: 3 };
+      room.used = [];
       room.turn = "X";
       htStartTurn(room);
       htEmit(room);

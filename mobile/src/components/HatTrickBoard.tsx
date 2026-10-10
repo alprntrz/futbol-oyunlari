@@ -108,6 +108,8 @@ export function HatTrickBoard({
   footer,
   header,
   sheetCaption,
+  steals,
+  usedNames,
 }: {
   grid: Grid;
   board: (HtCell | null)[];
@@ -127,6 +129,10 @@ export function HatTrickBoard({
   header?: React.ReactNode;
   /** replaces the "X · your guess · 42s" line in the guess sheet */
   sheetCaption?: string;
+  /** steal mode: steals left per player (null/undefined = off) */
+  steals?: Record<Mark, number> | null;
+  /** every name played this game, including ones stolen off the board */
+  usedNames?: string[];
 }) {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
@@ -139,7 +145,9 @@ export function HatTrickBoard({
   const size = (n: number) => (cellW ? { width: cellW * n, height: cellW } : null);
 
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
-  const used = useMemo(() => new Set(board.filter(Boolean).map((c) => c!.name)), [board]);
+  const used = useMemo(() => new Set([...(usedNames ?? []), ...board.filter(Boolean).map((c) => c!.name)]), [board, usedNames]);
+  // A rival's square can be taken while the player to move still has steals
+  const canSteal = (cell: HtCell) => !!steals && cell.mark !== turn && steals[turn] > 0;
   const suggestions = useMemo(() => searchPlayers(input), [input]);
   const line = useMemo(() => winningLine(board), [board]);
 
@@ -195,6 +203,14 @@ export function HatTrickBoard({
                       {labels[m]}
                     </Text>
                   )}
+                  {steals && (
+                    <View style={[styles.stealBadge, { backgroundColor: active ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.7)" }]}>
+                      <Icon name="arrow.left.arrow.right" size={11} color={active ? "white" : MARK[m].color} fallback="⇄" />
+                      <Text allowFontScaling={false} style={[styles.stealCount, { color: active ? "white" : MARK[m].color }]}>
+                        {steals[m]}
+                      </Text>
+                    </View>
+                  )}
                   {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
                 </View>
               );
@@ -235,7 +251,7 @@ export function HatTrickBoard({
               return (
                 <Tap
                   key={ci}
-                  disabled={!!cell || !!winner || !canMove}
+                  disabled={(!!cell && !canSteal(cell)) || !!winner || !canMove}
                   onPress={() => {
                     setOpenCell(idx);
                     setInput("");
@@ -287,7 +303,7 @@ export function HatTrickBoard({
               </View>
             )}
             <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
-              {sheetCaption ?? `${turn} · ${t("ttYourGuess")} · ${timeLeft}s`}
+              {sheetCaption ?? `${turn} · ${openCell !== null && board[openCell] ? `${t("htSteals")} (${board[openCell]!.name})` : t("ttYourGuess")} · ${timeLeft}s`}
             </Text>
             <View style={styles.inputWrap}>
               <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
@@ -346,6 +362,8 @@ const styles = StyleSheet.create({
   playerPill: { flex: 1, height: 52, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderRadius: 12, paddingHorizontal: 12 },
   playerMark: { fontFamily: F.black, fontSize: 30, lineHeight: 34 },
   playerName: { flexShrink: 1, fontSize: 14, fontWeight: "700" },
+  stealBadge: { flexDirection: "row", alignItems: "center", gap: 2, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 2 },
+  stealCount: { fontFamily: F.display, fontSize: 14, lineHeight: 16 },
   playerTime: { color: "white", fontFamily: F.display, fontSize: 24, lineHeight: 34, fontVariant: ["tabular-nums"] },
   bar: { height: 6, borderRadius: 3, backgroundColor: "#E2E6EC", marginTop: 12, overflow: "hidden" },
   grid: { width: "100%", gap: 6, marginTop: 16 },

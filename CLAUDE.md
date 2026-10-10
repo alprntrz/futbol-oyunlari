@@ -30,7 +30,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
 - Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`, incl. `ht:queue` matchmaking:
   server owns turn, 45 s clock and result; the host's phone deals the grid as
-  criterion ids). The Missing 11 race (`room:*`, `race:*`) is still served for
+  criterion ids). Possession Play uses `pp:*` (same pattern, two chess clocks;
+  the mover's phone computes claimed hexes). Football Bingo is offline (daily
+  seeded card, `mobile/src/lib/bingo.ts`). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - Read `mobile/AGENTS.md`: Expo APIs change per SDK, check the versioned docs.

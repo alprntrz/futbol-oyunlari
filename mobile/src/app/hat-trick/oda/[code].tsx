@@ -30,6 +30,8 @@ interface HtRoom {
   winner: Winner;
   flash: { mark: Mark; reason: "wrong" | "timeout" } | null;
   remainingMs: number;
+  steals: Record<Mark, number> | null;
+  used: string[];
   players: HtPlayer[];
 }
 
@@ -177,6 +179,8 @@ export default function HatTrickRoom() {
       <Stack.Screen options={{ title: `${t("htOnline")} · ${code}` }} />
       {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
       <HatTrickBoard
+        steals={room.steals}
+        usedNames={room.used}
         grid={grid}
         board={room.board}
         turn={room.turn}

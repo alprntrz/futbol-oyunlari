@@ -1,3 +1,4 @@
+import type { SymbolViewProps } from "expo-symbols";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
@@ -121,6 +122,14 @@ export default function Home() {
       <Animated.View entering={enter(4)}>
         <WideTile image={BRAND.icon.tiki} title={t("tikiTakaName")} desc={t("htTile")} bg="#E4ECFD" onPress={() => router.push("/hat-trick")} />
       </Animated.View>
+      <View style={[styles.pair, { marginTop: 12 }]}>
+        <Animated.View entering={enter(5)} style={{ flex: 1 }}>
+          <SymbolTile icon="square.grid.4x3.fill" fallback="🎱" title={t("bingoName")} desc={t("bingoShort")} color={C.greenMid} bg="#E6F2E9" onPress={() => router.push("/bingo")} />
+        </Animated.View>
+        <Animated.View entering={enter(6)} style={{ flex: 1 }}>
+          <SymbolTile icon="hexagon.fill" fallback="⬡" title={t("ppName")} desc={t("ppShort")} color={C.coral} bg="#FCE9EC" onPress={() => router.push("/possession")} />
+        </Animated.View>
+      </View>
     </Page>
   );
 }
@@ -130,6 +139,38 @@ function GameTile({ image, title, desc, bg, onPress }: { image: ImageSourcePropT
     <Tap onPress={onPress} style={[styles.tile, { backgroundColor: bg }]} accessibilityLabel={`${title}. ${desc}`}>
       <Image source={image} style={styles.tileImage} accessible={false} />
       <Text style={styles.tileTitle}>{title}</Text>
+      <Text style={styles.tileDesc} numberOfLines={2}>
+        {desc}
+      </Text>
+    </Tap>
+  );
+}
+
+function SymbolTile({
+  icon,
+  fallback,
+  title,
+  desc,
+  color,
+  bg,
+  onPress,
+}: {
+  icon: SymbolViewProps["name"];
+  fallback: string;
+  title: string;
+  desc: string;
+  color: string;
+  bg: string;
+  onPress: () => void;
+}) {
+  return (
+    <Tap onPress={onPress} style={[styles.tile, { backgroundColor: bg }]} accessibilityLabel={`${title}. ${desc}`}>
+      <View style={styles.symbolBadge}>
+        <Icon name={icon} size={34} color={color} fallback={fallback} />
+      </View>
+      <Text style={styles.tileTitle} numberOfLines={1} adjustsFontSizeToFit>
+        {title}
+      </Text>
       <Text style={styles.tileDesc} numberOfLines={2}>
         {desc}
       </Text>
@@ -194,6 +235,7 @@ const styles = StyleSheet.create({
 
   pair: { flexDirection: "row", gap: 12 },
   tile: { borderRadius: R.card, padding: 16, paddingTop: 12, minHeight: 168 },
+  symbolBadge: { width: 60, height: 60, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.75)", alignItems: "center", justifyContent: "center", marginBottom: 12, marginTop: 6 },
   tileImage: { width: 72, height: 72, marginLeft: -6, marginBottom: 6 },
   tileTitle: { fontFamily: F.display, fontSize: 24, lineHeight: 26, color: C.text },
   tileDesc: { fontSize: 15, fontWeight: "500", color: C.text2, marginTop: 2, lineHeight: 20 },
