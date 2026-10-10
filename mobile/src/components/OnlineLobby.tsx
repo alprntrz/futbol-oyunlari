@@ -23,8 +23,8 @@ export function OnlineLobby({
   roomHref,
   createOptions,
 }: {
-  /** socket event prefix: "ht" (Hat-trick) or "pp" (Possession Play) */
-  game: "ht" | "pp";
+  /** socket event prefix: "ht" (Hat-trick), "pp" (Possession Play) or "qz" (Quiz) */
+  game: "ht" | "pp" | "qz";
   title: string;
   createPayload: () => object;
   roomHref: (code: string) => Href;
@@ -70,7 +70,7 @@ export function OnlineLobby({
     if (code.trim().length < 5) return;
     call<{ ok: boolean; error?: string; room?: { code: string } }>(`${game}:join`, { code: code.trim().toUpperCase(), nick }, (res) => {
       if (res.ok && res.room) goToRoom(res.room.code);
-      else setError(res.error === "full" ? t("roomFull") : t("roomNotFound"));
+      else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
     });
   };
 

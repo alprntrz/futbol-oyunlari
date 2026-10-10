@@ -95,6 +95,80 @@ function htCode() {
 }
 
 
+// ── Quiz (Bilgi Yarışı) rooms ─────────────────────────────────────────────
+// The creator's phone deals the questions (generated from the shared data,
+// answers included). The server keeps the answers to itself until the reveal,
+// runs the clock and the scoring. Random rooms fill up with house players
+// (nicknames, human-ish timing) when not enough people are searching.
+const QZ_MAX = 5;
+const QZ_INTRO_MS = 3000;
+const QZ_REVEAL_MS = 4000;
+/** an open random room starts this long after it was opened */
+const QZ_FILL_MS = 15_000;
+/** code -> quiz room */
+const qzRooms = new Map();
+/** the random room currently taking players, if any */
+let qzOpenCode = null;
+
+const QZ_NAMES = ["emre", "burak", "mert", "kerem", "can", "ozan", "baris", "efe", "arda", "yusuf", "selin", "zeynep", "ece", "deniz", "berk", "kaan", "onur", "tolga", "hakan", "cem", "umut", "eren", "furkan", "batu", "sinan", "melis", "volkan", "tuna", "doruk", "lucas", "mateo", "jonas", "luca"];
+const QZ_TAILS = ["", "", "07", "10", "1907", "1903", "1905", "34", "35", "06", "16", "61", "99", "23", "_fb", "_gs", "_bjk", "_ts"];
+function qzNick() {
+  const pick = (xs) => xs[Math.floor(Math.random() * xs.length)];
+  const name = pick(QZ_NAMES);
+  const cased = Math.random() < 0.4 ? name[0].toUpperCase() + name.slice(1) : name;
+  const tail = pick(QZ_TAILS);
+  const sep = tail && !tail.startsWith("_") && Math.random() < 0.25 ? "." : "";
+  return cased + sep + tail;
+}
+
+/** Same rule as quizPoints in src/lib/quiz.ts: 10 when instant, 5 at the buzzer. */
+function qzPoints(ms, limit) {
+  const left = Math.max(0, Math.min(1, 1 - ms / limit));
+  return Math.round(5 + 5 * left);
+}
+
+function qzValidQuestions(qs) {
+  return (
+    Array.isArray(qs) &&
+    qs.length >= 1 &&
+    qs.length <= 20 &&
+    qs.every((q) => q && q.text && Array.isArray(q.options) && q.options.length === 4 && Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4)
+  );
+}
+
+function qzSettings(s) {
+  const seconds = [10, 15, 20].includes(Number(s?.seconds)) ? Number(s.seconds) : 15;
+  const maxPlayers = Math.max(2, Math.min(QZ_MAX, Number(s?.maxPlayers) || QZ_MAX));
+  const category = ["mixed", "players", "matches"].includes(s?.category) ? s.category : "mixed";
+  return { seconds, maxPlayers, category };
+}
+
+function qzPublic(room) {
+  const q = room.questions[room.index];
+  const showQ = room.phase === "question" || room.phase === "reveal";
+  const reveal = room.phase === "reveal" || room.phase === "done";
+  return {
+    code: room.code,
+    random: room.random,
+    hostId: room.hostId,
+    settings: room.settings,
+    phase: room.phase,
+    index: room.index,
+    total: room.questions.length,
+    question: showQ ? { text: q.text, context: q.context ?? null, options: q.options } : null,
+    answer: room.phase === "reveal" ? q.answer : null,
+    remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : 0,
+    players: room.players.map((p) => ({
+      id: p.id,
+      nick: p.nick,
+      score: p.score,
+      answered: room.answers.has(p.id),
+      choice: reveal ? (room.answers.get(p.id)?.choice ?? null) : null,
+      gained: reveal ? (p.gained ?? 0) : 0,
+    })),
+  };
+}
+
 // ── Possession Play (31 hexes) online rooms ───────────────────────────────
 // The host's phone deals the board (criterion ids). The mover's phone works
 // out which hexes a footballer claims (both phones share the player list);
@@ -591,6 +665,207 @@ app.prepare().then(() => {
         io.to("ht:" + room.code).emit("ht:peer-left", htPublic(room));
       }
     });
+
+    // ── Quiz ──
+    const qzEmit = (room) => io.to("qz:" + room.code).emit("qz:update", qzPublic(room));
+    const qzClear = (room) => {
+      clearTimeout(room.timer);
+      room.botTimers.forEach(clearTimeout);
+      room.botTimers = [];
+    };
+    const qzHumans = (room) => room.players.filter((p) => !p.bot);
+
+    const qzReveal = (room) => {
+      if (room.phase !== "question") return;
+      qzClear(room);
+      const q = room.questions[room.index];
+      const limit = room.settings.seconds * 1000;
+      for (const p of room.players) {
+        const a = room.answers.get(p.id);
+        p.gained = a && a.choice === q.answer ? qzPoints(a.ms, limit) : 0;
+        p.score += p.gained;
+      }
+      room.phase = "reveal";
+      room.deadline = Date.now() + QZ_REVEAL_MS;
+      room.timer = setTimeout(() => qzNext(room), QZ_REVEAL_MS);
+      qzEmit(room);
+    };
+
+    const qzNext = (room) => {
+      qzClear(room);
+      room.index++;
+      room.answers = new Map();
+      if (room.index >= room.questions.length) {
+        room.phase = "done";
+        room.deadline = null;
+        return qzEmit(room);
+      }
+      const limit = room.settings.seconds * 1000;
+      room.phase = "question";
+      room.qStart = Date.now();
+      room.deadline = room.qStart + limit;
+      room.timer = setTimeout(() => qzReveal(room), limit);
+      // house players answer like people: a few seconds in, right most of the time
+      const q = room.questions[room.index];
+      for (const p of room.players.filter((x) => x.bot)) {
+        if (Math.random() < 0.05) continue; // now and then they run out of time
+        const ms = 2500 + Math.random() * (limit - 3500);
+        room.botTimers.push(
+          setTimeout(() => {
+            const wrong = [0, 1, 2, 3].filter((i) => i !== q.answer);
+            const choice = Math.random() < p.skill ? q.answer : wrong[Math.floor(Math.random() * 3)];
+            qzAnswer(room, p.id, choice);
+          }, ms)
+        );
+      }
+      qzEmit(room);
+    };
+
+    const qzBegin = (room) => {
+      qzClear(room);
+      if (qzOpenCode === room.code) qzOpenCode = null;
+      for (const p of room.players) {
+        p.score = 0;
+        p.gained = 0;
+      }
+      room.index = -1;
+      room.answers = new Map();
+      room.phase = "intro";
+      room.deadline = Date.now() + QZ_INTRO_MS;
+      room.timer = setTimeout(() => qzNext(room), QZ_INTRO_MS);
+      qzEmit(room);
+    };
+
+    const qzAnswer = (room, id, choice) => {
+      if (room.phase !== "question" || room.answers.has(id) || !room.players.some((p) => p.id === id)) return;
+      if (!Number.isInteger(choice) || choice < 0 || choice > 3) return;
+      room.answers.set(id, { choice, ms: Date.now() - room.qStart });
+      if (room.players.every((p) => room.answers.has(p.id))) {
+        clearTimeout(room.timer);
+        room.timer = setTimeout(() => qzReveal(room), 500);
+      }
+      qzEmit(room);
+    };
+
+    const qzAddBot = (room) => {
+      if (room.phase !== "lobby" || room.players.length >= room.settings.maxPlayers) return;
+      room.players.push({ id: "p" + Math.random().toString(36).slice(2, 10), nick: qzNick(), score: 0, bot: true, skill: 0.45 + Math.random() * 0.3 });
+      qzEmit(room);
+    };
+
+    const qzNewRoom = (socket, nick, settings, questions, random) => {
+      let code;
+      do code = makeCode();
+      while (qzRooms.has(code));
+      const room = {
+        code,
+        random,
+        hostId: socket.id,
+        settings,
+        questions,
+        phase: "lobby",
+        index: -1,
+        answers: new Map(),
+        deadline: null,
+        timer: null,
+        botTimers: [],
+        players: [{ id: socket.id, nick: String(nick || "").slice(0, 20), score: 0 }],
+      };
+      qzRooms.set(code, room);
+      socket.data.qzCode = code;
+      socket.join("qz:" + code);
+      return room;
+    };
+
+    const qzLeave = () => {
+      const room = qzRooms.get(socket.data.qzCode);
+      socket.leave("qz:" + socket.data.qzCode);
+      socket.data.qzCode = null;
+      if (!room) return;
+      room.players = room.players.filter((p) => p.id !== socket.id);
+      room.answers.delete(socket.id);
+      if (!qzHumans(room).length) {
+        qzClear(room);
+        qzRooms.delete(room.code);
+        if (qzOpenCode === room.code) qzOpenCode = null;
+        return;
+      }
+      if (room.hostId === socket.id) room.hostId = qzHumans(room)[0].id;
+      if (room.phase === "question" && room.players.every((p) => room.answers.has(p.id))) qzReveal(room);
+      else qzEmit(room);
+    };
+
+    socket.on("qz:create", ({ nick, settings, questions }, cb) => {
+      if (!qzValidQuestions(questions)) return cb?.({ ok: false, error: "bad_questions" });
+      if (socket.data.qzCode) qzLeave();
+      const room = qzNewRoom(socket, nick, qzSettings(settings), questions, false);
+      cb?.({ ok: true, room: qzPublic(room) });
+    });
+
+    socket.on("qz:join", ({ code, nick }, cb) => {
+      const room = qzRooms.get(String(code || "").toUpperCase());
+      if (!room) return cb?.({ ok: false, error: "not_found" });
+      if (room.players.some((p) => p.id === socket.id)) return cb?.({ ok: true, room: qzPublic(room) });
+      if (room.phase !== "lobby") return cb?.({ ok: false, error: "started" });
+      if (room.players.length >= room.settings.maxPlayers) return cb?.({ ok: false, error: "full" });
+      if (socket.data.qzCode) qzLeave();
+      room.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), score: 0 });
+      socket.data.qzCode = room.code;
+      socket.join("qz:" + room.code);
+      cb?.({ ok: true, room: qzPublic(room) });
+      qzEmit(room);
+      if (room.random && room.players.length >= room.settings.maxPlayers) qzBegin(room);
+    });
+
+    // Random: join the open room, or open one that starts after QZ_FILL_MS
+    socket.on("qz:queue", ({ nick, questions }, cb) => {
+      if (!qzValidQuestions(questions)) return cb?.({ ok: false, error: "bad_questions" });
+      if (socket.data.qzCode) qzLeave();
+      const open = qzOpenCode && qzRooms.get(qzOpenCode);
+      if (open && open.phase === "lobby" && open.players.length < open.settings.maxPlayers) {
+        open.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), score: 0 });
+        socket.data.qzCode = open.code;
+        socket.join("qz:" + open.code);
+        cb?.({ ok: true, code: open.code });
+        qzEmit(open);
+        if (open.players.length >= open.settings.maxPlayers) qzBegin(open);
+        return;
+      }
+      const room = qzNewRoom(socket, nick, qzSettings({}), questions, true);
+      qzOpenCode = room.code;
+      // a few others "find" the room while it waits
+      const joins = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < joins; i++) room.botTimers.push(setTimeout(() => qzAddBot(room), 2500 + Math.random() * (QZ_FILL_MS - 4000)));
+      room.timer = setTimeout(() => {
+        if (room.phase !== "lobby") return;
+        while (room.players.length < 2) qzAddBot(room);
+        qzBegin(room);
+      }, QZ_FILL_MS);
+      room.fillAt = Date.now() + QZ_FILL_MS;
+      cb?.({ ok: true, code: room.code });
+    });
+
+    socket.on("qz:start", () => {
+      const room = qzRooms.get(socket.data.qzCode);
+      if (!room || room.hostId !== socket.id || room.phase !== "lobby" || room.players.length < 2) return;
+      qzBegin(room);
+    });
+
+    socket.on("qz:answer", ({ choice }) => {
+      const room = qzRooms.get(socket.data.qzCode);
+      if (room) qzAnswer(room, socket.id, Number(choice));
+    });
+
+    // Same people, new questions (from the host's phone)
+    socket.on("qz:rematch", ({ questions }) => {
+      const room = qzRooms.get(socket.data.qzCode);
+      if (!room || room.hostId !== socket.id || room.phase !== "done" || !qzValidQuestions(questions)) return;
+      room.questions = questions;
+      qzBegin(room);
+    });
+
+    socket.on("qz:leave", qzLeave);
+    socket.on("disconnect", qzLeave);
 
     socket.on("disconnect", () => {
       const room = rooms.get(joinedCode);

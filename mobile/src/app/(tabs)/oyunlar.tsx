@@ -53,14 +53,15 @@ export default function Games() {
       bg: "#E4ECFD",
     },
     {
-      icon: "square.grid.3x3.square",
-      fallback: "▦",
-      title: t("kbName"),
-      desc: t("kbShort"),
-      href: "/kombine",
-      color: "#7044E8",
-      bg: "#EFE9FF",
+      icon: "questionmark.bubble.fill",
+      fallback: "?",
+      title: t("qzName"),
+      desc: t("qzShort"),
+      href: "/bilgi",
+      color: C.blue,
+      bg: C.blueSoft,
     },
+    // Kombine (match-3, /kombine) is shelved for a later version: code and routes stay, no entry here
     {
       icon: "person.fill.questionmark",
       fallback: "?",

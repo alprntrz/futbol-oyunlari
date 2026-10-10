@@ -34,7 +34,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   after 20 s an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
   `ht:forfeit` end games early). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
-- Kombine (football match-3): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
+- Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
+  data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
+  until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5
+  by speed). Random rooms (`qz:queue`) start after 15 s and fill up with house players.
+- Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.
   The match screen opts out of React Compiler memoization because the engine mutates `game`.
