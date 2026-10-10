@@ -159,7 +159,7 @@ export default function HatTrickSolo() {
   const share = () => {
     const squares = run.cells.map((c) => (c.length ? "🟩" : "⬜"));
     const rows = [0, 1, 2].map((r) => squares.slice(r * 3, r * 3 + 3).join("")).join("\n");
-    Share.share({ message: `${t("bbShareText")} #${day % 1000}\n${rows}\n${boxes}/9 · ${players} ${t("bbPlayers")} · %${percent}` });
+    Share.share({ message: `${t("bbShareText")} #${day % 1000}\n${rows}\n${boxes}/9\n${players} ${t("bbPlayers")}, %${percent}` });
   };
 
   return (

@@ -303,7 +303,7 @@ export function HatTrickBoard({
               </View>
             )}
             <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
-              {sheetCaption ?? `${turn} · ${openCell !== null && board[openCell] ? `${t("htSteals")} (${board[openCell]!.name})` : t("ttYourGuess")} · ${timeLeft}s`}
+              {sheetCaption ?? `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
             </Text>
             <View style={styles.inputWrap}>
               <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />

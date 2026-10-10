@@ -103,7 +103,7 @@ export default function HatTrickLocal() {
         timeLeft={timeLeft}
         labels={{ X: "X", O: "O" }}
         canMove
-        status={`${t("ttTurn")}: ${turn} · ${t("ttPick")}`}
+        status={`${t("ttTurn")}: ${turn}`}
         flash={flash}
         celebrate
         winnerText={winner === "draw" ? t("ttDraw") : `${winner} ${t("ttWins")}`}

@@ -65,7 +65,7 @@ export default function PossessionLocal() {
     setUsedNames((u) => [...u, player.name]);
     const next = owners.map((o, i) => (claims.includes(i) ? { mark: turn, name: player.name } : o));
     setOwners(next);
-    endTurn(`${player.name}: +${claims.length} ${t("ppClaimed")}${stolen ? ` · ${stolen} ${t("ppStole")}` : ""}`, next);
+    endTurn(`${player.name}: +${claims.length} ${t("ppClaimed")}${stolen ? `, ${stolen} ${t("ppStoleShort")}` : ""}`, next);
   };
 
   const restart = () => {
@@ -92,7 +92,7 @@ export default function PossessionLocal() {
         canMove
         winner={winner}
         winnerText={winner === "draw" ? t("ttDraw") : `${winner} ${t("ttWins")}`}
-        status={`${t("ttTurn")}: ${turn} · ${t("ppPick")}`}
+        status={`${t("ttTurn")}: ${turn}`}
         flash={flash}
         celebrate
         onMove={onMove}

@@ -99,7 +99,6 @@ export default function PossessionRoom() {
   }
 
   const me = room?.players.find((p) => p.id === myId);
-  const opponent = room?.players.find((p) => p.id !== myId);
   const isHost = room?.players[0]?.id === myId;
   const nameOf = (p?: { id: string; nick?: string }) => (p ? (p.id === myId ? t("you") : (p as PpPlayer).nick || t("opponent")) : "…");
 
@@ -129,12 +128,12 @@ export default function PossessionRoom() {
   const flash = !f
     ? null
     : f.reason === "claim"
-      ? `${who}: ${f.name} +${f.count} ${t("ppClaimed")}${f.stolen ? ` · ${f.stolen} ${t("ppStole")}` : ""}`
+      ? `${who}: ${f.name} +${f.count} ${t("ppClaimed")}${f.stolen ? `, ${f.stolen} ${t("ppStoleShort")}` : ""}`
       : `${who}: ${t(f.reason === "wrong" ? "ttWrong" : "ppTimeout")}`;
 
   return (
     <Page>
-      <Stack.Screen options={{ title: `${t("ppName")} · ${code}` }} />
+      <Stack.Screen options={{ title: code }} />
       {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
       <PossessionBoard
         board={board}
@@ -145,8 +144,8 @@ export default function PossessionRoom() {
         labels={labels}
         canMove={myTurn && !peerLeft}
         winner={room.winner}
-        winnerText={room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? `${t("htYouWin")} 🏆` : t("htYouLose")}
-        status={myTurn ? t("ppYourTurn") : `${opponent ? nameOf(opponent) : ""} · ${t("htTheirTurn")}`}
+        winnerText={room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? t("htYouWin") : t("htYouLose")}
+        status={myTurn ? t("ppYourTurn") : t("htTheirTurn")}
         flash={flash}
         celebrate={room.winner === me?.mark}
         onMove={(hex, player) => {

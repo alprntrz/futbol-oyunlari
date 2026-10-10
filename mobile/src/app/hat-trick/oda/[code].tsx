@@ -94,7 +94,6 @@ export default function HatTrickRoom() {
 
   const grid = useMemo(() => (room ? gridFromIds(room.grid) : null), [room?.grid]); // eslint-disable-line react-hooks/exhaustive-deps
   const me = room?.players.find((p) => p.id === myId);
-  const opponent = room?.players.find((p) => p.id !== myId);
   const isHost = room?.players[0]?.id === myId;
   const timeLeft = Math.min(TURN_SECONDS, Math.max(0, Math.ceil((deadline - now) / 1000)));
 
@@ -172,11 +171,11 @@ export default function HatTrickRoom() {
   const myTurn = !!me && room.turn === me.mark && !room.winner;
   const flash = room.flash ? `${nameOf(room.players.find((p) => p.mark === room.flash!.mark))}: ${t(room.flash.reason === "wrong" ? "ttWrong" : "ttTimeout")}` : null;
   const winnerText =
-    room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? `${t("htYouWin")} 🏆` : t("htYouLose");
+    room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? t("htYouWin") : t("htYouLose");
 
   return (
     <Page>
-      <Stack.Screen options={{ title: `${t("htOnline")} · ${code}` }} />
+      <Stack.Screen options={{ title: code }} />
       {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
       <HatTrickBoard
         steals={room.steals}
@@ -188,7 +187,7 @@ export default function HatTrickRoom() {
         timeLeft={timeLeft}
         labels={labels}
         canMove={myTurn && !peerLeft}
-        status={myTurn ? t("htYourTurn") : `${opponent ? nameOf(opponent) : ""} · ${t("htTheirTurn")}`}
+        status={myTurn ? t("htYourTurn") : t("htTheirTurn")}
         flash={flash}
         celebrate={room.winner === me?.mark}
         winnerText={winnerText}

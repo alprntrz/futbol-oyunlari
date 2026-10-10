@@ -137,7 +137,7 @@ export default function Bingo() {
 
   const share = () => {
     const rows = [0, 1, 2, 3].map((r) => run.placed.slice(r * 4, r * 4 + 4).map((p) => (p ? "🟩" : "⬜")).join("")).join("\n");
-    Share.share({ message: `${t("bingoName")} #${day % 1000}\n${rows}\n${filled}/${CARD_SIZE} · ${used} ${t("bingoUsed")}` });
+    Share.share({ message: `${t("bingoName")} #${day % 1000}\n${rows}\n${filled}/${CARD_SIZE}, ${used} ${t("bingoUsed")}` });
   };
 
   return (
@@ -194,7 +194,7 @@ export default function Bingo() {
         <Card style={[styles.player, { gap: 4 }]}>
           <Text style={T.title}>{complete ? t("bingoDone") : t("bingoOut")}</Text>
           <Text style={T.body}>
-            {filled}/{CARD_SIZE} · {used} {t("bingoScore")}
+            {filled}/{CARD_SIZE}, {used} {t("bingoScore")}
           </Text>
           <Button title={t("share")} icon="square.and.arrow.up" onPress={share} style={{ alignSelf: "stretch", marginTop: 10 }} />
           <Text style={[T.caption, { marginTop: 8 }]}>{t("bingoTomorrow")}</Text>

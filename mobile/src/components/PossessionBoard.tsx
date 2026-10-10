@@ -9,7 +9,7 @@ import type { Criterion } from "@/lib/tiki";
 import { haptic } from "~/lib/haptics";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
-import { NEIGHBOURS, POS, ROWS, type PpCell } from "~/lib/possession";
+import { POS, ROWS, type PpCell } from "~/lib/possession";
 import { C, F, shadow, T } from "~/lib/theme";
 
 import { CriterionBadge, MARK } from "./HatTrickBoard";
@@ -65,7 +65,7 @@ export function PossessionBoard({
   /** every name played this game, including ones whose hexes were stolen */
   usedNames: string[];
 }) {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const [width, setWidth] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
   const [confetti, setConfetti] = useState(0);
@@ -204,12 +204,12 @@ export function PossessionBoard({
               <CriterionBadge c={board[open]} size={30} />
               <Text style={T.headline}>{label(board[open])}</Text>
               <Text style={[T.caption, { textAlign: "center" }]}>
-                + {NEIGHBOURS[open].filter((n) => owners[n]?.mark !== turn).length} ⬡
+                {t("ppNeighbours")}
               </Text>
             </View>
           ) : null
         }
-        caption={`${labels[turn]} · ${fmt(clocks[turn])}`}
+        caption={`${labels[turn]}  ${fmt(clocks[turn])}`}
         captionColor={MARK[turn].color}
         used={used}
         accept={(p) => open !== null && board[open].test(p)}

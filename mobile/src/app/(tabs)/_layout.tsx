@@ -9,6 +9,10 @@ export default function TabsLayout() {
   return (
     <NativeTabs tintColor={C.greenMid}>
       <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>{t("tabHome")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: "house", selected: "house.fill" }} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="oyunlar">
         <NativeTabs.Trigger.Label>{t("tabGames")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={BRAND.tab.games} renderingMode="template" />
       </NativeTabs.Trigger>

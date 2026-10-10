@@ -1,52 +1,91 @@
-import type { SymbolViewProps } from "expo-symbols";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
-import { dailyMatch } from "@/lib/daily";
+import { dayNumber } from "@/lib/daily";
+import { generateGrid, seededRandom } from "@/lib/tiki";
 
-import { Jersey } from "~/components/Jersey";
+import { CriterionBadge } from "~/components/HatTrickBoard";
+import { ModeList, type Mode } from "~/components/ModeGrid";
 import { Text } from "~/components/Text";
 import { Icon, Page, SectionLabel, Tap } from "~/components/ui";
-import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
-import { jerseyStyle } from "~/lib/kits";
-import { loadDayState, loadStats } from "~/lib/storage";
+import { loadStats } from "~/lib/storage";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
-type DailyStatus = { kind: "new" } | { kind: "playing"; solved: number } | { kind: "done"; solved: number };
+/** Filled squares of today's solo run, or null when it hasn't been started. */
+type Today = { filled: boolean[]; finished: boolean } | null;
 
 const enter = (i: number) => FadeIn.duration(180).delay(i * 25);
 
+/** Home: Hat-trick first. Today's solo grid up top, the versus modes right under it. */
 export default function Home() {
   const { t, locale } = useI18n();
-  const { match, day } = useMemo(() => dailyMatch(), []);
-  const [status, setStatus] = useState<DailyStatus>({ kind: "new" });
+  const day = useMemo(() => dayNumber(), []);
+  // same seed as the solo screen, so the preview is the grid you'll play
+  const grid = useMemo(() => generateGrid(seededRandom(day * 7919 + 17)), [day]);
+  const [today, setToday] = useState<Today>(null);
   const [streak, setStreak] = useState(0);
 
-  // Refresh the daily card and streak whenever the tab comes back into view
   useFocusEffect(
     useCallback(() => {
-      loadDayState(day).then((s) => {
-        if (!s || s.matchId !== match.id) return setStatus({ kind: "new" });
-        const solved = s.slots.filter((x) => x.solved).length;
-        const done = s.gaveUp || s.slots.every((x) => x.solved || x.failed);
-        setStatus(done ? { kind: "done", solved } : { kind: "playing", solved });
-      });
+      AsyncStorage.getItem(`hattrick-box-${day}`)
+        .then((raw) => {
+          if (!raw) return setToday(null);
+          const run = JSON.parse(raw) as {
+            cells: string[][];
+            finished: boolean;
+          };
+          // an opened-but-empty run still reads as "not played"
+          const filled = run.cells.map((c) => c.length > 0);
+          setToday(run.finished || filled.some(Boolean) ? { filled, finished: run.finished } : null);
+        })
+        .catch(() => setToday(null));
       loadStats().then((s) => setStreak(s.streak));
-    }, [day, match.id])
+    }, [day])
   );
 
-  const today = new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", weekday: "long" });
-  const cta = status.kind === "new" ? t("play") : status.kind === "playing" ? t("continueGame") : t("seeResult");
-  const statusText =
-    status.kind === "new" ? t("notStarted") : `${status.kind === "playing" ? t("inProgress") : t("completed")} ${status.solved}/11`;
+  const filledCount = today?.filled.filter(Boolean).length ?? 0;
+  const status = !today ? t("homeNotPlayed") : today.finished ? `${t("homeDone")}: ${filledCount}/9` : `${filledCount}/9 ${t("homeFilledOf")}`;
+  const cta = !today ? t("play") : today.finished ? t("seeResult") : t("continueGame");
+  const date = new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", weekday: "long" });
+
+  const versus: Mode[] = [
+    {
+      icon: "person.2.fill",
+      fallback: "👥",
+      title: t("htFriend"),
+      desc: t("htFriendDesc"),
+      href: "/hat-trick/oda",
+      color: C.greenMid,
+      soft: C.greenSoft,
+    },
+    {
+      icon: "antenna.radiowaves.left.and.right",
+      fallback: "📡",
+      title: t("htRandom"),
+      desc: t("htRandomDesc"),
+      href: "/hat-trick/rastgele",
+      color: C.blue,
+      soft: C.blueSoft,
+    },
+    {
+      icon: "iphone",
+      fallback: "📱",
+      title: t("htSame"),
+      desc: t("htSameDesc"),
+      href: "/hat-trick/yerel",
+      color: C.coral,
+      soft: C.coralSoft,
+    },
+  ];
 
   return (
     <Page topInset>
       <View style={styles.topRow}>
-        <Text style={T.caption}>{today}</Text>
+        <Text style={T.caption}>{date}</Text>
         {streak > 0 && (
           <Tap onPress={() => router.push("/istatistik")} style={styles.streak} accessibilityLabel={`${t("streak")}: ${streak}`}>
             <Icon name="flame.fill" size={16} color={C.amber} fallback="🔥" />
@@ -54,191 +93,117 @@ export default function Home() {
           </Tap>
         )}
       </View>
-      <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("appName")}</Text>
-      <Text style={[T.body, { marginTop: 2 }]}>{t("homeSubtitle")}</Text>
+      <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("tikiTakaName")}</Text>
+      <Text style={[T.body, { marginTop: 2 }]}>{t("homeHtTagline")}</Text>
 
-      {/* Daily XI: a slice of pitch with today's fixture on it */}
       <Animated.View entering={enter(0)}>
         <Tap
-          onPress={() => router.push("/eksik-11/gunluk")}
+          onPress={() => router.push("/hat-trick/tek")}
           style={styles.hero}
-          accessibilityLabel={`${t("daily")} ${day % 1000}. ${match.team} ${match.score} ${match.opponent}. ${statusText}`}
+          accessibilityLabel={`${t("homeTodayGrid")} #${day % 1000}. ${status}`}
           accessibilityHint={cta}
         >
-          <View style={StyleSheet.absoluteFill}>
-            {Array.from({ length: 6 }, (_, i) => (
-              <View key={i} style={{ flex: 1, backgroundColor: i % 2 ? "#13803B" : "#0F7A37" }} />
-            ))}
-          </View>
-          <View pointerEvents="none" style={styles.chalkCircle} />
-          <View pointerEvents="none" style={styles.chalkLine} />
-
-          <View style={styles.heroHead}>
+          <View style={styles.heroText}>
             <Text style={styles.heroKicker}>#{day % 1000}</Text>
-            <Text style={styles.heroStatus}>{statusText}</Text>
-          </View>
-          <Text style={styles.heroTitle}>{t("daily")}</Text>
-
-          <View style={styles.fixture}>
-            <Jersey body={match.kit.body} sleeves={match.kit.sleeves} numberColor={match.kit.number} number={11} variant={jerseyStyle(match)} size={58} hideNumber />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.fixtureTeams} numberOfLines={2}>
-                {match.team} <Text style={{ color: "#BFE6CB" }}>{match.score}</Text> {match.opponent}
-              </Text>
-              <Text style={styles.fixtureMeta} numberOfLines={2}>
-                {match.competition[locale]}, {match.season}
-              </Text>
+            <Text style={styles.heroTitle}>{t("homeTodayGrid")}</Text>
+            <Text style={styles.heroStatus}>{status}</Text>
+            <View style={styles.cta}>
+              <Icon name="play.fill" size={13} color={HERO} fallback="▶" />
+              <Text style={styles.ctaText}>{cta}</Text>
             </View>
           </View>
 
-          <View style={styles.cta}>
-            <Icon name="play.fill" size={16} color={C.greenDark} fallback="▶" />
-            <Text style={styles.ctaText}>{cta}</Text>
+          {/* The real grid for today: column headers, row headers, 3×3 squares */}
+          <View style={styles.board}>
+            <View style={styles.boardRow}>
+              <View style={styles.head} />
+              {grid.cols.map((c) => (
+                <View key={c.id} style={styles.head}>
+                  <CriterionBadge c={c} size={26} />
+                </View>
+              ))}
+            </View>
+            {grid.rows.map((r, ri) => (
+              <View key={r.id} style={styles.boardRow}>
+                <View style={styles.head}>
+                  <CriterionBadge c={r} size={26} />
+                </View>
+                {grid.cols.map((c, ci) => (
+                  <View key={c.id} style={[styles.square, today?.filled[ri * 3 + ci] && styles.squareFilled]}>
+                    {today?.filled[ri * 3 + ci] && <Icon name="checkmark" size={14} color="white" fallback="✓" />}
+                  </View>
+                ))}
+              </View>
+            ))}
           </View>
         </Tap>
       </Animated.View>
 
-      <SectionLabel>{t("homeGamesTitle")}</SectionLabel>
-
-      <View style={styles.pair}>
-        <Animated.View entering={enter(1)} style={{ flex: 1 }}>
-          <GameTile image={BRAND.icon.practice} title={t("practice")} desc={t("practiceShort")} bg="#E2F3E7" onPress={() => router.push("/eksik-11/pratik")} />
-        </Animated.View>
-        <Animated.View entering={enter(2)} style={{ flex: 1 }}>
-          <GameTile image={BRAND.icon.team} title={t("byTeam")} desc={t("teamShort")} bg="#FCE9E7" onPress={() => router.push("/eksik-11/takimlar")} />
-        </Animated.View>
-      </View>
-
-      <Animated.View entering={enter(3)}>
-        <WideTile
-          image={BRAND.icon.race}
-          title={`${t("tikiTakaName")} ${t("htOnline")}`}
-          desc={t("htOnlineDesc")}
-          bg={C.greenDark}
-          dark
-          onPress={() => router.push("/hat-trick/oda")}
-        />
+      <SectionLabel>{t("homeVersus")}</SectionLabel>
+      <Animated.View entering={enter(1)}>
+        <ModeList modes={versus} />
       </Animated.View>
-      <Animated.View entering={enter(4)}>
-        <WideTile image={BRAND.icon.tiki} title={t("tikiTakaName")} desc={t("htTile")} bg="#E4ECFD" onPress={() => router.push("/hat-trick")} />
-      </Animated.View>
-      <View style={[styles.pair, { marginTop: 12 }]}>
-        <Animated.View entering={enter(5)} style={{ flex: 1 }}>
-          <SymbolTile icon="square.grid.4x3.fill" fallback="🎱" title={t("bingoName")} desc={t("bingoShort")} color={C.greenMid} bg="#E6F2E9" onPress={() => router.push("/bingo")} />
-        </Animated.View>
-        <Animated.View entering={enter(6)} style={{ flex: 1 }}>
-          <SymbolTile icon="hexagon.fill" fallback="⬡" title={t("ppName")} desc={t("ppShort")} color={C.coral} bg="#FCE9EC" onPress={() => router.push("/possession")} />
-        </Animated.View>
-      </View>
+
+      <Tap onPress={() => router.push("/oyunlar")} style={styles.allGames} accessibilityLabel={t("homeAllGames")}>
+        <Text style={styles.allGamesText}>{t("homeAllGames")}</Text>
+        <Icon name="arrow.right" size={14} color={C.greenMid} fallback="→" />
+      </Tap>
     </Page>
   );
 }
 
-function GameTile({ image, title, desc, bg, onPress }: { image: ImageSourcePropType; title: string; desc: string; bg: string; onPress: () => void }) {
-  return (
-    <Tap onPress={onPress} style={[styles.tile, { backgroundColor: bg }]} accessibilityLabel={`${title}. ${desc}`}>
-      <Image source={image} style={styles.tileImage} accessible={false} />
-      <Text style={styles.tileTitle}>{title}</Text>
-      <Text style={styles.tileDesc} numberOfLines={2}>
-        {desc}
-      </Text>
-    </Tap>
-  );
-}
-
-function SymbolTile({
-  icon,
-  fallback,
-  title,
-  desc,
-  color,
-  bg,
-  onPress,
-}: {
-  icon: SymbolViewProps["name"];
-  fallback: string;
-  title: string;
-  desc: string;
-  color: string;
-  bg: string;
-  onPress: () => void;
-}) {
-  return (
-    <Tap onPress={onPress} style={[styles.tile, { backgroundColor: bg }]} accessibilityLabel={`${title}. ${desc}`}>
-      <View style={styles.symbolBadge}>
-        <Icon name={icon} size={34} color={color} fallback={fallback} />
-      </View>
-      <Text style={styles.tileTitle} numberOfLines={1} adjustsFontSizeToFit>
-        {title}
-      </Text>
-      <Text style={styles.tileDesc} numberOfLines={2}>
-        {desc}
-      </Text>
-    </Tap>
-  );
-}
-
-function WideTile({
-  image,
-  title,
-  desc,
-  bg,
-  dark,
-  onPress,
-}: {
-  image: ImageSourcePropType;
-  title: string;
-  desc: string;
-  bg: string;
-  dark?: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Tap onPress={onPress} style={[styles.wide, { backgroundColor: bg }]} accessibilityLabel={`${title}. ${desc}`}>
-      <View style={{ flex: 1 }}>
-        <Text style={[styles.tileTitle, dark && { color: "white" }]}>{title}</Text>
-        <Text style={[styles.tileDesc, dark && { color: "#DDEFE3" }]} numberOfLines={3}>
-          {desc}
-        </Text>
-      </View>
-      <Image source={image} style={styles.wideImage} accessible={false} />
-    </Tap>
-  );
-}
+const SQUARE = 34;
+const HERO = "#1F3B8C";
 
 const styles = StyleSheet.create({
-  topRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", minHeight: 30 },
-  streak: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#FFF4DC", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    minHeight: 30,
+  },
+  streak: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#FFF4DC",
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
   streakText: { fontFamily: F.black, fontSize: 18, color: "#7A5205" },
 
-  hero: { marginTop: 18, borderRadius: 26, overflow: "hidden", padding: 20, ...shadow, shadowOpacity: 0.18 },
-  chalkCircle: {
-    position: "absolute",
-    right: -60,
-    top: -40,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.22)",
-  },
-  chalkLine: { position: "absolute", right: 40, top: 0, bottom: 0, width: 2, backgroundColor: "rgba(255,255,255,0.16)" },
-  heroHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  heroKicker: { fontFamily: F.display, fontSize: 18, color: "#FFFFFF" },
-  heroStatus: { fontSize: 13, fontWeight: "700", color: "white", backgroundColor: "#0C622C", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3, overflow: "hidden" },
-  heroTitle: { fontFamily: F.black, fontSize: 46, lineHeight: 48, color: "white", marginTop: 2 },
-  fixture: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 14, backgroundColor: "#0C622C", borderRadius: 16, padding: 10 },
-  fixtureTeams: { fontFamily: F.display, fontSize: 21, lineHeight: 23, color: "white" },
-  fixtureMeta: { fontSize: 14, fontWeight: "600", color: "#E3F2E8", marginTop: 2 },
-  cta: { marginTop: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "white", borderRadius: R.button, paddingVertical: 14 },
-  ctaText: { fontFamily: F.display, fontSize: 22, color: C.greenDark },
+  hero: { marginTop: 16, borderRadius: 24, padding: 16, backgroundColor: HERO, flexDirection: "row", gap: 12, ...shadow, shadowOpacity: 0.18 },
+  heroText: { flex: 1, justifyContent: "space-between" },
+  heroKicker: { fontFamily: F.display, fontSize: 16, color: "#C9D6FA" },
+  heroTitle: { fontFamily: F.black, fontSize: 28, lineHeight: 29, color: "white" },
+  heroStatus: { fontSize: 13, fontWeight: "600", color: "#DCE5FD", marginTop: 6 },
 
-  pair: { flexDirection: "row", gap: 12 },
-  tile: { borderRadius: R.card, padding: 16, paddingTop: 12, minHeight: 168 },
-  symbolBadge: { width: 60, height: 60, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.75)", alignItems: "center", justifyContent: "center", marginBottom: 12, marginTop: 6 },
-  tileImage: { width: 72, height: 72, marginLeft: -6, marginBottom: 6 },
-  tileTitle: { fontFamily: F.display, fontSize: 24, lineHeight: 26, color: C.text },
-  tileDesc: { fontSize: 15, fontWeight: "500", color: C.text2, marginTop: 2, lineHeight: 20 },
-  wide: { marginTop: 12, borderRadius: R.card, padding: 18, flexDirection: "row", alignItems: "center", gap: 12, minHeight: 104 },
-  wideImage: { width: 84, height: 84, marginVertical: -10 },
+  board: { gap: 4, alignSelf: "center" },
+  boardRow: { flexDirection: "row", gap: 4 },
+  head: { width: SQUARE, height: SQUARE, alignItems: "center", justifyContent: "center" },
+  square: { width: SQUARE, height: SQUARE, borderRadius: 9, backgroundColor: "#2A4AA6", alignItems: "center", justifyContent: "center" },
+  squareFilled: { backgroundColor: C.greenMid },
+
+  cta: {
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "white",
+    borderRadius: R.button,
+    paddingVertical: 10,
+  },
+  ctaText: { fontFamily: F.display, fontSize: 19, color: HERO },
+
+  allGames: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 14,
+    paddingVertical: 10,
+  },
+  allGamesText: { fontFamily: F.display, fontSize: 19, color: C.greenMid },
 });
