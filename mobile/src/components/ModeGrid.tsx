@@ -28,7 +28,7 @@ export function ModeGrid({ modes }: { modes: Mode[] }) {
       {modes.map((m, i) => (
         <Animated.View key={m.title} entering={softIn(i, 50)} style={styles.cell}>
           <Tap onPress={() => router.push(m.href)} style={styles.card} accessibilityLabel={`${m.title}. ${m.desc}`}>
-            <View style={[styles.icon, { backgroundColor: m.soft }]}>
+            <View style={[styles.icon, { backgroundColor: m.image ? "#EEF2EF" : m.soft }]}>
               {m.image ? <Image source={m.image} style={styles.art} /> : <Icon name={m.icon} size={24} color={m.color} fallback={m.fallback} />}
             </View>
             <Text style={styles.title} numberOfLines={1}>
@@ -118,7 +118,7 @@ export function ModeList({ modes }: { modes: Mode[] }) {
       {modes.map((m, i) => (
         <Animated.View key={m.title} entering={softIn(i, 50)}>
           <Tap onPress={() => router.push(m.href)} style={[styles.row, i > 0 && styles.rowDivider]} accessibilityLabel={`${m.title}. ${m.desc}`}>
-            <View style={[styles.rowIcon, { backgroundColor: m.soft }]}>
+            <View style={[styles.rowIcon, { backgroundColor: m.image ? "#EEF2EF" : m.soft }]}>
               {m.image ? <Image source={m.image} style={styles.rowArt} /> : <Icon name={m.icon} size={20} color={m.color} fallback={m.fallback} />}
             </View>
             <View style={{ flex: 1 }}>

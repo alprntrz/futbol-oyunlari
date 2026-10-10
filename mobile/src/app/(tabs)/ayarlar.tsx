@@ -68,9 +68,9 @@ export default function SettingsTab() {
 
       <SectionLabel>{t("privacyTitle")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
-        <Row icon="hand.raised.fill" iconFallback="🛡" color={C.greenMid} soft={C.greenSoft} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
-        <Row icon="questionmark.circle.fill" iconFallback="?" color={C.greenMid} soft={C.greenSoft} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
-        <Row icon="trash.fill" iconFallback="🗑" color={C.red} soft={C.redSoft} title={t("deleteData")} onPress={confirmDelete} last />
+        <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
+        <Row image={BRAND.settings.support} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
+        <Row image={BRAND.settings.delete} title={t("deleteData")} onPress={confirmDelete} last />
       </Card>
 
       <SectionLabel>{t("about")}</SectionLabel>

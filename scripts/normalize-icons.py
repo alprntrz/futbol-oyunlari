@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Give the game icons (mobile/assets/brand/icon-*.png) the same optical size and
+Give the icons (mobile/assets/brand/icon-, mode-, cat-, set-*.png) the same optical size and
 margin: each is cropped to its content and scaled so its filled area matches the
 others (a round icon and a wide one look equally big), never beyond 82% of the
 canvas. Run after scripts/brand-assets.py. Needs Pillow.
@@ -14,7 +14,7 @@ SIZE = 192
 MAX_SIDE = 0.82   # longest side, of the canvas
 TARGET_AREA = 0.46  # filled pixels, of the canvas
 
-for path in sorted(DIR.glob("icon-*.png")):
+for path in sorted([*DIR.glob("icon-*.png"), *DIR.glob("mode-*.png"), *DIR.glob("cat-*.png"), *DIR.glob("set-*.png")]):
     im = Image.open(path).convert("RGBA")
     alpha = im.getchannel("A")
     im = im.crop(alpha.point(lambda v: 255 if v > 20 else 0).getbbox())

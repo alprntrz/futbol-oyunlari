@@ -17,6 +17,9 @@ import { C, F, R, shadow, T } from "~/lib/theme";
 
 type DailyStatus = { kind: "new" } | { kind: "playing"; solved: number } | { kind: "done"; solved: number };
 
+/** one quiet tile behind every game's art, so the art carries the colour */
+const ART_BG = "#EEF2EF";
+
 type Game = { title: string; desc: string; href: Href; bg: string } & (
   { image: ImageSourcePropType } | { icon: SymbolViewProps["name"]; fallback: string; color: string }
 );
@@ -50,51 +53,43 @@ export default function Games() {
       title: t("tikiTakaName"),
       desc: t("htShort"),
       href: "/hat-trick",
-      bg: "#E4ECFD",
+      bg: ART_BG,
     },
     {
-      icon: "questionmark.bubble.fill",
-      fallback: "?",
+      image: BRAND.icon.quiz,
       title: t("qzName"),
       desc: t("qzShort"),
       href: "/bilgi",
-      color: C.blue,
-      bg: C.blueSoft,
+      bg: ART_BG,
     },
     // Kombine (match-3, /kombine) is shelved for a later version: code and routes stay, no entry here
     {
-      icon: "person.fill.questionmark",
-      fallback: "?",
+      image: BRAND.icon.mystery,
       title: t("myName"),
       desc: t("myShort"),
       href: "/gizli",
-      color: "#B7791F",
-      bg: "#FFF4DC",
+      bg: ART_BG,
     },
     {
       image: BRAND.icon.practice,
       title: t("missingXI"),
       desc: t("xiShort"),
       href: "/eksik-11",
-      bg: "#E2F3E7",
+      bg: ART_BG,
     },
     {
-      icon: "square.grid.4x3.fill",
-      fallback: "▦",
+      image: BRAND.icon.bingo,
       title: t("bingoName"),
       desc: t("bingoShort"),
       href: "/bingo",
-      color: C.greenMid,
-      bg: "#E6F2E9",
+      bg: ART_BG,
     },
     {
-      icon: "hexagon.fill",
-      fallback: "⬢",
+      image: BRAND.icon.possession,
       title: t("ppName"),
       desc: t("ppShort"),
       href: "/possession",
-      color: C.coral,
-      bg: "#FCE9EC",
+      bg: ART_BG,
     },
   ];
 

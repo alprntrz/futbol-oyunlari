@@ -1,7 +1,7 @@
 import { router, Stack, useFocusEffect, type Href } from "expo-router";
 import { useCallback, useState } from "react";
 import type { SymbolViewProps } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,6 +9,7 @@ import { LevelCard, type QuizProfile } from "~/components/QuizLevel";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
@@ -34,9 +35,9 @@ export default function QuizHome() {
       );
     }, [])
   );
-  const modes: { icon: SymbolViewProps["name"]; title: string; desc: string; href: Href; bg: string }[] = [
-    { icon: "person.3.fill", title: t("htRandom"), desc: t("qzRandomDesc"), href: "/bilgi/rastgele", bg: NIGHT.light ? C.green : "#2563EB" },
-    { icon: "person.2.badge.plus", title: t("htFriend"), desc: t("qzFriendsDesc"), href: "/bilgi/oda", bg: NIGHT.light ? C.greenDark : "#F59E0B" },
+  const modes: { icon: SymbolViewProps["name"]; image: ImageSourcePropType; title: string; desc: string; href: Href; bg: string }[] = [
+    { icon: "person.3.fill", title: t("htRandom"), desc: t("qzRandomDesc"), href: "/bilgi/rastgele", image: BRAND.mode.random, bg: NIGHT.light ? C.green : "#2563EB" },
+    { icon: "person.2.badge.plus", title: t("htFriend"), desc: t("qzFriendsDesc"), href: "/bilgi/oda", image: BRAND.mode.friend, bg: NIGHT.light ? C.greenDark : "#F59E0B" },
   ];
 
   return (
@@ -67,7 +68,7 @@ export default function QuizHome() {
                 <Text style={styles.cardTitle}>{m.title}</Text>
                 <Text style={styles.cardDesc}>{m.desc}</Text>
               </View>
-              <Icon name={m.icon} size={52} color="white" fallback="•" />
+              <Image source={m.image} style={{ width: 72, height: 72 }} />
             </Tap>
           </Animated.View>
         ))}

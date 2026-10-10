@@ -1,11 +1,12 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, F } from "~/lib/theme";
 
 import { Flag } from "./Flag";
 import { Text } from "./Text";
-import { Icon, Tap } from "./ui";
+import { Tap } from "./ui";
 
 export interface PickerItem {
   id: string;
@@ -23,7 +24,7 @@ export function LeagueBadge({ item, size = 34 }: { item: PickerItem; size?: numb
       {item.flag ? (
         <Flag id={item.flag} width={size * 1.45} />
       ) : (
-        <Icon name={item.icon === "europe" ? "star.circle.fill" : item.icon === "national" ? "globe.europe.africa.fill" : "soccerball"} size={size * 0.62} color={C.greenDark} fallback="⚽" />
+        <Image source={item.icon === "europe" ? BRAND.cat.europe : item.icon === "national" ? BRAND.cat.national : BRAND.cat.all} style={{ width: size * 0.86, height: size * 0.86 }} />
       )}
     </View>
   );
@@ -57,7 +58,7 @@ export function LeaguePicker({ items, value, onChange }: { items: PickerItem[]; 
 const styles = StyleSheet.create({
   scroll: { marginHorizontal: -16 },
   row: { gap: 8, paddingHorizontal: 16 },
-  badge: { overflow: "hidden", alignItems: "center", justifyContent: "center", backgroundColor: C.greenSoft },
+  badge: { overflow: "hidden", alignItems: "center", justifyContent: "center", backgroundColor: "#EEF2EF" },
   chip: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: 999, borderWidth: 1, borderColor: C.border, paddingLeft: 6, paddingRight: 14, paddingVertical: 6 },
   chipOn: { backgroundColor: C.greenMid, borderColor: C.greenMid },
   chipText: { fontFamily: F.display, fontSize: 17, color: C.text },

@@ -26,6 +26,27 @@ export const BRAND = {
     team: require("../../assets/brand/icon-team.png"),
     race: require("../../assets/brand/icon-race.png"),
     tiki: require("../../assets/brand/icon-tiki.png"),
+    quiz: require("../../assets/brand/icon-quiz.png"),
+    mystery: require("../../assets/brand/icon-mystery.png"),
+    bingo: require("../../assets/brand/icon-bingo.png"),
+    possession: require("../../assets/brand/icon-possession.png"),
+  },
+  /** ways to play (docs/design/ikon-brief-2.md) */
+  mode: {
+    friend: require("../../assets/brand/mode-friend.png"),
+    random: require("../../assets/brand/mode-random.png"),
+    same: require("../../assets/brand/mode-same.png"),
+    solo: require("../../assets/brand/mode-solo.png"),
+  },
+  cat: {
+    all: require("../../assets/brand/cat-all.png"),
+    europe: require("../../assets/brand/cat-europe.png"),
+    national: require("../../assets/brand/cat-national.png"),
+  },
+  settings: {
+    privacy: require("../../assets/brand/set-privacy.png"),
+    support: require("../../assets/brand/set-support.png"),
+    delete: require("../../assets/brand/set-delete.png"),
   },
   illus: {
     emptyStats: require("../../assets/brand/illus-empty-stats.png"),

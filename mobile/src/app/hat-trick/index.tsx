@@ -8,6 +8,7 @@ import { TikiSteps } from "~/components/HowTo";
 import { ModeGrid, type Mode } from "~/components/ModeGrid";
 import { Text } from "~/components/Text";
 import { Card, Page, SectionLabel } from "~/components/ui";
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { useHtLeague } from "~/lib/league";
 import { C, T } from "~/lib/theme";
@@ -23,6 +24,7 @@ export default function HatTrickHome() {
       title: t("htFriend"),
       desc: t("htFriendDesc"),
       href: "/hat-trick/oda",
+      image: BRAND.mode.friend,
       color: C.greenMid,
       soft: C.greenSoft,
     },
@@ -32,6 +34,7 @@ export default function HatTrickHome() {
       title: t("htRandom"),
       desc: t("htRandomDesc"),
       href: "/hat-trick/rastgele",
+      image: BRAND.mode.random,
       color: C.blue,
       soft: C.blueSoft,
     },
@@ -41,6 +44,7 @@ export default function HatTrickHome() {
       title: t("htSame"),
       desc: t("htSameDesc"),
       href: "/hat-trick/yerel",
+      image: BRAND.mode.same,
       color: C.coral,
       soft: C.coralSoft,
     },
@@ -50,6 +54,7 @@ export default function HatTrickHome() {
       title: t("htSolo"),
       desc: t("htSoloDesc"),
       href: "/hat-trick/tek",
+      image: BRAND.mode.solo,
       color: "#B7791F",
       soft: C.amberSoft,
     },

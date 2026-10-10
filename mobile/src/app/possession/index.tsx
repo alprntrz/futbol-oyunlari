@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { ModeList, type Mode } from "~/components/ModeGrid";
 import { Text } from "~/components/Text";
 import { Card, Icon, Page, SectionLabel } from "~/components/ui";
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
 
@@ -17,6 +18,7 @@ export default function PossessionHome() {
       title: t("htFriend"),
       desc: t("htFriendDesc"),
       href: "/possession/oda",
+      image: BRAND.mode.friend,
       color: C.greenMid,
       soft: C.greenSoft,
     },
@@ -26,6 +28,7 @@ export default function PossessionHome() {
       title: t("htRandom"),
       desc: t("htRandomDesc"),
       href: "/possession/rastgele",
+      image: BRAND.mode.random,
       color: C.blue,
       soft: C.blueSoft,
     },
@@ -35,6 +38,7 @@ export default function PossessionHome() {
       title: t("htSame"),
       desc: t("ppSameDesc"),
       href: "/possession/yerel",
+      image: BRAND.mode.same,
       color: C.coral,
       soft: C.coralSoft,
     },
