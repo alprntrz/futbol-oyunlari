@@ -1,4 +1,5 @@
 import Constants from "expo-constants";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
 
@@ -29,7 +30,8 @@ export default function SettingsTab() {
       <SectionLabel>{t("howToPlay")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
         <Row image={BRAND.icon.team} title={t("missingXI")} onPress={() => setSheet("xi")} />
-        <Row image={BRAND.icon.tiki} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} last />
+        <Row image={BRAND.icon.tiki} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} />
+        <Row icon="sparkles" iconFallback="✨" color={C.greenMid} soft={C.greenSoft} title={t("obReplay")} onPress={() => router.push("/onboarding")} last />
       </Card>
 
       <SectionLabel>{t("about")}</SectionLabel>

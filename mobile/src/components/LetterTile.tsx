@@ -12,7 +12,22 @@ const MARK_BG: Record<TileMark, string> = { correct: C.tileCorrect, present: C.t
 export const FLIP_STAGGER = 110;
 export const FLIP_DURATION = 360;
 
-export function Tile({ ch, mark, size, hint, flipIndex }: { ch: string; mark?: TileMark; size: number; hint?: boolean; flipIndex?: number }) {
+export function Tile({
+  ch,
+  mark,
+  size,
+  hint,
+  flipIndex,
+  dark,
+}: {
+  ch: string;
+  mark?: TileMark;
+  size: number;
+  hint?: boolean;
+  flipIndex?: number;
+  /** empty tile on a dark surface (onboarding) */
+  dark?: boolean;
+}) {
   const flipping = mark !== undefined && flipIndex !== undefined;
   // 0 → 0.5: tile folds shut showing the typed letter; 0.5 → 1: opens again coloured
   const p = useSharedValue(flipping ? 0 : 1);
@@ -34,18 +49,19 @@ export function Tile({ ch, mark, size, hint, flipIndex }: { ch: string; mark?: T
     if (!mark && ch && !hint) pop.set(withSequence(withTiming(1.12, { duration: 70 }), withTiming(1, { duration: 90 })));
   }, [ch, mark, hint, pop]);
 
-  const markBg = mark ? MARK_BG[mark] : C.card;
+  const blank = dark ? "#141516" : C.card;
+  const markBg = mark ? MARK_BG[mark] : blank;
   const box = useAnimatedStyle(() => {
     const v = p.get();
     const coloured = v >= 0.5;
     return {
-      backgroundColor: coloured ? markBg : C.card,
-      borderColor: coloured && mark ? markBg : ch ? "#8F9A93" : "#D3DBD5",
+      backgroundColor: coloured ? markBg : blank,
+      borderColor: coloured && mark ? markBg : dark ? (ch ? "#62666d" : "#34343a") : ch ? "#8F9A93" : "#D3DBD5",
       // Flip as a vertical squash (2D): 3D rotateX left tiles half-clipped on iOS
       transform: [{ scale: pop.get() }, { scaleY: Math.max(0.02, Math.abs(1 - 2 * v)) }],
     };
   });
-  const color = mark && !shut ? "white" : hint ? C.text3 : C.text;
+  const color = mark && !shut ? "white" : hint ? C.text3 : dark ? "#f7f8f8" : C.text;
 
   return (
     <Animated.View style={[styles.tile, { width: size, height: size }, box]}>

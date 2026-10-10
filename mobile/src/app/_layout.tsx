@@ -5,7 +5,8 @@ import {
   BarlowCondensed_900Black,
   useFonts,
 } from "@expo-google-fonts/barlow-condensed";
-import { Stack } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -25,7 +26,12 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
+    if (!loaded) return;
+    SplashScreen.hideAsync();
+    // First launch: show the intro once (key shared with app/onboarding.tsx)
+    AsyncStorage.getItem("onboarded-v1").then((done) => {
+      if (!done) router.push("/onboarding");
+    });
   }, [loaded]);
 
   if (!loaded) return null;
@@ -44,6 +50,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: "fullScreenModal", animation: "fade" }} />
       </Stack>
     </I18nProvider>
   );

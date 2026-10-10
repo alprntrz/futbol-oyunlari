@@ -36,7 +36,7 @@ const DEMO_GUESSES = ["PEDRO", "PIRLO"];
 const TYPE_MS = 170;
 
 /** Self-playing example: types two guesses into a row of tiles and flips them. */
-function DemoBoard() {
+export function DemoBoard({ dark }: { dark?: boolean }) {
   const [rows, setRows] = useState<string[]>([]);
   const [typing, setTyping] = useState("");
   const [cycle, setCycle] = useState(0);
@@ -66,7 +66,7 @@ function DemoBoard() {
 
   const empty = rows.length < DEMO_GUESSES.length;
   return (
-    <View style={styles.demo}>
+    <View style={[styles.demo, dark && { backgroundColor: "transparent" }]}>
       {rows.map((g, ri) => (
         <View key={`${cycle}-${ri}`} style={styles.demoRow}>
           {g.split("").map((ch, i) => (
@@ -77,7 +77,7 @@ function DemoBoard() {
       {empty && (
         <View style={styles.demoRow}>
           {DEMO_ANSWER.split("").map((_, i) => (
-            <Tile key={i} ch={typing[i] ?? ""} size={42} />
+            <Tile key={i} ch={typing[i] ?? ""} size={42} dark={dark} />
           ))}
         </View>
       )}
