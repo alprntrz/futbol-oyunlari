@@ -11,7 +11,7 @@ import { quizQuestions, type QuizCategory } from "@/lib/quiz";
 import { GrassPattern } from "~/components/GrassPattern";
 import { Confetti } from "~/components/motion";
 import { RunningPlayer } from "~/components/RunningPlayer";
-import { NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/components/StadiumHeader";
+import { goBack, NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
@@ -189,7 +189,7 @@ export default function QuizRoom() {
       : undefined;
 
   const leave = (
-    <Pressable onPress={() => router.back()} style={[styles.leave, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
+    <Pressable onPress={() => goBack()} style={[styles.leave, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
       <Icon name="chevron.left" size={18} color="white" fallback="‹" />
     </Pressable>
   );
@@ -201,7 +201,7 @@ export default function QuizRoom() {
       <View style={[styles.card, { alignItems: "center", gap: 12, paddingVertical: 28 }]}>
         <Icon name="exclamationmark.triangle.fill" size={30} color={C.amber} fallback="⚠️" />
         <Text style={styles.cardTitle}>{error}</Text>
-        <WideButton title={t("close")} kind="ghost" onPress={() => router.back()} />
+        <WideButton title={t("close")} kind="ghost" onPress={() => goBack()} />
       </View>
     );
   } else if (room?.phase === "lobby") {

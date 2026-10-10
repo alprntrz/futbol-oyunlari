@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
+import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
@@ -26,7 +26,7 @@ export default function QuizHome() {
       <Stack.Screen options={{ headerShown: false, contentStyle: { backgroundColor: NIGHT.body } }} />
       <NightStatusBar />
       <StadiumHeader height={HEADER} />
-      <Pressable onPress={() => router.back()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
+      <Pressable onPress={() => goBack()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
         <Icon name="chevron.left" size={18} color="white" fallback="‹" />
       </Pressable>
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + HEADER - 10, paddingHorizontal: 16, paddingBottom: insets.bottom + 24, gap: 14 }}>

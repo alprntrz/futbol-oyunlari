@@ -1,4 +1,4 @@
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { memo, useCallback, useEffect, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
@@ -23,6 +23,15 @@ export function NightStatusBar() {
     }, [])
   );
   return focused ? <StatusBar style="light" /> : null;
+}
+
+/**
+ * Back for the headerless night screens. Opened from a link or a notification there
+ * may be nothing to go back to: land on the Games tab instead of doing nothing.
+ */
+export function goBack() {
+  if (router.canGoBack()) router.back();
+  else router.replace("/oyunlar");
 }
 
 /** Night-match palette shared by the immersive game screens. */

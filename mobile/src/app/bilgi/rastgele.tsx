@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { quizQuestions } from "@/lib/quiz";
 
 import { RunningPlayer } from "~/components/RunningPlayer";
-import { NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
+import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
@@ -50,7 +50,7 @@ export default function QuizRandom() {
       <Stack.Screen options={{ headerShown: false, animation: "fade", contentStyle: { backgroundColor: NIGHT.body } }} />
       <NightStatusBar />
       <StadiumHeader height={HEADER} runners={[]} />
-      <Pressable onPress={() => router.back()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("cancel")} hitSlop={8}>
+      <Pressable onPress={() => goBack()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("cancel")} hitSlop={8}>
         <Icon name="chevron.left" size={18} color="white" fallback="‹" />
       </Pressable>
       <View style={{ paddingTop: insets.top + HEADER + 14, alignItems: "center", gap: 6, paddingHorizontal: 16 }}>
