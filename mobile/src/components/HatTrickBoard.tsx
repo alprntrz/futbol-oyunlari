@@ -74,7 +74,7 @@ export function ClubShirt({ c, size = 30 }: { c: Criterion; size?: number }) {
   return <Jersey body={kit.body} sleeves={kit.sleeves} pattern={kit.pattern} numberColor="#000" number={0} size={size * 1.35} variant="crew" hideNumber />;
 }
 
-function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
+export function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
   if (c.kind === "club") return <ClubShirt c={c} size={size} />;
   if (c.kind === "country") return <Flag id={c.id} width={size * 1.35} />;
   return <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>{c.icon}</Text>;
