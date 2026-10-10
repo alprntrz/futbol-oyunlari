@@ -13,6 +13,7 @@ export const BRAND = {
   illus: {
     emptyStats: require("../../assets/brand/illus-empty-stats.png"),
     waitingRoom: require("../../assets/brand/illus-waiting-room.png"),
+    waitingBall: require("../../assets/brand/illus-waiting-ball.png"),
     win: require("../../assets/brand/illus-win.png"),
     finish: require("../../assets/brand/illus-finish.png"),
     howto: require("../../assets/brand/illus-howto.png"),

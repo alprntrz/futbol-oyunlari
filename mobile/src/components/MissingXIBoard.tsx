@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
+import Svg, { Path } from "react-native-svg";
 
 import { FORMATIONS } from "@/lib/formations";
 import type { Difficulty, Match, SlotState } from "@/lib/types";
@@ -174,17 +175,29 @@ export function MissingXIBoard({
 
 const BLANKS_W = SLOT_W - 14;
 
-/** Fill-in-the-blank dashes, one per letter, with a gap between words. */
+/** Fill-in-the-blank squiggles, one wave per letter, with a gap between words. */
 function Blanks({ answer }: { answer: string }) {
   const letters = answer.replace(/ /g, "").length;
   const gaps = answer.split(" ").length - 1;
-  const dash = Math.max(3, Math.min(7, (BLANKS_W - (letters - 1) * 2 - gaps * 4) / letters));
+  const GAP = Math.min(4, Math.max(2, (BLANKS_W - letters * 5 - gaps * 6) / Math.max(letters - 1, 1)));
+  const WORD = 6;
+  const w = Math.max(3.5, Math.min(7, (BLANKS_W - (letters - 1) * GAP - gaps * WORD) / letters));
+  const h = 7;
+  let x = 1;
+  let d = "";
+  for (const ch of answer) {
+    if (ch === " ") {
+      x += WORD;
+      continue;
+    }
+    // one full wave per letter: up-bump then down-bump
+    d += `M${x} ${h / 2} q${w / 4} ${-h / 2.2} ${w / 2} 0 t${w / 2} 0 `;
+    x += w + GAP;
+  }
   return (
-    <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 2, height: 10 }}>
-      {answer.split("").map((ch, i) =>
-        ch === " " ? <View key={i} style={{ width: 2 }} /> : <View key={i} style={{ width: dash, height: 2, borderRadius: 1, backgroundColor: C.text2 }} />
-      )}
-    </View>
+    <Svg width={x} height={h}>
+      <Path d={d} stroke={C.greenDark} strokeWidth={2} strokeLinecap="round" fill="none" />
+    </Svg>
   );
 }
 
@@ -207,6 +220,6 @@ const styles = StyleSheet.create({
   slot: { position: "absolute", width: SLOT_W, height: SLOT_H, alignItems: "center", gap: 3 },
   label: { maxWidth: SLOT_W, backgroundColor: "rgba(255,255,255,0.95)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
   labelText: { fontSize: 10, fontWeight: "700", textAlign: "center" },
-  blanksRow: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 2 },
+  blanksRow: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 3 },
   tries: { fontSize: 9, fontWeight: "800", color: "white", backgroundColor: C.text2, borderRadius: 6, paddingHorizontal: 4, overflow: "hidden" },
 });

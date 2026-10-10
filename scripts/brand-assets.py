@@ -15,7 +15,7 @@ Writes to mobile/assets/brand/. Needs Pillow.
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageFilter, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
 SRC = Path(sys.argv[1])
 OUT = Path(__file__).resolve().parent.parent / "mobile" / "assets" / "brand"
@@ -59,12 +59,28 @@ for name in ["icon-daily", "icon-practice", "icon-team", "icon-race", "icon-tiki
     fit(clean_alpha(load(name), erode=0), (192, 192), margin=0.04).save(OUT / f"{name}.png", optimize=True)
 
 # ── Illustrations: shown ~200–240 pt wide → 720 px
-for name in ["illus-empty-stats", "illus-waiting-room", "illus-win", "illus-finish", "illus-howto"]:
+for name in ["illus-empty-stats", "illus-win", "illus-finish", "illus-howto"]:
     im = clean_alpha(load(name), erode=0)
     box = im.getchannel("A").getbbox()
     im = im.crop(box)
     im.thumbnail((720, 480), Image.LANCZOS)
     im.save(OUT / f"{name}.png", optimize=True)
+
+# ── Waiting room: phones without the ball (kept uncropped so the in-app ball
+# path can use the original coordinates) + the ball as its own sprite.
+# Ball centre/radius and the throw points are measured on the 1536×1024 image;
+# mobile/src/components/WaitingAnimation.tsx uses the same numbers.
+BALL_C, BALL_R = (838, 292), 122
+room = load("illus-waiting-room")
+ball = room.crop((BALL_C[0] - BALL_R, BALL_C[1] - BALL_R, BALL_C[0] + BALL_R, BALL_C[1] + BALL_R))
+disc = Image.new("L", ball.size, 0)
+ImageDraw.Draw(disc).ellipse((2, 2, ball.width - 3, ball.height - 3), fill=255)
+ball.putalpha(ImageChops.multiply(ball.getchannel("A"), disc))
+ball.resize((128, 128), Image.LANCZOS).save(OUT / "illus-waiting-ball.png", optimize=True)
+hole = Image.new("L", room.size, 255)
+ImageDraw.Draw(hole).ellipse((BALL_C[0] - BALL_R - 4, BALL_C[1] - BALL_R - 4, BALL_C[0] + BALL_R + 4, BALL_C[1] + BALL_R + 4), fill=0)
+room.putalpha(ImageChops.multiply(room.getchannel("A"), hole))
+room.resize((720, 480), Image.LANCZOS).save(OUT / "illus-waiting-room.png", optimize=True)
 
 # ── Shirts
 # Sleeve seam on the left half of the 1024 canvas as (y, x) points, measured on

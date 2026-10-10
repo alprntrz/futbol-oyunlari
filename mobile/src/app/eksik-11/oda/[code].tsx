@@ -1,14 +1,14 @@
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Image, Share, StyleSheet, Text, View } from "react-native";
+import { Share, StyleSheet, Text, View } from "react-native";
 
 import { getMatchById } from "@/data/matches";
 import type { Difficulty, Match } from "@/lib/types";
 
 import { MissingXIBoard } from "~/components/MissingXIBoard";
+import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
-import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { getNick } from "~/lib/raceSession";
@@ -131,7 +131,7 @@ export default function RoomScreen() {
           <View style={{ alignItems: "center", marginTop: 24, gap: 12 }}>
             {room && room.players.length < 2 && (
               <>
-                <Image source={BRAND.illus.waitingRoom} style={{ width: 240, height: 120 }} resizeMode="contain" />
+                <WaitingAnimation width={260} />
                 <Text style={T.body}>{t("waiting")}</Text>
               </>
             )}
