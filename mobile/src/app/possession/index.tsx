@@ -1,9 +1,8 @@
 import { Stack } from "expo-router";
-import { View } from "react-native";
-
+import { Rule } from "~/components/HowTo";
 import { ModeList, type Mode } from "~/components/ModeGrid";
 import { Text } from "~/components/Text";
-import { Card, Icon, Page, SectionLabel } from "~/components/ui";
+import { Card, Page, SectionLabel } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
@@ -54,13 +53,9 @@ export default function PossessionHome() {
       <ModeList modes={modes} />
 
       <SectionLabel>{t("howToPlay")}</SectionLabel>
-      <Card style={{ gap: 12 }}>
-        {[t("ppRule1"), t("ppRule2")].map((r) => (
-          <View key={r} style={{ flexDirection: "row", gap: 10 }}>
-            <Icon name="hexagon.fill" size={16} color={C.greenMid} fallback="⬢" />
-            <Text style={[T.body, { flex: 1 }]}>{r}</Text>
-          </View>
-        ))}
+      <Card style={{ gap: 14 }}>
+        <Rule image={BRAND.how.clock} desc={t("ppRule1")} />
+        <Rule image={BRAND.how.hexes} desc={t("ppRule2")} />
       </Card>
     </Page>
   );

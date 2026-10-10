@@ -48,6 +48,19 @@ export const BRAND = {
     support: require("../../assets/brand/set-support.png"),
     delete: require("../../assets/brand/set-delete.png"),
   },
+  /** how-to-play steps (docs/design/ikon-brief-3.md) */
+  how: {
+    tapShirt: require("../../assets/brand/how-tap-shirt.png"),
+    typeSurname: require("../../assets/brand/how-type-surname.png"),
+    grid: require("../../assets/brand/how-grid.png"),
+    namePlayer: require("../../assets/brand/how-name-player.png"),
+    threeRow: require("../../assets/brand/how-three-row.png"),
+    clock: require("../../assets/brand/how-clock.png"),
+    hexes: require("../../assets/brand/how-hexes.png"),
+    questions: require("../../assets/brand/how-questions.png"),
+    speed: require("../../assets/brand/how-speed.png"),
+    players: require("../../assets/brand/how-players.png"),
+  },
   illus: {
     emptyStats: require("../../assets/brand/illus-empty-stats.png"),
     waitingRoom: require("../../assets/brand/illus-waiting-room.png"),

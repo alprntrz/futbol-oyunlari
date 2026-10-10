@@ -5,6 +5,7 @@ import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropTyp
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Rule } from "~/components/HowTo";
 import { LevelCard, type QuizProfile } from "~/components/QuizLevel";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
@@ -73,12 +74,9 @@ export default function QuizHome() {
           </Animated.View>
         ))}
         <Animated.View entering={FadeIn.duration(200)} style={styles.rules}>
-          {[t("qzRule1"), t("qzRule2"), t("qzRule3")].map((r) => (
-            <View key={r} style={{ flexDirection: "row", gap: 10 }}>
-              <View style={styles.bullet} />
-              <Text style={styles.rule}>{r}</Text>
-            </View>
-          ))}
+          <Rule image={BRAND.how.questions} desc={t("qzRule1")} />
+          <Rule image={BRAND.how.speed} desc={t("qzRule2")} />
+          <Rule image={BRAND.how.players} desc={t("qzRule3")} />
         </Animated.View>
       </ScrollView>
     </View>
@@ -94,7 +92,5 @@ const styles = StyleSheet.create({
   cardDesc: { fontSize: 15, fontWeight: "600", lineHeight: 20, color: "rgba(255,255,255,0.9)" },
   standings: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: NIGHT.raised, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 16, paddingHorizontal: 14, paddingVertical: 13 },
   standingsText: { flex: 1, fontFamily: F.display, fontSize: 19, color: NIGHT.ink },
-  rules: { gap: 10, backgroundColor: NIGHT.light ? NIGHT.raised : NIGHT.sunk, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 20, padding: 16, marginTop: 4 },
-  bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: NIGHT.accent, marginTop: 8 },
-  rule: { flex: 1, fontSize: 15, lineHeight: 21, color: NIGHT.ink2 },
+  rules: { gap: 14, backgroundColor: NIGHT.light ? NIGHT.raised : NIGHT.sunk, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 20, padding: 16, marginTop: 4 },
 });

@@ -1,15 +1,14 @@
-import type { SymbolViewProps } from "expo-symbols";
 import { useEffect, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Modal, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
 
 import { evaluateGuess } from "@/lib/wordle";
 
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
 
 import { Tile } from "./LetterTile";
 import { Text } from "./Text";
-import { Icon } from "./ui";
 
 /** Small green / yellow / grey legend explaining the tile colours. */
 export function TileLegend({ compact }: { compact?: boolean }) {
@@ -86,15 +85,16 @@ export function DemoBoard({ dark }: { dark?: boolean }) {
   );
 }
 
-function Rule({ icon, fallback, title, desc }: { icon: SymbolViewProps["name"]; fallback: string; title: string; desc: string }) {
+/** A how-to step: our art on a quiet tile, an optional title, and the explanation. */
+export function Rule({ image, title, desc }: { image: ImageSourcePropType; title?: string; desc: string }) {
   return (
     <View style={styles.rule}>
       <View style={styles.ruleIcon}>
-        <Icon name={icon} size={18} color={C.greenMid} fallback={fallback} />
+        <Image source={image} style={styles.ruleArt} accessible={false} />
       </View>
-      <View style={{ flex: 1 }}>
-        <Text style={T.headline}>{title}</Text>
-        <Text style={[T.body, { marginTop: 1 }]}>{desc}</Text>
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        {title ? <Text style={T.headline}>{title}</Text> : null}
+        <Text style={[T.body, title ? { marginTop: 1 } : null]}>{desc}</Text>
       </View>
     </View>
   );
@@ -108,8 +108,8 @@ export function MissingXISteps() {
       <View style={{ alignItems: "center" }}>
         <TileLegend />
       </View>
-      <Rule icon="tshirt.fill" fallback="👕" title={t("step1")} desc={t("step1Desc")} />
-      <Rule icon="keyboard.fill" fallback="⌨️" title={t("step2")} desc={t("step2Desc")} />
+      <Rule image={BRAND.how.tapShirt} title={t("step1")} desc={t("step1Desc")} />
+      <Rule image={BRAND.how.typeSurname} title={t("step2")} desc={t("step2Desc")} />
     </View>
   );
 }
@@ -118,9 +118,9 @@ export function TikiSteps() {
   const { t } = useI18n();
   return (
     <View style={{ gap: 16 }}>
-      <Rule icon="square.grid.3x3.fill" fallback="#" title={t("tikiTakaName")} desc={t("ttStep1")} />
-      <Rule icon="character.cursor.ibeam" fallback="✎" title={t("ttPlaceholder").replace("…", "")} desc={t("ttStep2")} />
-      <Rule icon="trophy.fill" fallback="🏆" title="X O" desc={t("ttStep3")} />
+      <Rule image={BRAND.how.grid} title={t("tikiTakaName")} desc={t("ttStep1")} />
+      <Rule image={BRAND.how.namePlayer} title={t("ttPlaceholder").replace("…", "")} desc={t("ttStep2")} />
+      <Rule image={BRAND.how.threeRow} title="X O" desc={t("ttStep3")} />
     </View>
   );
 }
@@ -146,8 +146,9 @@ export function InfoSheet({ visible, onClose, title, children }: { visible: bool
 const styles = StyleSheet.create({
   demo: { alignItems: "center", gap: 6, minHeight: 2 * 42 + 6, paddingVertical: 8, backgroundColor: C.bg, borderRadius: 16 },
   demoRow: { flexDirection: "row", gap: 5 },
-  rule: { flexDirection: "row", gap: 12, alignItems: "flex-start" },
-  ruleIcon: { width: 34, height: 34, borderRadius: 10, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
+  rule: { flexDirection: "row", gap: 12, alignItems: "center" },
+  ruleIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: "#EEF2EF", alignItems: "center", justifyContent: "center" },
+  ruleArt: { width: 40, height: 40 },
   legend: { flexDirection: "row", flexWrap: "wrap", gap: 16 },
   legendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
   legendDot: { width: 14, height: 14, borderRadius: 4 },
