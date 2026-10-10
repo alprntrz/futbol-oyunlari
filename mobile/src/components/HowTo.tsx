@@ -5,7 +5,6 @@ import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { evaluateGuess } from "@/lib/wordle";
 
 import { useI18n } from "~/lib/i18n";
-import { Light } from "~/lib/surface";
 import { C, T } from "~/lib/theme";
 
 import { Tile } from "./LetterTile";
@@ -131,19 +130,15 @@ export function InfoSheet({ visible, onClose, title, children }: { visible: bool
   const { t } = useI18n();
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <Light>
-        <Light>
-          <View style={{ flex: 1, backgroundColor: C.card }}>
-            <View style={styles.sheetHeader}>
-              <Text style={T.title}>{title}</Text>
-              <Pressable onPress={onClose} hitSlop={12}>
-                <Text style={{ color: C.green, fontSize: 17, fontWeight: "600" }}>{t("close")}</Text>
-              </Pressable>
-            </View>
-            <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 4 }}>{children}</ScrollView>
-          </View>
-        </Light>
-      </Light>
+      <View style={{ flex: 1, backgroundColor: C.card }}>
+        <View style={styles.sheetHeader}>
+          <Text style={T.title}>{title}</Text>
+          <Pressable onPress={onClose} hitSlop={12}>
+            <Text style={{ color: C.green, fontSize: 17, fontWeight: "600" }}>{t("close")}</Text>
+          </Pressable>
+        </View>
+        <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 4 }}>{children}</ScrollView>
+      </View>
     </Modal>
   );
 }

@@ -51,11 +51,6 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   seeded card, `mobile/src/lib/bingo.ts`). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
-- Look: tab screens are light; every pushed game screen is a "night match" — `Page` (ui.tsx)
-  defaults to `night` when not `topInset`: stadium band, faint grass, transparent white header.
-  On night screens `Text` swaps dark ink for light (`lib/surface.tsx`); white surfaces (Card, Tap,
-  Segmented, sheets, board cells) are wrapped in `<Light>` so their text stays dark. A new white
-  `View` holding text on a game screen needs `<Light>` too.
 - Read `mobile/AGENTS.md`: Expo APIs change per SDK, check the versioned docs.
 - Brand images (`mobile/assets/brand/`) are generated: originals from the
   ChatGPT brief (`docs/design/ikon-brief.md`) → `python3 scripts/brand-assets.py <dir>`.

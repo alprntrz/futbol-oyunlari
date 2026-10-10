@@ -8,7 +8,6 @@ import { answerLetters, evaluateGuess, keyboardState } from "@/lib/wordle";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { Light } from "~/lib/surface";
 import { C, F, T } from "~/lib/theme";
 
 import { TileLegend } from "./HowTo";
@@ -95,51 +94,49 @@ export function GuessSheet({
       if (ch === " ") return <View key={j} style={{ width: WORD_GAP - GAP }} />;
       li++;
       const isHint = !!hintFirst && li === 0 && !letters;
-      return <Tile key={j} ch={isHint ? answer[0] : (letters[li] ?? "")} mark={marks?.[li]} size={tileSize} hint={isHint} flipIndex={flip ? li : undefined} />;
+      return (
+        <Tile key={j} ch={isHint ? answer[0] : (letters[li] ?? "")} mark={marks?.[li]} size={tileSize} hint={isHint} flipIndex={flip ? li : undefined} />
+      );
     });
   };
 
   return (
     <Modal visible={!!openPlayer} transparent animationType="slide" onRequestClose={onClose}>
-      <Light>
-        <Light>
-          <Pressable style={styles.backdrop} onPress={onClose} />
-          <View style={[styles.sheet, { paddingBottom: insets.bottom + 10 }]}>
-            <View style={styles.grabber} />
-            <View style={styles.header}>
-              <View style={styles.numberBadge}>
-                <Text style={styles.numberText}>{player?.number}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={T.headline}>
-                  {answer.length} {t("letters")}
-                </Text>
-                <Text style={T.caption}>
-                  {capitalize(t("guessesLeft"))}: {left}/{maxGuesses}
-                </Text>
-              </View>
-              <Pressable onPress={onClose} hitSlop={12} style={styles.close}>
-                <Icon name="xmark" size={14} color={C.text2} fallback="✕" />
-              </Pressable>
-            </View>
-
-            <View style={styles.rows}>
-              {pastGuesses.map((g, i) => (
-                <View key={`${player?.number}-${i}`} style={styles.row}>
-                  {row(g, evaluateGuess(g, answer), false, i === flipRow)}
-                </View>
-              ))}
-              <Animated.View style={[styles.row, shakeStyle]}>{row(current, undefined, showHint)}</Animated.View>
-            </View>
-
-            <View style={{ alignItems: "center", marginBottom: 14 }}>
-              <TileLegend compact />
-            </View>
-
-            <Keyboard onKey={handleKey} marks={keyboardState(pastGuesses, answer)} />
+      <Pressable style={styles.backdrop} onPress={onClose} />
+      <View style={[styles.sheet, { paddingBottom: insets.bottom + 10 }]}>
+        <View style={styles.grabber} />
+        <View style={styles.header}>
+          <View style={styles.numberBadge}>
+            <Text style={styles.numberText}>{player?.number}</Text>
           </View>
-        </Light>
-      </Light>
+          <View style={{ flex: 1 }}>
+            <Text style={T.headline}>
+              {answer.length} {t("letters")}
+            </Text>
+            <Text style={T.caption}>
+              {capitalize(t("guessesLeft"))}: {left}/{maxGuesses}
+            </Text>
+          </View>
+          <Pressable onPress={onClose} hitSlop={12} style={styles.close}>
+            <Icon name="xmark" size={14} color={C.text2} fallback="✕" />
+          </Pressable>
+        </View>
+
+        <View style={styles.rows}>
+          {pastGuesses.map((g, i) => (
+            <View key={`${player?.number}-${i}`} style={styles.row}>
+              {row(g, evaluateGuess(g, answer), false, i === flipRow)}
+            </View>
+          ))}
+          <Animated.View style={[styles.row, shakeStyle]}>{row(current, undefined, showHint)}</Animated.View>
+        </View>
+
+        <View style={{ alignItems: "center", marginBottom: 14 }}>
+          <TileLegend compact />
+        </View>
+
+        <Keyboard onKey={handleKey} marks={keyboardState(pastGuesses, answer)} />
+      </View>
     </Modal>
   );
 }

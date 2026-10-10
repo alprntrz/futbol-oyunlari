@@ -9,7 +9,6 @@ import { haptic } from "~/lib/haptics";
 import { answersFor } from "~/lib/htBot";
 import { TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
-import { Light } from "~/lib/surface";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Flag } from "./Flag";
@@ -79,11 +78,7 @@ export function ClubShirt({ c, size = 30 }: { c: Criterion; size?: number }) {
 export function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
   if (c.kind === "club") return <ClubShirt c={c} size={size} />;
   if (c.kind === "country") return <Flag id={c.id} width={size * 1.35} />;
-  return (
-    <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>
-      {c.icon}
-    </Text>
-  );
+  return <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>{c.icon}</Text>;
 }
 
 /** A placed name settles in with a barely-there bounce. */
@@ -237,24 +232,20 @@ export function HatTrickBoard({
           <View style={[styles.corner, size(1.1)]} />
           {grid.cols.map((c, i) => (
             <View key={i} style={[styles.cell, styles.head, size(1)]}>
-              <Light>
-                <CriterionBadge c={c} />
-                <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
-                  {label(c)}
-                </Text>
-              </Light>
+              <CriterionBadge c={c} />
+              <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
+                {label(c)}
+              </Text>
             </View>
           ))}
         </View>
         {grid.rows.map((r, ri) => (
           <View key={ri} style={styles.row}>
             <View style={[styles.corner, styles.head, size(1.1)]}>
-              <Light>
-                <CriterionBadge c={r} />
-                <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
-                  {label(r)}
-                </Text>
-              </Light>
+              <CriterionBadge c={r} />
+              <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
+                {label(r)}
+              </Text>
             </View>
             {grid.cols.map((c, ci) => {
               const idx = ri * 3 + ci;
@@ -307,74 +298,71 @@ export function HatTrickBoard({
       <AnswersSheet grid={grid} cell={review} placed={review !== null ? board[review] : null} onClose={() => setReview(null)} />
 
       <Modal visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
-        <Light>
-          <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-            <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={() => setOpenCell(null)} />
-            <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
-              <View style={styles.grabber} />
-              {row && col && (
-                <View style={styles.pair}>
-                  <View style={styles.chip}>
-                    <CriterionBadge c={row} size={22} />
-                    <Text style={styles.chipText}>{label(row)}</Text>
-                  </View>
-                  <Icon name="plus" size={14} color={C.text3} fallback="+" />
-                  <View style={styles.chip}>
-                    <CriterionBadge c={col} size={22} />
-                    <Text style={styles.chipText}>{label(col)}</Text>
-                  </View>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+          <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={() => setOpenCell(null)} />
+          <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
+            <View style={styles.grabber} />
+            {row && col && (
+              <View style={styles.pair}>
+                <View style={styles.chip}>
+                  <CriterionBadge c={row} size={22} />
+                  <Text style={styles.chipText}>{label(row)}</Text>
                 </View>
-              )}
-              <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
-                {sheetCaption ??
-                  `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
-              </Text>
-              <View style={styles.inputWrap}>
-                <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
-                <TextInput
-                  autoFocus
-                  value={input}
-                  onChangeText={setInput}
-                  onSubmitEditing={() => (suggestions.length === 1 ? submit(suggestions[0].name) : submit())}
-                  placeholder={t("ttPlaceholder")}
-                  placeholderTextColor={C.text3}
-                  autoCorrect={false}
-                  autoCapitalize="words"
-                  returnKeyType="done"
-                  style={styles.input}
-                />
+                <Icon name="plus" size={14} color={C.text3} fallback="+" />
+                <View style={styles.chip}>
+                  <CriterionBadge c={col} size={22} />
+                  <Text style={styles.chipText}>{label(col)}</Text>
+                </View>
               </View>
-              {input.trim().length >= 2 && (
-                <ScrollView style={styles.suggestions} keyboardShouldPersistTaps="handled">
-                  {suggestions.length === 0 ? (
-                    <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
-                  ) : (
-                    suggestions.map((p, i) => (
-                      <Tap
-                        key={p.name}
-                        disabled={used.has(p.name)}
-                        onPress={() => submit(p.name)}
-                        style={[styles.suggestion, i > 0 && styles.suggestionDivider, used.has(p.name) && { opacity: 0.4 }]}
-                      >
-                        <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
-                          <Text allowFontScaling={false} style={styles.avatarText}>
-                            {initials(p.name)}
-                          </Text>
-                        </View>
-                        <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
-                        {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
-                      </Tap>
-                    ))
-                  )}
-                </ScrollView>
-              )}
-              <View style={{ flexDirection: "row", gap: 10, marginTop: 14 }}>
-                <Button title={t("close")} kind="secondary" onPress={() => setOpenCell(null)} style={{ flex: 1 }} />
-                <Button title={t("ttSubmit")} onPress={() => submit()} style={{ flex: 1 }} />
-              </View>
+            )}
+            <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
+              {sheetCaption ?? `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
+            </Text>
+            <View style={styles.inputWrap}>
+              <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
+              <TextInput
+                autoFocus
+                value={input}
+                onChangeText={setInput}
+                onSubmitEditing={() => (suggestions.length === 1 ? submit(suggestions[0].name) : submit())}
+                placeholder={t("ttPlaceholder")}
+                placeholderTextColor={C.text3}
+                autoCorrect={false}
+                autoCapitalize="words"
+                returnKeyType="done"
+                style={styles.input}
+              />
             </View>
-          </KeyboardAvoidingView>
-        </Light>
+            {input.trim().length >= 2 && (
+              <ScrollView style={styles.suggestions} keyboardShouldPersistTaps="handled">
+                {suggestions.length === 0 ? (
+                  <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
+                ) : (
+                  suggestions.map((p, i) => (
+                    <Tap
+                      key={p.name}
+                      disabled={used.has(p.name)}
+                      onPress={() => submit(p.name)}
+                      style={[styles.suggestion, i > 0 && styles.suggestionDivider, used.has(p.name) && { opacity: 0.4 }]}
+                    >
+                      <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
+                        <Text allowFontScaling={false} style={styles.avatarText}>
+                          {initials(p.name)}
+                        </Text>
+                      </View>
+                      <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                      {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
+                    </Tap>
+                  ))
+                )}
+              </ScrollView>
+            )}
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 14 }}>
+              <Button title={t("close")} kind="secondary" onPress={() => setOpenCell(null)} style={{ flex: 1 }} />
+              <Button title={t("ttSubmit")} onPress={() => submit()} style={{ flex: 1 }} />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
       <Confetti fire={confetti} />
     </View>
@@ -395,47 +383,45 @@ function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: numbe
 
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
-      <Light>
-        <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={onClose} />
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
-          <View style={styles.grabber} />
-          <View style={styles.pair}>
-            <View style={styles.chip}>
-              <CriterionBadge c={row} size={22} />
-              <Text style={styles.chipText}>{label(row)}</Text>
-            </View>
-            <Icon name="plus" size={14} color={C.text3} fallback="+" />
-            <View style={styles.chip}>
-              <CriterionBadge c={col} size={22} />
-              <Text style={styles.chipText}>{label(col)}</Text>
-            </View>
+      <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={onClose} />
+      <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
+        <View style={styles.grabber} />
+        <View style={styles.pair}>
+          <View style={styles.chip}>
+            <CriterionBadge c={row} size={22} />
+            <Text style={styles.chipText}>{label(row)}</Text>
           </View>
-          <Text style={[T.caption, { textAlign: "center", marginVertical: 12 }]}>
-            {all.length === 0 ? t("htNoAnswers") : `${all.length} ${t("htAnswersCount")}`}
-          </Text>
-          {shown.length > 0 && (
-            <View style={styles.suggestionsStatic}>
-              {shown.map((p, i) => {
-                const mine = placed?.name === p.name;
-                return (
-                  <View key={p.name} style={[styles.suggestion, i > 0 && styles.suggestionDivider]}>
-                    <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
-                      <Text allowFontScaling={false} style={styles.avatarText}>
-                        {initials(p.name)}
-                      </Text>
-                    </View>
-                    <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
-                    {mine && placed && (
-                      <Text style={[styles.placedTag, { color: MARK[placed.mark].color, backgroundColor: MARK[placed.mark].soft }]}>{placed.mark}</Text>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          )}
-          <Button title={t("close")} kind="secondary" onPress={onClose} style={{ marginTop: 14 }} />
+          <Icon name="plus" size={14} color={C.text3} fallback="+" />
+          <View style={styles.chip}>
+            <CriterionBadge c={col} size={22} />
+            <Text style={styles.chipText}>{label(col)}</Text>
+          </View>
         </View>
-      </Light>
+        <Text style={[T.caption, { textAlign: "center", marginVertical: 12 }]}>
+          {all.length === 0 ? t("htNoAnswers") : `${all.length} ${t("htAnswersCount")}`}
+        </Text>
+        {shown.length > 0 && (
+          <View style={styles.suggestionsStatic}>
+            {shown.map((p, i) => {
+              const mine = placed?.name === p.name;
+              return (
+                <View key={p.name} style={[styles.suggestion, i > 0 && styles.suggestionDivider]}>
+                  <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
+                    <Text allowFontScaling={false} style={styles.avatarText}>
+                      {initials(p.name)}
+                    </Text>
+                  </View>
+                  <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                  {mine && placed && (
+                    <Text style={[styles.placedTag, { color: MARK[placed.mark].color, backgroundColor: MARK[placed.mark].soft }]}>{placed.mark}</Text>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+        <Button title={t("close")} kind="secondary" onPress={onClose} style={{ marginTop: 14 }} />
+      </View>
     </Modal>
   );
 }

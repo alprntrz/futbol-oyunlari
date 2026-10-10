@@ -12,8 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import { I18nProvider } from "~/lib/i18n";
-import { NIGHT } from "~/components/StadiumHeader";
-import { F } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,14 +41,12 @@ export default function RootLayout() {
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
-          // game screens: the header floats over the stadium band (see Page)
-          headerTransparent: true,
-          headerStyle: { backgroundColor: "transparent" },
-          headerTintColor: "#FFFFFF",
-          headerTitleStyle: { fontFamily: F.display, fontSize: 22, color: "#FFFFFF" },
+          headerStyle: { backgroundColor: C.bg },
+          headerTintColor: C.text,
+          headerTitleStyle: { fontFamily: F.display, fontSize: 22 },
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
-          contentStyle: { backgroundColor: NIGHT.body },
+          contentStyle: { backgroundColor: C.bg },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
