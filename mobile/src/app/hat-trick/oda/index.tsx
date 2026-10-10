@@ -1,22 +1,22 @@
 import { useState } from "react";
 
-import { generateGrid } from "@/lib/tiki";
-
 import { OnlineLobby } from "~/components/OnlineLobby";
 import { Text } from "~/components/Text";
 import { Segmented } from "~/components/ui";
 import { gridToIds } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { dealGrid, useHtLeague } from "~/lib/league";
 import { T } from "~/lib/theme";
 
 export default function HatTrickLobby() {
   const { t } = useI18n();
   const [steals, setSteals] = useState(false);
+  const [league] = useHtLeague();
   return (
     <OnlineLobby
       game="ht"
       title={t("tikiTakaName")}
-      createPayload={() => ({ grid: gridToIds(generateGrid()), steals })}
+      createPayload={() => ({ grid: gridToIds(dealGrid(league)), steals, league })}
       roomHref={(code) => ({ pathname: "/hat-trick/oda/[code]", params: { code } })}
       createOptions={
         <>

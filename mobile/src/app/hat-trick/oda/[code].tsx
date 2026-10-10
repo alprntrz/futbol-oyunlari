@@ -3,7 +3,6 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Share, StyleSheet, View } from "react-native";
 
-import { generateGrid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
@@ -13,6 +12,7 @@ import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { dealGrid } from "~/lib/league";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, F, T } from "~/lib/theme";
@@ -39,6 +39,7 @@ interface HtRoom {
   endReason: "forfeit" | "agreed" | null;
   /** game wins per mark this series; `over` once someone reaches `target` */
   series: { X: number; O: number; target: number; over: boolean };
+  league: string;
   players: HtPlayer[];
 }
 
@@ -103,11 +104,12 @@ export default function HatTrickRoom() {
   // Between games of a series the host's phone deals the next grid after a short pause
   const seriesOver = room?.series?.over ?? false;
   const hostHere = room?.players[0]?.id === myId;
+  const roomLeague = room?.league;
   useEffect(() => {
     if (!room?.winner || seriesOver || !hostHere || peerLeft) return;
-    const id = setTimeout(() => getSocket().emit("ht:rematch", { grid: gridToIds(generateGrid()) }), NEXT_GAME_MS);
+    const id = setTimeout(() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(roomLeague)) }), NEXT_GAME_MS);
     return () => clearTimeout(id);
-  }, [room?.winner, seriesOver, hostHere, peerLeft]);
+  }, [room?.winner, seriesOver, hostHere, peerLeft, roomLeague]);
 
   const grid = useMemo(() => (room ? gridFromIds(room.grid) : null), [room?.grid]); // eslint-disable-line react-hooks/exhaustive-deps
   const me = room?.players.find((p) => p.id === myId);
@@ -234,7 +236,7 @@ export default function HatTrickRoom() {
           room.winner && !series.over ? null : room.winner ? (
             <View style={{ marginTop: 18, gap: 10 }}>
               {isHost ? (
-                <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(generateGrid()) })} />
+                <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league)) })} />
               ) : (
                 <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
               )}

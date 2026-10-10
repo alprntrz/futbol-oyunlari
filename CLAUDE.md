@@ -35,6 +35,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
   `ht:forfeit` end games early; a match is a series, first to `HT_TARGET` = 3 game wins,
   wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
+- Leagues (`src/lib/leagues.ts`): Hat-trick grids per league (`leagueGrid`, only that league's
+  clubs plus countries/honours; leagues need 3+ clubs in tiki CLUBS); the pick lives in
+  `mobile/src/lib/league.ts` and rooms/queue carry `league`. Missing 11 categories (`XI_CATEGORIES`)
+  filter matches by tag/competition.
 - Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
   data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
   until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5

@@ -2,14 +2,13 @@ import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
-import { generateGrid } from "@/lib/tiki";
-
 import { MatchIntro } from "~/components/MatchIntro";
 import { Text } from "~/components/Text";
 import { RunningPlayer } from "~/components/RunningPlayer";
 import { Button, Card, Page } from "~/components/ui";
 import { gridToIds, type Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { dealGrid, useHtLeague } from "~/lib/league";
 import { loadNick, randomNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
@@ -24,6 +23,7 @@ export default function HatTrickRandom() {
   const { t } = useI18n();
   const [error, setError] = useState<string | null>(null);
   const [matched, setMatched] = useState<Matched | null>(null);
+  const [league] = useHtLeague();
 
   useEffect(() => {
     if (matched) return;
@@ -44,7 +44,7 @@ export default function HatTrickRandom() {
     const onError = () => setError(t("serverUnreachable"));
     const enqueue = async () => {
       setError(null);
-      socket.emit("ht:queue", { nick: await loadNick(), grid: gridToIds(generateGrid()) });
+      socket.emit("ht:queue", { nick: await loadNick(), grid: gridToIds(dealGrid(league)), league });
     };
     socket.on("ht:matched", onMatched);
     socket.on("connect_error", onError);
@@ -71,7 +71,7 @@ export default function HatTrickRandom() {
             router.replace(
               matched.kind === "room"
                 ? { pathname: "/hat-trick/oda/[code]", params: { code: matched.code, random: "1" } }
-                : { pathname: "/hat-trick/bot", params: { nick: matched.opponent } }
+                : { pathname: "/hat-trick/bot", params: { nick: matched.opponent, league } }
             )
           }
         />

@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 
-import { generateGrid, type Grid } from "@/lib/tiki";
+import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
@@ -12,12 +12,14 @@ import { Button, Page, Segmented } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type Series, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { dealGrid, useHtLeague } from "~/lib/league";
 import { T } from "~/lib/theme";
 
 /** Hat-trick on one phone: X and O take turns. */
 export default function HatTrickLocal() {
   const { t } = useI18n();
-  const [grid, setGrid] = useState<Grid>(generateGrid);
+  const [league] = useHtLeague();
+  const [grid, setGrid] = useState<Grid>(() => dealGrid(league));
   const [board, setBoard] = useState<(HtCell | null)[]>(() => Array(9).fill(null));
   const [turn, setTurn] = useState<Mark>("X");
   const [winner, setWinner] = useState<Winner>(null);
@@ -98,7 +100,7 @@ export default function HatTrickLocal() {
     setForfeited(null);
     setSteals({ X: 3, O: 3 });
     setUsedNames([]);
-    setGrid(generateGrid());
+    setGrid(dealGrid(league));
     setBoard(Array(9).fill(null));
     setTurn(first);
     setWinner(null);

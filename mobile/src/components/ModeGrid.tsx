@@ -29,7 +29,7 @@ export function ModeGrid({ modes }: { modes: Mode[] }) {
             <View style={[styles.icon, { backgroundColor: m.soft }]}>
               <Icon name={m.icon} size={24} color={m.color} fallback={m.fallback} />
             </View>
-            <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>
+            <Text style={styles.title} numberOfLines={1}>
               {m.title}
             </Text>
             <Text style={styles.desc} numberOfLines={2}>

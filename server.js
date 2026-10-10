@@ -90,6 +90,7 @@ function htPublic(room) {
     drawOffer: room.drawOffer ?? null,
     endReason: room.endReason ?? null,
     series: htSeries(room),
+    league: room.league || "all",
     players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
   };
 }
@@ -550,7 +551,7 @@ app.prepare().then(() => {
       }, HT_TURN_MS + graceMs);
     };
 
-    socket.on("ht:create", ({ nick, grid, steals }, cb) => {
+    socket.on("ht:create", ({ nick, grid, steals, league }, cb) => {
       if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return cb?.({ ok: false, error: "bad_grid" });
       const code = htCode();
       const room = {
@@ -565,6 +566,7 @@ app.prepare().then(() => {
         timer: null,
         // steal mode: 3 steals each, or null when off
         steals: steals ? { X: 3, O: 3 } : null,
+        league: typeof league === "string" ? league.slice(0, 12) : "all",
         used: [],
         players: [{ id: socket.id, nick: String(nick || "").slice(0, 20), mark: "X" }],
       };
@@ -590,18 +592,22 @@ app.prepare().then(() => {
 
     // Random opponent: the first waiting player is paired with the next one.
     // The waiting player's phone already dealt the grid; the room starts at once.
-    socket.on("ht:queue", ({ nick, grid }) => {
+    // random opponents are matched within the same league
+    socket.on("ht:queue", ({ nick, grid, league }) => {
       if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return;
+      const lg = typeof league === "string" ? league.slice(0, 12) : "all";
       htQueue = htQueue.filter((w) => w.socket.connected && w.socket.id !== socket.id);
-      const waiting = htQueue.shift();
+      const at = htQueue.findIndex((w) => w.league === lg);
+      const waiting = at >= 0 ? htQueue.splice(at, 1)[0] : null;
       if (!waiting) {
-        htQueue.push({ socket, nick: String(nick || "").slice(0, 20), grid });
+        htQueue.push({ socket, nick: String(nick || "").slice(0, 20), grid, league: lg });
         return;
       }
       const code = htCode();
       const room = {
         code,
         grid: waiting.grid,
+        league: lg,
         started: true,
         board: Array(9).fill(null),
         turn: "X",

@@ -1,16 +1,21 @@
 import { Stack } from "expo-router";
 
+import { LEAGUES, type LeagueId } from "@/lib/leagues";
+
 import { HelpButton } from "~/components/HelpButton";
+import { LeaguePicker } from "~/components/LeaguePicker";
 import { TikiSteps } from "~/components/HowTo";
 import { ModeGrid, type Mode } from "~/components/ModeGrid";
 import { Text } from "~/components/Text";
 import { Card, Page, SectionLabel } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
+import { useHtLeague } from "~/lib/league";
 import { C, T } from "~/lib/theme";
 
 /** Hat-trick hub: four ways to play. */
 export default function HatTrickHome() {
   const { t } = useI18n();
+  const [league, setLeague] = useHtLeague();
   const modes: Mode[] = [
     {
       icon: "person.2.fill",
@@ -60,6 +65,10 @@ export default function HatTrickHome() {
       />
       <Text style={T.title}>{t("tikiTakaName")}</Text>
       <Text style={[T.body, { marginTop: 4 }]}>{t("tikiTakaTagline")}</Text>
+
+      {/* the league applies to every mode below (the daily single-player grid stays all clubs) */}
+      <SectionLabel>{t("htLeague")}</SectionLabel>
+      <LeaguePicker items={LEAGUES} value={league} onChange={(id) => setLeague(id as LeagueId)} />
 
       <SectionLabel>{t("htModes")}</SectionLabel>
       <ModeGrid modes={modes} />

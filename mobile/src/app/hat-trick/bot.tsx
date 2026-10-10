@@ -2,7 +2,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
-import { generateGrid, type Grid } from "@/lib/tiki";
+import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
@@ -11,6 +11,7 @@ import { haptic } from "~/lib/haptics";
 import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
+import { dealGrid } from "~/lib/league";
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const fakeCode = () => Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
@@ -21,13 +22,13 @@ const fakeCode = () => Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(
  */
 export default function HatTrickHouse() {
   const { t } = useI18n();
-  const params = useLocalSearchParams<{ nick?: string }>();
+  const params = useLocalSearchParams<{ nick?: string; league?: string }>();
   const nick = params.nick || t("opponent");
   const [code] = useState(fakeCode);
 
   const [me, setMe] = useState<Mark>("X");
   const rival = other(me);
-  const [grid, setGrid] = useState<Grid>(generateGrid);
+  const [grid, setGrid] = useState<Grid>(() => dealGrid(params.league));
   const [board, setBoard] = useState<(HtCell | null)[]>(() => Array(9).fill(null));
   const [turn, setTurn] = useState<Mark>("X");
   const [winner, setWinner] = useState<Winner>(null);
@@ -136,7 +137,7 @@ export default function HatTrickHouse() {
   // Like the online rematch: new grid, marks swap so the other side starts
   const rematch = () => {
     if (seriesOver) setWins({ mine: 0, theirs: 0 });
-    setGrid(generateGrid());
+    setGrid(dealGrid(params.league));
     setBoard(Array(9).fill(null));
     setUsedNames([]);
     setMe(rival);
