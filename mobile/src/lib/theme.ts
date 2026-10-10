@@ -1,57 +1,65 @@
 /**
- * Light, calm design system: white cards on a soft grey background, one green
- * accent (the pitch), plain system font. Colour carries meaning only for
- * game feedback (green/yellow/grey tiles, blue X / coral O).
+ * Light theme with one UI accent (pitch green). Other colours only carry game
+ * meaning: tile feedback (green/yellow/grey), X/O players (blue/coral), the
+ * streak flame and trophies (amber), mistakes (red).
  */
 export const C = {
-  bg: "#F2F4F7",
+  bg: "#F1F4F1",
   card: "#FFFFFF",
-  border: "#E4E7EC",
-  divider: "#EEF0F3",
-  text: "#0B1220",
-  text2: "#5B6474",
-  text3: "#98A1B0",
+  border: "#E2E7E3",
+  divider: "#ECEFEC",
+  text: "#0E1A14",
+  text2: "#56645C",
+  text3: "#93A099",
 
   green: "#16A34A",
-  greenDark: "#15803D",
-  greenSoft: "#DCFCE7",
+  greenDark: "#14532D",
+  greenMid: "#15803D",
+  greenSoft: "#DDF5E4",
   blue: "#2563EB",
   blueSoft: "#DBEAFE",
   coral: "#F43F5E",
   coralSoft: "#FFE4E6",
   amber: "#F59E0B",
   amberSoft: "#FEF3C7",
-  violet: "#7C3AED",
-  violetSoft: "#EDE9FE",
   red: "#DC2626",
   redSoft: "#FEE2E2",
 
   tileCorrect: "#22A55A",
   tilePresent: "#E9B10A",
-  tileAbsent: "#8D96A5",
-  key: "#E4E7EC",
+  tileAbsent: "#8D968F",
+  key: "#E3E8E4",
 
   pitchA: "#3BA55C",
   pitchB: "#43B064",
   pitchLine: "rgba(255,255,255,0.55)",
 };
 
-export const R = { card: 20, button: 14, chip: 999 };
+/** Barlow Condensed: sporty display face for titles and every number. */
+export const F = {
+  display: "BarlowCondensed_800ExtraBold",
+  displayItalic: "BarlowCondensed_800ExtraBold_Italic",
+  black: "BarlowCondensed_900Black",
+  semi: "BarlowCondensed_600SemiBold",
+};
 
-/** Soft card shadow (iOS) / elevation (Android). */
+export const R = { card: 22, inner: 12, button: 14, chip: 999 };
+
+/** Soft card shadow tinted with the green-grey of the background. */
 export const shadow = {
-  shadowColor: "#0B1220",
-  shadowOpacity: 0.06,
-  shadowRadius: 12,
-  shadowOffset: { width: 0, height: 4 },
+  shadowColor: "#14532D",
+  shadowOpacity: 0.07,
+  shadowRadius: 14,
+  shadowOffset: { width: 0, height: 6 },
   elevation: 2,
 } as const;
 
 export const T = {
-  largeTitle: { fontSize: 32, fontWeight: "800", color: C.text, letterSpacing: -0.5 },
-  title: { fontSize: 22, fontWeight: "800", color: C.text, letterSpacing: -0.3 },
+  largeTitle: { fontFamily: F.display, fontSize: 40, color: C.text, letterSpacing: -0.4, lineHeight: 42 },
+  title: { fontFamily: F.display, fontSize: 30, color: C.text, lineHeight: 32 },
+  heading: { fontFamily: F.display, fontSize: 22, color: C.text },
   headline: { fontSize: 17, fontWeight: "700", color: C.text },
   body: { fontSize: 15, fontWeight: "400", color: C.text2, lineHeight: 21 },
   caption: { fontSize: 13, fontWeight: "500", color: C.text3 },
-  label: { fontSize: 13, fontWeight: "700", color: C.text3, letterSpacing: 0.6, textTransform: "uppercase" },
+  number: { fontFamily: F.display, fontVariant: ["tabular-nums"] },
 } as const;

@@ -9,6 +9,8 @@ export interface GameStats {
   streak: number;
   bestStreak: number;
   lastWonDay: number | null;
+  /** day number → players found that day (daily puzzle only) */
+  history?: Record<number, number>;
 }
 
 export interface DayState {
@@ -35,9 +37,10 @@ export async function loadStats(): Promise<GameStats> {
   return (await readJSON<GameStats>(STATS_KEY)) ?? { ...EMPTY };
 }
 
-export async function recordResult(won: boolean, day: number): Promise<GameStats> {
+export async function recordResult(won: boolean, day: number, found: number): Promise<GameStats> {
   const s = await loadStats();
   s.played++;
+  s.history = { ...s.history, [day]: found };
   if (won) {
     s.won++;
     s.streak = s.lastWonDay === day - 1 ? s.streak + 1 : 1;

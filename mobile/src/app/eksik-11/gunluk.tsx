@@ -42,10 +42,10 @@ export default function DailyScreen() {
 
 function DailyGame({ match, day, difficulty, saved }: { match: Match; day: number; difficulty: Difficulty; saved: DayState | null }) {
   const [recorded, setRecorded] = useState(saved?.recorded ?? false);
-  const game = useMissingXI(match, difficulty, saved ?? undefined, (won) => {
+  const game = useMissingXI(match, difficulty, saved ?? undefined, (won, found) => {
     if (recorded) return;
     setRecorded(true);
-    recordResult(won, day);
+    recordResult(won, day, found);
   });
   const { slots, gaveUp, progress } = game;
 

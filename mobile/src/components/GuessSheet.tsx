@@ -8,30 +8,16 @@ import { answerLetters, evaluateGuess, keyboardState } from "@/lib/wordle";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, T } from "~/lib/theme";
+import { C, F, T } from "~/lib/theme";
 
 import { TileLegend } from "./HowTo";
+import { Tile } from "./LetterTile";
 import { Keyboard } from "./Keyboard";
 import { Icon } from "./ui";
 
 const GAP = 5;
 const capitalize = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
 const WORD_GAP = 12;
-const MARK_BG: Record<TileMark, string> = { correct: C.tileCorrect, present: C.tilePresent, absent: C.tileAbsent };
-
-function Tile({ ch, mark, size, hint }: { ch: string; mark?: TileMark; size: number; hint?: boolean }) {
-  return (
-    <View
-      style={[
-        styles.tile,
-        { width: size, height: size },
-        mark ? { backgroundColor: MARK_BG[mark], borderColor: MARK_BG[mark] } : ch ? { borderColor: "#9AA3B2" } : null,
-      ]}
-    >
-      <Text style={{ color: mark ? "white" : hint ? C.text3 : C.text, fontWeight: "800", fontSize: size * 0.5 }}>{ch}</Text>
-    </View>
-  );
-}
 
 /**
  * Bottom sheet with Wordle rows + keyboard for one lineup slot. Tiles shrink to
@@ -54,10 +40,14 @@ export function GuessSheet({
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [current, setCurrent] = useState("");
+  const [flipRow, setFlipRow] = useState<number | null>(null);
   // Keep showing the last slot while the sheet slides out after it closes
   const [shown, setShown] = useState({ player: openPlayer, pastGuesses: openGuesses });
   if (openPlayer && (openPlayer !== shown.player || openGuesses !== shown.pastGuesses)) {
-    if (openPlayer !== shown.player) setCurrent("");
+    if (openPlayer !== shown.player) {
+      setCurrent("");
+      setFlipRow(null);
+    }
     setShown({ player: openPlayer, pastGuesses: openGuesses });
   }
   const { player, pastGuesses } = shown;
@@ -90,19 +80,22 @@ export function GuessSheet({
   const handleKey = (key: string) => {
     if (key === "ENTER") {
       if (current.length !== answer.length) return shake();
+      setFlipRow(pastGuesses.length);
       onGuess(current);
       setCurrent("");
     } else if (key === "DELETE") setCurrent((c) => c.slice(0, -1));
     else setCurrent((c) => (c.length < answer.length ? c + key : c));
   };
 
-  const row = (letters: string, marks?: TileMark[], hintFirst?: boolean) => {
+  const row = (letters: string, marks?: TileMark[], hintFirst?: boolean, flip?: boolean) => {
     let li = -1;
     return display.split("").map((ch, j) => {
       if (ch === " ") return <View key={j} style={{ width: WORD_GAP - GAP }} />;
       li++;
       const isHint = !!hintFirst && li === 0 && !letters;
-      return <Tile key={j} ch={isHint ? answer[0] : (letters[li] ?? "")} mark={marks?.[li]} size={tileSize} hint={isHint} />;
+      return (
+        <Tile key={j} ch={isHint ? answer[0] : (letters[li] ?? "")} mark={marks?.[li]} size={tileSize} hint={isHint} flipIndex={flip ? li : undefined} />
+      );
     });
   };
 
@@ -130,8 +123,8 @@ export function GuessSheet({
 
         <View style={styles.rows}>
           {pastGuesses.map((g, i) => (
-            <View key={i} style={styles.row}>
-              {row(g, evaluateGuess(g, answer))}
+            <View key={`${player?.number}-${i}`} style={styles.row}>
+              {row(g, evaluateGuess(g, answer), false, i === flipRow)}
             </View>
           ))}
           <Animated.View style={[styles.row, shakeStyle]}>{row(current, undefined, showHint)}</Animated.View>
@@ -153,9 +146,8 @@ const styles = StyleSheet.create({
   grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 10 },
   header: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 8, marginBottom: 16 },
   numberBadge: { width: 40, height: 40, borderRadius: 12, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
-  numberText: { color: C.greenDark, fontWeight: "800", fontSize: 16 },
+  numberText: { color: C.greenDark, fontFamily: F.display, fontSize: 22 },
   close: { width: 30, height: 30, borderRadius: 15, backgroundColor: C.bg, alignItems: "center", justifyContent: "center" },
   rows: { alignItems: "center", gap: GAP, marginBottom: 14 },
   row: { flexDirection: "row", gap: GAP },
-  tile: { borderWidth: 2, borderColor: "#D5DAE1", borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: C.card },
 });

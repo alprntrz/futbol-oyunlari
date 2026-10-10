@@ -1,16 +1,18 @@
 import { Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { GridPlayer } from "@/data/players";
 import { generateGrid, searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
 import { HelpButton } from "~/components/HelpButton";
+import { Confetti } from "~/components/motion";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, R, shadow, T } from "~/lib/theme";
+import { C, F, R, shadow, T } from "~/lib/theme";
 
 type Mark = "X" | "O";
 interface Cell {
@@ -61,6 +63,16 @@ function CriterionBadge({ c, size }: { c: Criterion; size?: number }) {
   return c.kind === "club" ? <Crest c={c} size={size} /> : <Text style={{ fontSize: (size ?? 30) * 0.8 }}>{c.icon}</Text>;
 }
 
+/** The mark in a winning square, pulsing. */
+function WinPulse({ color, mark }: { color: string; mark: Mark }) {
+  const scale = useSharedValue(1);
+  useEffect(() => {
+    scale.set(withRepeat(withSequence(withTiming(1.25, { duration: 380 }), withTiming(1, { duration: 380 })), -1));
+  }, [scale]);
+  const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
+  return <Animated.Text style={[styles.mark, { color }, style]}>{mark}</Animated.Text>;
+}
+
 function winnerOf(board: (Cell | null)[]): { mark: Mark; line: number[] } | null {
   for (const line of LINES) {
     const [a, b, c] = line.map((i) => board[i]);
@@ -80,6 +92,7 @@ export default function TikiTakaToeScreen() {
   const [openCell, setOpenCell] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [flash, setFlash] = useState<string | null>(null);
+  const [confetti, setConfetti] = useState(0);
   const [timeLeft, setTimeLeft] = useState(TURN_SECONDS);
   const [deadline, setDeadline] = useState(() => Date.now() + TURN_SECONDS * 1000);
   // Explicit cell sizes keep header and board columns exactly aligned
@@ -158,6 +171,7 @@ export default function TikiTakaToeScreen() {
     if (win) {
       haptic.success();
       setWinner(win);
+      if (win !== "draw") setConfetti(Date.now());
     } else {
       haptic.press();
       setTurn((m) => (m === "X" ? "O" : "X"));
@@ -250,12 +264,12 @@ export default function TikiTakaToeScreen() {
                   ]}
                 >
                   {cell ? (
-                    <>
-                      <Text style={[styles.mark, { color: MARK[cell.mark].color }]}>{cell.mark}</Text>
+                    <Animated.View entering={ZoomIn.springify().damping(9)} style={{ alignItems: "center" }}>
+                      {inWin ? <WinPulse color={MARK[cell.mark].color} mark={cell.mark} /> : <Text style={[styles.mark, { color: MARK[cell.mark].color }]}>{cell.mark}</Text>}
                       <Text style={styles.cellName} numberOfLines={2}>
                         {cell.player.name}
                       </Text>
-                    </>
+                    </Animated.View>
                   ) : (
                     <Icon name="plus" size={20} color="#C3C9D3" fallback="+" />
                   )}
@@ -334,6 +348,7 @@ export default function TikiTakaToeScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
+      <Confetti fire={confetti} />
     </Page>
   );
 }
@@ -342,8 +357,8 @@ const styles = StyleSheet.create({
   winner: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 20 },
   players: { flexDirection: "row", gap: 10 },
   playerPill: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 12, paddingVertical: 10 },
-  playerMark: { fontSize: 22, fontWeight: "900" },
-  playerTime: { color: "white", fontSize: 15, fontWeight: "700", fontVariant: ["tabular-nums"] },
+  playerMark: { fontFamily: F.black, fontSize: 30, lineHeight: 32 },
+  playerTime: { color: "white", fontFamily: F.display, fontSize: 24, fontVariant: ["tabular-nums"] },
   bar: { height: 6, borderRadius: 3, backgroundColor: "#E2E6EC", marginTop: 12, overflow: "hidden" },
   grid: { width: "100%", gap: 6, marginTop: 16 },
   row: { flexDirection: "row", gap: 6 },
@@ -352,7 +367,7 @@ const styles = StyleSheet.create({
   head: { backgroundColor: C.card, alignItems: "center", justifyContent: "center", gap: 4, padding: 4, ...shadow, shadowOpacity: 0.04 },
   headLabel: { color: C.text2, fontSize: 10, fontWeight: "700", textAlign: "center" },
   play: { backgroundColor: C.card, borderWidth: 2, borderColor: C.border, borderStyle: "dashed", alignItems: "center", justifyContent: "center", padding: 3 },
-  mark: { fontSize: 30, fontWeight: "900", lineHeight: 34 },
+  mark: { fontFamily: F.black, fontSize: 40, lineHeight: 42 },
   cellName: { color: C.text, fontSize: 9, fontWeight: "600", textAlign: "center" },
   sheet: { backgroundColor: C.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, paddingTop: 8 },
   grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 14 },

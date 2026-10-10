@@ -1,8 +1,14 @@
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import type { SymbolViewProps } from "expo-symbols";
+import { useEffect, useState } from "react";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { BRAND } from "~/lib/brand";
+import { evaluateGuess } from "@/lib/wordle";
+
 import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
+
+import { Tile } from "./LetterTile";
+import { Icon } from "./ui";
 
 /** Small green / yellow / grey legend explaining the tile colours. */
 export function TileLegend({ compact }: { compact?: boolean }) {
@@ -24,16 +30,70 @@ export function TileLegend({ compact }: { compact?: boolean }) {
   );
 }
 
-function Step({ n, title, desc, children }: { n: number; title: string; desc: string; children?: React.ReactNode }) {
+// Demo: the answer is PIRLO; first guess PEDRO (P and O right, R elsewhere), then PIRLO.
+const DEMO_ANSWER = "PIRLO";
+const DEMO_GUESSES = ["PEDRO", "PIRLO"];
+const TYPE_MS = 170;
+
+/** Self-playing example: types two guesses into a row of tiles and flips them. */
+function DemoBoard() {
+  const [rows, setRows] = useState<string[]>([]);
+  const [typing, setTyping] = useState("");
+  const [cycle, setCycle] = useState(0);
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let at = 400;
+    const schedule = (fn: () => void, wait: number) => {
+      at += wait;
+      timers.push(setTimeout(fn, at));
+    };
+    schedule(() => {
+      setRows([]);
+      setTyping("");
+    }, 0);
+    DEMO_GUESSES.forEach((g, gi) => {
+      for (let i = 1; i <= g.length; i++) schedule(() => setTyping(g.slice(0, i)), TYPE_MS);
+      schedule(() => {
+        setRows((r) => [...r, g]);
+        setTyping("");
+      }, 350);
+      schedule(() => {}, gi === 0 ? 1300 : 2400);
+    });
+    schedule(() => setCycle((c) => c + 1), 0);
+    return () => timers.forEach(clearTimeout);
+  }, [cycle]);
+
+  const empty = rows.length < DEMO_GUESSES.length;
   return (
-    <View style={styles.step}>
-      <View style={styles.stepNum}>
-        <Text style={styles.stepNumText}>{n}</Text>
+    <View style={styles.demo}>
+      {rows.map((g, ri) => (
+        <View key={`${cycle}-${ri}`} style={styles.demoRow}>
+          {g.split("").map((ch, i) => (
+            <Tile key={i} ch={ch} mark={evaluateGuess(g, DEMO_ANSWER)[i]} size={42} flipIndex={i} />
+          ))}
+        </View>
+      ))}
+      {empty && (
+        <View style={styles.demoRow}>
+          {DEMO_ANSWER.split("").map((_, i) => (
+            <Tile key={i} ch={typing[i] ?? ""} size={42} />
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+function Rule({ icon, fallback, title, desc }: { icon: SymbolViewProps["name"]; fallback: string; title: string; desc: string }) {
+  return (
+    <View style={styles.rule}>
+      <View style={styles.ruleIcon}>
+        <Icon name={icon} size={18} color={C.greenMid} fallback={fallback} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={T.headline}>{title}</Text>
-        <Text style={[T.body, { marginTop: 2 }]}>{desc}</Text>
-        {children}
+        <Text style={[T.body, { marginTop: 1 }]}>{desc}</Text>
       </View>
     </View>
   );
@@ -42,15 +102,13 @@ function Step({ n, title, desc, children }: { n: number; title: string; desc: st
 export function MissingXISteps() {
   const { t } = useI18n();
   return (
-    <View style={{ gap: 18 }}>
-      <Image source={BRAND.illus.howto} style={styles.howto} resizeMode="contain" />
-      <Step n={1} title={t("step1")} desc={t("step1Desc")} />
-      <Step n={2} title={t("step2")} desc={t("step2Desc")} />
-      <Step n={3} title={t("step3")} desc={t("step3Desc")}>
-        <View style={{ marginTop: 10 }}>
-          <TileLegend />
-        </View>
-      </Step>
+    <View style={{ gap: 16 }}>
+      <DemoBoard />
+      <View style={{ alignItems: "center" }}>
+        <TileLegend />
+      </View>
+      <Rule icon="tshirt.fill" fallback="👕" title={t("step1")} desc={t("step1Desc")} />
+      <Rule icon="keyboard.fill" fallback="⌨️" title={t("step2")} desc={t("step2Desc")} />
     </View>
   );
 }
@@ -58,10 +116,10 @@ export function MissingXISteps() {
 export function TikiSteps() {
   const { t } = useI18n();
   return (
-    <View style={{ gap: 18 }}>
-      <Step n={1} title={t("tikiTakaName")} desc={t("ttStep1")} />
-      <Step n={2} title={t("ttPlaceholder").replace("…", "")} desc={t("ttStep2")} />
-      <Step n={3} title="X · O" desc={t("ttStep3")} />
+    <View style={{ gap: 16 }}>
+      <Rule icon="square.grid.3x3.fill" fallback="#" title={t("tikiTakaName")} desc={t("ttStep1")} />
+      <Rule icon="character.cursor.ibeam" fallback="✎" title={t("ttPlaceholder").replace("…", "")} desc={t("ttStep2")} />
+      <Rule icon="trophy.fill" fallback="🏆" title="X O" desc={t("ttStep3")} />
     </View>
   );
 }
@@ -85,12 +143,12 @@ export function InfoSheet({ visible, onClose, title, children }: { visible: bool
 }
 
 const styles = StyleSheet.create({
-  howto: { width: "100%", height: 130 },
+  demo: { alignItems: "center", gap: 6, minHeight: 2 * 42 + 6, paddingVertical: 8, backgroundColor: C.bg, borderRadius: 16 },
+  demoRow: { flexDirection: "row", gap: 5 },
+  rule: { flexDirection: "row", gap: 12, alignItems: "flex-start" },
+  ruleIcon: { width: 34, height: 34, borderRadius: 10, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
   legend: { flexDirection: "row", flexWrap: "wrap", gap: 16 },
   legendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
   legendDot: { width: 14, height: 14, borderRadius: 4 },
-  step: { flexDirection: "row", gap: 14 },
-  stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
-  stepNumText: { color: C.greenDark, fontWeight: "800", fontSize: 14 },
   sheetHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 20 },
 });

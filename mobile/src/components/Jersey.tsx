@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 
 import { BRAND, type JerseyStyle } from "~/lib/brand";
+import { F } from "~/lib/theme";
 
 /**
  * Football shirt in the team's kit colours. Three generated layers: a white
@@ -16,6 +17,7 @@ export function Jersey({
   captain,
   goals,
   faded,
+  hideNumber,
   size = 54,
 }: {
   body: string;
@@ -26,6 +28,7 @@ export function Jersey({
   captain?: boolean;
   goals?: number;
   faded?: boolean;
+  hideNumber?: boolean;
   size?: number;
 }) {
   const layers = BRAND.jersey[variant];
@@ -37,12 +40,12 @@ export function Jersey({
       <View style={[StyleSheet.absoluteFill, { mixBlendMode: "multiply" }]}>
         <Image source={layers.shade} style={fill} />
       </View>
-      <View style={[StyleSheet.absoluteFill, styles.numberWrap]}>
+      {!hideNumber && <View style={[StyleSheet.absoluteFill, styles.numberWrap]}>
         <Text
           style={{
             color: numberColor,
-            fontSize: size * (number >= 10 ? 0.3 : 0.34),
-            fontWeight: "900",
+            fontSize: Math.round(size * 0.42),
+            fontFamily: F.black,
             fontVariant: ["tabular-nums"],
             textShadowColor: "rgba(0,0,0,0.25)",
             textShadowOffset: { width: 0, height: 0.5 },
@@ -51,7 +54,7 @@ export function Jersey({
         >
           {number}
         </Text>
-      </View>
+      </View>}
       {goals ? (
         <View style={styles.goals}>
           <Text style={{ fontSize: 10 }}>⚽</Text>

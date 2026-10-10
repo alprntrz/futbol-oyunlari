@@ -9,7 +9,7 @@ import { Button, Card, Icon, Page, SectionLabel, Segmented } from "~/components/
 import { useI18n } from "~/lib/i18n";
 import { setNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
-import { C, T } from "~/lib/theme";
+import { C, F, T } from "~/lib/theme";
 
 const TIMEOUT_MS = 6000;
 
@@ -84,8 +84,8 @@ export default function RaceLobby() {
 
       <Card style={styles.block}>
         <View style={styles.blockHead}>
-          <View style={[styles.badge, { backgroundColor: C.violetSoft }]}>
-            <Icon name="arrow.right.circle.fill" size={18} color={C.violet} fallback="→" />
+          <View style={[styles.badge, { backgroundColor: C.bg }]}>
+            <Icon name="arrow.right.circle.fill" size={18} color={C.text2} fallback="→" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={T.headline}>{t("joinRoom")}</Text>
@@ -116,7 +116,7 @@ export default function RaceLobby() {
 
 const styles = StyleSheet.create({
   input: { backgroundColor: C.card, borderRadius: 14, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, paddingVertical: 13, fontSize: 16, color: C.text },
-  code: { fontSize: 22, fontWeight: "800", letterSpacing: 6, textAlign: "center" },
+  code: { fontFamily: F.black, fontSize: 30, letterSpacing: 8, textAlign: "center" },
   block: { marginTop: 16, gap: 14 },
   blockHead: { flexDirection: "row", alignItems: "center", gap: 12 },
   badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },

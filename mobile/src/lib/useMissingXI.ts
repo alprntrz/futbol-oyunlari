@@ -22,7 +22,7 @@ export function useMissingXI(
   difficulty: Difficulty,
   initial?: { slots: SlotState[]; gaveUp: boolean },
   /** Called once by the move (guess or give-up) that ends the game */
-  onFinish?: (won: boolean) => void
+  onFinish?: (won: boolean, found: number) => void
 ) {
   const maxGuesses = difficulty === "hard" ? 4 : 6;
   const [slots, setSlots] = useState<SlotState[]>(
@@ -45,7 +45,7 @@ export function useMissingXI(
       return { solved: isRight, failed: !isRight && guesses.length >= maxGuesses, guesses };
     });
     setSlots(next);
-    if (next.every((s) => s.solved || s.failed)) onFinish?.(next.every((s) => s.solved));
+    if (next.every((s) => s.solved || s.failed)) onFinish?.(next.every((s) => s.solved), next.filter((s) => s.solved).length);
     if (isRight) haptic.success();
     else if (next[idx].failed) haptic.error();
     else haptic.warning();
@@ -53,7 +53,7 @@ export function useMissingXI(
 
   const giveUp = () => {
     setGaveUp(true);
-    onFinish?.(false);
+    onFinish?.(false, slots.filter((s) => s.solved).length);
     haptic.error();
   };
 

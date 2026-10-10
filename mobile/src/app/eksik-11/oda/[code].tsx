@@ -13,7 +13,7 @@ import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
-import { C, T } from "~/lib/theme";
+import { C, F, T } from "~/lib/theme";
 import { useMissingXI, type GameProgress } from "~/lib/useMissingXI";
 
 interface PublicPlayer {
@@ -102,7 +102,7 @@ export default function RoomScreen() {
       {!room?.started ? (
         <>
           <Card style={styles.codeCard}>
-            <Text style={T.label}>{t("roomCode")}</Text>
+            <Text style={T.caption}>{t("roomCode")}</Text>
             <Tap onPress={copy} style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
               <Text style={styles.code}>{code}</Text>
               <Icon name={copied ? "checkmark.circle.fill" : "doc.on.doc"} size={20} color={copied ? C.green : C.text3} fallback="⧉" />
@@ -119,8 +119,8 @@ export default function RoomScreen() {
           <Card style={{ marginTop: 16, padding: 0, overflow: "hidden" }}>
             {room?.players.map((p, i) => (
               <View key={p.id} style={[styles.player, i > 0 && styles.playerDivider]}>
-                <View style={[styles.avatar, { backgroundColor: p.id === myId ? C.greenSoft : C.violetSoft }]}>
-                  <Icon name="person.fill" size={16} color={p.id === myId ? C.green : C.violet} fallback="👤" />
+                <View style={[styles.avatar, { backgroundColor: p.id === myId ? C.greenSoft : C.bg }]}>
+                  <Icon name="person.fill" size={16} color={p.id === myId ? C.green : C.text2} fallback="👤" />
                 </View>
                 <Text style={[T.headline, { flex: 1 }]}>{p.id === myId ? t("you") : p.nick || t("opponent")}</Text>
                 {p.isHost && <Icon name="crown.fill" size={14} color={C.amber} fallback="👑" />}
@@ -161,9 +161,9 @@ export default function RoomScreen() {
             headerExtra={
               opponent ? (
                 <View style={styles.versus}>
-                  <Icon name="person.fill" size={13} color={C.violet} fallback="👤" />
+                  <Icon name="person.fill" size={13} color={C.text2} fallback="👤" />
                   <Text style={[T.caption, { color: C.text2 }]}>
-                    {opponent.nick || t("opponent")}: <Text style={{ fontWeight: "800", color: C.violet }}>{opponent.solved}/11</Text> · {opponent.totalGuesses}{" "}
+                    {opponent.nick || t("opponent")}: <Text style={{ fontFamily: F.display, fontSize: 16, color: C.text }}>{opponent.solved}/11</Text> · {opponent.totalGuesses}{" "}
                     {t("guessesWord")}
                   </Text>
                 </View>
@@ -201,7 +201,7 @@ function RaceGame({ match, difficulty, headerExtra }: { match: Match; difficulty
 
 const styles = StyleSheet.create({
   codeCard: { alignItems: "center", gap: 14, padding: 24 },
-  code: { fontSize: 40, fontWeight: "800", letterSpacing: 8, color: C.text },
+  code: { fontFamily: F.black, fontSize: 56, letterSpacing: 6, color: C.text },
   player: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14 },
   playerDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   avatar: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center" },

@@ -4,7 +4,7 @@ import type { TileMark } from "@/lib/types";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 import { Icon } from "./ui";
 
@@ -26,7 +26,7 @@ export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks
         <View key={row} style={styles.row}>
           {ri === 2 && (
             <Pressable onPress={() => press("ENTER")} style={({ pressed }) => [styles.key, styles.wide, { backgroundColor: C.green }, pressed && styles.pressed]}>
-              <Text style={[styles.label, { color: "white", fontSize: 13 }]}>{t("guess")}</Text>
+              <Text style={[styles.label, { color: "white", fontSize: 18 }]}>{t("guess")}</Text>
             </Pressable>
           )}
           {row.split("").map((ch) => {
@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
   key: { height: 50, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: C.key },
   letter: { flex: 1, maxWidth: 38 },
   wide: { flex: 1.7, maxWidth: 66 },
-  label: { fontSize: 17, fontWeight: "700" },
+  label: { fontFamily: F.display, fontSize: 22 },
   pressed: { opacity: 0.6, transform: [{ scale: 0.94 }] },
 });

@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { haptic } from "~/lib/haptics";
-import { C, R, shadow, T } from "~/lib/theme";
+import { C, F, R, shadow, T } from "~/lib/theme";
 
 type SymbolName = SymbolViewProps["name"];
 
@@ -148,7 +148,7 @@ export function Row({
 }
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <Text style={[T.label, { marginTop: 28, marginBottom: 10, marginLeft: 4 }]}>{children}</Text>;
+  return <Text style={[T.heading, { marginTop: 26, marginBottom: 10, marginLeft: 2 }]}>{children}</Text>;
 }
 
 /** iOS-style segmented control. */
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonText: { fontSize: 16, fontWeight: "700" },
+  buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3 },
   row: { flexDirection: "row", alignItems: "center", paddingLeft: 14, gap: 14 },
   badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   rowImage: { width: 48, height: 48 },
