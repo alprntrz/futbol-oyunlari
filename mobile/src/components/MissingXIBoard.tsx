@@ -5,6 +5,7 @@ import { FORMATIONS } from "@/lib/formations";
 import type { Difficulty, Match, SlotState } from "@/lib/types";
 
 import { useI18n } from "~/lib/i18n";
+import { jerseyStyle, keeperKit } from "~/lib/kits";
 import { C, R, T } from "~/lib/theme";
 
 import { GuessSheet } from "./GuessSheet";
@@ -12,7 +13,7 @@ import { Jersey } from "./Jersey";
 import { Button, Card, Icon, Tap } from "./ui";
 
 const SLOT_W = 86;
-const SLOT_H = 66;
+const SLOT_H = 72;
 
 /** Match card + progress + pitch + guess sheet for one Eksik 11 game. */
 export function MissingXIBoard({
@@ -40,6 +41,8 @@ export function MissingXIBoard({
   const pitchH = (pitchW * 4) / 3;
   const positions = FORMATIONS[match.formation];
   const solved = slots.filter((s) => s.solved).length;
+  const style = jerseyStyle(match);
+  const keeper = keeperKit(match.kit);
 
   // Close the sheet shortly after its slot resolves (or the game ends)
   const open = openSlot !== null ? slots[openSlot] : null;
@@ -130,9 +133,10 @@ export function MissingXIBoard({
                 style={[styles.slot, { left: (pos.x / 100) * pitchW - SLOT_W / 2, top: (pos.y / 100) * pitchH - SLOT_H / 2 }]}
               >
                 <Jersey
-                  body={match.kit.body}
-                  sleeves={match.kit.sleeves}
-                  numberColor={match.kit.number}
+                  variant={i === 0 ? "keeper" : style}
+                  body={i === 0 ? keeper.body : match.kit.body}
+                  sleeves={i === 0 ? keeper.sleeves : match.kit.sleeves}
+                  numberColor={i === 0 ? keeper.number : match.kit.number}
                   number={p.number}
                   captain={p.captain}
                   goals={p.goals}

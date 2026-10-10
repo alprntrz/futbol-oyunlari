@@ -1,11 +1,12 @@
-import { Share, StyleSheet, Text, View } from "react-native";
+import { Image, Share, StyleSheet, Text, View } from "react-native";
 
 import type { Match, SlotState } from "@/lib/types";
 
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
-import { C, T } from "~/lib/theme";
+import { T } from "~/lib/theme";
 
-import { Button, Card, Icon } from "./ui";
+import { Button, Card } from "./ui";
 
 /** End-of-game summary with native share sheet (emoji grid like the web app). */
 export function ResultCard({
@@ -35,9 +36,7 @@ export function ResultCard({
 
   return (
     <Card style={styles.card}>
-      <View style={[styles.icon, { backgroundColor: won ? C.greenSoft : C.amberSoft }]}>
-        <Icon name={won ? "trophy.fill" : "flag.checkered"} size={28} color={won ? C.green : C.amber} fallback={won ? "🏆" : "🏁"} />
-      </View>
+      <Image source={won ? BRAND.illus.win : BRAND.illus.finish} style={styles.illus} resizeMode="contain" />
       <Text style={[T.title, { textAlign: "center", marginTop: 12 }]}>{won ? t("won") : `${solved}/11 ${t("resultFound")}`}</Text>
       <Text style={[T.body, { marginTop: 4 }]}>
         {t("totalGuesses")}: {totalGuesses}
@@ -52,6 +51,6 @@ export function ResultCard({
 
 const styles = StyleSheet.create({
   card: { marginTop: 16, alignItems: "center", padding: 20 },
-  icon: { width: 56, height: 56, borderRadius: 18, alignItems: "center", justifyContent: "center" },
+  illus: { width: 200, height: 110 },
   buttons: { flexDirection: "row", gap: 10, marginTop: 18, alignSelf: "stretch" },
 });

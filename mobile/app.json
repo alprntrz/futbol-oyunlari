@@ -4,27 +4,25 @@
     "slug": "futbol-oyunlari",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/brand/app-icon.png",
     "scheme": "futboloyunlari",
     "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/brand/app-icon.png",
       "bundleIdentifier": "com.alprntrz.futboloyunlari",
       "supportsTablet": false
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#16A34A",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/brand/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.alprntrz.futboloyunlari"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/brand/icon-team.png"
     },
     "plugins": [
       "expo-router",
@@ -32,8 +30,8 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#F2F4F7",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "image": "./assets/brand/splash-logo.png",
+          "imageWidth": 160
         }
       ]
     ],

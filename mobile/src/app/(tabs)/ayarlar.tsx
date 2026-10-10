@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 
 import { InfoSheet, MissingXISteps, TikiSteps } from "~/components/HowTo";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
 
@@ -27,8 +28,8 @@ export default function SettingsTab() {
 
       <SectionLabel>{t("howToPlay")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
-        <Row icon="tshirt.fill" iconFallback="👕" color={C.green} soft={C.greenSoft} title={t("missingXI")} onPress={() => setSheet("xi")} />
-        <Row icon="number" iconFallback="#" color={C.blue} soft={C.blueSoft} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} last />
+        <Row image={BRAND.icon.team} title={t("missingXI")} onPress={() => setSheet("xi")} />
+        <Row image={BRAND.icon.tiki} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} last />
       </Card>
 
       <SectionLabel>{t("about")}</SectionLabel>

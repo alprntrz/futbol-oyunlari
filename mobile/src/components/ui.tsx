@@ -1,10 +1,12 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import {
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
+  type ImageSourcePropType,
   type PressableProps,
   type StyleProp,
   type ViewStyle,
@@ -103,21 +105,23 @@ export function Button({
   );
 }
 
-/** List row: coloured icon badge, title, description, chevron. */
+/** List row: illustrated icon (or coloured symbol badge), title, description, chevron. */
 export function Row({
+  image,
   icon,
   iconFallback,
-  color,
-  soft,
+  color = C.text,
+  soft = C.bg,
   title,
   subtitle,
   onPress,
   last,
 }: {
-  icon: SymbolName;
+  image?: ImageSourcePropType;
+  icon?: SymbolName;
   iconFallback?: string;
-  color: string;
-  soft: string;
+  color?: string;
+  soft?: string;
   title: string;
   subtitle?: string;
   onPress: () => void;
@@ -125,9 +129,13 @@ export function Row({
 }) {
   return (
     <Tap onPress={onPress} style={styles.row}>
-      <View style={[styles.badge, { backgroundColor: soft }]}>
-        <Icon name={icon} size={20} color={color} fallback={iconFallback} />
-      </View>
+      {image ? (
+        <Image source={image} style={styles.rowImage} />
+      ) : (
+        <View style={[styles.badge, { backgroundColor: soft }]}>
+          {icon ? <Icon name={icon} size={20} color={color} fallback={iconFallback} /> : null}
+        </View>
+      )}
       <View style={[styles.rowText, !last && styles.rowDivider]}>
         <View style={{ flex: 1 }}>
           <Text style={T.headline}>{title}</Text>
@@ -197,6 +205,7 @@ const styles = StyleSheet.create({
   buttonText: { fontSize: 16, fontWeight: "700" },
   row: { flexDirection: "row", alignItems: "center", paddingLeft: 14, gap: 14 },
   badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  rowImage: { width: 48, height: 48 },
   rowText: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 14, paddingRight: 14 },
   rowDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   segmented: { flexDirection: "row", backgroundColor: "#E8EBF0", borderRadius: 12, padding: 3 },

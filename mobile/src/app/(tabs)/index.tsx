@@ -1,10 +1,11 @@
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { dailyMatch } from "@/lib/daily";
 
-import { Button, Card, Chip, Icon, Page, Row, SectionLabel } from "~/components/ui";
+import { Button, Card, Chip, Page, Row, SectionLabel } from "~/components/ui";
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { loadDayState } from "~/lib/storage";
 import { C, R, T } from "~/lib/theme";
@@ -41,7 +42,7 @@ export default function Home() {
       <Card style={styles.hero}>
         <View style={styles.heroTop}>
           <View style={styles.heroBadge}>
-            <Icon name="calendar" size={22} color="white" fallback="📅" />
+            <Image source={BRAND.icon.daily} style={{ width: 46, height: 46 }} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.heroKicker}>
@@ -66,28 +67,19 @@ export default function Home() {
       <SectionLabel>{t("missingXI")}</SectionLabel>
       <Card style={styles.list}>
         <Row
-          icon="shuffle"
-          iconFallback="🎯"
-          color={C.green}
-          soft={C.greenSoft}
+          image={BRAND.icon.practice}
           title={t("practice")}
           subtitle={t("practiceAllDesc")}
           onPress={() => router.push("/eksik-11/pratik")}
         />
         <Row
-          icon="tshirt.fill"
-          iconFallback="👕"
-          color={C.red}
-          soft={C.redSoft}
+          image={BRAND.icon.team}
           title={t("byTeam")}
           subtitle={t("byTeamDesc")}
           onPress={() => router.push("/eksik-11/takimlar")}
         />
         <Row
-          icon="person.2.fill"
-          iconFallback="🏁"
-          color={C.violet}
-          soft={C.violetSoft}
+          image={BRAND.icon.race}
           title={t("onlineRace")}
           subtitle={t("raceDesc")}
           onPress={() => router.push("/eksik-11/oda")}
@@ -98,10 +90,7 @@ export default function Home() {
       <SectionLabel>{t("otherGames")}</SectionLabel>
       <Card style={styles.list}>
         <Row
-          icon="number"
-          iconFallback="#"
-          color={C.blue}
-          soft={C.blueSoft}
+          image={BRAND.icon.tiki}
           title={t("tikiTakaName")}
           subtitle={t("tikiShort")}
           onPress={() => router.push("/tiki-taka-toe")}
@@ -115,7 +104,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   hero: { marginTop: 20, backgroundColor: C.green, padding: 20, borderRadius: R.card + 4 },
   heroTop: { flexDirection: "row", alignItems: "center", gap: 12 },
-  heroBadge: { width: 44, height: 44, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center" },
+  heroBadge: { width: 56, height: 56, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" },
   heroKicker: { color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: "700" },
   heroTitle: { color: "white", fontSize: 24, fontWeight: "800", letterSpacing: -0.3 },
   heroDesc: { color: "rgba(255,255,255,0.92)", fontSize: 15, lineHeight: 21, marginTop: 14 },

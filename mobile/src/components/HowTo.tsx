@@ -1,5 +1,6 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
 
@@ -42,6 +43,7 @@ export function MissingXISteps() {
   const { t } = useI18n();
   return (
     <View style={{ gap: 18 }}>
+      <Image source={BRAND.illus.howto} style={styles.howto} resizeMode="contain" />
       <Step n={1} title={t("step1")} desc={t("step1Desc")} />
       <Step n={2} title={t("step2")} desc={t("step2Desc")} />
       <Step n={3} title={t("step3")} desc={t("step3Desc")}>
@@ -83,6 +85,7 @@ export function InfoSheet({ visible, onClose, title, children }: { visible: bool
 }
 
 const styles = StyleSheet.create({
+  howto: { width: "100%", height: 130 },
   legend: { flexDirection: "row", flexWrap: "wrap", gap: 16 },
   legendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
   legendDot: { width: 14, height: 14, borderRadius: 4 },

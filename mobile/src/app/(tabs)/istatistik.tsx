@@ -1,8 +1,9 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { Card, Icon, Page, SectionLabel } from "~/components/ui";
+import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { loadStats, type GameStats } from "~/lib/storage";
 import { C, T } from "~/lib/theme";
@@ -26,7 +27,7 @@ export default function StatsTab() {
 
       {s && s.played === 0 ? (
         <Card style={{ alignItems: "center", paddingVertical: 32, gap: 12 }}>
-          <Icon name="chart.bar" size={36} color={C.text3} fallback="📊" />
+          <Image source={BRAND.illus.emptyStats} style={{ width: 220, height: 120 }} resizeMode="contain" />
           <Text style={[T.body, { textAlign: "center" }]}>{t("noStatsYet")}</Text>
         </Card>
       ) : (

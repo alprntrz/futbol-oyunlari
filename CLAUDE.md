@@ -30,6 +30,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - Read `mobile/AGENTS.md`: Expo APIs change per SDK, check the versioned docs.
+- Brand images (`mobile/assets/brand/`) are generated: originals from the
+  ChatGPT brief (`docs/design/ikon-brief.md`) → `python3 scripts/brand-assets.py <dir>`.
+  Shirts are three layers per collar style (body / sleeves tinted with kit
+  colours, grey shade multiplied on top); the number is text. The full-size
+  originals are not committed.
 
 ## Conventions that are easy to break
 
