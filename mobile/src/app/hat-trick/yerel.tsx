@@ -5,6 +5,7 @@ import { Alert, View } from "react-native";
 import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
+import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
 import { Text } from "~/components/Text";
@@ -167,6 +168,15 @@ export default function HatTrickLocal() {
             <GameActions draw={null} onOfferDraw={offerDraw} onForfeit={forfeit} onSkip={skip} canSkip />
           )
         }
+      />
+      <SeriesEnd
+        over={seriesOver}
+        won
+        countTrophy={false}
+        title={`${winner ?? ""} ${t("vcMarkWon")}`}
+        mine={winner === "O" ? series.O : series.X}
+        theirs={winner === "O" ? series.X : series.O}
+        onRematch={() => newGrid(true)}
       />
     </Page>
   );

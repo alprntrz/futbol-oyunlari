@@ -5,6 +5,7 @@ import { View } from "react-native";
 import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
+import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { Button, Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
@@ -205,6 +206,7 @@ export default function HatTrickHouse() {
           )
         }
       />
+      <SeriesEnd over={seriesOver} won={wins.mine >= SERIES_TARGET} mine={wins.mine} theirs={wins.theirs} onRematch={rematch} />
     </Page>
   );
 }

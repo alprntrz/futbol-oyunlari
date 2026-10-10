@@ -69,6 +69,14 @@ export function Page({ children, scroll = true, topInset = false }: { children: 
   );
 }
 
+/** Darker shade of each button colour: the edge the face sits on. */
+const EDGE = { primary: "#0F7A35", secondary: "#D3DBD6", danger: "#F3B5B5", ghost: "transparent" } as const;
+const DEPTH = 4;
+
+/**
+ * Chunky game button: a face sitting on a darker edge, pressed down into it on
+ * touch (the face drops by the edge height). Ghost buttons stay flat.
+ */
 export function Button({
   title,
   onPress,
@@ -86,15 +94,44 @@ export function Button({
 }) {
   const bg = { primary: C.green, secondary: C.card, danger: C.redSoft, ghost: "transparent" }[kind];
   const fg = { primary: "white", secondary: C.text, danger: C.red, ghost: C.text2 }[kind];
+  const depth = kind === "ghost" ? 0 : DEPTH;
+  // padding and height belong to the face; layout (margins, flex, width) to the outer edge
+  const { padding, paddingHorizontal, paddingVertical, paddingLeft, paddingRight, paddingTop, paddingBottom, minHeight, ...outer } = StyleSheet.flatten(style) ?? {};
+  const inner = Object.fromEntries(
+    Object.entries({ padding, paddingHorizontal, paddingVertical, paddingLeft, paddingRight, paddingTop, paddingBottom, minHeight }).filter(([, v]) => v !== undefined)
+  );
   return (
-    <Tap
-      onPress={onPress}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
+      accessibilityLabel={title}
       disabled={disabled}
-      style={[styles.button, { backgroundColor: bg }, kind === "secondary" && { borderWidth: 1, borderColor: C.border }, disabled && { opacity: 0.45 }, style]}
+      onPress={() => {
+        haptic.press();
+        onPress();
+      }}
+      // pressed: the face drops onto the edge (edge padding moves from below to above, behind the face)
+      style={({ pressed }) => [
+        { borderRadius: R.button, backgroundColor: EDGE[kind] },
+        pressed && !disabled ? { paddingTop: depth, backgroundColor: "transparent" } : { paddingBottom: depth },
+        disabled && { opacity: 0.45 },
+        outer,
+      ]}
     >
-      {icon ? <Icon name={icon} size={17} color={fg} /> : null}
-      <Text style={[styles.buttonText, { color: fg }]}>{title}</Text>
-    </Tap>
+      {() => (
+        <View
+          style={[
+            styles.button,
+            inner,
+            { backgroundColor: bg },
+            kind === "secondary" && { borderWidth: 1, borderColor: C.border },
+          ]}
+        >
+          {icon ? <Icon name={icon} size={17} color={fg} /> : null}
+          <Text style={[styles.buttonText, { color: fg }]}>{title}</Text>
+        </View>
+      )}
+    </Pressable>
   );
 }
 
@@ -179,7 +216,8 @@ export function Chip({ label, color, soft, icon }: { label: string; color: strin
 const styles = StyleSheet.create({
   card: { backgroundColor: C.card, borderRadius: R.card, padding: 16, ...shadow },
   button: {
-    minHeight: 50,
+    flexGrow: 1,
+    minHeight: 48,
     borderRadius: R.button,
     paddingHorizontal: 18,
     flexDirection: "row",

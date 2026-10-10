@@ -5,6 +5,7 @@ import { Share, StyleSheet, View } from "react-native";
 
 
 import { GameActions } from "~/components/GameActions";
+import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
@@ -254,6 +255,13 @@ export default function HatTrickRoom() {
             />
           )
         }
+      />
+      <SeriesEnd
+        over={series.over}
+        won={iWon}
+        mine={me ? series[me.mark] : 0}
+        theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
+        onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league)) }) : null}
       />
     </Page>
   );
