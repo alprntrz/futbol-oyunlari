@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
 import { haptic } from "~/lib/haptics";
+import { answersFor } from "~/lib/htBot";
 import { TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
@@ -137,6 +138,8 @@ export function HatTrickBoard({
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const [openCell, setOpenCell] = useState<number | null>(null);
+  // after the game: a square whose possible answers are being shown
+  const [review, setReview] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [confetti, setConfetti] = useState(0);
   // Explicit cell sizes keep header and board columns exactly aligned
@@ -251,8 +254,9 @@ export function HatTrickBoard({
               return (
                 <Tap
                   key={ci}
-                  disabled={(!!cell && !canSteal(cell)) || !!winner || !canMove}
+                  disabled={!winner && ((!!cell && !canSteal(cell)) || !canMove)}
                   onPress={() => {
+                    if (winner) return setReview(idx);
                     setOpenCell(idx);
                     setInput("");
                   }}
@@ -282,7 +286,16 @@ export function HatTrickBoard({
         ))}
       </View>
 
+      {winner && (
+        <View style={styles.reviewHint}>
+          <Icon name="hand.tap.fill" size={14} color={C.text2} fallback="☝︎" />
+          <Text style={T.caption}>{t("htReviewHint")}</Text>
+        </View>
+      )}
+
       {footer}
+
+      <AnswersSheet grid={grid} cell={review} placed={review !== null ? board[review] : null} onClose={() => setReview(null)} />
 
       <Modal visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
@@ -356,7 +369,67 @@ export function HatTrickBoard({
   );
 }
 
+/** After a game: who could have gone in a square. Best-known players first. */
+function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: number | null; placed: HtCell | null; onClose: () => void }) {
+  const { t, locale } = useI18n();
+  const insets = useSafeAreaInsets();
+  const all = useMemo(() => (cell === null ? [] : answersFor(grid, cell)), [grid, cell]);
+  if (cell === null) return null;
+  const row = grid.rows[Math.floor(cell / 3)];
+  const col = grid.cols[cell % 3];
+  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  // the name actually played here goes first, then the best-known others
+  const shown = [...all.filter((p) => p.name === placed?.name), ...all.filter((p) => p.name !== placed?.name)].slice(0, 8);
+
+  return (
+    <Modal visible transparent animationType="slide" onRequestClose={onClose}>
+      <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={onClose} />
+      <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
+        <View style={styles.grabber} />
+        <View style={styles.pair}>
+          <View style={styles.chip}>
+            <CriterionBadge c={row} size={22} />
+            <Text style={styles.chipText}>{label(row)}</Text>
+          </View>
+          <Icon name="plus" size={14} color={C.text3} fallback="+" />
+          <View style={styles.chip}>
+            <CriterionBadge c={col} size={22} />
+            <Text style={styles.chipText}>{label(col)}</Text>
+          </View>
+        </View>
+        <Text style={[T.caption, { textAlign: "center", marginVertical: 12 }]}>
+          {all.length === 0 ? t("htNoAnswers") : `${all.length} ${t("htAnswersCount")}`}
+        </Text>
+        {shown.length > 0 && (
+          <View style={styles.suggestionsStatic}>
+            {shown.map((p, i) => {
+              const mine = placed?.name === p.name;
+              return (
+                <View key={p.name} style={[styles.suggestion, i > 0 && styles.suggestionDivider]}>
+                  <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
+                    <Text allowFontScaling={false} style={styles.avatarText}>
+                      {initials(p.name)}
+                    </Text>
+                  </View>
+                  <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                  {mine && placed && (
+                    <Text style={[styles.placedTag, { color: MARK[placed.mark].color, backgroundColor: MARK[placed.mark].soft }]}>{placed.mark}</Text>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+        <Button title={t("close")} kind="secondary" onPress={onClose} style={{ marginTop: 14 }} />
+      </View>
+    </Modal>
+  );
+}
+
 const styles = StyleSheet.create({
+  reviewHint: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12 },
+  suggestionsStatic: { borderRadius: R.button, borderWidth: 1, borderColor: C.border, overflow: "hidden" },
+  placedTag: { fontFamily: F.black, fontSize: 16, borderRadius: 8, paddingHorizontal: 8, overflow: "hidden" },
   winner: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 20 },
   players: { flexDirection: "row", gap: 10 },
   playerPill: { flex: 1, height: 52, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderRadius: 12, paddingHorizontal: 12 },

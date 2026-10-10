@@ -48,6 +48,8 @@ function publicRoom(room) {
 // validate guesses against the same bundled player list. The server owns the
 // turn, the 45 s clock and the result.
 const HT_TURN_MS = 45_000;
+// matched random games open with a short VS screen before X's clock starts
+const HT_INTRO_MS = 3500;
 const HT_LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
   [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -385,16 +387,17 @@ app.prepare().then(() => {
 
     const htEmit = (room) => io.to("ht:" + room.code).emit("ht:update", htPublic(room));
 
-    const htStartTurn = (room) => {
+    // `graceMs` adds time before the first turn's clock (the "match found" intro)
+    const htStartTurn = (room, graceMs = 0) => {
       clearTimeout(room.timer);
-      room.deadline = Date.now() + HT_TURN_MS;
+      room.deadline = Date.now() + HT_TURN_MS + graceMs;
       room.timer = setTimeout(() => {
         if (room.winner || !htRooms.has(room.code)) return;
         room.flash = { mark: room.turn, reason: "timeout" };
         room.turn = room.turn === "X" ? "O" : "X";
         htStartTurn(room);
         htEmit(room);
-      }, HT_TURN_MS);
+      }, HT_TURN_MS + graceMs);
     };
 
     socket.on("ht:create", ({ nick, grid, steals }, cb) => {
@@ -468,8 +471,8 @@ app.prepare().then(() => {
         s.data.htCode = code;
         s.join("ht:" + code);
       }
-      htStartTurn(room);
-      io.to("ht:" + code).emit("ht:matched", { code });
+      htStartTurn(room, HT_INTRO_MS);
+      io.to("ht:" + code).emit("ht:matched", { code, players: htPublic(room).players });
     });
 
     socket.on("ht:unqueue", () => {
