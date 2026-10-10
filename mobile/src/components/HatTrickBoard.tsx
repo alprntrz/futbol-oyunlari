@@ -106,6 +106,8 @@ export function HatTrickBoard({
   winnerText,
   onMove,
   footer,
+  header,
+  sheetCaption,
 }: {
   grid: Grid;
   board: (HtCell | null)[];
@@ -121,6 +123,10 @@ export function HatTrickBoard({
   winnerText: string;
   onMove: (cell: number, name: string | null) => void;
   footer?: React.ReactNode;
+  /** replaces the X/O turn card (single player) */
+  header?: React.ReactNode;
+  /** replaces the "X · your guess · 42s" line in the guess sheet */
+  sheetCaption?: string;
 }) {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
@@ -169,7 +175,9 @@ export function HatTrickBoard({
 
   return (
     <View style={{ width: "100%" }}>
-      {winner ? (
+      {header ? (
+        header
+      ) : winner ? (
         <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
           <Icon name="trophy.fill" size={26} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
           <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
@@ -279,7 +287,7 @@ export function HatTrickBoard({
               </View>
             )}
             <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
-              {turn} · {t("ttYourGuess")} · {timeLeft}s
+              {sheetCaption ?? `${turn} · ${t("ttYourGuess")} · ${timeLeft}s`}
             </Text>
             <View style={styles.inputWrap}>
               <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />

@@ -55,6 +55,8 @@ const HT_LINES = [
 ];
 /** code -> hat-trick room */
 const htRooms = new Map();
+/** players waiting for a random opponent: { socket, nick, grid } */
+let htQueue = [];
 
 function htResult(board) {
   for (const [a, b, c] of HT_LINES) {
@@ -191,7 +193,6 @@ app.prepare().then(() => {
     });
 
     // ── Hat-trick ──
-    let htCodeJoined = null;
 
     const htEmit = (room) => io.to("ht:" + room.code).emit("ht:update", htPublic(room));
 
@@ -223,7 +224,7 @@ app.prepare().then(() => {
         players: [{ id: socket.id, nick: String(nick || "").slice(0, 20), mark: "X" }],
       };
       htRooms.set(code, room);
-      htCodeJoined = code;
+      socket.data.htCode = code;
       socket.join("ht:" + code);
       cb?.({ ok: true, room: htPublic(room) });
     });
@@ -236,14 +237,53 @@ app.prepare().then(() => {
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
         room.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), mark });
       }
-      htCodeJoined = room.code;
+      socket.data.htCode = room.code;
       socket.join("ht:" + room.code);
       htEmit(room);
       cb?.({ ok: true, room: htPublic(room) });
     });
 
+    // Random opponent: the first waiting player is paired with the next one.
+    // The waiting player's phone already dealt the grid; the room starts at once.
+    socket.on("ht:queue", ({ nick, grid }) => {
+      if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return;
+      htQueue = htQueue.filter((w) => w.socket.connected && w.socket.id !== socket.id);
+      const waiting = htQueue.shift();
+      if (!waiting) {
+        htQueue.push({ socket, nick: String(nick || "").slice(0, 20), grid });
+        return;
+      }
+      const code = htCode();
+      const room = {
+        code,
+        grid: waiting.grid,
+        started: true,
+        board: Array(9).fill(null),
+        turn: "X",
+        winner: null,
+        flash: null,
+        deadline: null,
+        timer: null,
+        players: [
+          { id: waiting.socket.id, nick: waiting.nick, mark: "X" },
+          { id: socket.id, nick: String(nick || "").slice(0, 20), mark: "O" },
+        ],
+      };
+      htRooms.set(code, room);
+      for (const s of [waiting.socket, socket]) {
+        s.data.htCode = code;
+        s.join("ht:" + code);
+      }
+      htStartTurn(room);
+      io.to("ht:" + code).emit("ht:matched", { code });
+    });
+
+    socket.on("ht:unqueue", () => {
+      htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
+    });
+
     socket.on("ht:start", () => {
-      const room = htRooms.get(htCodeJoined);
+      const room = htRooms.get(socket.data.htCode);
       if (!room || room.started || room.players.length < 2 || room.players[0].id !== socket.id) return;
       room.started = true;
       htStartTurn(room);
@@ -252,7 +292,7 @@ app.prepare().then(() => {
 
     // name = validated player name, or null for a wrong guess (turn passes)
     socket.on("ht:move", ({ cell, name }) => {
-      const room = htRooms.get(htCodeJoined);
+      const room = htRooms.get(socket.data.htCode);
       if (!room || !room.started || room.winner) return;
       const me = room.players.find((p) => p.id === socket.id);
       if (!me || me.mark !== room.turn) return;
@@ -280,7 +320,7 @@ app.prepare().then(() => {
 
     // Host deals a new grid; marks swap so the other player starts
     socket.on("ht:rematch", ({ grid }) => {
-      const room = htRooms.get(htCodeJoined);
+      const room = htRooms.get(socket.data.htCode);
       if (!room || !room.winner || room.players[0].id !== socket.id || !grid) return;
       room.grid = grid;
       room.board = Array(9).fill(null);
@@ -293,7 +333,8 @@ app.prepare().then(() => {
     });
 
     socket.on("disconnect", () => {
-      const room = htRooms.get(htCodeJoined);
+      htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
+      const room = htRooms.get(socket.data.htCode);
       if (!room) return;
       room.players = room.players.filter((p) => p.id !== socket.id);
       if (room.players.length === 0) {
