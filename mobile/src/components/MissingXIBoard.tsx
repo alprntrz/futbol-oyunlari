@@ -7,7 +7,7 @@ import type { Difficulty, LineupPlayer, Match, SlotState } from "@/lib/types";
 import { answerLetters } from "@/lib/wordle";
 
 import { useI18n } from "~/lib/i18n";
-import { jerseyStyle, keeperKit } from "~/lib/kits";
+import { jerseyStyle, keeperKit, teamKit } from "~/lib/kits";
 import { C, F, R, T } from "~/lib/theme";
 
 import { GuessSheet } from "./GuessSheet";
@@ -92,6 +92,8 @@ export function MissingXIBoard({
       { text: t("giveUp"), style: "destructive", onPress: onGiveUp },
     ]);
 
+  const rival = teamKit(match.opponent);
+
   return (
     <View style={{ width: "100%" }}>
       {/* Match */}
@@ -102,17 +104,17 @@ export function MissingXIBoard({
           </Text>
           <Text style={T.caption}>{match.date}</Text>
         </View>
+        {/* both sides the same way: shirt over name; one-word names shrink to fit instead of breaking */}
         <View style={styles.scoreRow}>
-          <View style={styles.teamSide}>
-            <Jersey body={match.kit.body} sleeves={match.kit.sleeves} numberColor={match.kit.number} number={11} variant={style} size={34} hideNumber />
-            <Text style={styles.team} numberOfLines={2}>
-              {match.team}
-            </Text>
+          <View style={styles.side}>
+            <Jersey body={match.kit.body} sleeves={match.kit.sleeves} numberColor={match.kit.number} number={11} variant={style} size={40} hideNumber />
+            <TeamName name={match.team} />
           </View>
           <Text style={styles.score}>{match.score}</Text>
-          <Text style={[styles.team, styles.opponent]} numberOfLines={2}>
-            {match.opponent}
-          </Text>
+          <View style={styles.side}>
+            <Jersey body={rival.body} sleeves={rival.sleeves} pattern={rival.pattern} numberColor="#000" number={0} variant={style} size={40} hideNumber />
+            <TeamName name={match.opponent} muted />
+          </View>
         </View>
         {headerExtra}
       </Card>
@@ -269,12 +271,22 @@ function Blanks({ answer }: { answer: string }) {
   );
 }
 
+/** A team name that wraps between words but never inside one. */
+function TeamName({ name, muted }: { name: string; muted?: boolean }) {
+  const words = name.trim().split(/\s+/).length;
+  return (
+    <Text style={[styles.team, muted && styles.opponent]} numberOfLines={words > 1 ? 2 : 1} adjustsFontSizeToFit minimumFontScale={0.7}>
+      {name}
+    </Text>
+  );
+}
+
 const styles = StyleSheet.create({
   metaRow: { flexDirection: "row", justifyContent: "space-between", gap: 12 },
   scoreRow: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 10 },
-  teamSide: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8 },
-  team: { flex: 1, fontFamily: F.display, fontSize: 22, color: C.text, lineHeight: 24 },
-  opponent: { color: C.text3, textAlign: "right" },
+  side: { flex: 1, alignItems: "center", gap: 4 },
+  team: { fontFamily: F.display, fontSize: 20, color: C.text, lineHeight: 22, textAlign: "center" },
+  opponent: { color: C.text2 },
   score: { fontFamily: F.black, fontSize: 30, color: C.text, fontVariant: ["tabular-nums"] },
   progressRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginTop: 18, marginHorizontal: 4 },
   bigCount: { fontFamily: F.black, fontSize: 40, lineHeight: 42, color: C.green },

@@ -32,11 +32,11 @@ function avatarColor(name: string) {
   return `hsl(${h % 360}, 45%, 48%)`;
 }
 
-type Kit = { body: string; sleeves: string; pattern?: { color: string; bands: number; horizontal?: boolean } };
+export type Kit = { body: string; sleeves: string; pattern?: { color: string; bands: number; horizontal?: boolean } };
 const stripes = (color: string, bands = 7) => ({ color, bands });
 
 /** Club home kits for criterion shirts (body, sleeves, stripes/halves/hoops). */
-const CLUB_KITS: Record<string, Kit> = {
+export const CLUB_KITS: Record<string, Kit> = {
   realmadrid: { body: "#FFFFFF", sleeves: "#FFFFFF" },
   barcelona: { body: "#A50044", sleeves: "#004D98", pattern: stripes("#004D98", 5) },
   atletico: { body: "#CB3524", sleeves: "#CB3524", pattern: stripes("#FFFFFF") },
