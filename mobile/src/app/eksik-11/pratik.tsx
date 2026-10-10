@@ -2,7 +2,8 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Text } from "react-native";
 
-import { globalMatches, randomMatch, turkishMatches } from "@/lib/daily";
+import { randomMatch, recentMatches } from "@/lib/daily";
+import { matchesOfTeam, teamsWithMatches } from "@/lib/teams";
 import type { Difficulty, Match } from "@/lib/types";
 
 import { GameIntro } from "~/components/GameIntro";
@@ -14,14 +15,18 @@ import { useI18n } from "~/lib/i18n";
 import { T } from "~/lib/theme";
 import { useMissingXI } from "~/lib/useMissingXI";
 
-/** Random-match practice; `havuz` = "global" (2005+, non-Turkish) or "turkiye". */
+/** Random-match practice: every match since 2005, or one team's matches (`takim`). */
 export default function PracticeScreen() {
-  const { t } = useI18n();
-  const { havuz } = useLocalSearchParams<{ havuz?: string }>();
-  const turkish = havuz === "turkiye";
-  const pool = useMemo(() => (turkish ? turkishMatches() : globalMatches()), [turkish]);
+  const { t, locale } = useI18n();
+  const { takim } = useLocalSearchParams<{ takim?: string }>();
+  const pool = useMemo(() => (takim ? matchesOfTeam(takim) : recentMatches()), [takim]);
+  const teamLabel = useMemo(() => {
+    if (!takim) return null;
+    const team = teamsWithMatches(1).find((tm) => tm.name === takim);
+    return locale === "en" ? (team?.en ?? takim) : takim;
+  }, [takim, locale]);
   const [game, setGame] = useState<{ match: Match; difficulty: Difficulty; key: number } | null>(null);
-  const title = turkish ? t("turkishTeams") : t("practice");
+  const title = teamLabel ?? t("practice");
 
   const start = (difficulty: Difficulty) =>
     setGame((g) => ({ match: randomMatch(g?.match.id, pool), difficulty, key: (g?.key ?? 0) + 1 }));
@@ -32,7 +37,11 @@ export default function PracticeScreen() {
       {pool.length === 0 ? (
         <Text style={[T.body, { textAlign: "center", marginTop: 40 }]}>{t("noMatches")}</Text>
       ) : !game ? (
-        <GameIntro title={title} subtitle={turkish ? t("turkishDesc") : t("practiceDesc")} onStart={start} />
+        <GameIntro
+          title={title}
+          subtitle={teamLabel ? `${pool.length} ${t("matchesWord")}` : t("practiceAllDesc")}
+          onStart={start}
+        />
       ) : (
         <PracticeGame key={game.key} match={game.match} difficulty={game.difficulty} onNext={() => start(game.difficulty)} />
       )}

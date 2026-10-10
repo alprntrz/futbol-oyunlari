@@ -71,17 +71,17 @@ export default function Home() {
           color={C.green}
           soft={C.greenSoft}
           title={t("practice")}
-          subtitle={t("practiceDesc")}
-          onPress={() => router.push({ pathname: "/eksik-11/pratik", params: { havuz: "global" } })}
+          subtitle={t("practiceAllDesc")}
+          onPress={() => router.push("/eksik-11/pratik")}
         />
         <Row
-          icon="flag.fill"
-          iconFallback="🇹🇷"
+          icon="tshirt.fill"
+          iconFallback="👕"
           color={C.red}
           soft={C.redSoft}
-          title={t("turkishTeams")}
-          subtitle={t("turkishDesc")}
-          onPress={() => router.push({ pathname: "/eksik-11/pratik", params: { havuz: "turkiye" } })}
+          title={t("byTeam")}
+          subtitle={t("byTeamDesc")}
+          onPress={() => router.push("/eksik-11/takimlar")}
         />
         <Row
           icon="person.2.fill"

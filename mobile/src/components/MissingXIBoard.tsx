@@ -12,7 +12,7 @@ import { Jersey } from "./Jersey";
 import { Button, Card, Icon, Tap } from "./ui";
 
 const SLOT_W = 86;
-const SLOT_H = 60;
+const SLOT_H = 66;
 
 /** Match card + progress + pitch + guess sheet for one Eksik 11 game. */
 export function MissingXIBoard({
@@ -144,10 +144,10 @@ export function MissingXIBoard({
                       {p.name}
                     </Text>
                   ) : (
-                    <Text style={[styles.labelText, { color: C.text2 }]} numberOfLines={1}>
-                      {answerLength(p.answer)} {t("letters")}
-                      {s.guesses.length > 0 ? ` · ${s.guesses.length}×` : ""}
-                    </Text>
+                    <View style={styles.blanksRow}>
+                      <Blanks answer={p.answer} />
+                      {s.guesses.length > 0 && <Text style={styles.tries}>{s.guesses.length}</Text>}
+                    </View>
                   )}
                 </View>
               </Tap>
@@ -168,7 +168,21 @@ export function MissingXIBoard({
   );
 }
 
-const answerLength = (a: string) => a.replace(/ /g, "").length;
+const BLANKS_W = SLOT_W - 14;
+
+/** Fill-in-the-blank dashes, one per letter, with a gap between words. */
+function Blanks({ answer }: { answer: string }) {
+  const letters = answer.replace(/ /g, "").length;
+  const gaps = answer.split(" ").length - 1;
+  const dash = Math.max(3, Math.min(7, (BLANKS_W - (letters - 1) * 2 - gaps * 4) / letters));
+  return (
+    <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 2, height: 10 }}>
+      {answer.split("").map((ch, i) =>
+        ch === " " ? <View key={i} style={{ width: 2 }} /> : <View key={i} style={{ width: dash, height: 2, borderRadius: 1, backgroundColor: C.text2 }} />
+      )}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   scoreRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 10 },
@@ -189,4 +203,6 @@ const styles = StyleSheet.create({
   slot: { position: "absolute", width: SLOT_W, height: SLOT_H, alignItems: "center", gap: 3 },
   label: { maxWidth: SLOT_W, backgroundColor: "rgba(255,255,255,0.95)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
   labelText: { fontSize: 10, fontWeight: "700", textAlign: "center" },
+  blanksRow: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 2 },
+  tries: { fontSize: 9, fontWeight: "800", color: "white", backgroundColor: C.text2, borderRadius: 6, paddingHorizontal: 4, overflow: "hidden" },
 });

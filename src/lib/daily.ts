@@ -46,3 +46,8 @@ export function globalMatches(): Match[] {
     return Number(m.date.slice(-4)) >= 2005;
   });
 }
+
+/** Every match since 2005, Turkish teams included (mobile practice pool). */
+export function recentMatches(): Match[] {
+  return MATCHES.filter((m) => Number(m.date.slice(-4)) >= 2005);
+}
