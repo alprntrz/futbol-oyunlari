@@ -124,7 +124,7 @@ export default function HatTrickSolo() {
   if (!run) {
     return (
       <Page>
-        <Stack.Screen options={{ title: `${t("htSolo")} #${day % 1000}`, headerRight: () => <HelpButton game="tiki" /> }} />
+        <Stack.Screen options={{ title: t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
         <Text style={T.title}>{t("htSolo")}</Text>
         <Text style={[T.body, { marginTop: 6 }]}>{t("bbIntro")}</Text>
         <View style={styles.tipRow}>
@@ -164,7 +164,7 @@ export default function HatTrickSolo() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: `${t("htSolo")} #${day % 1000}`, headerRight: () => <HelpButton game="tiki" /> }} />
+      <Stack.Screen options={{ title: t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
 
       {/* Score strip */}
       <Card style={styles.strip}>

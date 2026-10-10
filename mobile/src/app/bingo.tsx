@@ -75,7 +75,7 @@ export default function Bingo() {
   if (!run) {
     return (
       <Page>
-        <Stack.Screen options={{ title: `${t("bingoName")} #${day % 1000}` }} />
+        <Stack.Screen options={{ title: t("bingoName") }} />
         <Text style={T.title}>{t("bingoName")}</Text>
         <Text style={[T.body, { marginTop: 6 }]}>{t("bingoIntro")}</Text>
         <Card style={{ marginTop: 16, gap: 12 }}>
@@ -142,7 +142,7 @@ export default function Bingo() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: `${t("bingoName")} #${day % 1000}` }} />
+      <Stack.Screen options={{ title: t("bingoName") }} />
 
       <Card style={styles.strip}>
         <View style={styles.stat}>

@@ -107,7 +107,7 @@ export default function MysteryPlayer() {
       />
 
       <View style={styles.head}>
-        <Text style={T.title}>{mode === "daily" ? `#${day % 1000}` : t("myFree")}</Text>
+        <Text style={T.title}>{mode === "daily" ? t("myDailyTitle") : t("myFree")}</Text>
         <View style={styles.dots} accessibilityLabel={`${Math.max(left, 0)} ${t("myLeft")}`}>
           {Array.from({ length: MAX_GUESSES }, (_, i) => (
             <View key={i} style={[styles.dot, { backgroundColor: i < spent ? (won && i === spent - 1 ? C.green : C.border) : C.greenMid }]} />

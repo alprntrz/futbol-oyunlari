@@ -104,7 +104,7 @@ export default function Games() {
         <Tap
           onPress={() => router.push("/eksik-11/gunluk")}
           style={styles.hero}
-          accessibilityLabel={`${t("daily")} ${day % 1000}. ${match.team} ${match.score} ${match.opponent}. ${statusText}`}
+          accessibilityLabel={`${t("daily")}. ${match.team} ${match.score} ${match.opponent}. ${statusText}`}
           accessibilityHint={cta}
         >
           <View style={StyleSheet.absoluteFill}>
@@ -122,9 +122,7 @@ export default function Games() {
           <View pointerEvents="none" style={styles.chalkLine} />
 
           <View style={styles.heroHead}>
-            <Text style={styles.heroTitle}>
-              {t("daily")} <Text style={styles.heroKicker}>#{day % 1000}</Text>
-            </Text>
+            <Text style={styles.heroTitle}>{t("daily")}</Text>
             <Text style={styles.heroStatus}>{statusText}</Text>
           </View>
 
@@ -214,7 +212,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  heroKicker: { fontFamily: F.display, fontSize: 18, color: "#BFE6CB" },
   heroStatus: {
     fontSize: 13,
     fontWeight: "700",

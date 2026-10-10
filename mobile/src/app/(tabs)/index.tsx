@@ -100,11 +100,10 @@ export default function Home() {
         <Tap
           onPress={() => router.push("/hat-trick/tek")}
           style={styles.hero}
-          accessibilityLabel={`${t("homeTodayGrid")} #${day % 1000}. ${status}`}
+          accessibilityLabel={`${t("homeTodayGrid")}. ${status}`}
           accessibilityHint={cta}
         >
           <View style={styles.heroText}>
-            <Text style={styles.heroKicker}>#{day % 1000}</Text>
             <Text style={styles.heroTitle}>{t("homeTodayGrid")}</Text>
             <Text style={styles.heroStatus}>{status}</Text>
             <View style={styles.cta}>
@@ -175,7 +174,6 @@ const styles = StyleSheet.create({
 
   hero: { marginTop: 16, borderRadius: 24, padding: 16, backgroundColor: HERO, flexDirection: "row", gap: 12, ...shadow, shadowOpacity: 0.18 },
   heroText: { flex: 1, justifyContent: "space-between" },
-  heroKicker: { fontFamily: F.display, fontSize: 16, color: "#C9D6FA" },
   heroTitle: { fontFamily: F.black, fontSize: 28, lineHeight: 29, color: "white" },
   heroStatus: { fontSize: 13, fontWeight: "600", color: "#DCE5FD", marginTop: 6 },
 
