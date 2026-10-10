@@ -6,6 +6,7 @@ import type { GridPlayer } from "@/data/players";
 import { matchPlayers, searchPlayers } from "@/lib/tiki";
 
 import { useI18n } from "~/lib/i18n";
+import { Light } from "~/lib/surface";
 import { C, R, T } from "~/lib/theme";
 
 import { Text } from "./Text";
@@ -56,52 +57,56 @@ export function PlayerSearchSheet({
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={close}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={close} />
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
-          <View style={styles.grabber} />
-          {header}
-          {caption ? <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: captionColor, fontWeight: "700" }]}>{caption}</Text> : null}
-          <View style={styles.inputWrap}>
-            <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
-            <TextInput
-              autoFocus
-              value={input}
-              onChangeText={setInput}
-              onSubmitEditing={() => (suggestions.length === 1 ? submit(suggestions[0]) : submit())}
-              placeholder={t("ttPlaceholder")}
-              placeholderTextColor={C.text3}
-              autoCorrect={false}
-              autoCapitalize="words"
-              returnKeyType="done"
-              style={styles.input}
-            />
-          </View>
-          {input.trim().length >= 2 && (
-            <ScrollView style={styles.suggestions} keyboardShouldPersistTaps="handled">
-              {suggestions.length === 0 ? (
-                <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
-              ) : (
-                suggestions.map((p, i) => (
-                  <Tap
-                    key={p.name}
-                    disabled={used.has(p.name)}
-                    onPress={() => submit(p)}
-                    style={[styles.suggestion, i > 0 && styles.divider, used.has(p.name) && { opacity: 0.4 }]}
-                  >
-                    <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
-                    {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
-                  </Tap>
-                ))
+      <Light>
+        <Light>
+          <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+            <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={close} />
+            <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
+              <View style={styles.grabber} />
+              {header}
+              {caption ? <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: captionColor, fontWeight: "700" }]}>{caption}</Text> : null}
+              <View style={styles.inputWrap}>
+                <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
+                <TextInput
+                  autoFocus
+                  value={input}
+                  onChangeText={setInput}
+                  onSubmitEditing={() => (suggestions.length === 1 ? submit(suggestions[0]) : submit())}
+                  placeholder={t("ttPlaceholder")}
+                  placeholderTextColor={C.text3}
+                  autoCorrect={false}
+                  autoCapitalize="words"
+                  returnKeyType="done"
+                  style={styles.input}
+                />
+              </View>
+              {input.trim().length >= 2 && (
+                <ScrollView style={styles.suggestions} keyboardShouldPersistTaps="handled">
+                  {suggestions.length === 0 ? (
+                    <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
+                  ) : (
+                    suggestions.map((p, i) => (
+                      <Tap
+                        key={p.name}
+                        disabled={used.has(p.name)}
+                        onPress={() => submit(p)}
+                        style={[styles.suggestion, i > 0 && styles.divider, used.has(p.name) && { opacity: 0.4 }]}
+                      >
+                        <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                        {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
+                      </Tap>
+                    ))
+                  )}
+                </ScrollView>
               )}
-            </ScrollView>
-          )}
-          <View style={{ flexDirection: "row", gap: 10, marginTop: 14 }}>
-            <Button title={t("close")} kind="secondary" onPress={close} style={{ flex: 1 }} />
-            <Button title={t("ttSubmit")} onPress={() => submit()} style={{ flex: 1 }} />
-          </View>
-        </View>
-      </KeyboardAvoidingView>
+              <View style={{ flexDirection: "row", gap: 10, marginTop: 14 }}>
+                <Button title={t("close")} kind="secondary" onPress={close} style={{ flex: 1 }} />
+                <Button title={t("ttSubmit")} onPress={() => submit()} style={{ flex: 1 }} />
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </Light>
+      </Light>
     </Modal>
   );
 }

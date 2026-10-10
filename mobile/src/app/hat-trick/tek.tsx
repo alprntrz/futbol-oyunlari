@@ -14,6 +14,7 @@ import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { Light } from "~/lib/surface";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 const TIME_LIMIT = 180;
@@ -94,7 +95,12 @@ export default function HatTrickSolo() {
 
   const start = () => {
     haptic.press();
-    setRun({ cells: Array.from({ length: 9 }, () => []), limit: limit === "3", deadline: limit === "3" ? Date.now() + TIME_LIMIT * 1000 : null, finished: false });
+    setRun({
+      cells: Array.from({ length: 9 }, () => []),
+      limit: limit === "3",
+      deadline: limit === "3" ? Date.now() + TIME_LIMIT * 1000 : null,
+      finished: false,
+    });
   };
 
   const pick = (p: GridPlayer) => {
@@ -208,15 +214,17 @@ export default function HatTrickSolo() {
           </View>
           {query.trim().length >= 2 && (
             <ScrollView style={styles.suggestions} keyboardShouldPersistTaps="handled">
-              {suggestions.length === 0 ? (
-                <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
-              ) : (
-                suggestions.map((p, i) => (
-                  <Tap key={p.name} onPress={() => pick(p)} style={[styles.suggestion, i > 0 && styles.divider]}>
-                    <Text style={[T.headline, { fontSize: 15 }]}>{p.name}</Text>
-                  </Tap>
-                ))
-              )}
+              <Light>
+                {suggestions.length === 0 ? (
+                  <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
+                ) : (
+                  suggestions.map((p, i) => (
+                    <Tap key={p.name} onPress={() => pick(p)} style={[styles.suggestion, i > 0 && styles.divider]}>
+                      <Text style={[T.headline, { fontSize: 15 }]}>{p.name}</Text>
+                    </Tap>
+                  ))
+                )}
+              </Light>
             </ScrollView>
           )}
         </View>
@@ -234,20 +242,24 @@ export default function HatTrickSolo() {
           <View style={styles.corner} />
           {grid.cols.map((c, i) => (
             <View key={i} style={[styles.cell, styles.head]}>
-              <CriterionBadge c={c} />
-              <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
-                {label(c)}
-              </Text>
+              <Light>
+                <CriterionBadge c={c} />
+                <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
+                  {label(c)}
+                </Text>
+              </Light>
             </View>
           ))}
         </View>
         {grid.rows.map((r, ri) => (
           <View key={ri} style={styles.row}>
             <View style={[styles.corner, styles.head]}>
-              <CriterionBadge c={r} />
-              <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
-                {label(r)}
-              </Text>
+              <Light>
+                <CriterionBadge c={r} />
+                <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
+                  {label(r)}
+                </Text>
+              </Light>
             </View>
             {grid.cols.map((_, ci) => {
               const names = run.cells[ri * 3 + ci];
@@ -299,9 +311,31 @@ const styles = StyleSheet.create({
   stat: { flex: 1, alignItems: "center" },
   statValue: { fontFamily: F.display, fontSize: 24, lineHeight: 28, color: C.text, fontVariant: ["tabular-nums"] },
   searchRow: { flexDirection: "row", gap: 8, marginTop: 12 },
-  inputWrap: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 12 },
+  inputWrap: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: C.card,
+    borderRadius: R.button,
+    borderWidth: 1,
+    borderColor: C.border,
+    paddingHorizontal: 12,
+  },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
-  suggestions: { position: "absolute", top: 66, left: 0, right: 0, maxHeight: 260, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, ...shadow, shadowOpacity: 0.15 },
+  suggestions: {
+    position: "absolute",
+    top: 66,
+    left: 0,
+    right: 0,
+    maxHeight: 260,
+    backgroundColor: C.card,
+    borderRadius: R.button,
+    borderWidth: 1,
+    borderColor: C.border,
+    ...shadow,
+    shadowOpacity: 0.15,
+  },
   suggestion: { paddingHorizontal: 14, paddingVertical: 12 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   toast: { marginTop: 10, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12, alignSelf: "center" },
