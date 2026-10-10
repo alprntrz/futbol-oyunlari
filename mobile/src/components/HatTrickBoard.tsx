@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
+import Animated, { Keyframe } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
@@ -10,6 +10,7 @@ import { TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
+import { Flag } from "./Flag";
 import { Confetti } from "./motion";
 import { Text } from "./Text";
 import { Button, Card, Icon, Tap } from "./ui";
@@ -49,9 +50,18 @@ function Crest({ c, size = 30 }: { c: Criterion; size?: number }) {
   );
 }
 
-function CriterionBadge({ c, size }: { c: Criterion; size?: number }) {
-  return c.kind === "club" ? <Crest c={c} size={size} /> : <Text allowFontScaling={false} style={{ fontSize: (size ?? 30) * 0.8 }}>{c.icon}</Text>;
+function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
+  if (c.kind === "club") return <Crest c={c} size={size} />;
+  if (c.kind === "country") return <Flag id={c.id} width={size * 1.35} />;
+  return <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>{c.icon}</Text>;
 }
+
+/** A placed mark pops in once: small scale-up, one light overshoot, settle. */
+const MARK_IN = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 0.6 }] },
+  55: { opacity: 1, transform: [{ scale: 1.12 }] },
+  100: { opacity: 1, transform: [{ scale: 1 }] },
+}).duration(260);
 
 /**
  * Hat-trick board: whose-turn card, the 3×3 criteria grid and the guess sheet.
@@ -148,12 +158,12 @@ export function HatTrickBoard({
               return (
                 <View key={m} style={[styles.playerPill, { backgroundColor: active ? MARK[m].color : MARK[m].soft }]}>
                   <Text style={[styles.playerMark, { color: active ? "white" : MARK[m].color }]}>{m}</Text>
-                  <View style={{ flexShrink: 1 }}>
+                  {labels[m] !== m && (
                     <Text style={[styles.playerName, { color: active ? "white" : MARK[m].color }]} numberOfLines={1}>
                       {labels[m]}
                     </Text>
-                    {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
-                  </View>
+                  )}
+                  {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
                 </View>
               );
             })}
@@ -208,7 +218,7 @@ export function HatTrickBoard({
                   ]}
                 >
                   {cell ? (
-                    <Animated.View entering={FadeIn.duration(140)} style={{ alignItems: "center" }}>
+                    <Animated.View entering={MARK_IN} style={{ alignItems: "center" }}>
                       <Text style={[styles.mark, { color: MARK[cell.mark].color }]}>{cell.mark}</Text>
                       <Text style={styles.cellName} numberOfLines={2}>
                         {cell.name}
@@ -301,10 +311,10 @@ export function HatTrickBoard({
 const styles = StyleSheet.create({
   winner: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 20 },
   players: { flexDirection: "row", gap: 10 },
-  playerPill: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 10 },
-  playerMark: { fontFamily: F.black, fontSize: 30, lineHeight: 32 },
-  playerName: { fontSize: 13, fontWeight: "700" },
-  playerTime: { color: "white", fontFamily: F.display, fontSize: 20, lineHeight: 22, fontVariant: ["tabular-nums"] },
+  playerPill: { flex: 1, height: 52, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderRadius: 12, paddingHorizontal: 12 },
+  playerMark: { fontFamily: F.black, fontSize: 30, lineHeight: 34 },
+  playerName: { flexShrink: 1, fontSize: 14, fontWeight: "700" },
+  playerTime: { color: "white", fontFamily: F.display, fontSize: 24, lineHeight: 34, fontVariant: ["tabular-nums"] },
   bar: { height: 6, borderRadius: 3, backgroundColor: "#E2E6EC", marginTop: 12, overflow: "hidden" },
   grid: { width: "100%", gap: 6, marginTop: 16 },
   row: { flexDirection: "row", gap: 6 },

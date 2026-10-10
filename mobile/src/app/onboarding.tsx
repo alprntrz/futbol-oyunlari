@@ -6,6 +6,7 @@ import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "re
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Flag } from "~/components/Flag";
 import { DemoBoard } from "~/components/HowTo";
 import { Jersey } from "~/components/Jersey";
 import { Text } from "~/components/Text";
@@ -164,8 +165,8 @@ function PitchPanel() {
 
 /** Page 3: a Hat-trick grid mid-game, in the surface ladder. */
 function VersusPanel() {
-  const heads = ["🇧🇷", "RMA", "UCL"];
-  const rows = ["🇫🇷", "BAR", "🏆"];
+  const heads = ["brazil", "RMA", "UCL"];
+  const rows = ["france", "BAR", "🏆"];
   const marks: (string | null)[] = ["X", null, "O", null, "X", null, "O", null, "X"];
   return (
     <Animated.View entering={FadeIn.duration(180)} style={{ gap: 6 }}>
@@ -177,6 +178,9 @@ function VersusPanel() {
             const isX = label === "X";
             return (
               <View key={ci} style={[styles.gridCell, head ? styles.gridHead : styles.gridPlay, ri === 0 && ci === 0 && { opacity: 0 }]}>
+                {label === "brazil" || label === "france" ? (
+                  <Flag id={label} width={34} />
+                ) : (
                 <Text
                   allowFontScaling={false}
                   style={[
@@ -186,6 +190,7 @@ function VersusPanel() {
                 >
                   {label ?? ""}
                 </Text>
+                )}
               </View>
             );
           })}
