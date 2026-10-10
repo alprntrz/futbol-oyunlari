@@ -1,33 +1,20 @@
-import { Stack } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { GridPlayer } from "@/data/players";
-import { generateGrid, searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
+import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
-import { HelpButton } from "~/components/HelpButton";
-import { Text } from "~/components/Text";
-import { Confetti } from "~/components/motion";
-import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
+import { TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
-type Mark = "X" | "O";
-interface Cell {
-  mark: Mark;
-  player: GridPlayer;
-}
+import { Confetti } from "./motion";
+import { Text } from "./Text";
+import { Button, Card, Icon, Tap } from "./ui";
 
-const TURN_SECONDS = 45;
-const LINES = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8],
-  [0, 3, 6], [1, 4, 7], [2, 5, 8],
-  [0, 4, 8], [2, 4, 6],
-];
-const MARK: Record<Mark, { color: string; soft: string }> = {
+export const MARK: Record<Mark, { color: string; soft: string }> = {
   X: { color: C.blue, soft: C.blueSoft },
   O: { color: C.coral, soft: C.coralSoft },
 };
@@ -55,146 +42,103 @@ function crestText(c: Criterion) {
 function Crest({ c, size = 30 }: { c: Criterion; size?: number }) {
   return (
     <View style={{ width: size, height: size, borderRadius: size / 3, backgroundColor: c.c1, borderWidth: 1, borderColor: "rgba(0,0,0,0.1)", alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ color: crestText(c), fontWeight: "800", fontSize: size * 0.3 }}>{c.short}</Text>
+      <Text allowFontScaling={false} style={{ color: crestText(c), fontWeight: "800", fontSize: size * 0.3 }}>
+        {c.short}
+      </Text>
     </View>
   );
 }
 
 function CriterionBadge({ c, size }: { c: Criterion; size?: number }) {
-  return c.kind === "club" ? <Crest c={c} size={size} /> : <Text style={{ fontSize: (size ?? 30) * 0.8 }}>{c.icon}</Text>;
+  return c.kind === "club" ? <Crest c={c} size={size} /> : <Text allowFontScaling={false} style={{ fontSize: (size ?? 30) * 0.8 }}>{c.icon}</Text>;
 }
 
-/** The mark in a winning square, pulsing. */
-function WinPulse({ color, mark }: { color: string; mark: Mark }) {
-  const scale = useSharedValue(1);
-  useEffect(() => {
-    scale.set(withRepeat(withSequence(withTiming(1.25, { duration: 380 }), withTiming(1, { duration: 380 })), -1));
-  }, [scale]);
-  const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
-  return <Animated.Text style={[styles.mark, { color }, style]}>{mark}</Animated.Text>;
-}
-
-function winnerOf(board: (Cell | null)[]): { mark: Mark; line: number[] } | null {
-  for (const line of LINES) {
-    const [a, b, c] = line.map((i) => board[i]);
-    if (a && b && c && a.mark === b.mark && b.mark === c.mark) return { mark: a.mark, line };
-  }
-  return null;
-}
-
-export default function TikiTakaToeScreen() {
+/**
+ * Hat-trick board: whose-turn card, the 3×3 criteria grid and the guess sheet.
+ * Holds no game state; the screen decides what a move does (same phone or online).
+ * `onMove(cell, name)` gets the validated player name, or null for a wrong guess.
+ */
+export function HatTrickBoard({
+  grid,
+  board,
+  turn,
+  winner,
+  timeLeft,
+  labels,
+  canMove,
+  status,
+  flash,
+  celebrate,
+  winnerText,
+  onMove,
+  footer,
+}: {
+  grid: Grid;
+  board: (HtCell | null)[];
+  turn: Mark;
+  winner: Winner;
+  timeLeft: number;
+  labels: Record<Mark, string>;
+  canMove: boolean;
+  status: string;
+  flash?: string | null;
+  /** fire confetti when this game is won (false for the losing online player) */
+  celebrate: boolean;
+  winnerText: string;
+  onMove: (cell: number, name: string | null) => void;
+  footer?: React.ReactNode;
+}) {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
-  const [grid, setGrid] = useState<Grid>(generateGrid);
-  const [board, setBoard] = useState<(Cell | null)[]>(() => Array(9).fill(null));
-  const [turn, setTurn] = useState<Mark>("X");
-  const [used, setUsed] = useState<Set<string>>(() => new Set());
-  const [winner, setWinner] = useState<Mark | "draw" | null>(null);
   const [openCell, setOpenCell] = useState<number | null>(null);
   const [input, setInput] = useState("");
-  const [flash, setFlash] = useState<string | null>(null);
   const [confetti, setConfetti] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(TURN_SECONDS);
-  const [deadline, setDeadline] = useState(() => Date.now() + TURN_SECONDS * 1000);
   // Explicit cell sizes keep header and board columns exactly aligned
   const [gridW, setGridW] = useState(0);
   const cellW = gridW ? (gridW - 3 * 6) / 4.1 : 0;
   const size = (n: number) => (cellW ? { width: cellW * n, height: cellW } : null);
-  const resetClock = () => {
-    setDeadline(Date.now() + TURN_SECONDS * 1000);
-    setTimeLeft(TURN_SECONDS);
-  };
 
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const used = useMemo(() => new Set(board.filter(Boolean).map((c) => c!.name)), [board]);
   const suggestions = useMemo(() => searchPlayers(input), [input]);
-  const winningLine = useMemo(() => winnerOf(board)?.line ?? null, [board]);
+  const line = useMemo(() => winningLine(board), [board]);
 
-  const passTurn = (message: string) => {
-    setFlash(`${turn}: ${message}`);
-    setOpenCell(null);
-    setInput("");
-    setTurn((m) => (m === "X" ? "O" : "X"));
-    resetClock();
-  };
-
-  // Per-turn countdown from a deadline; at zero the turn passes
+  // Close the sheet when the turn moves on (timeout, or the other phone played)
+  const sheetTurn = useRef(turn);
   useEffect(() => {
-    if (winner) return;
-    const id = setInterval(() => {
-      const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
-      setTimeLeft(left);
-      if (left === 0) {
-        haptic.warning();
-        passTurn(t("ttTimeout"));
-      }
-    }, 250);
-    return () => clearInterval(id);
-    // passTurn/t only change with turn/locale, which restart the interval anyway
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deadline, winner, turn]);
+    if (turn !== sheetTurn.current || winner) {
+      sheetTurn.current = turn;
+      setOpenCell(null);
+    }
+  }, [turn, winner]);
 
-  function newGrid() {
-    setGrid(generateGrid());
-    setBoard(Array(9).fill(null));
-    setTurn("X");
-    setUsed(new Set());
-    setWinner(null);
-    setOpenCell(null);
-    setInput("");
-    setFlash(null);
-    resetClock();
-  }
+  const wasWon = useRef(!!winner);
+  useEffect(() => {
+    if (winner && !wasWon.current && winner !== "draw" && celebrate) setConfetti(Date.now());
+    wasWon.current = !!winner;
+  }, [winner, celebrate]);
 
-  function submit(text?: string) {
+  const submit = (text?: string) => {
     const guess = (text ?? input).trim();
     if (openCell === null || !guess) return;
-    const row = grid.rows[Math.floor(openCell / 3)];
-    const col = grid.cols[openCell % 3];
-    const player = validateCell(guess, row, col, used);
-    if (!player) {
-      haptic.error();
-      passTurn(t("ttWrong"));
-      return;
-    }
-    const next = board.slice();
-    next[openCell] = { mark: turn, player };
-    setBoard(next);
-    setUsed(new Set(used).add(player.name));
+    const player = validateCell(guess, grid.rows[Math.floor(openCell / 3)], grid.cols[openCell % 3], used);
+    if (player) haptic.press();
+    else haptic.error();
+    onMove(openCell, player?.name ?? null);
     setOpenCell(null);
     setInput("");
-    setFlash(null);
-
-    let win: Mark | "draw" | null = winnerOf(next)?.mark ?? null;
-    if (!win && next.every(Boolean)) {
-      const x = next.filter((c) => c?.mark === "X").length;
-      win = x === 9 - x ? "draw" : x > 9 - x ? "X" : "O";
-    }
-    if (win) {
-      haptic.success();
-      setWinner(win);
-      if (win !== "draw") setConfetti(Date.now());
-    } else {
-      haptic.press();
-      setTurn((m) => (m === "X" ? "O" : "X"));
-      resetClock();
-    }
-  }
+  };
 
   const low = timeLeft <= 10;
   const row = openCell !== null ? grid.rows[Math.floor(openCell / 3)] : null;
   const col = openCell !== null ? grid.cols[openCell % 3] : null;
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: t("tikiTakaName"), headerRight: () => <HelpButton game="tiki" /> }} />
-
-      {/* Whose turn */}
+    <View style={{ width: "100%" }}>
       {winner ? (
         <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
           <Icon name="trophy.fill" size={26} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
-          <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>
-            {winner === "draw" ? t("ttDraw") : `${winner} ${t("ttWins")}`}
-          </Text>
+          <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
         </Card>
       ) : (
         <Card style={{ padding: 14 }}>
@@ -204,7 +148,12 @@ export default function TikiTakaToeScreen() {
               return (
                 <View key={m} style={[styles.playerPill, { backgroundColor: active ? MARK[m].color : MARK[m].soft }]}>
                   <Text style={[styles.playerMark, { color: active ? "white" : MARK[m].color }]}>{m}</Text>
-                  {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
+                  <View style={{ flexShrink: 1 }}>
+                    <Text style={[styles.playerName, { color: active ? "white" : MARK[m].color }]} numberOfLines={1}>
+                      {labels[m]}
+                    </Text>
+                    {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
+                  </View>
                 </View>
               );
             })}
@@ -212,17 +161,11 @@ export default function TikiTakaToeScreen() {
           <View style={styles.bar}>
             <View style={{ height: "100%", width: `${(timeLeft / TURN_SECONDS) * 100}%`, backgroundColor: low ? C.red : MARK[turn].color, borderRadius: 3 }} />
           </View>
-          <Text style={[T.body, { textAlign: "center", marginTop: 10, color: C.text }]}>
-            <Text style={{ fontWeight: "800", color: MARK[turn].color }}>
-              {t("ttTurn")}: {turn}
-            </Text>{" "}
-            · {t("ttPick")}
-          </Text>
+          <Text style={[T.body, { textAlign: "center", marginTop: 10, color: MARK[turn].color, fontWeight: "700" }]}>{status}</Text>
           {flash ? <Text style={[T.caption, { textAlign: "center", color: C.red, marginTop: 4 }]}>{flash}</Text> : null}
         </Card>
       )}
 
-      {/* Grid */}
       <View style={styles.grid} onLayout={(e) => setGridW(e.nativeEvent.layout.width)}>
         <View style={styles.row}>
           <View style={[styles.corner, size(1.1)]} />
@@ -243,32 +186,32 @@ export default function TikiTakaToeScreen() {
                 {label(r)}
               </Text>
             </View>
-            {grid.cols.map((_, ci) => {
+            {grid.cols.map((c, ci) => {
               const idx = ri * 3 + ci;
               const cell = board[idx];
-              const inWin = winningLine?.includes(idx);
+              const inWin = line?.includes(idx);
               return (
                 <Tap
                   key={ci}
-                  disabled={!!cell || !!winner}
+                  disabled={!!cell || !!winner || !canMove}
                   onPress={() => {
                     setOpenCell(idx);
                     setInput("");
-                    setFlash(null);
                   }}
+                  accessibilityLabel={cell ? `${cell.mark}, ${cell.name}` : `${label(r)} + ${label(c)}`}
                   style={[
                     styles.cell,
                     styles.play,
                     size(1),
                     cell && { backgroundColor: MARK[cell.mark].soft, borderColor: MARK[cell.mark].soft },
-                    inWin && { borderColor: MARK[cell!.mark].color },
+                    inWin && { borderColor: MARK[cell!.mark].color, borderStyle: "solid" },
                   ]}
                 >
                   {cell ? (
-                    <Animated.View entering={ZoomIn.springify().damping(9)} style={{ alignItems: "center" }}>
-                      {inWin ? <WinPulse color={MARK[cell.mark].color} mark={cell.mark} /> : <Text style={[styles.mark, { color: MARK[cell.mark].color }]}>{cell.mark}</Text>}
+                    <Animated.View entering={FadeIn.duration(140)} style={{ alignItems: "center" }}>
+                      <Text style={[styles.mark, { color: MARK[cell.mark].color }]}>{cell.mark}</Text>
                       <Text style={styles.cellName} numberOfLines={2}>
-                        {cell.player.name}
+                        {cell.name}
                       </Text>
                     </Animated.View>
                   ) : (
@@ -281,9 +224,8 @@ export default function TikiTakaToeScreen() {
         ))}
       </View>
 
-      <Button title={t("ttNewGrid")} kind={winner ? "primary" : "secondary"} icon="arrow.clockwise" onPress={newGrid} style={{ marginTop: 18 }} />
+      {footer}
 
-      {/* Guess sheet */}
       <Modal visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={() => setOpenCell(null)} />
@@ -333,7 +275,9 @@ export default function TikiTakaToeScreen() {
                       style={[styles.suggestion, i > 0 && styles.suggestionDivider, used.has(p.name) && { opacity: 0.4 }]}
                     >
                       <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
-                        <Text style={styles.avatarText}>{initials(p.name)}</Text>
+                        <Text allowFontScaling={false} style={styles.avatarText}>
+                          {initials(p.name)}
+                        </Text>
                       </View>
                       <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
                       {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
@@ -350,16 +294,17 @@ export default function TikiTakaToeScreen() {
         </KeyboardAvoidingView>
       </Modal>
       <Confetti fire={confetti} />
-    </Page>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   winner: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 20 },
   players: { flexDirection: "row", gap: 10 },
-  playerPill: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 12, paddingVertical: 10 },
+  playerPill: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 10 },
   playerMark: { fontFamily: F.black, fontSize: 30, lineHeight: 32 },
-  playerTime: { color: "white", fontFamily: F.display, fontSize: 24, fontVariant: ["tabular-nums"] },
+  playerName: { fontSize: 13, fontWeight: "700" },
+  playerTime: { color: "white", fontFamily: F.display, fontSize: 20, lineHeight: 22, fontVariant: ["tabular-nums"] },
   bar: { height: 6, borderRadius: 3, backgroundColor: "#E2E6EC", marginTop: 12, overflow: "hidden" },
   grid: { width: "100%", gap: 6, marginTop: 16 },
   row: { flexDirection: "row", gap: 6 },

@@ -3,7 +3,7 @@ import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DemoBoard } from "~/components/HowTo";
@@ -151,7 +151,7 @@ function PitchPanel() {
       {shirts.map((s, i) => (
         <Animated.View
           key={i}
-          entering={FadeInDown.delay(150 + i * 90).springify().damping(13)}
+          entering={FadeIn.duration(160).delay(i * 25)}
           style={[styles.pitchSlot, { left: `${s.x}%`, top: `${s.y}%` }]}
         >
           <Jersey body="#f7f8f8" sleeves="#f7f8f8" numberColor="#141516" number={s.n} size={46} />
@@ -162,31 +162,33 @@ function PitchPanel() {
   );
 }
 
-/** Page 3: race card with a room code and two players, in the surface ladder. */
+/** Page 3: a Hat-trick grid mid-game, in the surface ladder. */
 function VersusPanel() {
-  const rows = [
-    { name: "Deniz", solved: 7, mine: true },
-    { name: "Mert", solved: 5, mine: false },
-  ];
+  const heads = ["🇧🇷", "RMA", "UCL"];
+  const rows = ["🇫🇷", "BAR", "🏆"];
+  const marks: (string | null)[] = ["X", null, "O", null, "X", null, "O", null, "X"];
   return (
-    <Animated.View entering={FadeIn.duration(400)} style={{ gap: 12 }}>
-      <View style={styles.codeRow}>
-        {"K7M2X".split("").map((ch, i) => (
-          <View key={i} style={styles.codeCell}>
-            <Text style={styles.codeText}>{ch}</Text>
-          </View>
-        ))}
-      </View>
-      {rows.map((r) => (
-        <View key={r.name} style={styles.playerRow}>
-          <View style={[styles.avatar, r.mine && { borderColor: L.primary }]}>
-            <Text style={styles.avatarText}>{r.name[0]}</Text>
-          </View>
-          <Text style={styles.playerName}>{r.name}</Text>
-          <View style={styles.track}>
-            <View style={[styles.trackFill, { width: `${(r.solved / 11) * 100}%`, backgroundColor: r.mine ? L.primary : L.hairlineStrong }]} />
-          </View>
-          <Text style={styles.playerScore}>{r.solved}/11</Text>
+    <Animated.View entering={FadeIn.duration(180)} style={{ gap: 6 }}>
+      {[null, ...rows].map((r, ri) => (
+        <View key={ri} style={{ flexDirection: "row", gap: 6 }}>
+          {[r, ...heads].map((h, ci) => {
+            const head = ri === 0 || ci === 0;
+            const label = ri === 0 ? (ci === 0 ? "" : heads[ci - 1]) : ci === 0 ? r : marks[(ri - 1) * 3 + (ci - 1)];
+            const isX = label === "X";
+            return (
+              <View key={ci} style={[styles.gridCell, head ? styles.gridHead : styles.gridPlay, ri === 0 && ci === 0 && { opacity: 0 }]}>
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    head ? styles.gridHeadText : styles.gridMark,
+                    !head && { color: isX ? L.primary : L.inkMuted },
+                  ]}
+                >
+                  {label ?? ""}
+                </Text>
+              </View>
+            );
+          })}
         </View>
       ))}
     </Animated.View>
@@ -243,14 +245,9 @@ const styles = StyleSheet.create({
   pitchSlot: { position: "absolute", width: 70, marginLeft: -35, marginTop: -30, alignItems: "center", gap: 4 },
   blank: { width: 44, height: 6, borderRadius: 3, backgroundColor: "rgba(247,248,248,0.85)" },
 
-  codeRow: { flexDirection: "row", gap: 8, justifyContent: "center", marginBottom: 8 },
-  codeCell: { width: 44, height: 52, borderRadius: 8, backgroundColor: L.surface2, borderWidth: 1, borderColor: L.hairlineStrong, alignItems: "center", justifyContent: "center" },
-  codeText: { color: L.ink, fontSize: 24, fontWeight: "600", letterSpacing: -0.4 },
-  playerRow: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: L.surface2, borderRadius: 12, borderWidth: 1, borderColor: L.hairline, padding: 12 },
-  avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: L.surface3, borderWidth: 1.5, borderColor: L.hairlineStrong, alignItems: "center", justifyContent: "center" },
-  avatarText: { color: L.ink, fontSize: 14, fontWeight: "600" },
-  playerName: { color: L.ink, fontSize: 15, fontWeight: "500", width: 56 },
-  track: { flex: 1, height: 6, borderRadius: 3, backgroundColor: L.surface3, overflow: "hidden" },
-  trackFill: { height: "100%", borderRadius: 3 },
-  playerScore: { color: L.inkMuted, fontSize: 13, fontWeight: "500", fontVariant: ["tabular-nums"] },
+  gridCell: { flex: 1, aspectRatio: 1, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  gridHead: { backgroundColor: L.surface2, borderWidth: 1, borderColor: L.hairline },
+  gridPlay: { backgroundColor: L.surface3, borderWidth: 1, borderColor: L.hairlineStrong },
+  gridHeadText: { color: L.inkMuted, fontSize: 15, fontWeight: "600", letterSpacing: -0.2 },
+  gridMark: { fontSize: 30, fontWeight: "600", letterSpacing: -0.6 },
 });

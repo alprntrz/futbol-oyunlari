@@ -26,8 +26,12 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Shared, keep platform-free: `src/lib/{types,wordle,formations,daily,tiki,strings}.ts`
   and `src/data/*`. No DOM/`localStorage`/React in these.
 - UI strings live in `src/lib/strings.ts` (used by both apps).
-- `cd mobile && npx expo start --ios` (Expo Go on the simulator). Online race
+- `cd mobile && npx expo start --ios` (Expo Go on the simulator). Online play
   talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
+- Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`:
+  server owns turn, 45 s clock and result; the host's phone deals the grid as
+  criterion ids). The Missing 11 race (`room:*`, `race:*`) is still served for
+  the web app but has no screen in the mobile app.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - Read `mobile/AGENTS.md`: Expo APIs change per SDK, check the versioned docs.
 - Brand images (`mobile/assets/brand/`) are generated: originals from the

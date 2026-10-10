@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { FORMATIONS } from "@/lib/formations";
 import type { Difficulty, LineupPlayer, Match, SlotState } from "@/lib/types";
@@ -18,8 +18,8 @@ import { Confetti, PopNumber } from "./motion";
 import { Button, Card, Icon, Tap } from "./ui";
 
 const SLOT_W = 86;
-/** Shirts drop in once when the board opens: short travel, one soft settle. */
-const SHIRT_ENTER = (i: number) => FadeInDown.delay(40 + i * 30).springify().damping(20).stiffness(220).withInitialValues({ transform: [{ translateY: -10 }] });
+/** Shirts fade in once when the board opens: quick, no travel. */
+const SHIRT_ENTER = (i: number) => FadeIn.duration(160).delay(i * 12);
 const SLOT_H = 72;
 
 /** How long the sheet stays open after a slot resolves: the tile flip, then a beat. */
@@ -82,7 +82,7 @@ export function MissingXIBoard({
   // Progress bar slides to the new value
   const bar = useSharedValue(solved / 11);
   useEffect(() => {
-    bar.set(withSpring(solved / 11, { damping: 16, stiffness: 120 }));
+    bar.set(withTiming(solved / 11, { duration: 220 }));
   }, [solved, bar]);
   const barStyle = useAnimatedStyle(() => ({ width: `${bar.get() * 100}%` }));
 

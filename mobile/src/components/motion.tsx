@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSequence,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 
@@ -110,7 +109,7 @@ export function PopNumber({ value, style }: { value: number | string; style?: St
       first.current = false;
       return;
     }
-    scale.set(withSequence(withTiming(1.35, { duration: 120 }), withSpring(1, { damping: 7, stiffness: 220 })));
+    scale.set(withSequence(withTiming(1.1, { duration: 90 }), withTiming(1, { duration: 120 })));
   }, [value, scale]);
 
   const anim = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));

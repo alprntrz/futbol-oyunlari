@@ -1,7 +1,7 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
 
@@ -62,7 +62,7 @@ export default function StatsTab() {
         </Card>
       ) : (
         <>
-          <Animated.View entering={FadeInDown.springify().damping(14)}>
+          <Animated.View entering={FadeIn.duration(180)}>
             <View style={styles.streakCard}>
               <Icon name="flame.fill" size={54} color={C.amber} fallback="🔥" />
               <View style={{ flex: 1 }}>
@@ -87,7 +87,7 @@ export default function StatsTab() {
                 <Text style={styles.distLabel}>{b.label}</Text>
                 <View style={{ flex: 1 }}>
                   <Animated.View
-                    entering={FadeInLeft.delay(i * 70).springify().damping(16)}
+                    entering={FadeIn.duration(180).delay(i * 25)}
                     style={[
                       styles.distBar,
                       { width: `${Math.max(8, (counts[i] / maxCount) * 100)}%`, backgroundColor: counts[i] ? (i === 0 ? C.green : i < 3 ? "#4FB874" : "#8FD3A6") : "#E3E8E4" },

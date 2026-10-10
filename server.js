@@ -42,6 +42,50 @@ function publicRoom(room) {
   };
 }
 
+
+// ── Hat-trick (3×3 criteria grid) online rooms ────────────────────────────
+// The host's phone builds the grid and sends criterion ids; both phones
+// validate guesses against the same bundled player list. The server owns the
+// turn, the 45 s clock and the result.
+const HT_TURN_MS = 45_000;
+const HT_LINES = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6],
+];
+/** code -> hat-trick room */
+const htRooms = new Map();
+
+function htResult(board) {
+  for (const [a, b, c] of HT_LINES) {
+    if (board[a] && board[b] && board[c] && board[a].mark === board[b].mark && board[b].mark === board[c].mark) {
+      return board[a].mark;
+    }
+  }
+  if (!board.every(Boolean)) return null;
+  const x = board.filter((c) => c.mark === "X").length;
+  return x === 9 - x ? "draw" : x > 9 - x ? "X" : "O";
+}
+
+function htPublic(room) {
+  return {
+    code: room.code,
+    grid: room.grid,
+    started: room.started,
+    board: room.board,
+    turn: room.turn,
+    winner: room.winner,
+    flash: room.flash,
+    remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : HT_TURN_MS,
+    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
+  };
+}
+
+function htCode() {
+  const code = makeCode();
+  return htRooms.has(code) ? htCode() : code;
+}
+
 app.prepare().then(() => {
   const server = createServer((req, res) => handle(req, res));
   const io = new Server(server, { cors: { origin: "*" } });
@@ -143,6 +187,123 @@ app.prepare().then(() => {
         rooms.delete(room.code);
       } else {
         io.to(room.code).emit("room:update", publicRoom(room));
+      }
+    });
+
+    // ── Hat-trick ──
+    let htCodeJoined = null;
+
+    const htEmit = (room) => io.to("ht:" + room.code).emit("ht:update", htPublic(room));
+
+    const htStartTurn = (room) => {
+      clearTimeout(room.timer);
+      room.deadline = Date.now() + HT_TURN_MS;
+      room.timer = setTimeout(() => {
+        if (room.winner || !htRooms.has(room.code)) return;
+        room.flash = { mark: room.turn, reason: "timeout" };
+        room.turn = room.turn === "X" ? "O" : "X";
+        htStartTurn(room);
+        htEmit(room);
+      }, HT_TURN_MS);
+    };
+
+    socket.on("ht:create", ({ nick, grid }, cb) => {
+      if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return cb?.({ ok: false, error: "bad_grid" });
+      const code = htCode();
+      const room = {
+        code,
+        grid,
+        started: false,
+        board: Array(9).fill(null),
+        turn: "X",
+        winner: null,
+        flash: null,
+        deadline: null,
+        timer: null,
+        players: [{ id: socket.id, nick: String(nick || "").slice(0, 20), mark: "X" }],
+      };
+      htRooms.set(code, room);
+      htCodeJoined = code;
+      socket.join("ht:" + code);
+      cb?.({ ok: true, room: htPublic(room) });
+    });
+
+    socket.on("ht:join", ({ code, nick }, cb) => {
+      const room = htRooms.get(String(code || "").toUpperCase());
+      if (!room) return cb?.({ ok: false, error: "not_found" });
+      if (!room.players.some((p) => p.id === socket.id)) {
+        if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
+        const mark = room.players[0]?.mark === "X" ? "O" : "X";
+        room.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), mark });
+      }
+      htCodeJoined = room.code;
+      socket.join("ht:" + room.code);
+      htEmit(room);
+      cb?.({ ok: true, room: htPublic(room) });
+    });
+
+    socket.on("ht:start", () => {
+      const room = htRooms.get(htCodeJoined);
+      if (!room || room.started || room.players.length < 2 || room.players[0].id !== socket.id) return;
+      room.started = true;
+      htStartTurn(room);
+      htEmit(room);
+    });
+
+    // name = validated player name, or null for a wrong guess (turn passes)
+    socket.on("ht:move", ({ cell, name }) => {
+      const room = htRooms.get(htCodeJoined);
+      if (!room || !room.started || room.winner) return;
+      const me = room.players.find((p) => p.id === socket.id);
+      if (!me || me.mark !== room.turn) return;
+      if (name) {
+        const i = Number(cell);
+        // Taken square or a name already on the board: resync the sender only
+        if (!(i >= 0 && i < 9) || room.board[i] || room.board.some((c) => c && c.name === name)) {
+          return socket.emit("ht:update", htPublic(room));
+        }
+        room.board[i] = { mark: me.mark, name: String(name).slice(0, 60) };
+        room.flash = null;
+        room.winner = htResult(room.board);
+      } else {
+        room.flash = { mark: me.mark, reason: "wrong" };
+      }
+      if (room.winner) {
+        clearTimeout(room.timer);
+        room.deadline = null;
+      } else {
+        room.turn = room.turn === "X" ? "O" : "X";
+        htStartTurn(room);
+      }
+      htEmit(room);
+    });
+
+    // Host deals a new grid; marks swap so the other player starts
+    socket.on("ht:rematch", ({ grid }) => {
+      const room = htRooms.get(htCodeJoined);
+      if (!room || !room.winner || room.players[0].id !== socket.id || !grid) return;
+      room.grid = grid;
+      room.board = Array(9).fill(null);
+      room.winner = null;
+      room.flash = null;
+      for (const p of room.players) p.mark = p.mark === "X" ? "O" : "X";
+      room.turn = "X";
+      htStartTurn(room);
+      htEmit(room);
+    });
+
+    socket.on("disconnect", () => {
+      const room = htRooms.get(htCodeJoined);
+      if (!room) return;
+      room.players = room.players.filter((p) => p.id !== socket.id);
+      if (room.players.length === 0) {
+        clearTimeout(room.timer);
+        htRooms.delete(room.code);
+      } else {
+        clearTimeout(room.timer);
+        room.started = false;
+        room.deadline = null;
+        io.to("ht:" + room.code).emit("ht:peer-left", htPublic(room));
       }
     });
 

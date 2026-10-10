@@ -2,11 +2,11 @@ import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
-import { randomMatch } from "@/lib/daily";
-import type { Difficulty } from "@/lib/types";
+import { generateGrid } from "@/lib/tiki";
 
 import { Text } from "~/components/Text";
-import { Button, Card, Icon, Page, SectionLabel, Segmented } from "~/components/ui";
+import { Button, Card, Icon, Page, SectionLabel } from "~/components/ui";
+import { gridToIds } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { setNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
@@ -14,11 +14,11 @@ import { C, F, T } from "~/lib/theme";
 
 const TIMEOUT_MS = 6000;
 
-export default function RaceLobby() {
+/** Online Hat-trick lobby: create a room (you deal the grid) or join by code. */
+export default function HatTrickLobby() {
   const { t } = useI18n();
   const [nick, setNickInput] = useState("");
   const [code, setCode] = useState("");
-  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -37,17 +37,17 @@ export default function RaceLobby() {
 
   const goToRoom = (roomCode: string) => {
     setNick(nick);
-    router.push({ pathname: "/eksik-11/oda/[code]", params: { code: roomCode } });
+    router.push({ pathname: "/hat-trick/oda/[code]", params: { code: roomCode } });
   };
 
   const create = () =>
-    call<{ ok: boolean; room?: { code: string } }>("room:create", { nick, difficulty, matchId: randomMatch().id }, (res) => {
+    call<{ ok: boolean; room?: { code: string } }>("ht:create", { nick, grid: gridToIds(generateGrid()) }, (res) => {
       if (res.ok && res.room) goToRoom(res.room.code);
     });
 
   const join = () => {
     if (code.trim().length < 5) return;
-    call<{ ok: boolean; error?: string; room?: { code: string } }>("room:join", { code: code.trim().toUpperCase(), nick }, (res) => {
+    call<{ ok: boolean; error?: string; room?: { code: string } }>("ht:join", { code: code.trim().toUpperCase(), nick }, (res) => {
       if (res.ok && res.room) goToRoom(res.room.code);
       else setError(res.error === "full" ? t("roomFull") : t("roomNotFound"));
     });
@@ -55,9 +55,9 @@ export default function RaceLobby() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: t("onlineRace") }} />
-      <Text style={T.title}>{t("onlineRace")}</Text>
-      <Text style={[T.body, { marginTop: 4 }]}>{t("raceDesc")}</Text>
+      <Stack.Screen options={{ title: t("htOnline") }} />
+      <Text style={T.title}>{t("tikiTakaName")}</Text>
+      <Text style={[T.body, { marginTop: 4 }]}>{t("htOnlineDesc")}</Text>
 
       <SectionLabel>{t("yourName")}</SectionLabel>
       <TextInput value={nick} onChangeText={setNickInput} placeholder={t("yourName")} placeholderTextColor={C.text3} maxLength={20} style={styles.input} />
@@ -65,21 +65,13 @@ export default function RaceLobby() {
       <Card style={styles.block}>
         <View style={styles.blockHead}>
           <View style={[styles.badge, { backgroundColor: C.greenSoft }]}>
-            <Icon name="plus" size={18} color={C.green} fallback="+" />
+            <Icon name="plus" size={18} color={C.greenMid} fallback="+" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={T.headline}>{t("createRoom")}</Text>
             <Text style={[T.body, { fontSize: 14 }]}>{t("createRoomDesc")}</Text>
           </View>
         </View>
-        <Segmented
-          value={difficulty}
-          onChange={setDifficulty}
-          options={[
-            { value: "normal", label: t("normal") },
-            { value: "hard", label: t("hard") },
-          ]}
-        />
         <Button title={t("createRoom")} onPress={create} disabled={busy} />
       </Card>
 
@@ -104,6 +96,7 @@ export default function RaceLobby() {
           maxLength={5}
           autoCapitalize="characters"
           autoCorrect={false}
+          accessibilityLabel={t("roomCode")}
           style={[styles.input, styles.code]}
         />
         <Button title={t("joinRoom")} kind="secondary" onPress={join} disabled={busy || code.trim().length < 5} />

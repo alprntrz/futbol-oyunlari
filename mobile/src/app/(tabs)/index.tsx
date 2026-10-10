@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 
 import { dailyMatch } from "@/lib/daily";
 
@@ -16,7 +16,7 @@ import { C, F, R, shadow, T } from "~/lib/theme";
 
 type DailyStatus = { kind: "new" } | { kind: "playing"; solved: number } | { kind: "done"; solved: number };
 
-const enter = (i: number) => FadeInDown.delay(60 + i * 70).springify().damping(15);
+const enter = (i: number) => FadeIn.duration(180).delay(i * 25);
 
 export default function Home() {
   const { t, locale } = useI18n();
@@ -111,15 +111,15 @@ export default function Home() {
       <Animated.View entering={enter(3)}>
         <WideTile
           image={BRAND.icon.race}
-          title={t("onlineRace")}
-          desc={t("raceShort")}
+          title={`${t("tikiTakaName")} ${t("htOnline")}`}
+          desc={t("htOnlineDesc")}
           bg={C.greenDark}
           dark
-          onPress={() => router.push("/eksik-11/oda")}
+          onPress={() => router.push("/hat-trick/oda")}
         />
       </Animated.View>
       <Animated.View entering={enter(4)}>
-        <WideTile image={BRAND.icon.tiki} title={t("tikiTakaName")} desc={t("tikiShort")} bg="#E4ECFD" onPress={() => router.push("/hat-trick")} />
+        <WideTile image={BRAND.icon.tiki} title={t("tikiTakaName")} desc={t("htTile")} bg="#E4ECFD" onPress={() => router.push("/hat-trick")} />
       </Animated.View>
     </Page>
   );
