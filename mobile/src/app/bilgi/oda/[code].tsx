@@ -9,13 +9,15 @@ import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg"
 import { quizQuestions, type QuizCategory } from "@/lib/quiz";
 
 import { GrassPattern } from "~/components/GrassPattern";
-import { Confetti } from "~/components/motion";
+import { Victory } from "~/components/Victory";
 import { LevelProgress, type QuizProfile } from "~/components/QuizLevel";
 import { RunningPlayer } from "~/components/RunningPlayer";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
+import { REWARD } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { loadNick, loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
@@ -132,7 +134,7 @@ export default function QuizRoom() {
   const [myId, setMyId] = useState(() => getSocket().id ?? "");
   const [picked, setPicked] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-  const [confetti, setConfetti] = useState(0);
+  const [ceremonyClosed, setCeremonyClosed] = useState(false);
   const lastPhase = useRef("");
   const [progress, setProgress] = useState<{ gained: number; before: QuizProfile; after: QuizProfile } | null>(null);
 
@@ -145,18 +147,27 @@ export default function QuizRoom() {
       if (key === lastPhase.current) return;
       lastPhase.current = key;
       if (r.phase === "question") setPicked(null);
-      if (r.phase === "intro") setProgress(null);
+      if (r.phase === "intro") {
+        setProgress(null);
+        setCeremonyClosed(false);
+        play("start");
+      }
       if (r.phase === "reveal") {
         const me = r.players.find((p) => p.id === socket.id);
-        if (me?.choice === r.answer) haptic.success();
-        else haptic.error();
+        if (me?.choice === r.answer) {
+          haptic.success();
+          play("correct");
+        } else {
+          haptic.error();
+          play("wrong");
+        }
       }
-      if (r.phase === "done" && [...r.players].sort((a, b) => b.score - a.score)[0]?.id === socket.id) setConfetti(Date.now());
     };
     const onConnect = () => setMyId(socket.id ?? "");
     const onProgress = (p: { gained: number; before: QuizProfile; after: QuizProfile }) => {
       setProgress(p);
-      if (p.after.level > p.before.level) setTimeout(() => haptic.success(), 1100);
+      // the level-up sting comes after the ceremony's own sounds
+      if (p.after.level > p.before.level) setTimeout(() => (haptic.success(), play("levelup")), 2300);
     };
     socket.on("qz:progress", onProgress);
     socket.on("qz:update", apply);
@@ -177,6 +188,14 @@ export default function QuizRoom() {
   }, [code]);
 
   const ticking = room?.phase === "question" || room?.phase === "intro" || room?.phase === "reveal";
+  // clock ticks through the last five seconds of a question (until you've answered)
+  const secLeft = room?.phase === "question" ? Math.ceil(Math.max(0, deadline - now) / 1000) : 0;
+  const lastTick = useRef(0);
+  useEffect(() => {
+    if (room?.phase !== "question" || picked !== null || secLeft < 1 || secLeft > 5 || secLeft === lastTick.current) return;
+    lastTick.current = secLeft;
+    play("tick");
+  }, [secLeft, room?.phase, picked]);
   useEffect(() => {
     if (!ticking) return;
     const id = setInterval(() => setNow(Date.now()), 100);
@@ -470,7 +489,7 @@ export default function QuizRoom() {
       ) : null}
       {leave}
       <View style={[styles.content, { paddingTop: room?.phase === "done" ? insets.top + 56 : insets.top + HEADER + 6 }]}>{body}</View>
-      <Confetti fire={confetti} />
+      {room?.phase === "done" && <QuizCeremony room={room} myId={myId} progress={progress} closed={ceremonyClosed} onClose={() => setCeremonyClosed(true)} random={!!params.random} />}
     </View>
   );
 }
@@ -572,3 +591,54 @@ const styles = StyleSheet.create({
   wideGhost: { backgroundColor: C.bg },
   wideText: { fontFamily: F.display, fontSize: 20 },
 });
+
+/** Full time: the ceremony with your place, points and XP (opens once the XP has arrived). */
+function QuizCeremony({
+  room,
+  myId,
+  progress,
+  closed,
+  onClose,
+  random,
+}: {
+  room: QzRoom;
+  myId: string;
+  progress: { gained: number; before: QuizProfile; after: QuizProfile } | null;
+  closed: boolean;
+  onClose: () => void;
+  random: boolean;
+}) {
+  const { t, locale } = useI18n();
+  const standings = [...room.players].sort((a, b) => b.score - a.score);
+  const place = standings.findIndex((p) => p.id === myId) + 1;
+  const me = standings[place - 1];
+  const won = place === 1;
+  const placeTitle = won ? t("vcWon") : locale === "tr" ? `${place}. OLDUN` : `${place}${["ST", "ND", "RD"][place - 1] ?? "TH"} PLACE`;
+  const levelled = !!progress && progress.after.level > progress.before.level;
+  const isHost = room.hostId === myId;
+
+  return (
+    <Victory
+      visible={!!progress && !closed}
+      won={won}
+      title={placeTitle}
+      subtitle={levelled ? t("qzLevelUp") : undefined}
+      medal={progress?.after.level ?? 1}
+      medalKind="level"
+      panelTitle={t("vcSummary")}
+      rewards={[
+        { image: REWARD.xp, value: progress?.gained ?? 0, prefix: "+", label: "XP" },
+        { image: REWARD.games, value: me?.score ?? 0, label: t("qzPoints") },
+        { image: REWARD.trophy, value: `${place}/${standings.length}`, label: t("qzStandings") },
+      ]}
+      primary={
+        random
+          ? { title: t("htNewGame"), icon: "play.fill", onPress: () => router.replace("/bilgi/rastgele") }
+          : isHost
+            ? { title: t("htRematch"), icon: "arrow.clockwise", onPress: () => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category) }) }
+            : { title: t("vcContinue"), onPress: onClose }
+      }
+      secondary={random || isHost ? { title: t("vcSeeTable"), onPress: onClose } : undefined}
+    />
+  );
+}

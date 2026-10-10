@@ -33,6 +33,14 @@
           "image": "./assets/brand/splash-logo.png",
           "imageWidth": 160
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
       ]
     ],
     "experiments": {

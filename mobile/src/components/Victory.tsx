@@ -1,46 +1,59 @@
-import type { SymbolViewProps } from "expo-symbols";
-import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Modal, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Image, ImageBackground, Modal, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Animated, { Easing, FadeIn, Keyframe, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { REWARD } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { F } from "~/lib/theme";
 
 import { Confetti, useCountUp } from "./motion";
 import { Text } from "./Text";
-import { Button, Icon } from "./ui";
+import { Button } from "./ui";
 
 export interface Reward {
-  icon: SymbolViewProps["name"];
-  fallback: string;
+  image: ImageSourcePropType;
   /** shown counting up when it's a number */
   value: number | string;
   prefix?: string;
   label: string;
 }
 
-const GOLD = "#F7C531";
-const GOLD_DARK = "#B7791F";
 const PITCH = "#15803D";
 const PITCH_DEEP = "#0E5E2C";
-const CREAM = "#FFF6DC";
+const INK = "#5B3A06";
+
+// the ceremony's beats, in ms from opening
+const T_TITLE = 0;
+const T_MEDAL = 280;
+const T_PANEL = 620;
+const T_CARD = 780;
+const CARD_STEP = 180;
 
 /** Title stamps in: big, slight overshoot, settles. */
 const STAMP = new Keyframe({
-  0: { opacity: 0, transform: [{ scale: 1.6 }] },
+  0: { opacity: 0, transform: [{ scale: 1.7 }] },
   60: { opacity: 1, transform: [{ scale: 0.94 }] },
   100: { opacity: 1, transform: [{ scale: 1 }] },
 }).duration(420);
 
+const MEDAL_IN = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 0.4 }, { rotate: "-12deg" }] },
+  65: { opacity: 1, transform: [{ scale: 1.08 }, { rotate: "3deg" }] },
+  100: { opacity: 1, transform: [{ scale: 1 }, { rotate: "0deg" }] },
+})
+  .delay(T_MEDAL)
+  .duration(480);
+
 const CARD_IN = (i: number) =>
   new Keyframe({
-    0: { opacity: 0, transform: [{ translateY: 24 }, { scale: 0.85 }] },
-    70: { opacity: 1, transform: [{ translateY: -4 }, { scale: 1.04 }] },
+    0: { opacity: 0, transform: [{ translateY: 26 }, { scale: 0.8 }] },
+    70: { opacity: 1, transform: [{ translateY: -4 }, { scale: 1.05 }] },
     100: { opacity: 1, transform: [{ translateY: 0 }, { scale: 1 }] },
   })
-    .delay(700 + i * 160)
+    .delay(T_CARD + i * CARD_STEP)
     .duration(360);
 
 function Count({ value, prefix = "", delay }: { value: number | string; prefix?: string; delay: number }) {
@@ -50,7 +63,7 @@ function Count({ value, prefix = "", delay }: { value: number | string; prefix?:
     const id = setTimeout(() => setTarget(value), delay);
     return () => clearTimeout(id);
   }, [value, delay]);
-  const shown = useCountUp(target, 600);
+  const shown = useCountUp(target, 650);
   return (
     <Text allowFontScaling={false} style={styles.rewardValue}>
       {typeof value === "number" ? `${prefix}${shown}` : value}
@@ -58,33 +71,40 @@ function Count({ value, prefix = "", delay }: { value: number | string; prefix?:
   );
 }
 
-/** Trophy in a laurel, with a slow glint once it has landed. */
-function Laurel({ won, children }: { won: boolean; children: React.ReactNode }) {
+/** The medal in its laurel, with a slow glint behind once it has landed. */
+function Medal({ won, kind, value }: { won: boolean; kind: "trophy" | "level"; value: number | string }) {
   const glow = useSharedValue(0);
   useEffect(() => {
-    glow.set(withDelay(500, withRepeat(withSequence(withTiming(1, { duration: 1100, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 1100 })), -1)));
+    glow.set(withDelay(T_MEDAL + 500, withRepeat(withSequence(withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 1200 })), -1)));
   }, [glow]);
-  const halo = useAnimatedStyle(() => ({ opacity: 0.25 + glow.get() * 0.35, transform: [{ scale: 1 + glow.get() * 0.06 }] }));
-  const colour = won ? GOLD : "#C9D3CC";
+  const halo = useAnimatedStyle(() => ({ opacity: 0.18 + glow.get() * 0.3, transform: [{ scale: 1 + glow.get() * 0.08 }] }));
+
   return (
-    <View style={styles.laurelWrap}>
+    <Animated.View entering={MEDAL_IN} style={styles.medalWrap}>
       {won && <Animated.View style={[styles.halo, halo]} />}
-      <Icon name="laurel.leading" size={92} color={colour} fallback="❦" />
-      <View style={[styles.medal, { borderColor: won ? "#FFE58A" : "#E3E9E5", backgroundColor: won ? GOLD : "#AEBBB2" }]}>{children}</View>
-      <Icon name="laurel.trailing" size={92} color={colour} fallback="❦" />
-    </View>
+      <Image source={won ? REWARD.laurelGold : REWARD.laurelSilver} style={styles.laurel} resizeMode="contain" />
+      <View style={styles.medal}>
+        <Image source={kind === "level" ? REWARD.levelBadge : REWARD.medal} style={styles.medalImage} resizeMode="contain" />
+        <Text allowFontScaling={false} style={[styles.medalText, kind === "level" && { marginTop: 10 }]}>
+          {value}
+        </Text>
+        {kind === "trophy" && <Image source={REWARD.trophy} style={styles.medalTrophy} resizeMode="contain" />}
+      </View>
+    </Animated.View>
   );
 }
 
 /**
  * End-of-match ceremony: stamped title, a medal in a laurel, then the match's
- * rewards popping in one by one on a cream panel, and the next step.
+ * rewards popping in one by one on a cream panel, with sounds on each beat.
  */
 export function Victory({
   visible,
   won,
   title,
+  subtitle,
   medal,
+  medalKind = "trophy",
   panelTitle,
   rewards,
   primary,
@@ -93,14 +113,18 @@ export function Victory({
   visible: boolean;
   won: boolean;
   title: string;
-  /** big number on the medal (e.g. trophies won) */
+  /** small line under the title (e.g. "Level up") */
+  subtitle?: string;
+  /** big number on the medal (trophies won, or the level) */
   medal: number | string;
+  medalKind?: "trophy" | "level";
   panelTitle: string;
   rewards: Reward[];
-  primary: { title: string; icon?: SymbolViewProps["name"]; onPress: () => void };
+  primary: { title: string; icon?: Parameters<typeof Button>[0]["icon"]; onPress: () => void };
   secondary?: { title: string; onPress: () => void };
 }) {
   const insets = useSafeAreaInsets();
+
   // confetti fires each time a won ceremony opens
   const [fire, setFire] = useState(0);
   const [prevVisible, setPrevVisible] = useState(false);
@@ -108,65 +132,79 @@ export function Victory({
     setPrevVisible(visible);
     if (visible && won) setFire((f) => f + 1);
   }
+
+  // the sound track follows the animation's beats
   useEffect(() => {
     if (!visible) return;
-    if (won) haptic.success();
-    else haptic.warning();
-  }, [visible, won]);
+    const at = (ms: number, fn: () => void) => setTimeout(fn, ms);
+    const timers = [
+      at(T_TITLE + 120, () => play("stamp")),
+      at(T_MEDAL + 150, () => {
+        play(won ? "victory" : "lose");
+        if (won) haptic.success();
+        else haptic.warning();
+      }),
+      at(T_PANEL, () => play("whoosh")),
+      ...rewards.map((_, i) => at(T_CARD + i * CARD_STEP + 120, () => play("pop"))),
+      at(T_CARD + rewards.length * CARD_STEP + 250, () => play("coin")),
+    ];
+    return () => timers.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   return (
     <Modal visible={visible} animationType="fade" transparent statusBarTranslucent onRequestClose={secondary?.onPress ?? primary.onPress}>
-      <View style={[styles.screen, { backgroundColor: won ? PITCH : "#3F5247", paddingTop: insets.top + 24, paddingBottom: insets.bottom + 20 }]}>
+      <ImageBackground
+        source={REWARD.stars}
+        resizeMode="repeat"
+        imageStyle={{ opacity: won ? 1 : 0.35 }}
+        style={[styles.screen, { backgroundColor: won ? PITCH : "#3F5247", paddingTop: insets.top + 18, paddingBottom: insets.bottom + 20 }]}
+      >
         <StatusBar style="light" />
 
-        <Animated.View entering={STAMP}>
+        <Animated.View entering={STAMP} style={{ alignItems: "center" }}>
           <Text allowFontScaling={false} style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
             {title}
           </Text>
+          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         </Animated.View>
 
-        <Animated.View entering={FadeIn.delay(250).duration(300)}>
-          <Laurel won={won}>
-            <Text allowFontScaling={false} style={styles.medalText}>
-              {medal}
-            </Text>
-            <Icon name="trophy.fill" size={18} color={won ? GOLD_DARK : "#6C7A71"} fallback="🏆" />
-          </Laurel>
-        </Animated.View>
+        <Medal won={won} kind={medalKind} value={medal} />
 
-        <Animated.View entering={FadeIn.delay(550).duration(250)} style={styles.panel}>
-          <View style={styles.ribbon}>
+        <Animated.View entering={FadeIn.delay(T_PANEL).duration(260)} style={styles.panelWrap}>
+          <ImageBackground source={REWARD.panel} resizeMode="stretch" capInsets={{ top: 60, left: 60, bottom: 60, right: 60 }} style={styles.panel}>
+            <View style={styles.cards}>
+              {rewards.map((r, i) => (
+                <Animated.View key={r.label} entering={CARD_IN(i)} style={styles.card}>
+                  <Image source={r.image} style={styles.cardImage} resizeMode="contain" />
+                  <Count value={r.value} prefix={r.prefix} delay={T_CARD + 100 + i * CARD_STEP} />
+                  <Text allowFontScaling={false} style={styles.rewardLabel} numberOfLines={2}>
+                    {r.label}
+                  </Text>
+                </Animated.View>
+              ))}
+            </View>
+          </ImageBackground>
+          {/* ribbon over the panel's top edge */}
+          <ImageBackground source={REWARD.ribbon} resizeMode="contain" style={styles.ribbon}>
             <Text allowFontScaling={false} style={styles.ribbonText}>
               {panelTitle}
             </Text>
-          </View>
-          <View style={styles.cards}>
-            {rewards.map((r, i) => (
-              <Animated.View key={r.label} entering={CARD_IN(i)} style={styles.card}>
-                <View style={styles.cardIcon}>
-                  <Icon name={r.icon} size={30} color={GOLD_DARK} fallback={r.fallback} />
-                </View>
-                <Count value={r.value} prefix={r.prefix} delay={800 + i * 160} />
-                <Text allowFontScaling={false} style={styles.rewardLabel} numberOfLines={2}>
-                  {r.label}
-                </Text>
-              </Animated.View>
-            ))}
-          </View>
+          </ImageBackground>
         </Animated.View>
 
-        <Animated.View entering={FadeIn.delay(900 + rewards.length * 160).duration(250)} style={styles.actions}>
+        <Animated.View entering={FadeIn.delay(T_CARD + rewards.length * CARD_STEP + 200).duration(250)} style={styles.actions}>
           <Button title={primary.title} icon={primary.icon} onPress={primary.onPress} style={{ alignSelf: "stretch" }} />
           {secondary && <Button title={secondary.title} kind="secondary" onPress={secondary.onPress} style={{ alignSelf: "stretch" }} />}
         </Animated.View>
-      </View>
+      </ImageBackground>
       <Confetti fire={fire} />
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, alignItems: "center", paddingHorizontal: 20, gap: 14 },
+  screen: { flex: 1, alignItems: "center", paddingHorizontal: 20, gap: 6 },
   title: {
     fontFamily: F.black,
     fontSize: 58,
@@ -178,17 +216,22 @@ const styles = StyleSheet.create({
     textShadowRadius: 0,
     marginTop: 8,
   },
-  laurelWrap: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 2, height: 150 },
-  halo: { position: "absolute", width: 128, height: 128, borderRadius: 64, backgroundColor: "#FFE58A" },
-  medal: { width: 104, height: 104, borderRadius: 52, borderWidth: 5, alignItems: "center", justifyContent: "center" },
-  medalText: { fontFamily: F.black, fontSize: 42, lineHeight: 44, color: "#5B3A06" },
-  panel: { alignSelf: "stretch", backgroundColor: CREAM, borderRadius: 24, paddingTop: 30, paddingBottom: 18, paddingHorizontal: 12, marginTop: 14, borderWidth: 3, borderColor: "#F3DFA2" },
-  ribbon: { position: "absolute", top: -18, alignSelf: "center", backgroundColor: "#22A055", borderRadius: 10, paddingHorizontal: 26, paddingVertical: 6, borderBottomWidth: 4, borderBottomColor: PITCH_DEEP },
-  ribbonText: { fontFamily: F.black, fontSize: 20, color: "white" },
-  cards: { flexDirection: "row", gap: 10 },
-  card: { flex: 1, alignItems: "center", backgroundColor: "#FBE7B3", borderRadius: 16, paddingVertical: 12, paddingHorizontal: 6, gap: 2 },
-  cardIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: "#FFF8E6", alignItems: "center", justifyContent: "center", marginBottom: 4 },
-  rewardValue: { fontFamily: F.black, fontSize: 28, lineHeight: 30, color: "#5B3A06" },
-  rewardLabel: { fontSize: 13, fontWeight: "700", color: "#8A6417", textAlign: "center" },
+  subtitle: { fontFamily: F.display, fontSize: 20, color: "#FDE68A", marginTop: -2 },
+  medalWrap: { width: 250, height: 228, alignItems: "center", justifyContent: "center" },
+  halo: { position: "absolute", width: 150, height: 150, borderRadius: 75, backgroundColor: "#FFE58A" },
+  laurel: { position: "absolute", top: 0, left: 0, width: 250, height: 228 },
+  medal: { width: 116, height: 116, alignItems: "center", justifyContent: "center", marginTop: -8 },
+  medalImage: { position: "absolute", top: 0, left: 0, width: 116, height: 116 },
+  medalText: { fontFamily: F.black, fontSize: 40, lineHeight: 44, color: INK, marginTop: -10 },
+  medalTrophy: { position: "absolute", bottom: 14, width: 26, height: 26 },
+  panelWrap: { alignSelf: "stretch", marginTop: 26 },
+  panel: { paddingTop: 40, paddingBottom: 22, paddingHorizontal: 18 },
+  ribbon: { position: "absolute", top: -26, alignSelf: "center", width: 260, height: 54, alignItems: "center", justifyContent: "center" },
+  ribbonText: { fontFamily: F.black, fontSize: 20, color: "white", marginTop: -6, textShadowColor: PITCH_DEEP, textShadowOffset: { width: 0, height: 1.5 }, textShadowRadius: 0 },
+  cards: { flexDirection: "row", gap: 8 },
+  card: { flex: 1, alignItems: "center", backgroundColor: "#FBE7B3", borderRadius: 16, paddingVertical: 10, paddingHorizontal: 4, gap: 1 },
+  cardImage: { width: 54, height: 54, marginBottom: 2 },
+  rewardValue: { fontFamily: F.black, fontSize: 26, lineHeight: 28, color: INK },
+  rewardLabel: { fontSize: 12, fontWeight: "700", color: "#8A6417", textAlign: "center" },
   actions: { alignSelf: "stretch", gap: 10, marginTop: "auto" },
 });

@@ -2,6 +2,23 @@
  * Generated brand images (docs/design/ikon-brief.md), processed by
  * scripts/brand-assets.py into mobile/assets/brand/.
  */
+/** Reward art (docs/design/oyun-hissi-brief.md) via scripts/reward-assets.py. */
+export const REWARD = {
+  laurelGold: require("../../assets/brand/odul/laurel-gold.png"),
+  laurelSilver: require("../../assets/brand/odul/laurel-silver.png"),
+  medal: require("../../assets/brand/odul/medal-gold.png"),
+  trophy: require("../../assets/brand/odul/trophy-cup.png"),
+  ribbon: require("../../assets/brand/odul/ribbon-banner.png"),
+  panel: require("../../assets/brand/odul/panel-frame.png"),
+  xp: require("../../assets/brand/odul/reward-xp.png"),
+  series: require("../../assets/brand/odul/reward-series.png"),
+  games: require("../../assets/brand/odul/reward-games.png"),
+  chest: require("../../assets/brand/odul/chest-football.png"),
+  chestOpen: require("../../assets/brand/odul/chest-football-open.png"),
+  levelBadge: require("../../assets/brand/odul/level-badge.png"),
+  stars: require("../../assets/brand/odul/bg-stars.png"),
+};
+
 export const BRAND = {
   icon: {
     daily: require("../../assets/brand/icon-daily.png"),

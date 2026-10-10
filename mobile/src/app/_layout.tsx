@@ -12,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import { I18nProvider } from "~/lib/i18n";
+import { initSounds } from "~/lib/sound";
 import { C, F } from "~/lib/theme";
 
 SplashScreen.preventAutoHideAsync();
@@ -28,6 +29,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (!loaded) return;
     SplashScreen.hideAsync();
+    initSounds();
     // First launch: show the intro once (key shared with app/onboarding.tsx)
     AsyncStorage.getItem("onboarded-v1").then((done) => {
       if (!done) router.push("/onboarding");

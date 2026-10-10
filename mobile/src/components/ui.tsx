@@ -4,6 +4,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { haptic } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Text } from "./Text";
@@ -108,6 +109,7 @@ export function Button({
       disabled={disabled}
       onPress={() => {
         haptic.press();
+        play("tap");
         onPress();
       }}
       // pressed: the face drops onto the edge (edge padding moves from below to above, behind the face)

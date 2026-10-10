@@ -8,11 +8,13 @@ import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
+import { play, setSoundsOn, soundsOn } from "~/lib/sound";
 import { C, T } from "~/lib/theme";
 
 export default function SettingsTab() {
   const { t, locale, setLocale } = useI18n();
   const [sheet, setSheet] = useState<"xi" | "tiki" | null>(null);
+  const [sound, setSound] = useState(soundsOn() ? "on" : "off");
 
   return (
     <Page topInset>
@@ -25,6 +27,20 @@ export default function SettingsTab() {
         options={[
           { value: "tr", label: "Türkçe" },
           { value: "en", label: "English" },
+        ]}
+      />
+
+      <SectionLabel>{t("settingsSound")}</SectionLabel>
+      <Segmented
+        value={sound}
+        onChange={(v) => {
+          setSound(v);
+          setSoundsOn(v === "on");
+          if (v === "on") play("coin");
+        }}
+        options={[
+          { value: "on", label: t("soundOn") },
+          { value: "off", label: t("soundOff") },
         ]}
       />
 

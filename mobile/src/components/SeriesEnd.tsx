@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+import { REWARD } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { addTrophy, loadTrophies } from "~/lib/trophies";
 
@@ -61,10 +62,10 @@ export function SeriesEnd({
       medal={countTrophy ? (trophies ?? 0) : mine}
       panelTitle={t("vcSummary")}
       rewards={[
-        { icon: "flag.checkered", fallback: "🏁", value: `${mine}-${theirs}`, label: t("vcScore") },
-        { icon: "checkmark.seal.fill", fallback: "✓", value: mine, label: t("vcGames") },
+        { image: REWARD.series, value: `${mine}-${theirs}`, label: t("vcScore") },
+        { image: REWARD.games, value: mine, label: t("vcGames") },
         // a shared phone has no trophy cabinet of its own
-        ...(countTrophy ? [{ icon: "trophy.fill" as const, fallback: "🏆", value: trophies ?? 0, label: won ? t("vcTrophyNew") : t("vcTrophies") }] : []),
+        ...(countTrophy ? [{ image: REWARD.trophy, value: trophies ?? 0, label: won ? t("vcTrophyNew") : t("vcTrophies") }] : []),
       ]}
       primary={onRematch ? { title: rematchTitle ?? t("htRematch"), icon: "arrow.clockwise", onPress: () => (setClosed(true), onRematch()) } : { title: t("vcContinue"), onPress: () => setClosed(true) }}
       secondary={onRematch ? { title: t("vcContinue"), onPress: () => setClosed(true) } : undefined}

@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
 import { haptic } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { answersFor } from "~/lib/htBot";
 import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
@@ -184,8 +185,13 @@ export function HatTrickBoard({
     const guess = (text ?? input).trim();
     if (openCell === null || !guess) return;
     const player = validateCell(guess, grid.rows[Math.floor(openCell / 3)], grid.cols[openCell % 3], used);
-    if (player) haptic.press();
-    else haptic.error();
+    if (player) {
+      haptic.press();
+      play("correct");
+    } else {
+      haptic.error();
+      play("wrong");
+    }
     onMove(openCell, player?.name ?? null);
     setOpenCell(null);
     setInput("");
