@@ -180,6 +180,8 @@ function VersusPanel() {
               <View key={ci} style={[styles.gridCell, head ? styles.gridHead : styles.gridPlay, ri === 0 && ci === 0 && { opacity: 0 }]}>
                 {label === "brazil" || label === "france" ? (
                   <Flag id={label} width={34} />
+                ) : label === "RMA" || label === "BAR" ? (
+                  <Jersey body={label === "RMA" ? "#FFFFFF" : "#A50044"} sleeves={label === "RMA" ? "#FFFFFF" : "#004D98"} numberColor="#000" number={0} size={40} variant="crew" hideNumber />
                 ) : (
                 <Text
                   allowFontScaling={false}

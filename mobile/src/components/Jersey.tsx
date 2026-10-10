@@ -1,3 +1,4 @@
+import MaskedView from "@react-native-masked-view/masked-view";
 import { Image, StyleSheet, View } from "react-native";
 
 import { BRAND, type JerseyStyle } from "~/lib/brand";
@@ -20,6 +21,7 @@ export function Jersey({
   goals,
   faded,
   hideNumber,
+  pattern,
   size = 54,
 }: {
   body: string;
@@ -31,6 +33,8 @@ export function Jersey({
   goals?: number;
   faded?: boolean;
   hideNumber?: boolean;
+  /** Torso pattern over the body colour: `bands` alternating stripes (body colour first) */
+  pattern?: { color: string; bands: number; horizontal?: boolean };
   size?: number;
 }) {
   const layers = BRAND.jersey[variant];
@@ -38,6 +42,16 @@ export function Jersey({
   return (
     <View style={[fill, { opacity: faded ? 0.45 : 1 }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Image source={layers.body} style={[StyleSheet.absoluteFill, fill, { tintColor: body }]} />
+      {pattern && (
+        // Stripes clipped to the shirt silhouette; the sleeves layer covers their outer ends
+        <MaskedView style={StyleSheet.absoluteFill} maskElement={<Image source={layers.body} style={fill} />}>
+          <View style={[fill, { flexDirection: pattern.horizontal ? "column" : "row", paddingHorizontal: pattern.horizontal ? 0 : size * 0.24 }]}>
+            {Array.from({ length: pattern.bands }, (_, i) => (
+              <View key={i} style={{ flex: 1, backgroundColor: i % 2 ? pattern.color : body }} />
+            ))}
+          </View>
+        </MaskedView>
+      )}
       <Image source={layers.sleeves} style={[StyleSheet.absoluteFill, fill, { tintColor: sleeves }]} />
       <View style={[StyleSheet.absoluteFill, { mixBlendMode: "multiply" }]}>
         <Image source={layers.shade} style={fill} />

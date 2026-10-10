@@ -11,6 +11,7 @@ import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Flag } from "./Flag";
+import { Jersey } from "./Jersey";
 import { Confetti } from "./motion";
 import { Text } from "./Text";
 import { Button, Card, Icon, Tap } from "./ui";
@@ -30,28 +31,51 @@ function avatarColor(name: string) {
   return `hsl(${h % 360}, 45%, 48%)`;
 }
 
-/** Readable text colour on a crest: the club's 2nd colour unless it is too close to the 1st. */
-function crestText(c: Criterion) {
-  const lum = (hex = "#000000") => {
-    const n = parseInt(hex.slice(1), 16);
-    return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
-  };
-  if (Math.abs(lum(c.c1) - lum(c.c2)) > 0.35) return c.c2;
-  return lum(c.c1) > 0.6 ? "#111111" : "#ffffff";
-}
+type Kit = { body: string; sleeves: string; pattern?: { color: string; bands: number; horizontal?: boolean } };
+const stripes = (color: string, bands = 7) => ({ color, bands });
 
-function Crest({ c, size = 30 }: { c: Criterion; size?: number }) {
-  return (
-    <View style={{ width: size, height: size, borderRadius: size / 3, backgroundColor: c.c1, borderWidth: 1, borderColor: "rgba(0,0,0,0.1)", alignItems: "center", justifyContent: "center" }}>
-      <Text allowFontScaling={false} style={{ color: crestText(c), fontWeight: "800", fontSize: size * 0.3 }}>
-        {c.short}
-      </Text>
-    </View>
-  );
+/** Club home kits for criterion shirts (body, sleeves, stripes/halves/hoops). */
+const CLUB_KITS: Record<string, Kit> = {
+  realmadrid: { body: "#FFFFFF", sleeves: "#FFFFFF" },
+  barcelona: { body: "#A50044", sleeves: "#004D98", pattern: stripes("#004D98", 5) },
+  atletico: { body: "#CB3524", sleeves: "#CB3524", pattern: stripes("#FFFFFF") },
+  sevilla: { body: "#FFFFFF", sleeves: "#D81920" },
+  valencia: { body: "#FFFFFF", sleeves: "#111111" },
+  villarreal: { body: "#FFE667", sleeves: "#FFE667" },
+  bayern: { body: "#DC052D", sleeves: "#DC052D" },
+  dortmund: { body: "#FDE100", sleeves: "#111111" },
+  schalke: { body: "#004B9E", sleeves: "#004B9E" },
+  leverkusen: { body: "#E32221", sleeves: "#111111" },
+  manutd: { body: "#DA291C", sleeves: "#DA291C" },
+  mancity: { body: "#6CABDD", sleeves: "#6CABDD" },
+  liverpool: { body: "#C8102E", sleeves: "#C8102E" },
+  chelsea: { body: "#034694", sleeves: "#034694" },
+  arsenal: { body: "#EF0107", sleeves: "#FFFFFF" },
+  tottenham: { body: "#FFFFFF", sleeves: "#132257" },
+  juventus: { body: "#FFFFFF", sleeves: "#111111", pattern: stripes("#111111") },
+  milan: { body: "#FB090B", sleeves: "#111111", pattern: stripes("#111111") },
+  inter: { body: "#0068A8", sleeves: "#0068A8", pattern: stripes("#111111") },
+  napoli: { body: "#12A0D7", sleeves: "#12A0D7" },
+  roma: { body: "#8E1F2F", sleeves: "#8E1F2F" },
+  psg: { body: "#004170", sleeves: "#004170", pattern: { color: "#DA291C", bands: 3 } },
+  monaco: { body: "#E51B22", sleeves: "#FFFFFF", pattern: { color: "#FFFFFF", bands: 2, horizontal: true } },
+  ajax: { body: "#FFFFFF", sleeves: "#FFFFFF", pattern: { color: "#D2122E", bands: 3 } },
+  psv: { body: "#ED1C24", sleeves: "#ED1C24", pattern: stripes("#FFFFFF") },
+  porto: { body: "#FFFFFF", sleeves: "#004B9E", pattern: stripes("#004B9E") },
+  benfica: { body: "#E40521", sleeves: "#E40521" },
+  sporting: { body: "#008057", sleeves: "#008057", pattern: { color: "#FFFFFF", bands: 7, horizontal: true } },
+  galatasaray: { body: "#FDB912", sleeves: "#A32638", pattern: { color: "#A32638", bands: 2 } },
+  fenerbahce: { body: "#163962", sleeves: "#163962", pattern: stripes("#FFED00") },
+  besiktas: { body: "#111111", sleeves: "#111111", pattern: stripes("#FFFFFF") },
+};
+
+export function ClubShirt({ c, size = 30 }: { c: Criterion; size?: number }) {
+  const kit = CLUB_KITS[c.id] ?? { body: c.c1 ?? "#DDE3DF", sleeves: c.c1 ?? "#DDE3DF" };
+  return <Jersey body={kit.body} sleeves={kit.sleeves} pattern={kit.pattern} numberColor="#000" number={0} size={size * 1.35} variant="crew" hideNumber />;
 }
 
 function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
-  if (c.kind === "club") return <Crest c={c} size={size} />;
+  if (c.kind === "club") return <ClubShirt c={c} size={size} />;
   if (c.kind === "country") return <Flag id={c.id} width={size * 1.35} />;
   return <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>{c.icon}</Text>;
 }
