@@ -73,17 +73,10 @@ export default function Games() {
     },
     {
       image: BRAND.icon.practice,
-      title: t("practice"),
-      desc: t("practiceShort"),
-      href: "/eksik-11/pratik",
+      title: t("missingXI"),
+      desc: t("xiShort"),
+      href: "/eksik-11",
       bg: "#E2F3E7",
-    },
-    {
-      image: BRAND.icon.team,
-      title: t("byTeam"),
-      desc: t("teamShort"),
-      href: "/eksik-11/takimlar",
-      bg: "#FCE9E7",
     },
     {
       icon: "square.grid.4x3.fill",

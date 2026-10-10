@@ -8,6 +8,8 @@ export const dict = {
   tr: {
     appName: "Futbol Oyunları",
     missingXI: "Eksik 11",
+    xiShort: "Pratik ya da takımını seç",
+    xiHubDesc: "Maçın ilk 11'ini tamamla. Günün maçı Oyunlar sekmesinin en üstünde.",
     missingXITagline: "Tarihi maçların ilk 11'ini tahmin et",
     daily: "Günün Kadrosu",
     practice: "Pratik",
@@ -340,6 +342,8 @@ export const dict = {
   en: {
     appName: "Football Games",
     missingXI: "Missing 11",
+    xiShort: "Practice or pick a team",
+    xiHubDesc: "Fill in a match's starting XI. Today's match is at the top of the Games tab.",
     missingXITagline: "Guess the starting XI of historic matches",
     daily: "Daily XI",
     practice: "Practice",
