@@ -54,7 +54,7 @@ export default function QuizRandom() {
         <Icon name="chevron.left" size={18} color="white" fallback="‹" />
       </Pressable>
       <View style={{ paddingTop: insets.top + HEADER + 14, alignItems: "center", gap: 6, paddingHorizontal: 16 }}>
-        <RunningPlayer />
+        <RunningPlayer shirt={NIGHT.kit.shirt} shorts={NIGHT.kit.shorts} />
         <Text style={styles.big}>{t("qzSearching")}</Text>
         <Text style={styles.sub}>{error ?? t("qzSearchingDesc")}</Text>
       </View>

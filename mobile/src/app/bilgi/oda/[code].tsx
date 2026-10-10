@@ -215,7 +215,7 @@ export default function QuizRoom() {
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24, gap: 14 }} showsVerticalScrollIndicator={false}>
         {room.random ? (
           <Animated.View entering={FadeIn.duration(250)} style={{ alignItems: "center", gap: 6, paddingVertical: 8 }}>
-            <RunningPlayer />
+            <RunningPlayer shirt={NIGHT.kit.shirt} shorts={NIGHT.kit.shorts} />
             <Text style={styles.big}>{t("qzSearching")}</Text>
             <Text style={styles.sub}>{t("qzSearchingDesc")}</Text>
           </Animated.View>
