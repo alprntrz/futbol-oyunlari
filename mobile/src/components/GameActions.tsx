@@ -8,7 +8,7 @@ import { Text } from "./Text";
 import { Button, Card } from "./ui";
 
 /**
- * Draw and forfeit, under the board while a game is on.
+ * Skip, draw and forfeit, under the board while a game is on.
  * `draw` is the pending offer from this player's point of view: "sent", "received" or null.
  */
 export function GameActions({
@@ -16,9 +16,14 @@ export function GameActions({
   onOfferDraw,
   onReplyDraw,
   onForfeit,
+  onSkip,
+  canSkip,
   disabled,
 }: {
   draw: "sent" | "received" | null;
+  /** pass the turn to the opponent; shown when given */
+  onSkip?: () => void;
+  canSkip?: boolean;
   onOfferDraw: () => void;
   onReplyDraw?: (accept: boolean) => void;
   onForfeit: () => void;
@@ -46,21 +51,23 @@ export function GameActions({
         </Animated.View>
       )}
       <View style={styles.row}>
+        {onSkip && <Button title={t("htSkip")} icon="forward.fill" kind="secondary" disabled={disabled || !canSkip} onPress={onSkip} style={styles.btn} />}
         <Button
-          title={draw === "sent" ? t("htDrawSent") : t("htOfferDraw")}
+          title={draw === "sent" ? t("htDrawSentShort") : t("htDrawShort")}
           icon="equal.circle"
           kind="secondary"
           disabled={disabled || draw !== null}
           onPress={onOfferDraw}
-          style={{ flex: 1 }}
+          style={styles.btn}
         />
-        <Button title={t("htForfeit")} icon="flag.fill" kind="danger" disabled={disabled} onPress={confirmForfeit} style={{ flex: 1 }} />
+        <Button title={t("htForfeit")} icon="flag.fill" kind="danger" disabled={disabled} onPress={confirmForfeit} style={styles.btn} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: "row", gap: 10 },
+  row: { flexDirection: "row", gap: 8 },
+  btn: { flex: 1, paddingHorizontal: 6 },
   offer: { gap: 12, borderWidth: 1, borderColor: C.amber, backgroundColor: C.amberSoft },
 });

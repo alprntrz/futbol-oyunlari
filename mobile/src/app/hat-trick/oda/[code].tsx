@@ -11,7 +11,7 @@ import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
-import { gridFromIds, gridToIds, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
+import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
@@ -29,7 +29,7 @@ interface HtRoom {
   board: (HtCell | null)[];
   turn: Mark;
   winner: Winner;
-  flash: { mark: Mark; reason: "wrong" | "timeout" | "declined" } | null;
+  flash: { mark: Mark; reason: "wrong" | "timeout" | "declined" | "skip" } | null;
   remainingMs: number;
   steals: Record<Mark, number> | null;
   used: string[];
@@ -37,6 +37,8 @@ interface HtRoom {
   drawOffer: Mark | null;
   /** how a finished game ended, when it wasn't on the board */
   endReason: "forfeit" | "agreed" | null;
+  /** game wins per mark this series; `over` once someone reaches `target` */
+  series: { X: number; O: number; target: number; over: boolean };
   players: HtPlayer[];
 }
 
@@ -97,6 +99,15 @@ export default function HatTrickRoom() {
     const id = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(id);
   }, [room?.started, room?.winner]);
+
+  // Between games of a series the host's phone deals the next grid after a short pause
+  const seriesOver = room?.series?.over ?? false;
+  const hostHere = room?.players[0]?.id === myId;
+  useEffect(() => {
+    if (!room?.winner || seriesOver || !hostHere || peerLeft) return;
+    const id = setTimeout(() => getSocket().emit("ht:rematch", { grid: gridToIds(generateGrid()) }), NEXT_GAME_MS);
+    return () => clearTimeout(id);
+  }, [room?.winner, seriesOver, hostHere, peerLeft]);
 
   const grid = useMemo(() => (room ? gridFromIds(room.grid) : null), [room?.grid]); // eslint-disable-line react-hooks/exhaustive-deps
   const me = room?.players.find((p) => p.id === myId);
@@ -182,14 +193,20 @@ export default function HatTrickRoom() {
       ? f.mark === me?.mark
         ? t("htDrawDeclined")
         : null
-      : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.reason === "wrong" ? "ttWrong" : "ttTimeout")}`;
+      : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.reason === "wrong" ? "ttWrong" : f.reason === "skip" ? "htSkipped" : "ttTimeout")}`;
   const iWon = room.winner === me?.mark;
+  const series = room.series;
+  const score = me ? `${series[me.mark]} – ${series[me.mark === "X" ? "O" : "X"]}` : "";
+  const winnerName = room.winner === "X" || room.winner === "O" ? nameOf(room.players.find((p) => p.mark === room.winner)) : "";
   const winnerText =
-    room.winner === "draw"
-      ? t(room.endReason === "agreed" ? "htDrawAgreed" : "ttDraw")
-      : room.endReason === "forfeit"
-        ? t(iWon ? "htTheyForfeited" : "htYouForfeited")
-        : t(iWon ? "htYouWin" : "htYouLose");
+    room.endReason === "forfeit"
+      ? t(iWon ? "htTheyForfeited" : "htYouForfeited")
+      : series.over
+        ? t(iWon ? "htSeriesWon" : "htSeriesLost")
+        : room.winner === "draw"
+          ? t(room.endReason === "agreed" ? "htDrawAgreed" : "htGameDraw")
+          : `${winnerName} ${t("htTookGame")}`;
+  const winnerSub = series.over ? score : `${score}, ${t("htNextGame")}`;
   const draw = !room.drawOffer || !me ? null : room.drawOffer === me.mark ? "sent" : "received";
 
   return (
@@ -208,11 +225,13 @@ export default function HatTrickRoom() {
         canMove={myTurn && !peerLeft}
         status={myTurn ? t("htYourTurn") : t("htTheirTurn")}
         flash={flash}
-        celebrate={iWon}
+        celebrate={iWon && series.over}
         winnerText={winnerText}
+        winnerSub={winnerSub}
+        series={series}
         onMove={(cell, name) => getSocket().emit("ht:move", { cell, name })}
         footer={
-          room.winner ? (
+          room.winner && !series.over ? null : room.winner ? (
             <View style={{ marginTop: 18, gap: 10 }}>
               {isHost ? (
                 <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(generateGrid()) })} />
@@ -228,6 +247,8 @@ export default function HatTrickRoom() {
               onOfferDraw={() => getSocket().emit("ht:draw-offer")}
               onReplyDraw={(accept) => getSocket().emit("ht:draw-reply", { accept })}
               onForfeit={() => getSocket().emit("ht:forfeit")}
+              onSkip={() => getSocket().emit("ht:skip")}
+              canSkip={myTurn}
             />
           )
         }

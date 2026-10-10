@@ -10,6 +10,12 @@ export type Winner = Mark | "draw" | null;
 
 export const TURN_SECONDS = 45;
 
+/** A match is a series: first to SERIES_TARGET game wins. */
+export const SERIES_TARGET = 3;
+export type Series = Record<Mark, number>;
+/** pause on the result before the next game of a series deals in */
+export const NEXT_GAME_MS = 3500;
+
 export const LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
   [0, 3, 6], [1, 4, 7], [2, 5, 8],

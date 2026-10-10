@@ -8,7 +8,7 @@ import { GameActions } from "~/components/GameActions";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { Button, Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
-import { other, resultOf, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
+import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
 
@@ -37,6 +37,9 @@ export default function HatTrickHouse() {
   const [timeLeft, setTimeLeft] = useState(TURN_SECONDS);
   const [usedNames, setUsedNames] = useState<string[]>([]);
   const [drawSent, setDrawSent] = useState(false);
+  // series score: follows the people, marks swap every game
+  const [wins, setWins] = useState({ mine: 0, theirs: 0 });
+  const seriesOver = wins.mine >= SERIES_TARGET || wins.theirs >= SERIES_TARGET;
 
   const nameOf = (m: Mark) => (m === me ? t("you") : nick);
 
@@ -50,6 +53,15 @@ export default function HatTrickHouse() {
     setWinner(w);
     setEndReason(reason);
     setDrawSent(false);
+    if (reason === "forfeit") setWins((s) => (w === me ? { ...s, mine: SERIES_TARGET } : { ...s, theirs: SERIES_TARGET }));
+    else if (w === me) setWins((s) => ({ ...s, mine: s.mine + 1 }));
+    else if (w === rival) setWins((s) => ({ ...s, theirs: s.theirs + 1 }));
+  };
+
+  const skip = () => {
+    setDrawSent(false);
+    setFlash(`${t("you")}: ${t("htSkipped")}`);
+    nextTurn();
   };
 
   const play = (cell: number, name: string | null) => {
@@ -123,6 +135,7 @@ export default function HatTrickHouse() {
 
   // Like the online rematch: new grid, marks swap so the other side starts
   const rematch = () => {
+    if (seriesOver) setWins({ mine: 0, theirs: 0 });
     setGrid(generateGrid());
     setBoard(Array(9).fill(null));
     setUsedNames([]);
@@ -135,13 +148,24 @@ export default function HatTrickHouse() {
     setTimeLeft(TURN_SECONDS);
   };
 
+  // next game of the series after a short look at the result
+  useEffect(() => {
+    if (!winner || seriesOver) return;
+    const id = setTimeout(rematch, NEXT_GAME_MS);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [winner, seriesOver]);
+
   const iWon = winner === me;
+  const score = `${wins.mine} – ${wins.theirs}`;
   const winnerText =
-    winner === "draw"
-      ? t(endReason === "agreed" ? "htDrawAgreed" : "ttDraw")
-      : endReason === "forfeit"
-        ? t(iWon ? "htTheyForfeited" : "htYouForfeited")
-        : t(iWon ? "htYouWin" : "htYouLose");
+    endReason === "forfeit"
+      ? t(iWon ? "htTheyForfeited" : "htYouForfeited")
+      : seriesOver
+        ? t(iWon ? "htSeriesWon" : "htSeriesLost")
+        : winner === "draw"
+          ? t(endReason === "agreed" ? "htDrawAgreed" : "htGameDraw")
+          : `${nameOf(winner as Mark)} ${t("htTookGame")}`;
 
   return (
     <Page>
@@ -158,17 +182,25 @@ export default function HatTrickHouse() {
         canMove={turn === me}
         status={turn === me ? t("htYourTurn") : t("htTheirTurn")}
         flash={flash}
-        celebrate={iWon}
+        celebrate={iWon && seriesOver}
         winnerText={winnerText}
+        winnerSub={seriesOver ? score : `${score}, ${t("htNextGame")}`}
+        series={me === "X" ? { X: wins.mine, O: wins.theirs } : { X: wins.theirs, O: wins.mine }}
         onMove={play}
         footer={
-          winner ? (
+          winner && !seriesOver ? null : winner ? (
             <View style={{ marginTop: 18, gap: 10 }}>
               <Button title={t("htRematch")} icon="arrow.clockwise" onPress={rematch} />
               <Button title={t("htNewGame")} kind="secondary" icon="play.fill" onPress={() => router.replace("/hat-trick/rastgele")} />
             </View>
           ) : (
-            <GameActions draw={drawSent ? "sent" : null} onOfferDraw={() => setDrawSent(true)} onForfeit={() => end(rival, "forfeit")} />
+            <GameActions
+              draw={drawSent ? "sent" : null}
+              onOfferDraw={() => setDrawSent(true)}
+              onForfeit={() => end(rival, "forfeit")}
+              onSkip={skip}
+              canSkip={turn === me}
+            />
           )
         }
       />

@@ -50,6 +50,8 @@ function publicRoom(room) {
 // validate guesses against the same bundled player list. The server owns the
 // turn, the 45 s clock and the result.
 const HT_TURN_MS = 45_000;
+/** a match is a series: first to this many game wins takes it */
+const HT_TARGET = 3;
 // matched random games open with a short VS screen before X's clock starts
 const HT_INTRO_MS = 3500;
 const HT_LINES = [
@@ -87,8 +89,26 @@ function htPublic(room) {
     used: room.used,
     drawOffer: room.drawOffer ?? null,
     endReason: room.endReason ?? null,
+    series: htSeries(room),
     players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
   };
+}
+
+/** Game wins per mark (wins follow the player, marks swap every game). */
+function htSeries(room) {
+  const of = (mark) => room.wins?.[room.players.find((p) => p.mark === mark)?.id] ?? 0;
+  const X = of("X");
+  const O = of("O");
+  return { X, O, target: HT_TARGET, over: X >= HT_TARGET || O >= HT_TARGET };
+}
+
+/** Count a finished game towards the series. */
+function htTally(room) {
+  if (room.winner !== "X" && room.winner !== "O") return;
+  const p = room.players.find((x) => x.mark === room.winner);
+  if (!p) return;
+  room.wins = room.wins || {};
+  room.wins[p.id] = (room.wins[p.id] || 0) + 1;
 }
 
 function htCode() {
@@ -644,6 +664,7 @@ app.prepare().then(() => {
       if (room.winner) {
         clearTimeout(room.timer);
         room.deadline = null;
+        htTally(room);
       } else {
         room.turn = room.turn === "X" ? "O" : "X";
         htStartTurn(room);
@@ -657,8 +678,25 @@ app.prepare().then(() => {
       room.winner = winner;
       room.endReason = endReason;
       room.drawOffer = null;
+      if (endReason === "forfeit") {
+        // giving up concedes the whole series
+        const p = room.players.find((x) => x.mark === winner);
+        if (p) room.wins = { ...room.wins, [p.id]: HT_TARGET };
+      } else htTally(room);
       htEmit(room);
     };
+
+    // Pass: the turn goes to the opponent with a fresh clock
+    socket.on("ht:skip", () => {
+      const room = htRooms.get(socket.data.htCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || !room.started || room.winner || room.turn !== me.mark) return;
+      room.flash = { mark: me.mark, reason: "skip" };
+      room.drawOffer = null;
+      room.turn = room.turn === "X" ? "O" : "X";
+      htStartTurn(room);
+      htEmit(room);
+    });
 
     // Either player can offer a draw once it's pending-free; the other accepts or declines
     socket.on("ht:draw-offer", () => {
@@ -690,6 +728,8 @@ app.prepare().then(() => {
     socket.on("ht:rematch", ({ grid }) => {
       const room = htRooms.get(socket.data.htCode);
       if (!room || !room.winner || room.players[0].id !== socket.id || !grid) return;
+      // next game of the series, or a fresh series once it's decided
+      if (htSeries(room).over) room.wins = {};
       room.grid = grid;
       room.board = Array(9).fill(null);
       room.winner = null;

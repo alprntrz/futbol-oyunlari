@@ -7,7 +7,7 @@ import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/ti
 
 import { haptic } from "~/lib/haptics";
 import { answersFor } from "~/lib/htBot";
-import { TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
+import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
@@ -109,6 +109,8 @@ export function HatTrickBoard({
   flash,
   celebrate,
   winnerText,
+  winnerSub,
+  series,
   onMove,
   footer,
   header,
@@ -128,6 +130,10 @@ export function HatTrickBoard({
   /** fire confetti when this game is won (false for the losing online player) */
   celebrate: boolean;
   winnerText: string;
+  /** under the result: the series score / "next game starting" */
+  winnerSub?: string;
+  /** game wins in this series, per mark (series play only) */
+  series?: Record<Mark, number> | null;
   onMove: (cell: number, name: string | null) => void;
   footer?: React.ReactNode;
   /** replaces the X/O turn card (single player) */
@@ -197,7 +203,10 @@ export function HatTrickBoard({
         <Animated.View entering={SOFT_IN}>
           <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
             <Icon name="trophy.fill" size={26} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
-            <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
+            <View style={{ alignItems: "center", gap: 2 }}>
+              <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>{winnerText}</Text>
+              {winnerSub ? <Text style={[T.caption, { fontWeight: "700" }]}>{winnerSub}</Text> : null}
+            </View>
           </Card>
         </Animated.View>
       ) : (
@@ -219,6 +228,16 @@ export function HatTrickBoard({
                       <Text allowFontScaling={false} style={[styles.stealCount, { color: active ? "white" : MARK[m].color }]}>
                         {steals[m]}
                       </Text>
+                    </View>
+                  )}
+                  {series && (
+                    <View style={styles.pips} accessibilityLabel={`${series[m]}/${SERIES_TARGET}`}>
+                      {Array.from({ length: SERIES_TARGET }, (_, k) => (
+                        <View
+                          key={k}
+                          style={[styles.pip, { borderColor: active ? "white" : MARK[m].color }, k < series[m] && { backgroundColor: active ? "white" : MARK[m].color }]}
+                        />
+                      ))}
                     </View>
                   )}
                   {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
@@ -451,6 +470,8 @@ const styles = StyleSheet.create({
   playerPill: { flex: 1, height: 52, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderRadius: 12, paddingHorizontal: 12 },
   playerMark: { fontFamily: F.black, fontSize: 30, lineHeight: 34 },
   playerName: { flexShrink: 1, fontSize: 14, fontWeight: "700" },
+  pips: { flexDirection: "row", gap: 3 },
+  pip: { width: 8, height: 8, borderRadius: 4, borderWidth: 1.5 },
   stealBadge: { flexDirection: "row", alignItems: "center", gap: 2, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 2 },
   stealCount: { fontFamily: F.display, fontSize: 14, lineHeight: 16 },
   playerTime: { color: "white", fontFamily: F.display, fontSize: 24, lineHeight: 34, fontVariant: ["tabular-nums"] },

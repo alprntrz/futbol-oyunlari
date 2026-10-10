@@ -10,7 +10,7 @@ import { HelpButton } from "~/components/HelpButton";
 import { Text } from "~/components/Text";
 import { Button, Page, Segmented } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
-import { other, resultOf, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
+import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type Series, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { T } from "~/lib/theme";
 
@@ -29,6 +29,16 @@ export default function HatTrickLocal() {
   const [usedNames, setUsedNames] = useState<string[]>([]);
   // set when the game ended by forfeit: the mark that gave up
   const [forfeited, setForfeited] = useState<Mark | null>(null);
+  const [series, setSeries] = useState<Series>({ X: 0, O: 0 });
+  const seriesOver = series.X >= SERIES_TARGET || series.O >= SERIES_TARGET;
+  // who opens the next game: it alternates through a series
+  const [starter, setStarter] = useState<Mark>("X");
+
+  const finish = (w: Winner, gaveUp: Mark | null = null) => {
+    setWinner(w);
+    if (gaveUp) setSeries((s) => ({ ...s, [other(gaveUp)]: SERIES_TARGET }));
+    else if (w === "X" || w === "O") setSeries((s) => ({ ...s, [w]: s[w] + 1 }));
+  };
 
   const nextTurn = (message: string | null) => {
     setFlash(message);
@@ -63,33 +73,56 @@ export default function HatTrickLocal() {
     const result = resultOf(next);
     if (result) {
       haptic.success();
-      setWinner(result);
+      finish(result);
     } else nextTurn(null);
   };
 
   const offerDraw = () =>
     Alert.alert(t("htLocalDrawAsk"), t("htLocalDrawAskDesc"), [
       { text: t("cancel"), style: "cancel" },
-      { text: t("htAccept"), onPress: () => setWinner("draw") },
+      { text: t("htAccept"), onPress: () => finish("draw") },
     ]);
 
   const forfeit = () => {
     setForfeited(turn);
-    setWinner(other(turn));
+    finish(other(turn), turn);
   };
 
-  const newGrid = () => {
+  const skip = () => nextTurn(`${turn}: ${t("htSkipped")}`);
+
+  /** `fresh`: a new series (mode switch, or after one is decided) */
+  const newGrid = (fresh = false) => {
+    const first = fresh ? "X" : other(starter);
+    if (fresh) setSeries({ X: 0, O: 0 });
+    setStarter(first);
     setForfeited(null);
     setSteals({ X: 3, O: 3 });
     setUsedNames([]);
     setGrid(generateGrid());
     setBoard(Array(9).fill(null));
-    setTurn("X");
+    setTurn(first);
     setWinner(null);
     setFlash(null);
     setDeadline(Date.now() + TURN_SECONDS * 1000);
     setTimeLeft(TURN_SECONDS);
   };
+
+  // next game of the series after a short look at the result
+  useEffect(() => {
+    if (!winner || seriesOver) return;
+    const id = setTimeout(() => newGrid(), NEXT_GAME_MS);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [winner, seriesOver]);
+
+  const score = `X ${series.X} – ${series.O} O`;
+  const winnerText = forfeited
+    ? `${forfeited} ${t("htLocalForfeited")}, ${winner} ${t("htSeriesWonBy")}`
+    : seriesOver
+      ? `${winner} ${t("htSeriesWonBy")}`
+      : winner === "draw"
+        ? t("htGameDraw")
+        : `${winner} ${t("htTookGame")}`;
 
   return (
     <Page>
@@ -99,7 +132,7 @@ export default function HatTrickLocal() {
           value={stealMode ? "on" : "off"}
           onChange={(v) => {
             setStealMode(v === "on");
-            newGrid();
+            newGrid(true);
           }}
           options={[
             { value: "off", label: t("htClassic") },
@@ -120,14 +153,16 @@ export default function HatTrickLocal() {
         canMove
         status={`${t("ttTurn")}: ${turn}`}
         flash={flash}
-        celebrate
-        winnerText={winner === "draw" ? t("ttDraw") : forfeited ? `${forfeited} ${t("htLocalForfeited")}, ${winner} ${t("ttWins")}` : `${winner} ${t("ttWins")}`}
+        celebrate={seriesOver}
+        winnerText={winnerText}
+        winnerSub={seriesOver ? score : `${score}, ${t("htNextGame")}`}
+        series={series}
         onMove={onMove}
         footer={
-          winner ? (
-            <Button title={t("ttNewGrid")} icon="arrow.clockwise" onPress={newGrid} style={{ marginTop: 18 }} />
+          winner && !seriesOver ? null : winner ? (
+            <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => newGrid(true)} style={{ marginTop: 18 }} />
           ) : (
-            <GameActions draw={null} onOfferDraw={offerDraw} onForfeit={forfeit} />
+            <GameActions draw={null} onOfferDraw={offerDraw} onForfeit={forfeit} onSkip={skip} canSkip />
           )
         }
       />

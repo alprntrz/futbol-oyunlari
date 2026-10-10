@@ -33,7 +33,8 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   criterion ids; a queue match gets `HT_INTRO_MS` before X's clock for the VS screen,
   after 20 s an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
-  `ht:forfeit` end games early). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
+  `ht:forfeit` end games early; a match is a series, first to `HT_TARGET` = 3 game wins,
+  wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
 - Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
   data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
   until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5
