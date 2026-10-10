@@ -1,7 +1,9 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 import { BRAND, type JerseyStyle } from "~/lib/brand";
 import { F } from "~/lib/theme";
+
+import { Text } from "./Text";
 
 /**
  * Football shirt in the team's kit colours. Three generated layers: a white
@@ -34,7 +36,7 @@ export function Jersey({
   const layers = BRAND.jersey[variant];
   const fill = { width: size, height: size };
   return (
-    <View style={[fill, { opacity: faded ? 0.45 : 1 }]}>
+    <View style={[fill, { opacity: faded ? 0.45 : 1 }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Image source={layers.body} style={[StyleSheet.absoluteFill, fill, { tintColor: body }]} />
       <Image source={layers.sleeves} style={[StyleSheet.absoluteFill, fill, { tintColor: sleeves }]} />
       <View style={[StyleSheet.absoluteFill, { mixBlendMode: "multiply" }]}>
@@ -42,6 +44,7 @@ export function Jersey({
       </View>
       {!hideNumber && <View style={[StyleSheet.absoluteFill, styles.numberWrap]}>
         <Text
+          allowFontScaling={false}
           style={{
             color: numberColor,
             fontSize: Math.round(size * 0.42),

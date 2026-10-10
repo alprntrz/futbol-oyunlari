@@ -1,6 +1,5 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
-import { Text } from "react-native";
 
 import { randomMatch, recentMatches } from "@/lib/daily";
 import { matchesOfTeam, teamsWithMatches } from "@/lib/teams";
@@ -10,6 +9,7 @@ import { GameIntro } from "~/components/GameIntro";
 import { HelpButton } from "~/components/HelpButton";
 import { MissingXIBoard } from "~/components/MissingXIBoard";
 import { ResultCard } from "~/components/ResultCard";
+import { Text } from "~/components/Text";
 import { Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { T } from "~/lib/theme";

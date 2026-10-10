@@ -1,10 +1,11 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
 
+import { Text } from "~/components/Text";
 import { useCountUp } from "~/components/motion";
 import { Card, Icon, Page, SectionLabel } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
@@ -129,10 +130,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF4DC",
   },
   streakValue: { fontFamily: F.black, fontSize: 72, lineHeight: 74, color: C.text },
-  streakLabel: { fontFamily: F.semi, fontSize: 18, color: "#9A6A08", marginTop: -4 },
+  streakLabel: { fontFamily: F.semi, fontSize: 18, color: "#7A5205", marginTop: -4 },
   side: { alignItems: "flex-end" },
   sideValue: { fontFamily: F.display, fontSize: 24, lineHeight: 26, color: C.text },
-  sideLabel: { fontSize: 11, fontWeight: "600", color: "#9A6A08" },
+  sideLabel: { fontSize: 12, fontWeight: "600", color: "#7A5205" },
   distRow: { flexDirection: "row", alignItems: "center", gap: 10 },
   distLabel: { width: 26, fontFamily: F.display, fontSize: 18, color: C.text2, textAlign: "right" },
   distBar: { height: 26, borderRadius: 7, justifyContent: "center", alignItems: "flex-end", paddingHorizontal: 8 },

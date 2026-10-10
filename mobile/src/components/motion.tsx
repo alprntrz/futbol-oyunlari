@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, useWindowDimensions, View, type StyleProp, type TextStyle } from "react-native";
+import { StyleSheet, useWindowDimensions, View, type StyleProp, type TextStyle } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withDelay,
   withSequence,
@@ -11,6 +12,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { C } from "~/lib/theme";
+
+import { Text } from "./Text";
 
 const CONFETTI_COLORS = [C.green, "#4ADE80", C.amber, "#FDE047", "#FFFFFF", C.blue, C.coral];
 
@@ -60,8 +63,9 @@ export function Confetti({ fire }: { fire: number }) {
     return () => clearTimeout(timer);
   }, [fire]);
 
+  const reduceMotion = useReducedMotion();
   const active = fire && finished !== fire ? fire : null;
-  if (!active) return null;
+  if (!active || reduceMotion) return null;
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 10 }]}>
       {Array.from({ length: 70 }, (_, i) => (
@@ -73,10 +77,12 @@ export function Confetti({ fire }: { fire: number }) {
 
 /** Counts up from 0 (or the previous value) to `value`. */
 export function useCountUp(value: number, duration = 700) {
+  const reduceMotion = useReducedMotion();
   const [shown, setShown] = useState(0);
   const from = useRef(0);
 
   useEffect(() => {
+    if (reduceMotion) return;
     const start = Date.now();
     const a = from.current;
     let raf = 0;
@@ -89,9 +95,9 @@ export function useCountUp(value: number, duration = 700) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [value, duration]);
+  }, [value, duration, reduceMotion]);
 
-  return shown;
+  return reduceMotion ? value : shown;
 }
 
 /** Number that pops (scale bounce) whenever it changes. */

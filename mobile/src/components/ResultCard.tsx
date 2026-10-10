@@ -1,4 +1,4 @@
-import { Image, Share, StyleSheet, Text, View } from "react-native";
+import { Image, Share, StyleSheet, View } from "react-native";
 
 import type { Match, SlotState } from "@/lib/types";
 
@@ -6,6 +6,7 @@ import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { T } from "~/lib/theme";
 
+import { Text } from "./Text";
 import { Button, Card } from "./ui";
 
 /** End-of-game summary with native share sheet (emoji grid like the web app). */

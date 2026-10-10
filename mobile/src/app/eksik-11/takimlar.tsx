@@ -1,10 +1,11 @@
 import { router, Stack } from "expo-router";
 import { useMemo, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
 import { teamsWithMatches, type Team } from "@/lib/teams";
 import { normalizeAnswer } from "@/lib/wordle";
 
+import { Text } from "~/components/Text";
 import { Card, Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { C, R, T } from "~/lib/theme";

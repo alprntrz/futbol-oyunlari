@@ -1,10 +1,11 @@
 import { router, Stack } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
 import { randomMatch } from "@/lib/daily";
 import type { Difficulty } from "@/lib/types";
 
+import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Segmented } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { setNick } from "~/lib/raceSession";

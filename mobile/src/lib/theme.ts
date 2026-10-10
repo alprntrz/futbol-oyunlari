@@ -10,7 +10,7 @@ export const C = {
   divider: "#ECEFEC",
   text: "#0E1A14",
   text2: "#56645C",
-  text3: "#93A099",
+  text3: "#5F6C64",
 
   green: "#16A34A",
   greenDark: "#14532D",

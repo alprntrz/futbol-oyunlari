@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import type { Difficulty } from "@/lib/types";
 
@@ -7,6 +7,7 @@ import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
 
 import { MissingXISteps } from "./HowTo";
+import { Text } from "./Text";
 import { Button, Card, SectionLabel, Segmented } from "./ui";
 
 /** Pre-game screen: what this mode is, how to play, difficulty, Start. */

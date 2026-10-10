@@ -1,6 +1,6 @@
 import type { SymbolViewProps } from "expo-symbols";
 import { useEffect, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { evaluateGuess } from "@/lib/wordle";
 
@@ -8,6 +8,7 @@ import { useI18n } from "~/lib/i18n";
 import { C, T } from "~/lib/theme";
 
 import { Tile } from "./LetterTile";
+import { Text } from "./Text";
 import { Icon } from "./ui";
 
 /** Small green / yellow / grey legend explaining the tile colours. */

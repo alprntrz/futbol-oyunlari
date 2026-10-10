@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming, ZoomIn } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 
@@ -14,6 +14,7 @@ import { C, F, R, T } from "~/lib/theme";
 import { GuessSheet } from "./GuessSheet";
 import { Jersey } from "./Jersey";
 import { FLIP_DURATION, FLIP_STAGGER } from "./LetterTile";
+import { Text } from "./Text";
 import { Confetti, PopNumber } from "./motion";
 import { Button, Card, Icon, Tap } from "./ui";
 
@@ -199,6 +200,7 @@ function Slot({
   kit: { body: string; sleeves: string; number: string; variant: "keeper" | ReturnType<typeof jerseyStyle> };
   onPress: () => void;
 }) {
+  const { t } = useI18n();
   const revealed = state.solved || done;
   const locked = done || state.solved || state.failed;
   const scale = useSharedValue(1);
@@ -220,7 +222,14 @@ function Slot({
 
   return (
     <Animated.View entering={ZoomIn.delay(80 + index * 55).springify().damping(12)} style={[styles.slot, { left, top }]}>
-      <Tap disabled={locked} onPress={onPress} style={{ alignItems: "center", gap: 3 }}>
+      <Tap
+        disabled={locked}
+        onPress={onPress}
+        style={{ alignItems: "center", gap: 3 }}
+        accessibilityLabel={
+          revealed ? `${player.number}, ${player.name}` : `${player.number}, ${answerLetters(player.answer).length} ${t("letters")}`
+        }
+      >
         <Animated.View style={pop}>
           <Jersey
             variant={kit.variant}

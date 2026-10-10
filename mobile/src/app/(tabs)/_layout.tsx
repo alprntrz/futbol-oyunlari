@@ -7,7 +7,7 @@ import { C } from "~/lib/theme";
 export default function TabsLayout() {
   const { t } = useI18n();
   return (
-    <NativeTabs tintColor={C.green}>
+    <NativeTabs tintColor={C.greenMid}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{t("tabGames")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={BRAND.tab.games} renderingMode="template" />

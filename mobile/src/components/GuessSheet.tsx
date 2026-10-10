@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -13,6 +13,7 @@ import { C, F, T } from "~/lib/theme";
 import { TileLegend } from "./HowTo";
 import { Tile } from "./LetterTile";
 import { Keyboard } from "./Keyboard";
+import { Text } from "./Text";
 import { Icon } from "./ui";
 
 const GAP = 5;

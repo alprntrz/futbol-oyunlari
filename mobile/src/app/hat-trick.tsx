@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -8,6 +8,7 @@ import type { GridPlayer } from "@/data/players";
 import { generateGrid, searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
 import { HelpButton } from "~/components/HelpButton";
+import { Text } from "~/components/Text";
 import { Confetti } from "~/components/motion";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";

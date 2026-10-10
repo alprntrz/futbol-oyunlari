@@ -1,12 +1,13 @@
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Share, StyleSheet, Text, View } from "react-native";
+import { Share, StyleSheet, View } from "react-native";
 
 import { getMatchById } from "@/data/matches";
 import type { Difficulty, Match } from "@/lib/types";
 
 import { MissingXIBoard } from "~/components/MissingXIBoard";
+import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";

@@ -1,20 +1,11 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  type ImageSourcePropType,
-  type PressableProps,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { haptic } from "~/lib/haptics";
 import { C, F, R, shadow, T } from "~/lib/theme";
+
+import { Text } from "./Text";
 
 type SymbolName = SymbolViewProps["name"];
 
@@ -27,6 +18,8 @@ export function Icon({ name, size = 20, color = C.text, fallback }: { name: Symb
       tintColor={color}
       weight="semibold"
       fallback={<Text style={{ fontSize: size * 0.9, color }}>{fallback ?? "•"}</Text>}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
     />
   );
 }
@@ -35,7 +28,9 @@ export function Icon({ name, size = 20, color = C.text, fallback }: { name: Symb
 export function Tap({ style, onPress, silent, ...rest }: PressableProps & { style?: StyleProp<ViewStyle>; silent?: boolean }) {
   return (
     <Pressable
+      accessibilityRole="button"
       {...rest}
+      accessibilityState={{ disabled: !!rest.disabled, ...rest.accessibilityState }}
       onPress={(e) => {
         if (!silent) haptic.press();
         onPress?.(e);
@@ -130,7 +125,7 @@ export function Row({
   return (
     <Tap onPress={onPress} style={styles.row}>
       {image ? (
-        <Image source={image} style={styles.rowImage} />
+        <Image source={image} style={styles.rowImage} accessibilityIgnoresInvertColors accessible={false} />
       ) : (
         <View style={[styles.badge, { backgroundColor: soft }]}>
           {icon ? <Icon name={icon} size={20} color={color} fallback={iconFallback} /> : null}
@@ -172,6 +167,8 @@ export function Segmented<T extends string>({
               haptic.tap();
               onChange(o.value);
             }}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: active }}
             style={[styles.segment, active && styles.segmentActive]}
           >
             <Text style={[styles.segmentText, active && { color: C.text }]}>{o.label}</Text>

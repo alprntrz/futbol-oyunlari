@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from "react-native-reanimated";
 
 import type { TileMark } from "@/lib/types";
 
 import { C, F } from "~/lib/theme";
+
+import { Text } from "./Text";
 
 const MARK_BG: Record<TileMark, string> = { correct: C.tileCorrect, present: C.tilePresent, absent: C.tileAbsent };
 
@@ -65,7 +67,7 @@ export function Tile({
 
   return (
     <Animated.View style={[styles.tile, { width: size, height: size }, box]}>
-      <Text style={{ fontFamily: F.display, fontSize: Math.round(size * 0.62), color, minWidth: 8, textAlign: "center" }}>{ch}</Text>
+      <Text allowFontScaling={false} style={{ fontFamily: F.display, fontSize: Math.round(size * 0.62), color, minWidth: 8, textAlign: "center" }}>{ch}</Text>
     </Animated.View>
   );
 }

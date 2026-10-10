@@ -1,9 +1,10 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { InfoSheet, MissingXISteps, TikiSteps } from "~/components/HowTo";
+import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";

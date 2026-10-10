@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import type { TileMark } from "@/lib/types";
 
@@ -6,6 +6,7 @@ import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F } from "~/lib/theme";
 
+import { Text } from "./Text";
 import { Icon } from "./ui";
 
 const ROWS = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
@@ -26,7 +27,7 @@ export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks
         <View key={row} style={styles.row}>
           {ri === 2 && (
             <Pressable onPress={() => press("ENTER")} style={({ pressed }) => [styles.key, styles.wide, { backgroundColor: C.green }, pressed && styles.pressed]}>
-              <Text style={[styles.label, { color: "white", fontSize: 18 }]}>{t("guess")}</Text>
+              <Text allowFontScaling={false} style={[styles.label, { color: "white", fontSize: 18 }]}>{t("guess")}</Text>
             </Pressable>
           )}
           {row.split("").map((ch) => {
@@ -37,7 +38,7 @@ export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks
                 onPress={() => press(ch)}
                 style={({ pressed }) => [styles.key, styles.letter, { backgroundColor: m ? MARK_BG[m] : C.key }, pressed && styles.pressed]}
               >
-                <Text style={[styles.label, { color: m ? "white" : C.text }]}>{ch}</Text>
+                <Text allowFontScaling={false} style={[styles.label, { color: m ? "white" : C.text }]}>{ch}</Text>
               </Pressable>
             );
           })}
