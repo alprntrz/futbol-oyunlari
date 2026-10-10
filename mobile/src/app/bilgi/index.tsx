@@ -12,7 +12,7 @@ import { Icon, Tap } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
-import { F } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 const HEADER = 130;
 
@@ -35,8 +35,8 @@ export default function QuizHome() {
     }, [])
   );
   const modes: { icon: SymbolViewProps["name"]; title: string; desc: string; href: Href; bg: string }[] = [
-    { icon: "person.3.fill", title: t("htRandom"), desc: t("qzRandomDesc"), href: "/bilgi/rastgele", bg: "#2563EB" },
-    { icon: "person.2.badge.plus", title: t("htFriend"), desc: t("qzFriendsDesc"), href: "/bilgi/oda", bg: "#F59E0B" },
+    { icon: "person.3.fill", title: t("htRandom"), desc: t("qzRandomDesc"), href: "/bilgi/rastgele", bg: NIGHT.light ? C.green : "#2563EB" },
+    { icon: "person.2.badge.plus", title: t("htFriend"), desc: t("qzFriendsDesc"), href: "/bilgi/oda", bg: NIGHT.light ? C.greenDark : "#F59E0B" },
   ];
 
   return (
@@ -45,7 +45,7 @@ export default function QuizHome() {
       <NightStatusBar />
       <StadiumHeader height={HEADER} />
       <Pressable onPress={() => goBack()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
-        <Icon name="chevron.left" size={18} color="white" fallback="‹" />
+        <Icon name="chevron.left" size={18} color={NIGHT.ink} fallback="‹" />
       </Pressable>
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + HEADER - 10, paddingHorizontal: 16, paddingBottom: insets.bottom + 24, gap: 14 }}>
         <Animated.View entering={FadeIn.duration(200)}>
@@ -57,7 +57,7 @@ export default function QuizHome() {
           <Tap onPress={() => router.push("/bilgi/siralama")} style={styles.standings} accessibilityLabel={t("qzStandingsTitle")}>
             <Icon name="trophy.fill" size={18} color="#FACC15" fallback="🏆" />
             <Text style={styles.standingsText}>{t("qzStandingsTitle")}</Text>
-            <Icon name="chevron.right" size={14} color="rgba(255,255,255,0.7)" fallback="›" />
+            <Icon name="chevron.right" size={14} color={NIGHT.ink3} fallback="›" />
           </Tap>
         </Animated.View>
         {modes.map((m) => (
@@ -85,15 +85,15 @@ export default function QuizHome() {
 }
 
 const styles = StyleSheet.create({
-  back: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.16)", alignItems: "center", justifyContent: "center" },
-  title: { fontFamily: F.black, fontSize: 34, lineHeight: 38, color: "white" },
-  sub: { fontSize: 15, lineHeight: 21, color: "rgba(255,255,255,0.78)", marginTop: 4 },
+  back: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: NIGHT.raised, alignItems: "center", justifyContent: "center" },
+  title: { fontFamily: F.black, fontSize: 34, lineHeight: 38, color: NIGHT.ink },
+  sub: { fontSize: 15, lineHeight: 21, color: NIGHT.ink2, marginTop: 4 },
   card: { flexDirection: "row", alignItems: "center", gap: 14, borderRadius: 26, paddingHorizontal: 22, paddingVertical: 24, minHeight: 124 },
   cardTitle: { fontFamily: F.black, fontSize: 28, lineHeight: 31, color: "white" },
   cardDesc: { fontSize: 15, fontWeight: "600", lineHeight: 20, color: "rgba(255,255,255,0.9)" },
-  standings: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 16, paddingHorizontal: 14, paddingVertical: 13 },
-  standingsText: { flex: 1, fontFamily: F.display, fontSize: 19, color: "white" },
-  rules: { gap: 10, backgroundColor: "rgba(0,0,0,0.18)", borderRadius: 20, padding: 16, marginTop: 4 },
+  standings: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: NIGHT.raised, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 16, paddingHorizontal: 14, paddingVertical: 13 },
+  standingsText: { flex: 1, fontFamily: F.display, fontSize: 19, color: NIGHT.ink },
+  rules: { gap: 10, backgroundColor: NIGHT.light ? NIGHT.raised : NIGHT.sunk, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 20, padding: 16, marginTop: 4 },
   bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: NIGHT.accent, marginTop: 8 },
-  rule: { flex: 1, fontSize: 15, lineHeight: 21, color: "rgba(255,255,255,0.88)" },
+  rule: { flex: 1, fontSize: 15, lineHeight: 21, color: NIGHT.ink2 },
 });

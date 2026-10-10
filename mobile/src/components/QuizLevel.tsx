@@ -106,14 +106,14 @@ export function LevelProgress({ gained, before, after }: { gained: number; befor
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: "rgba(0,0,0,0.22)", borderRadius: 20, padding: 14 },
+  card: { flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: NIGHT.light ? NIGHT.raised : NIGHT.sunk, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 20, padding: 14 },
   badge: { backgroundColor: "#FACC15", borderWidth: 3, borderColor: "#FEF08A", alignItems: "center", justifyContent: "center" },
   badgeText: { fontFamily: F.black, color: "#422006" },
   row: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },
-  level: { fontFamily: F.display, fontSize: 20, color: "white" },
-  xp: { fontSize: 13, fontWeight: "700", color: "rgba(255,255,255,0.7)" },
-  gained: { fontFamily: F.black, fontSize: 20, color: "#FDE047" },
-  track: { height: 8, borderRadius: 4, backgroundColor: "rgba(255,255,255,0.16)", overflow: "hidden" },
+  level: { fontFamily: F.display, fontSize: 20, color: NIGHT.ink },
+  xp: { fontSize: 13, fontWeight: "700", color: NIGHT.ink3 },
+  gained: { fontFamily: F.black, fontSize: 20, color: NIGHT.gold },
+  track: { height: 8, borderRadius: 4, backgroundColor: NIGHT.light ? NIGHT.sunk : "rgba(255,255,255,0.16)", overflow: "hidden" },
   fill: { height: "100%", borderRadius: 4, backgroundColor: NIGHT.accent },
-  totals: { fontSize: 13, color: "rgba(255,255,255,0.72)", fontWeight: "600" },
+  totals: { fontSize: 13, color: NIGHT.ink2, fontWeight: "600" },
 });

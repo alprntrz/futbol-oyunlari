@@ -92,7 +92,7 @@ export default function QuizStandings() {
       <NightStatusBar />
       <StadiumHeader height={HEADER} />
       <Pressable onPress={goBack} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
-        <Icon name="chevron.left" size={18} color="white" fallback="‹" />
+        <Icon name="chevron.left" size={18} color={NIGHT.ink} fallback="‹" />
       </Pressable>
 
       <View style={{ paddingTop: insets.top + HEADER - 8, paddingHorizontal: 16, gap: 12, flex: 1 }}>
@@ -100,7 +100,7 @@ export default function QuizStandings() {
         <View style={styles.tabs}>
           {(["all", "week"] as Period[]).map((p) => (
             <Pressable key={p} onPress={() => setPeriod(p)} style={[styles.tab, period === p && styles.tabOn]} accessibilityRole="tab" accessibilityState={{ selected: period === p }}>
-              <Text style={[styles.tabText, period === p && { color: NIGHT.bodyLow }]}>{p === "all" ? t("qzAllTime") : t("qzThisWeek")}</Text>
+              <Text style={[styles.tabText, period === p && { color: NIGHT.light ? "#FFFFFF" : NIGHT.bodyLow }]}>{p === "all" ? t("qzAllTime") : t("qzThisWeek")}</Text>
             </Pressable>
           ))}
         </View>
@@ -134,23 +134,23 @@ export default function QuizStandings() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: NIGHT.body },
-  back: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.16)", alignItems: "center", justifyContent: "center" },
-  title: { fontFamily: F.black, fontSize: 32, lineHeight: 36, color: "white" },
-  tabs: { flexDirection: "row", backgroundColor: "rgba(0,0,0,0.25)", borderRadius: 999, padding: 4 },
+  back: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: NIGHT.raised, alignItems: "center", justifyContent: "center" },
+  title: { fontFamily: F.black, fontSize: 32, lineHeight: 36, color: NIGHT.ink },
+  tabs: { flexDirection: "row", backgroundColor: NIGHT.sunk, borderRadius: 999, padding: 4 },
   tab: { flex: 1, alignItems: "center", paddingVertical: 8, borderRadius: 999 },
-  tabOn: { backgroundColor: "white" },
-  tabText: { fontSize: 15, fontWeight: "800", color: "rgba(255,255,255,0.8)" },
+  tabOn: { backgroundColor: NIGHT.light ? NIGHT.primary : "#FFFFFF" },
+  tabText: { fontSize: 15, fontWeight: "800", color: NIGHT.ink2 },
   headRow: { flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 14 },
-  headText: { fontSize: 12, fontWeight: "800", color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: 0.5 },
-  row: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10 },
-  rowMe: { backgroundColor: "rgba(34,211,238,0.18)", borderWidth: 1.5, borderColor: NIGHT.accent },
-  rank: { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.12)" },
-  rankText: { fontFamily: F.display, fontSize: 15, color: "white" },
+  headText: { fontSize: 13, fontWeight: "700", color: NIGHT.ink3 },
+  row: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: NIGHT.raised, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10 },
+  rowMe: { backgroundColor: NIGHT.accentSoft, borderWidth: 1.5, borderColor: NIGHT.accent },
+  rank: { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: NIGHT.sunk },
+  rankText: { fontFamily: F.display, fontSize: 15, color: NIGHT.ink },
   avatar: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "white" },
   avatarText: { color: "white", fontWeight: "800", fontSize: 14 },
-  nick: { fontSize: 16, fontWeight: "800", color: "white" },
-  meta: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.65)", marginTop: 1 },
-  xp: { fontFamily: F.black, fontSize: 20, color: "white", minWidth: 48, textAlign: "right" },
-  empty: { fontSize: 15, color: "rgba(255,255,255,0.75)", textAlign: "center", marginTop: 30 },
+  nick: { fontSize: 16, fontWeight: "800", color: NIGHT.ink },
+  meta: { fontSize: 12, fontWeight: "600", color: NIGHT.ink3, marginTop: 1 },
+  xp: { fontFamily: F.black, fontSize: 20, color: NIGHT.ink, minWidth: 48, textAlign: "right" },
+  empty: { fontSize: 15, color: NIGHT.ink2, textAlign: "center", marginTop: 30 },
   pinned: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: 16, paddingTop: 10, backgroundColor: NIGHT.bodyLow },
 });

@@ -95,12 +95,12 @@ function TimerRing({ fraction, seconds, low }: { fraction: number; seconds: numb
   return (
     <View style={styles.ring}>
       <Svg width={44} height={44} style={StyleSheet.absoluteFill}>
-        <Circle cx={22} cy={22} r={r} stroke="rgba(255,255,255,0.18)" strokeWidth={4} fill="none" />
+        <Circle cx={22} cy={22} r={r} stroke={NIGHT.line} strokeWidth={4} fill="none" />
         <Circle
           cx={22}
           cy={22}
           r={r}
-          stroke={low ? WRONG : "white"}
+          stroke={low ? WRONG : NIGHT.track}
           strokeWidth={4}
           fill="none"
           strokeLinecap="round"
@@ -199,7 +199,7 @@ export default function QuizRoom() {
 
   const leave = (
     <Pressable onPress={() => goBack()} style={[styles.leave, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
-      <Icon name="chevron.left" size={18} color="white" fallback="‹" />
+      <Icon name="chevron.left" size={18} color={NIGHT.ink} fallback="‹" />
     </Pressable>
   );
 
@@ -369,7 +369,7 @@ export default function QuizRoom() {
               {room.index + 1}/{room.total}
             </Text>
           </View>
-          <Icon name={q.context ? "sportscourt.fill" : "person.fill"} size={26} color="white" fallback="⚽" />
+          <Icon name={q.context ? "sportscourt.fill" : "person.fill"} size={26} color={NIGHT.ink} fallback="⚽" />
           <TimerRing fraction={leftMs / limitMs} seconds={Math.ceil(leftMs / 1000)} low={low} />
         </View>
 
@@ -436,7 +436,7 @@ export default function QuizRoom() {
 
         {reveal && (me?.choice == null || me.choice !== room.answer) && (
           <Animated.View entering={FadeIn.delay(200).duration(200)} style={{ alignItems: "center", marginTop: 16 }}>
-            <Text style={[styles.verdict, { color: me?.choice == null ? "#FDE68A" : WRONG }]}>{me?.choice == null ? t("qzTimeUp") : t("qzWrong")}</Text>
+            <Text style={[styles.verdict, { color: me?.choice == null ? NIGHT.warn : WRONG }]}>{me?.choice == null ? t("qzTimeUp") : t("qzWrong")}</Text>
           </Animated.View>
         )}
       </Animated.View>
@@ -486,8 +486,8 @@ function WideButton({
   const primary = kind === "primary";
   return (
     <Tap onPress={onPress} disabled={disabled} style={[styles.wide, primary ? styles.widePrimary : styles.wideGhost, disabled && { opacity: 0.45 }]}>
-      {icon && <Icon name={icon} size={16} color={primary ? NIGHT.bodyLow : C.text} />}
-      <Text style={[styles.wideText, { color: primary ? NIGHT.bodyLow : C.text }]}>{title}</Text>
+      {icon && <Icon name={icon} size={16} color={primary ? NIGHT.primaryInk : C.text} />}
+      <Text style={[styles.wideText, { color: primary ? NIGHT.primaryInk : C.text }]}>{title}</Text>
     </Tap>
   );
 }
@@ -496,7 +496,7 @@ function RoundButton({ icon, label, onPress }: { icon: "house.fill" | "arrow.clo
   return (
     <Tap onPress={onPress} style={{ alignItems: "center", gap: 8, width: 120 }} accessibilityLabel={label}>
       <View style={styles.round}>
-        <Icon name={icon} size={26} color="white" fallback="•" />
+        <Icon name={icon} size={26} color={NIGHT.ink} fallback="•" />
       </View>
       <Text style={styles.roundLabel}>{label}</Text>
     </Tap>
@@ -506,7 +506,7 @@ function RoundButton({ icon, label, onPress }: { icon: "house.fill" | "arrow.clo
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: NIGHT.body },
   content: { flex: 1, paddingHorizontal: 16 },
-  leave: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.16)", alignItems: "center", justifyContent: "center" },
+  leave: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: NIGHT.raised, alignItems: "center", justifyContent: "center" },
 
   avatar: { alignItems: "center", justifyContent: "center", borderWidth: 2 },
   avatarText: { color: "white", fontWeight: "800" },
@@ -515,21 +515,21 @@ const styles = StyleSheet.create({
   cardTitle: { fontFamily: F.display, fontSize: 22, color: C.text, textAlign: "center" },
   caption: { fontSize: 13, fontWeight: "600", color: C.text2 },
   code: { fontFamily: F.black, fontSize: 48, letterSpacing: 6, color: C.text },
-  big: { fontFamily: F.black, fontSize: 30, lineHeight: 34, color: "white", textAlign: "center" },
-  sub: { fontSize: 15, color: "rgba(255,255,255,0.75)", fontWeight: "500" },
+  big: { fontFamily: F.black, fontSize: 30, lineHeight: 34, color: NIGHT.ink, textAlign: "center" },
+  sub: { fontSize: 15, color: NIGHT.ink2, fontWeight: "500" },
 
   seats: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 14 },
   seat: { width: 62, alignItems: "center", gap: 6 },
-  seatName: { fontSize: 12, fontWeight: "700", color: "white", maxWidth: 62 },
-  emptySeat: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.35)" },
+  seatName: { fontSize: 12, fontWeight: "700", color: NIGHT.ink, maxWidth: 62 },
+  emptySeat: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderStyle: "dashed", borderColor: NIGHT.ink3 },
 
   topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
-  countChip: { borderWidth: 2, borderColor: "rgba(255,255,255,0.7)", borderRadius: 9, paddingHorizontal: 8, paddingVertical: 3, minWidth: 48, alignItems: "center" },
-  countText: { fontFamily: F.display, fontSize: 16, color: "white" },
+  countChip: { borderWidth: 2, borderColor: NIGHT.ink3, borderRadius: 9, paddingHorizontal: 8, paddingVertical: 3, minWidth: 48, alignItems: "center" },
+  countText: { fontFamily: F.display, fontSize: 16, color: NIGHT.ink },
   ring: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
-  ringText: { fontFamily: F.display, fontSize: 17, color: "white", fontVariant: ["tabular-nums"] },
+  ringText: { fontFamily: F.display, fontSize: 17, color: NIGHT.ink, fontVariant: ["tabular-nums"] },
 
-  qCard: { backgroundColor: "white", borderRadius: 26, minHeight: 138, paddingHorizontal: 18, paddingVertical: 18, justifyContent: "center" },
+  qCard: { backgroundColor: "white", borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 26, minHeight: 138, paddingHorizontal: 18, paddingVertical: 18, justifyContent: "center" },
   qContext: { fontSize: 13, fontWeight: "600", color: C.text2, textAlign: "center" },
   qText: { fontSize: 19, lineHeight: 25, fontWeight: "700", color: C.text, textAlign: "center" },
 
@@ -537,12 +537,12 @@ const styles = StyleSheet.create({
   pill: { backgroundColor: "#F59E0B", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 3 },
   pillText: { fontSize: 12, fontWeight: "800", color: "#3B2300" },
 
-  option: { borderRadius: 999, minHeight: 52, paddingHorizontal: 44, paddingVertical: 10, alignItems: "center", justifyContent: "center" },
+  option: { borderRadius: 999, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, minHeight: 52, paddingHorizontal: 44, paddingVertical: 10, alignItems: "center", justifyContent: "center" },
   optionText: { fontSize: 16, fontWeight: "800", color: C.text, textAlign: "center" },
   myPick: { position: "absolute", left: -6, top: -8 },
   theirPicks: { position: "absolute", right: -6, top: -8, flexDirection: "row" },
   pointsUp: { position: "absolute", right: 34, top: -26 },
-  pointsUpText: { fontFamily: F.black, fontSize: 30, color: "#FDE047", textShadowColor: "rgba(0,0,0,0.35)", textShadowRadius: 4 },
+  pointsUpText: { fontFamily: F.black, fontSize: 30, color: NIGHT.gold, textShadowColor: NIGHT.light ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.35)", textShadowRadius: 4 },
   verdict: { fontFamily: F.black, fontSize: 26 },
 
   podiumCard: { backgroundColor: "#16A34A", borderRadius: 28, paddingTop: 18, paddingBottom: 16, paddingHorizontal: 14, gap: 8 },
@@ -559,11 +559,11 @@ const styles = StyleSheet.create({
   myStrip: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "center", backgroundColor: "rgba(0,0,0,0.22)", borderRadius: 999, paddingHorizontal: 14, paddingVertical: 4, marginTop: 4 },
   myStripText: { fontFamily: F.display, fontSize: 18, color: "white" },
   endButtons: { flexDirection: "row", justifyContent: "center", gap: 20, marginTop: 24 },
-  round: { width: 64, height: 64, borderRadius: 32, backgroundColor: "rgba(255,255,255,0.14)", borderWidth: 2, borderColor: "rgba(255,255,255,0.35)", alignItems: "center", justifyContent: "center" },
-  roundLabel: { fontSize: 14, fontWeight: "700", color: "white" },
+  round: { width: 64, height: 64, borderRadius: 32, backgroundColor: NIGHT.raised, borderWidth: 2, borderColor: NIGHT.line, alignItems: "center", justifyContent: "center" },
+  roundLabel: { fontSize: 14, fontWeight: "700", color: NIGHT.ink },
 
   wide: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 999, minHeight: 50, alignSelf: "stretch" },
-  widePrimary: { backgroundColor: "white" },
+  widePrimary: { backgroundColor: NIGHT.primary },
   wideGhost: { backgroundColor: C.bg },
   wideText: { fontFamily: F.display, fontSize: 20 },
 });

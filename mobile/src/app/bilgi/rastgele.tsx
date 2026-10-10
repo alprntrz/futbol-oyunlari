@@ -51,7 +51,7 @@ export default function QuizRandom() {
       <NightStatusBar />
       <StadiumHeader height={HEADER} runners={[]} />
       <Pressable onPress={() => goBack()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("cancel")} hitSlop={8}>
-        <Icon name="chevron.left" size={18} color="white" fallback="‹" />
+        <Icon name="chevron.left" size={18} color={NIGHT.ink} fallback="‹" />
       </Pressable>
       <View style={{ paddingTop: insets.top + HEADER + 14, alignItems: "center", gap: 6, paddingHorizontal: 16 }}>
         <RunningPlayer shirt={NIGHT.kit.shirt} shorts={NIGHT.kit.shorts} />
@@ -64,7 +64,7 @@ export default function QuizRandom() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: NIGHT.body },
-  back: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.16)", alignItems: "center", justifyContent: "center" },
-  big: { fontFamily: F.black, fontSize: 30, lineHeight: 34, color: "white", textAlign: "center" },
-  sub: { fontSize: 15, color: "rgba(255,255,255,0.75)", fontWeight: "500", textAlign: "center" },
+  back: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: NIGHT.raised, alignItems: "center", justifyContent: "center" },
+  big: { fontFamily: F.black, fontSize: 30, lineHeight: 34, color: NIGHT.ink, textAlign: "center" },
+  sub: { fontSize: 15, color: NIGHT.ink2, fontWeight: "500", textAlign: "center" },
 });

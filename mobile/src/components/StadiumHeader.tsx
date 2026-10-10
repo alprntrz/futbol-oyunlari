@@ -6,7 +6,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 
-import { F } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 import { Text } from "./Text";
 
@@ -22,7 +22,7 @@ export function NightStatusBar() {
       return () => setFocused(false);
     }, [])
   );
-  return focused ? <StatusBar style="light" /> : null;
+  return focused ? <StatusBar style={NIGHT.light ? "dark" : "light"} /> : null;
 }
 
 /**
@@ -34,19 +34,77 @@ export function goBack() {
   else router.replace("/oyunlar");
 }
 
-/** Night-match palette shared by the immersive game screens. */
-export const NIGHT = {
+/** The quiz's stadium in the dark: night match, floodlights on. */
+const DARK = {
+  light: false,
   sky: "#04190E",
   skyLow: "#0A3420",
   stand: "#0E4A2B",
   standLine: "rgba(255,255,255,0.07)",
+  crowd: "#FFFFFF",
+  roof: "#0C3D24",
+  pole: "#0B3A22",
+  glow: "#F4FFD8",
   body: "#0F5132",
   bodyLow: "#0A3A24",
   track: "#FFFFFF",
   accent: "#22D3EE",
+  accentSoft: "rgba(34,211,238,0.18)",
+  ink: "#FFFFFF",
+  ink2: "rgba(255,255,255,0.78)",
+  ink3: "rgba(255,255,255,0.58)",
+  raised: "rgba(255,255,255,0.12)",
+  sunk: "rgba(0,0,0,0.22)",
+  line: "rgba(255,255,255,0.35)",
+  gold: "#FDE047",
+  warn: "#FDE68A",
+  label: "#BFF6FF",
+  grass: "#FFFFFF",
+  /** filled button: white on the dark pitch */
+  primary: "#FFFFFF",
+  primaryInk: "#0A3A24",
   /** kit for figures drawn on the green: white shirt, black shorts */
   kit: { shirt: "#FFFFFF", shorts: "#111111" },
 };
+
+/** The same stadium in the app's own light colours: a day match. */
+const DAY: typeof DARK = {
+  light: true,
+  sky: "#E6F1E9",
+  skyLow: "#D6E9DC",
+  stand: "#C5DECD",
+  standLine: "rgba(20,83,45,0.10)",
+  crowd: "#14532D",
+  roof: "#A5C8B1",
+  pole: "#B3CDBC",
+  glow: "#FFFFFF",
+  body: C.bg,
+  bodyLow: C.bg,
+  track: C.greenMid,
+  accent: C.green,
+  accentSoft: C.greenSoft,
+  ink: C.text,
+  ink2: C.text2,
+  ink3: C.text3,
+  raised: C.card,
+  sunk: "#E4EBE6",
+  line: C.border,
+  gold: "#B45309",
+  warn: "#B45309",
+  label: C.greenDark,
+  grass: C.greenMid,
+  primary: C.green,
+  primaryInk: "#FFFFFF",
+  kit: { shirt: "#16A34A", shorts: "#FFFFFF" },
+};
+
+/**
+ * Palette for the quiz screens (named NIGHT from when it was only the dark one).
+ * Swap DAY for DARK to bring the night match back.
+ */
+export const NIGHT: typeof DARK = DAY;
+/** kept for switching back */
+export const NIGHT_DARK = DARK;
 
 const VB_W = 400;
 const VB_H = 170;
@@ -92,7 +150,7 @@ function Floodlight({ x }: { x: number }) {
   return (
     <G>
       <Circle cx={x} cy={18} r={46} fill="url(#glow)" />
-      <Line x1={x} y1={22} x2={x} y2={90} stroke="#0B3A22" strokeWidth={3} />
+      <Line x1={x} y1={22} x2={x} y2={90} stroke={NIGHT.pole} strokeWidth={3} />
       <Rect x={x - 13} y={10} width={26} height={13} rx={2} fill="#F7FBE8" opacity={0.92} />
       {[0, 1, 2].map((i) => (
         <Line key={i} x1={x - 13 + 6.5 * (i + 1)} y1={10} x2={x - 13 + 6.5 * (i + 1)} y2={23} stroke="#C8D9C0" strokeWidth={0.8} />
@@ -120,9 +178,13 @@ const Silhouette = memo(function Silhouette({ track }: { track: boolean }) {
           <Stop offset="1" stopColor={NIGHT.skyLow} />
         </LinearGradient>
         <RadialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-          <Stop offset="0" stopColor="#F4FFD8" stopOpacity="0.55" />
-          <Stop offset="1" stopColor="#F4FFD8" stopOpacity="0" />
+          <Stop offset="0" stopColor={NIGHT.glow} stopOpacity="0.55" />
+          <Stop offset="1" stopColor={NIGHT.glow} stopOpacity="0" />
         </RadialGradient>
+        <LinearGradient id="melt" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={NIGHT.body} stopOpacity="0" />
+          <Stop offset="1" stopColor={NIGHT.body} stopOpacity="1" />
+        </LinearGradient>
         <LinearGradient id="below" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={NIGHT.body} />
           <Stop offset="1" stopColor={NIGHT.body} />
@@ -132,10 +194,10 @@ const Silhouette = memo(function Silhouette({ track }: { track: boolean }) {
       <Floodlight x={46} />
       <Floodlight x={354} />
       {/* roof edge with its supports */}
-      <Path d={roof} stroke="#0C3D24" strokeWidth={4} fill="none" />
+      <Path d={roof} stroke={NIGHT.roof} strokeWidth={4} fill="none" />
       {Array.from({ length: 9 }, (_, i) => {
         const x = 20 + i * 45;
-        return <Line key={i} x1={x} y1={standTop(x) - 16} x2={x} y2={standTop(x)} stroke="#0C3D24" strokeWidth={1.5} />;
+        return <Line key={i} x1={x} y1={standTop(x) - 16} x2={x} y2={standTop(x)} stroke={NIGHT.roof} strokeWidth={1.5} />;
       })}
       {/* stands */}
       <Path d={`M0 ${VB_H} ${tierTop} L${VB_W} ${VB_H} Z`} fill={NIGHT.stand} />
@@ -152,8 +214,10 @@ const Silhouette = memo(function Silhouette({ track }: { track: boolean }) {
         />
       ))}
       {CROWD.map((d, i) => (
-        <Circle key={i} cx={d.x} cy={d.y} r={1.3} fill="#FFFFFF" opacity={d.o} />
+        <Circle key={i} cx={d.x} cy={d.y} r={1.3} fill={NIGHT.crowd} opacity={d.o} />
       ))}
+      {/* the stands melt into the page instead of ending on a hard edge */}
+      {!track && <Rect x={0} y={VB_H - 34} width={VB_W} height={34} fill="url(#melt)" />}
       {/* under the race line the screen's own colour takes over */}
       {track && (
         <>
@@ -251,5 +315,5 @@ const styles = StyleSheet.create({
   dot: { width: DOT, height: DOT, borderRadius: DOT / 2, borderWidth: 2, borderColor: "white", alignItems: "center", justifyContent: "center" },
   dotMe: { borderColor: NIGHT.accent, borderWidth: 3 },
   dotText: { color: "white", fontWeight: "800", fontSize: 13 },
-  label: { marginTop: 1, fontFamily: F.display, fontSize: 13, color: "#BFF6FF", textShadowColor: "rgba(0,0,0,0.6)", textShadowRadius: 3 },
+  label: { marginTop: 1, fontFamily: F.display, fontSize: 13, color: NIGHT.label, textShadowColor: NIGHT.light ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.6)", textShadowRadius: 3 },
 });

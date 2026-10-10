@@ -3,6 +3,8 @@ import { StyleSheet } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 
+import { NIGHT } from "./StadiumHeader";
+
 const W = 400;
 const H = 900;
 const BANDS = 12;
@@ -30,20 +32,21 @@ export const GrassPattern = memo(function GrassPattern() {
         <Defs>
           {/* stripes fade out towards the bottom, like light falling off the pitch */}
           <LinearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="white" stopOpacity="1" />
-            <Stop offset="1" stopColor="white" stopOpacity="0.45" />
+            <Stop offset="0" stopColor={NIGHT.grass} stopOpacity="1" />
+            <Stop offset="1" stopColor={NIGHT.grass} stopOpacity="0.45" />
           </LinearGradient>
         </Defs>
         {Array.from({ length: BANDS }, (_, i) =>
           i % 2 ? <Rect key={i} x={0} y={(i * H) / BANDS} width={W} height={H / BANDS} fill="url(#fade)" opacity={0.035} /> : null
         )}
-        <G opacity={0.07}>
+        {/* on the light pitch the blades are mid-green and fainter, or they read as scratches */}
+        <G opacity={NIGHT.light ? 0.05 : 0.07}>
           {BLADES.map((b, i) => (
-            <Path key={i} d={b.d} stroke={b.light ? "#B8F5C8" : "#03140A"} strokeWidth={1} strokeLinecap="round" />
+            <Path key={i} d={b.d} stroke={NIGHT.light ? NIGHT.grass : b.light ? "#B8F5C8" : "#03140A"} strokeWidth={1} strokeLinecap="round" />
           ))}
         </G>
         {/* halfway line and centre circle, barely there */}
-        <G opacity={0.05} stroke="white" strokeWidth={2} fill="none">
+        <G opacity={0.05} stroke={NIGHT.grass} strokeWidth={2} fill="none">
           <Line x1={0} y1={H * 0.62} x2={W} y2={H * 0.62} />
           <Path d={`M${W / 2 - 70} ${H * 0.62} a70 70 0 1 0 140 0 a70 70 0 1 0 -140 0`} />
         </G>
