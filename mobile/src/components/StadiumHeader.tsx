@@ -35,8 +35,8 @@ export const NIGHT = {
   bodyLow: "#0A3A24",
   track: "#FFFFFF",
   accent: "#22D3EE",
-  /** kit for figures drawn on the green: white shirt, navy shorts */
-  kit: { shirt: "#FFFFFF", shorts: "#1E3A8A" },
+  /** kit for figures drawn on the green: white shirt, black shorts */
+  kit: { shirt: "#FFFFFF", shorts: "#111111" },
 };
 
 const VB_W = 400;
