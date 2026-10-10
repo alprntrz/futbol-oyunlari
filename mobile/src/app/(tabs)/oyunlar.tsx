@@ -53,6 +53,15 @@ export default function Games() {
       bg: "#E4ECFD",
     },
     {
+      icon: "square.grid.3x3.square",
+      fallback: "▦",
+      title: t("kbName"),
+      desc: t("kbShort"),
+      href: "/kombine",
+      color: "#7044E8",
+      bg: "#EFE9FF",
+    },
+    {
       icon: "person.fill.questionmark",
       fallback: "?",
       title: t("myName"),
@@ -264,8 +273,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    minHeight: 58,
+    paddingVertical: 6,
+    minHeight: 54,
   },
   rowDivider: {
     borderTopWidth: StyleSheet.hairlineWidth,
