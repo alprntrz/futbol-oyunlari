@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { dailyMatch } from "@/lib/daily";
 import type { Difficulty, Match } from "@/lib/types";
 
-import { HeaderIcons } from "~/components/HeaderIcons";
+import { GameIntro } from "~/components/GameIntro";
+import { HelpButton } from "~/components/HelpButton";
 import { MissingXIBoard } from "~/components/MissingXIBoard";
 import { ResultCard } from "~/components/ResultCard";
-import { Screen } from "~/components/Screen";
-import { DifficultyPicker, HowToPlaySheet, StatsSheet } from "~/components/Sheets";
+import { Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
-import { loadDayState, loadStats, recordResult, saveDayState, type DayState, type GameStats } from "~/lib/storage";
+import { loadDayState, recordResult, saveDayState, type DayState } from "~/lib/storage";
 import { useMissingXI } from "~/lib/useMissingXI";
 
 export default function DailyScreen() {
@@ -18,9 +18,6 @@ export default function DailyScreen() {
   const { match, day } = useMemo(() => dailyMatch(), []);
   const [saved, setSaved] = useState<DayState | null | undefined>(undefined);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
-  const [help, setHelp] = useState(false);
-  const [statsOpen, setStatsOpen] = useState(false);
-  const [stats, setStats] = useState<GameStats | null>(null);
 
   useEffect(() => {
     // matchId guard: if the dataset changed and today's pick moved, drop the old save
@@ -29,46 +26,26 @@ export default function DailyScreen() {
       setSaved(valid);
       if (valid) setDifficulty(valid.difficulty);
     });
-    loadStats().then(setStats);
   }, [day, match.id]);
 
   return (
-    <Screen>
-      <Stack.Screen
-        options={{
-          title: `${t("daily")} #${day % 1000}`,
-          headerRight: () => <HeaderIcons onHelp={() => setHelp(true)} onStats={() => setStatsOpen(true)} />,
-        }}
-      />
+    <Page>
+      <Stack.Screen options={{ title: `${t("daily")} #${day % 1000}`, headerRight: () => <HelpButton game="xi" /> }} />
       {saved === undefined ? null : !difficulty ? (
-        <DifficultyPicker onPick={setDifficulty} />
+        <GameIntro title={t("daily")} subtitle={t("dailyHeroDesc")} onStart={setDifficulty} />
       ) : (
-        <DailyGame match={match} day={day} difficulty={difficulty} saved={saved} onStats={setStats} />
+        <DailyGame match={match} day={day} difficulty={difficulty} saved={saved} />
       )}
-      <HowToPlaySheet visible={help} onClose={() => setHelp(false)} />
-      <StatsSheet stats={stats} visible={statsOpen} onClose={() => setStatsOpen(false)} />
-    </Screen>
+    </Page>
   );
 }
 
-function DailyGame({
-  match,
-  day,
-  difficulty,
-  saved,
-  onStats,
-}: {
-  match: Match;
-  day: number;
-  difficulty: Difficulty;
-  saved: DayState | null;
-  onStats: (s: GameStats) => void;
-}) {
+function DailyGame({ match, day, difficulty, saved }: { match: Match; day: number; difficulty: Difficulty; saved: DayState | null }) {
   const [recorded, setRecorded] = useState(saved?.recorded ?? false);
   const game = useMissingXI(match, difficulty, saved ?? undefined, (won) => {
     if (recorded) return;
     setRecorded(true);
-    recordResult(won, day).then(onStats);
+    recordResult(won, day);
   });
   const { slots, gaveUp, progress } = game;
 
@@ -78,6 +55,7 @@ function DailyGame({
 
   return (
     <>
+      {progress.done && <ResultCard match={match} slots={slots} won={progress.won} day={day % 1000} />}
       <MissingXIBoard
         match={match}
         difficulty={difficulty}
@@ -87,7 +65,6 @@ function DailyGame({
         onGuess={game.guess}
         onGiveUp={game.giveUp}
       />
-      {progress.done && <ResultCard match={match} slots={slots} won={progress.won} day={day % 1000} />}
     </>
   );
 }

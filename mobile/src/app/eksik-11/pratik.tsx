@@ -5,35 +5,38 @@ import { Text } from "react-native";
 import { globalMatches, randomMatch, turkishMatches } from "@/lib/daily";
 import type { Difficulty, Match } from "@/lib/types";
 
+import { GameIntro } from "~/components/GameIntro";
+import { HelpButton } from "~/components/HelpButton";
 import { MissingXIBoard } from "~/components/MissingXIBoard";
 import { ResultCard } from "~/components/ResultCard";
-import { Screen } from "~/components/Screen";
-import { DifficultyPicker } from "~/components/Sheets";
+import { Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
-import { C, F } from "~/lib/theme";
+import { T } from "~/lib/theme";
 import { useMissingXI } from "~/lib/useMissingXI";
 
 /** Random-match practice; `havuz` = "global" (2005+, non-Turkish) or "turkiye". */
 export default function PracticeScreen() {
   const { t } = useI18n();
   const { havuz } = useLocalSearchParams<{ havuz?: string }>();
-  const pool = useMemo(() => (havuz === "turkiye" ? turkishMatches() : globalMatches()), [havuz]);
+  const turkish = havuz === "turkiye";
+  const pool = useMemo(() => (turkish ? turkishMatches() : globalMatches()), [turkish]);
   const [game, setGame] = useState<{ match: Match; difficulty: Difficulty; key: number } | null>(null);
+  const title = turkish ? t("turkishTeams") : t("practice");
 
   const start = (difficulty: Difficulty) =>
     setGame((g) => ({ match: randomMatch(g?.match.id, pool), difficulty, key: (g?.key ?? 0) + 1 }));
 
   return (
-    <Screen>
-      <Stack.Screen options={{ title: havuz === "turkiye" ? t("turkishTeams") : t("practice") }} />
+    <Page>
+      <Stack.Screen options={{ title, headerRight: () => <HelpButton game="xi" /> }} />
       {pool.length === 0 ? (
-        <Text style={{ color: C.textDim, fontFamily: F.body, marginTop: 40 }}>{t("noMatches")}</Text>
+        <Text style={[T.body, { textAlign: "center", marginTop: 40 }]}>{t("noMatches")}</Text>
       ) : !game ? (
-        <DifficultyPicker onPick={start} />
+        <GameIntro title={title} subtitle={turkish ? t("turkishDesc") : t("practiceDesc")} onStart={start} />
       ) : (
         <PracticeGame key={game.key} match={game.match} difficulty={game.difficulty} onNext={() => start(game.difficulty)} />
       )}
-    </Screen>
+    </Page>
   );
 }
 
@@ -41,6 +44,7 @@ function PracticeGame({ match, difficulty, onNext }: { match: Match; difficulty:
   const { slots, progress, guess, giveUp } = useMissingXI(match, difficulty);
   return (
     <>
+      {progress.done && <ResultCard match={match} slots={slots} won={progress.won} onNewMatch={onNext} />}
       <MissingXIBoard
         match={match}
         difficulty={difficulty}
@@ -50,7 +54,6 @@ function PracticeGame({ match, difficulty, onNext }: { match: Match; difficulty:
         onGuess={guess}
         onGiveUp={giveUp}
       />
-      {progress.done && <ResultCard match={match} slots={slots} won={progress.won} onNewMatch={onNext} />}
     </>
   );
 }

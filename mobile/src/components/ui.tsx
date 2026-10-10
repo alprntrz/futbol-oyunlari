@@ -1,15 +1,36 @@
-import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import { SymbolView, type SymbolViewProps } from "expo-symbols";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  type PressableProps,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { haptic } from "~/lib/haptics";
-import { C, F } from "~/lib/theme";
+import { C, R, shadow, T } from "~/lib/theme";
 
-/** Pressable that shrinks slightly and ticks a haptic when touched. */
-export function Tap({
-  style,
-  onPress,
-  silent,
-  ...rest
-}: PressableProps & { style?: StyleProp<ViewStyle>; silent?: boolean }) {
+type SymbolName = SymbolViewProps["name"];
+
+/** SF Symbol on iOS with an emoji/text fallback elsewhere. */
+export function Icon({ name, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {
+  return (
+    <SymbolView
+      name={name}
+      size={size}
+      tintColor={color}
+      weight="semibold"
+      fallback={<Text style={{ fontSize: size * 0.9, color }}>{fallback ?? "•"}</Text>}
+    />
+  );
+}
+
+/** Pressable with a light press-in scale and a haptic tick. */
+export function Tap({ style, onPress, silent, ...rest }: PressableProps & { style?: StyleProp<ViewStyle>; silent?: boolean }) {
   return (
     <Pressable
       {...rest}
@@ -17,91 +38,170 @@ export function Tap({
         if (!silent) haptic.press();
         onPress?.(e);
       }}
-      style={({ pressed }) => [style, pressed && !rest.disabled && { transform: [{ scale: 0.97 }], opacity: 0.85 }]}
+      style={({ pressed }) => [style, pressed && !rest.disabled && { transform: [{ scale: 0.98 }], opacity: 0.9 }]}
     />
+  );
+}
+
+export function Card({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+  return <View style={[styles.card, style]}>{children}</View>;
+}
+
+/** Scrollable page on the grey background. */
+export function Page({ children, scroll = true, topInset = false }: { children: React.ReactNode; scroll?: boolean; topInset?: boolean }) {
+  const insets = useSafeAreaInsets();
+  const pad = { paddingHorizontal: 16, paddingTop: topInset ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
+  if (!scroll) return <View style={[{ flex: 1, backgroundColor: C.bg }, pad]}>{children}</View>;
+  return (
+    <View style={{ flex: 1, backgroundColor: C.bg }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: C.bg }}
+      contentContainerStyle={[pad, { flexGrow: 1, alignItems: "center" }]}
+      contentInsetAdjustmentBehavior="automatic"
+      keyboardShouldPersistTaps="handled"
+    >
+      <View style={{ width: "100%", maxWidth: 560 }}>{children}</View>
+    </ScrollView>
+      {/* Tab screens have no header: keep scrolled content out from under the status bar */}
+      {topInset && <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, height: insets.top, backgroundColor: C.bg }} />}
+    </View>
   );
 }
 
 export function Button({
   title,
   onPress,
-  color = C.indigo,
-  outline,
+  kind = "primary",
+  icon,
   disabled,
   style,
 }: {
   title: string;
   onPress: () => void;
-  color?: string;
-  outline?: boolean;
+  kind?: "primary" | "secondary" | "danger" | "ghost";
+  icon?: SymbolName;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
+  const bg = { primary: C.green, secondary: C.card, danger: C.redSoft, ghost: "transparent" }[kind];
+  const fg = { primary: "white", secondary: C.text, danger: C.red, ghost: C.text2 }[kind];
   return (
     <Tap
       onPress={onPress}
       disabled={disabled}
       style={[
         styles.button,
-        outline ? { borderWidth: 1.5, borderColor: C.border } : { backgroundColor: color },
-        disabled && { opacity: 0.5 },
+        { backgroundColor: bg },
+        kind === "secondary" && { borderWidth: 1, borderColor: C.border },
+        disabled && { opacity: 0.45 },
         style,
       ]}
     >
-      <Text style={[styles.buttonText, outline && { color: C.textDim }]}>{title}</Text>
+      {icon ? <Icon name={icon} size={17} color={fg} /> : null}
+      <Text style={[styles.buttonText, { color: fg }]}>{title}</Text>
     </Tap>
   );
 }
 
-/** Big tappable card used for menus (game list, modes, difficulty). */
-export function MenuCard({
+/** List row: coloured icon badge, title, description, chevron. */
+export function Row({
+  icon,
+  iconFallback,
+  color,
+  soft,
   title,
   subtitle,
-  emoji,
-  color,
   onPress,
-  children,
+  last,
 }: {
+  icon: SymbolName;
+  iconFallback?: string;
+  color: string;
+  soft: string;
   title: string;
   subtitle?: string;
-  emoji?: string;
-  color: string;
   onPress: () => void;
-  children?: React.ReactNode;
+  last?: boolean;
 }) {
   return (
-    <Tap onPress={onPress} style={[styles.card, { borderColor: color + "99", backgroundColor: color + "26" }]}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-        {emoji ? <Text style={{ fontSize: 34 }}>{emoji}</Text> : null}
+    <Tap onPress={onPress} style={styles.row}>
+      <View style={[styles.badge, { backgroundColor: soft }]}>
+        <Icon name={icon} size={20} color={color} fallback={iconFallback} />
+      </View>
+      <View style={[styles.rowText, !last && styles.rowDivider]}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.cardTitle}>{title}</Text>
-          {subtitle ? <Text style={styles.cardSub}>{subtitle}</Text> : null}
-          {children}
+          <Text style={T.headline}>{title}</Text>
+          {subtitle ? <Text style={[T.body, { fontSize: 14, marginTop: 2 }]}>{subtitle}</Text> : null}
         </View>
-        <Text style={{ color: C.textMute, fontSize: 22 }}>›</Text>
+        <Icon name="chevron.right" size={14} color={C.text3} fallback="›" />
       </View>
     </Tap>
   );
 }
 
-export function Pill({ label, color }: { label: string; color: string }) {
+export function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <Text style={[T.label, { marginTop: 28, marginBottom: 10, marginLeft: 4 }]}>{children}</Text>;
+}
+
+/** iOS-style segmented control. */
+export function Segmented<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: { value: T; label: string }[];
+  onChange: (v: T) => void;
+}) {
   return (
-    <View style={{ backgroundColor: color, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 2 }}>
-      <Text style={{ color: "white", fontFamily: F.bold, fontSize: 11 }}>{label}</Text>
+    <View style={styles.segmented}>
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <Pressable
+            key={o.value}
+            onPress={() => {
+              haptic.tap();
+              onChange(o.value);
+            }}
+            style={[styles.segment, active && styles.segmentActive]}
+          >
+            <Text style={[styles.segmentText, active && { color: C.text }]}>{o.label}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+export function Chip({ label, color, soft, icon }: { label: string; color: string; soft: string; icon?: SymbolName }) {
+  return (
+    <View style={[styles.chip, { backgroundColor: soft }]}>
+      {icon ? <Icon name={icon} size={12} color={color} /> : null}
+      <Text style={{ color, fontSize: 13, fontWeight: "700" }}>{label}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  card: { backgroundColor: C.card, borderRadius: R.card, padding: 16, ...shadow },
   button: {
-    borderRadius: 12,
-    paddingVertical: 13,
+    minHeight: 50,
+    borderRadius: R.button,
     paddingHorizontal: 18,
+    flexDirection: "row",
+    gap: 8,
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonText: { color: "white", fontFamily: F.black, fontSize: 15 },
-  card: { borderRadius: 18, borderWidth: 1.5, padding: 18 },
-  cardTitle: { color: C.text, fontFamily: F.black, fontSize: 19 },
-  cardSub: { color: C.textDim, fontFamily: F.body, fontSize: 13, marginTop: 2 },
+  buttonText: { fontSize: 16, fontWeight: "700" },
+  row: { flexDirection: "row", alignItems: "center", paddingLeft: 14, gap: 14 },
+  badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  rowText: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 14, paddingRight: 14 },
+  rowDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  segmented: { flexDirection: "row", backgroundColor: "#E8EBF0", borderRadius: 12, padding: 3 },
+  segment: { flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: "center" },
+  segmentActive: { backgroundColor: C.card, ...shadow, shadowOpacity: 0.1 },
+  segmentText: { fontSize: 14, fontWeight: "700", color: C.text2 },
+  chip: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: R.chip, paddingHorizontal: 10, paddingVertical: 4, alignSelf: "flex-start" },
 });

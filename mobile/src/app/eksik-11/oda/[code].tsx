@@ -1,19 +1,18 @@
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Share, StyleSheet, Text, View } from "react-native";
 
 import { getMatchById } from "@/data/matches";
 import type { Difficulty, Match } from "@/lib/types";
 
 import { MissingXIBoard } from "~/components/MissingXIBoard";
-import { Screen } from "~/components/Screen";
-import { Button, Tap } from "~/components/ui";
+import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
-import { C, F } from "~/lib/theme";
+import { C, T } from "~/lib/theme";
 import { useMissingXI, type GameProgress } from "~/lib/useMissingXI";
 
 interface PublicPlayer {
@@ -84,72 +83,90 @@ export default function RoomScreen() {
 
   if (error) {
     return (
-      <Screen>
+      <Page>
         <Stack.Screen options={{ title: t("onlineRace") }} />
-        <Text style={[styles.big, { color: "#f87171", marginTop: 40 }]}>{error}</Text>
-        <Button title={`← ${t("onlineRace")}`} onPress={() => router.back()} style={{ marginTop: 20 }} />
-      </Screen>
+        <Card style={{ alignItems: "center", gap: 12, paddingVertical: 28 }}>
+          <Icon name="exclamationmark.triangle.fill" size={30} color={C.amber} fallback="⚠️" />
+          <Text style={T.headline}>{error}</Text>
+          <Button title={t("onlineRace")} kind="secondary" icon="chevron.left" onPress={() => router.back()} />
+        </Card>
+      </Page>
     );
   }
 
   return (
-    <Screen>
+    <Page>
       <Stack.Screen options={{ title: t("onlineRace") }} />
-      <View style={styles.bar}>
-        <Tap onPress={copy}>
-          <Text style={styles.code}>
-            {code} {copied ? "✓" : "⧉"}
-          </Text>
-        </Tap>
-        <View style={{ flexDirection: "row", gap: 12 }}>
-          {room?.players.map((p) => (
-            <View key={p.id} style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-              <View style={[styles.dot, { backgroundColor: p.done ? C.textMute : C.emerald }]} />
-              <Text style={styles.player}>{p.id === myId ? t("you") : p.nick || t("opponent")}</Text>
-              <Text style={styles.solved}>{p.solved}/11</Text>
-            </View>
-          ))}
-        </View>
-      </View>
 
       {!room?.started ? (
-        <View style={{ alignItems: "center", gap: 16, paddingVertical: 40 }}>
-          {room && room.players.length < 2 && <Text style={styles.waiting}>{t("waiting")}</Text>}
-          {room && room.players.length >= 2 && me?.isHost && (
-            <Button title={`▶ ${t("start")}`} color="#059669" onPress={() => getSocket().emit("room:start")} style={{ paddingHorizontal: 40 }} />
-          )}
-          {room && room.players.length >= 2 && !me?.isHost && <Text style={styles.waiting}>{t("waitingHost")}</Text>}
-          <Text style={{ color: C.textMute, fontFamily: F.body }}>
-            {t("roomCode")}: <Text style={{ color: C.text, fontFamily: F.black }}>{code}</Text>
-          </Text>
-        </View>
+        <>
+          <Card style={styles.codeCard}>
+            <Text style={T.label}>{t("roomCode")}</Text>
+            <Tap onPress={copy} style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+              <Text style={styles.code}>{code}</Text>
+              <Icon name={copied ? "checkmark.circle.fill" : "doc.on.doc"} size={20} color={copied ? C.green : C.text3} fallback="⧉" />
+            </Tap>
+            <Button
+              title={t("shareCode")}
+              kind="secondary"
+              icon="square.and.arrow.up"
+              onPress={() => Share.share({ message: `${t("inviteText")} ${code}` })}
+              style={{ alignSelf: "stretch" }}
+            />
+          </Card>
+
+          <Card style={{ marginTop: 16, padding: 0, overflow: "hidden" }}>
+            {room?.players.map((p, i) => (
+              <View key={p.id} style={[styles.player, i > 0 && styles.playerDivider]}>
+                <View style={[styles.avatar, { backgroundColor: p.id === myId ? C.greenSoft : C.violetSoft }]}>
+                  <Icon name="person.fill" size={16} color={p.id === myId ? C.green : C.violet} fallback="👤" />
+                </View>
+                <Text style={[T.headline, { flex: 1 }]}>{p.id === myId ? t("you") : p.nick || t("opponent")}</Text>
+                {p.isHost && <Icon name="crown.fill" size={14} color={C.amber} fallback="👑" />}
+              </View>
+            ))}
+          </Card>
+
+          <View style={{ alignItems: "center", marginTop: 24, gap: 12 }}>
+            {room && room.players.length < 2 && <Text style={T.body}>{t("waiting")}</Text>}
+            {room && room.players.length >= 2 && me?.isHost && (
+              <Button title={t("start")} icon="play.fill" onPress={() => getSocket().emit("room:start")} style={{ alignSelf: "stretch" }} />
+            )}
+            {room && room.players.length >= 2 && !me?.isHost && <Text style={T.body}>{t("waitingHost")}</Text>}
+          </View>
+        </>
       ) : match ? (
         <>
           {result && (
-            <View
+            <Card
               style={[
                 styles.result,
-                { backgroundColor: result.winnerId === null ? "rgba(217,119,6,0.3)" : result.winnerId === myId ? "rgba(5,150,105,0.3)" : "rgba(220,38,38,0.3)" },
+                { backgroundColor: result.winnerId === null ? C.amberSoft : result.winnerId === myId ? C.greenSoft : C.redSoft },
               ]}
             >
-              <Text style={styles.big}>{result.winnerId === null ? t("raceTie") : result.winnerId === myId ? t("raceWin") : t("raceLose")}</Text>
-            </View>
+              <Text style={[T.headline, { textAlign: "center" }]}>
+                {result.winnerId === null ? t("raceTie") : result.winnerId === myId ? t("raceWin") : t("raceLose")}
+              </Text>
+            </Card>
           )}
           <RaceGame
             match={match}
             difficulty={room.difficulty}
             headerExtra={
               opponent ? (
-                <Text style={styles.opponent}>
-                  {t("opponent")}: <Text style={{ color: C.text, fontFamily: F.black }}>{opponent.nick}</Text>{" "}
-                  <Text style={{ color: C.emeraldLight }}>{opponent.solved}/11</Text> · {t("totalGuesses").toLowerCase()}: {opponent.totalGuesses}
-                </Text>
+                <View style={styles.versus}>
+                  <Icon name="person.fill" size={13} color={C.violet} fallback="👤" />
+                  <Text style={[T.caption, { color: C.text2 }]}>
+                    {opponent.nick || t("opponent")}: <Text style={{ fontWeight: "800", color: C.violet }}>{opponent.solved}/11</Text> · {opponent.totalGuesses}{" "}
+                    {t("guessesWord")}
+                  </Text>
+                </View>
               ) : null
             }
           />
         </>
       ) : null}
-    </Screen>
+    </Page>
   );
 }
 
@@ -177,25 +194,11 @@ function RaceGame({ match, difficulty, headerExtra }: { match: Match; difficulty
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: C.border,
-    backgroundColor: "rgba(24,24,27,0.7)",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginBottom: 12,
-  },
-  code: { color: C.emeraldLight, fontFamily: F.black, fontSize: 20, letterSpacing: 3 },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  player: { color: C.text, fontFamily: F.bold, fontSize: 13 },
-  solved: { color: C.emeraldLight, fontFamily: F.black, fontSize: 13 },
-  waiting: { color: "#d4d4d8", fontFamily: F.bold, fontSize: 17, textAlign: "center" },
-  result: { width: "100%", borderRadius: 12, padding: 12, marginBottom: 12 },
-  big: { color: C.text, fontFamily: F.black, fontSize: 18, textAlign: "center" },
-  opponent: { color: C.textDim, fontFamily: F.body, fontSize: 12, marginTop: 4 },
+  codeCard: { alignItems: "center", gap: 14, padding: 24 },
+  code: { fontSize: 40, fontWeight: "800", letterSpacing: 8, color: C.text },
+  player: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14 },
+  playerDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
+  avatar: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center" },
+  result: { marginBottom: 12 },
+  versus: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 10 },
 });

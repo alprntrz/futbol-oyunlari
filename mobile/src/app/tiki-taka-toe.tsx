@@ -6,11 +6,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { GridPlayer } from "@/data/players";
 import { generateGrid, searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
-import { Screen } from "~/components/Screen";
-import { Button, Tap } from "~/components/ui";
+import { HelpButton } from "~/components/HelpButton";
+import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F } from "~/lib/theme";
+import { C, R, shadow, T } from "~/lib/theme";
 
 type Mark = "X" | "O";
 interface Cell {
@@ -24,7 +24,10 @@ const LINES = [
   [0, 3, 6], [1, 4, 7], [2, 5, 8],
   [0, 4, 8], [2, 4, 6],
 ];
-const MARK_COLOR: Record<Mark, string> = { X: C.indigoLight, O: C.roseLight };
+const MARK: Record<Mark, { color: string; soft: string }> = {
+  X: { color: C.blue, soft: C.blueSoft },
+  O: { color: C.coral, soft: C.coralSoft },
+};
 
 function initials(name: string) {
   const t = name.trim().split(/\s+/);
@@ -33,7 +36,7 @@ function initials(name: string) {
 function avatarColor(name: string) {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return `hsl(${h % 360}, 42%, 38%)`;
+  return `hsl(${h % 360}, 45%, 48%)`;
 }
 
 /** Readable text colour on a crest: the club's 2nd colour unless it is too close to the 1st. */
@@ -46,23 +49,16 @@ function crestText(c: Criterion) {
   return lum(c.c1) > 0.6 ? "#111111" : "#ffffff";
 }
 
-function Crest({ c, size = 28 }: { c: Criterion; size?: number }) {
+function Crest({ c, size = 30 }: { c: Criterion; size?: number }) {
   return (
-    <View style={{ width: size, height: size, borderRadius: 6, backgroundColor: c.c1, borderWidth: 1, borderColor: (c.c2 ?? "#fff") + "55", alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ color: crestText(c), fontFamily: F.black, fontSize: size * 0.32 }}>{c.short}</Text>
+    <View style={{ width: size, height: size, borderRadius: size / 3, backgroundColor: c.c1, borderWidth: 1, borderColor: "rgba(0,0,0,0.1)", alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ color: crestText(c), fontWeight: "800", fontSize: size * 0.3 }}>{c.short}</Text>
     </View>
   );
 }
 
-function CriterionHeader({ c, label }: { c: Criterion; label: string }) {
-  return (
-    <View style={styles.header}>
-      {c.kind === "club" ? <Crest c={c} /> : <Text style={{ fontSize: 22 }}>{c.icon}</Text>}
-      <Text style={styles.headerLabel} numberOfLines={2} adjustsFontSizeToFit>
-        {label}
-      </Text>
-    </View>
-  );
+function CriterionBadge({ c, size }: { c: Criterion; size?: number }) {
+  return c.kind === "club" ? <Crest c={c} size={size} /> : <Text style={{ fontSize: (size ?? 30) * 0.8 }}>{c.icon}</Text>;
 }
 
 function winnerOf(board: (Cell | null)[]): { mark: Mark; line: number[] } | null {
@@ -86,6 +82,10 @@ export default function TikiTakaToeScreen() {
   const [flash, setFlash] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(TURN_SECONDS);
   const [deadline, setDeadline] = useState(() => Date.now() + TURN_SECONDS * 1000);
+  // Explicit cell sizes keep header and board columns exactly aligned
+  const [gridW, setGridW] = useState(0);
+  const cellW = gridW ? (gridW - 3 * 6) / 4.1 : 0;
+  const size = (n: number) => (cellW ? { width: cellW * n, height: cellW } : null);
   const resetClock = () => {
     setDeadline(Date.now() + TURN_SECONDS * 1000);
     setTimeLeft(TURN_SECONDS);
@@ -170,46 +170,63 @@ export default function TikiTakaToeScreen() {
   const col = openCell !== null ? grid.cols[openCell % 3] : null;
 
   return (
-    <Screen>
-      <Stack.Screen options={{ title: t("tikiTakaName") }} />
+    <Page>
+      <Stack.Screen options={{ title: t("tikiTakaName"), headerRight: () => <HelpButton game="tiki" /> }} />
 
-      <View style={styles.status}>
-        {winner ? (
-          <Text style={styles.winner}>{winner === "draw" ? t("ttDraw") : `${winner} ${t("ttWins")}`}</Text>
-        ) : (
-          <>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
-              <View style={[styles.turn, { backgroundColor: turn === "X" ? C.indigo : C.rose }]}>
-                <Text style={styles.turnText}>
-                  {t("ttTurn")}: {turn}
-                </Text>
-              </View>
-              <Text style={[styles.timer, low && { color: "#f43f5e" }]}>
-                {timeLeft}
-                <Text style={styles.timerUnit}> {t("secondsShort")}</Text>
-              </Text>
-            </View>
-            <View style={styles.bar}>
-              <View style={{ height: "100%", width: `${(timeLeft / TURN_SECONDS) * 100}%`, backgroundColor: low ? "#f43f5e" : C.indigo }} />
-            </View>
-            {flash ? <Text style={styles.flash}>{flash}</Text> : null}
-          </>
-        )}
-      </View>
+      {/* Whose turn */}
+      {winner ? (
+        <Card style={[styles.winner, { backgroundColor: winner === "draw" ? C.amberSoft : MARK[winner].soft }]}>
+          <Icon name="trophy.fill" size={26} color={winner === "draw" ? C.amber : MARK[winner].color} fallback="🏆" />
+          <Text style={[T.title, { color: winner === "draw" ? C.text : MARK[winner].color }]}>
+            {winner === "draw" ? t("ttDraw") : `${winner} ${t("ttWins")}`}
+          </Text>
+        </Card>
+      ) : (
+        <Card style={{ padding: 14 }}>
+          <View style={styles.players}>
+            {(["X", "O"] as Mark[]).map((m) => {
+              const active = turn === m;
+              return (
+                <View key={m} style={[styles.playerPill, { backgroundColor: active ? MARK[m].color : MARK[m].soft }]}>
+                  <Text style={[styles.playerMark, { color: active ? "white" : MARK[m].color }]}>{m}</Text>
+                  {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
+                </View>
+              );
+            })}
+          </View>
+          <View style={styles.bar}>
+            <View style={{ height: "100%", width: `${(timeLeft / TURN_SECONDS) * 100}%`, backgroundColor: low ? C.red : MARK[turn].color, borderRadius: 3 }} />
+          </View>
+          <Text style={[T.body, { textAlign: "center", marginTop: 10, color: C.text }]}>
+            <Text style={{ fontWeight: "800", color: MARK[turn].color }}>
+              {t("ttTurn")}: {turn}
+            </Text>{" "}
+            · {t("ttPick")}
+          </Text>
+          {flash ? <Text style={[T.caption, { textAlign: "center", color: C.red, marginTop: 4 }]}>{flash}</Text> : null}
+        </Card>
+      )}
 
-      <View style={styles.grid}>
+      {/* Grid */}
+      <View style={styles.grid} onLayout={(e) => setGridW(e.nativeEvent.layout.width)}>
         <View style={styles.row}>
-          <View style={styles.corner} />
+          <View style={[styles.corner, size(1.1)]} />
           {grid.cols.map((c, i) => (
-            <View key={i} style={[styles.cell, styles.headCell]}>
-              <CriterionHeader c={c} label={label(c)} />
+            <View key={i} style={[styles.cell, styles.head, size(1)]}>
+              <CriterionBadge c={c} />
+              <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
+                {label(c)}
+              </Text>
             </View>
           ))}
         </View>
         {grid.rows.map((r, ri) => (
           <View key={ri} style={styles.row}>
-            <View style={[styles.corner, styles.headCell]}>
-              <CriterionHeader c={r} label={label(r)} />
+            <View style={[styles.corner, styles.head, size(1.1)]}>
+              <CriterionBadge c={r} />
+              <Text style={styles.headLabel} numberOfLines={2} adjustsFontSizeToFit>
+                {label(r)}
+              </Text>
             </View>
             {grid.cols.map((_, ci) => {
               const idx = ri * 3 + ci;
@@ -224,17 +241,23 @@ export default function TikiTakaToeScreen() {
                     setInput("");
                     setFlash(null);
                   }}
-                  style={[styles.cell, styles.playCell, cell && styles.filled, inWin && styles.win]}
+                  style={[
+                    styles.cell,
+                    styles.play,
+                    size(1),
+                    cell && { backgroundColor: MARK[cell.mark].soft, borderColor: MARK[cell.mark].soft },
+                    inWin && { borderColor: MARK[cell!.mark].color },
+                  ]}
                 >
                   {cell ? (
                     <>
-                      <Text style={[styles.mark, { color: MARK_COLOR[cell.mark] }]}>{cell.mark}</Text>
+                      <Text style={[styles.mark, { color: MARK[cell.mark].color }]}>{cell.mark}</Text>
                       <Text style={styles.cellName} numberOfLines={2}>
                         {cell.player.name}
                       </Text>
                     </>
                   ) : (
-                    <Text style={{ color: "#52525b", fontSize: 26 }}>+</Text>
+                    <Icon name="plus" size={20} color="#C3C9D3" fallback="+" />
                   )}
                 </Tap>
               );
@@ -243,103 +266,104 @@ export default function TikiTakaToeScreen() {
         ))}
       </View>
 
-      <Button title={t("ttNewGrid")} outline onPress={newGrid} style={{ marginTop: 16, paddingVertical: 9 }} />
-      <Text style={styles.hint}>{t("ttHint")}</Text>
+      <Button title={t("ttNewGrid")} kind={winner ? "primary" : "secondary"} icon="arrow.clockwise" onPress={newGrid} style={{ marginTop: 18 }} />
 
+      {/* Guess sheet */}
       <Modal visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-          <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.55)" }} onPress={() => setOpenCell(null)} />
+          <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={() => setOpenCell(null)} />
           <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
             <View style={styles.grabber} />
             {row && col && (
               <View style={styles.pair}>
                 <View style={styles.chip}>
-                  {row.kind === "club" ? <Crest c={row} size={20} /> : <Text>{row.icon}</Text>}
+                  <CriterionBadge c={row} size={22} />
                   <Text style={styles.chipText}>{label(row)}</Text>
                 </View>
-                <Text style={{ color: C.textMute }}>×</Text>
+                <Icon name="plus" size={14} color={C.text3} fallback="+" />
                 <View style={styles.chip}>
-                  {col.kind === "club" ? <Crest c={col} size={20} /> : <Text>{col.icon}</Text>}
+                  <CriterionBadge c={col} size={22} />
                   <Text style={styles.chipText}>{label(col)}</Text>
                 </View>
               </View>
             )}
-            <Text style={[styles.yourGuess, { color: MARK_COLOR[turn] }]}>
-              {turn} — {t("ttYourGuess")} · {timeLeft} {t("secondsShort")}
+            <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
+              {turn} · {t("ttYourGuess")} · {timeLeft}s
             </Text>
-            <TextInput
-              autoFocus
-              value={input}
-              onChangeText={setInput}
-              onSubmitEditing={() => (suggestions.length === 1 ? submit(suggestions[0].name) : submit())}
-              placeholder={t("ttPlaceholder")}
-              placeholderTextColor={C.textMute}
-              autoCorrect={false}
-              autoCapitalize="words"
-              returnKeyType="done"
-              style={styles.input}
-            />
+            <View style={styles.inputWrap}>
+              <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
+              <TextInput
+                autoFocus
+                value={input}
+                onChangeText={setInput}
+                onSubmitEditing={() => (suggestions.length === 1 ? submit(suggestions[0].name) : submit())}
+                placeholder={t("ttPlaceholder")}
+                placeholderTextColor={C.text3}
+                autoCorrect={false}
+                autoCapitalize="words"
+                returnKeyType="done"
+                style={styles.input}
+              />
+            </View>
             {input.trim().length >= 2 && (
               <ScrollView style={styles.suggestions} keyboardShouldPersistTaps="handled">
                 {suggestions.length === 0 ? (
-                  <Text style={styles.noResult}>{t("ttNoResult")}</Text>
+                  <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
                 ) : (
-                  suggestions.map((p) => (
-                    <Tap key={p.name} disabled={used.has(p.name)} onPress={() => submit(p.name)} style={[styles.suggestion, used.has(p.name) && { opacity: 0.4 }]}>
+                  suggestions.map((p, i) => (
+                    <Tap
+                      key={p.name}
+                      disabled={used.has(p.name)}
+                      onPress={() => submit(p.name)}
+                      style={[styles.suggestion, i > 0 && styles.suggestionDivider, used.has(p.name) && { opacity: 0.4 }]}
+                    >
                       <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
                         <Text style={styles.avatarText}>{initials(p.name)}</Text>
                       </View>
-                      <Text style={styles.suggestionName}>{p.name}</Text>
-                      {used.has(p.name) && <Text style={{ color: C.textMute }}>✓</Text>}
+                      <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                      {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
                     </Tap>
                   ))
                 )}
               </ScrollView>
             )}
-            <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
-              <Button title={t("close")} outline onPress={() => setOpenCell(null)} style={{ flex: 1 }} />
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 14 }}>
+              <Button title={t("close")} kind="secondary" onPress={() => setOpenCell(null)} style={{ flex: 1 }} />
               <Button title={t("ttSubmit")} onPress={() => submit()} style={{ flex: 1 }} />
             </View>
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </Screen>
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
-  status: { alignItems: "center", gap: 8, minHeight: 112, justifyContent: "center", marginBottom: 12 },
-  winner: { color: C.text, fontFamily: F.black, fontSize: 26 },
-  turn: { borderRadius: 999, paddingHorizontal: 18, paddingVertical: 6 },
-  turnText: { color: "white", fontFamily: F.black, fontSize: 16 },
-  timer: { color: C.text, fontFamily: F.black, fontSize: 44, fontVariant: ["tabular-nums"] },
-  timerUnit: { color: C.textMute, fontSize: 14 },
-  bar: { width: 220, height: 7, borderRadius: 4, backgroundColor: C.surface2, overflow: "hidden" },
-  flash: { color: C.roseLight, fontFamily: F.bold, fontSize: 12 },
-  grid: { width: "100%", gap: 6 },
+  winner: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 20 },
+  players: { flexDirection: "row", gap: 10 },
+  playerPill: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 12, paddingVertical: 10 },
+  playerMark: { fontSize: 22, fontWeight: "900" },
+  playerTime: { color: "white", fontSize: 15, fontWeight: "700", fontVariant: ["tabular-nums"] },
+  bar: { height: 6, borderRadius: 3, backgroundColor: "#E2E6EC", marginTop: 12, overflow: "hidden" },
+  grid: { width: "100%", gap: 6, marginTop: 16 },
   row: { flexDirection: "row", gap: 6 },
-  corner: { flex: 1.1, aspectRatio: 1, borderRadius: 10 },
-  cell: { flex: 1, aspectRatio: 1, borderRadius: 10 },
-  headCell: { backgroundColor: C.surface2 },
-  playCell: { borderWidth: 2, borderColor: C.border, backgroundColor: "rgba(24,24,27,0.6)", alignItems: "center", justifyContent: "center", padding: 3 },
-  filled: { backgroundColor: C.surface },
-  win: { borderColor: C.emerald, backgroundColor: "rgba(6,78,59,0.45)" },
-  header: { flex: 1, alignItems: "center", justifyContent: "center", gap: 4, padding: 3 },
-  headerLabel: { color: "#e4e4e7", fontFamily: F.bold, fontSize: 10, textAlign: "center" },
-  mark: { fontFamily: F.black, fontSize: 30, lineHeight: 34 },
-  cellName: { color: "#d4d4d8", fontFamily: F.body, fontSize: 9, textAlign: "center" },
-  hint: { color: C.textMute, fontFamily: F.body, fontSize: 12, textAlign: "center", marginTop: 12, lineHeight: 17 },
-  sheet: { backgroundColor: C.surface, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 16, paddingTop: 8 },
-  grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#52525b", marginBottom: 12 },
+  corner: { borderRadius: 14 },
+  cell: { borderRadius: 14 },
+  head: { backgroundColor: C.card, alignItems: "center", justifyContent: "center", gap: 4, padding: 4, ...shadow, shadowOpacity: 0.04 },
+  headLabel: { color: C.text2, fontSize: 10, fontWeight: "700", textAlign: "center" },
+  play: { backgroundColor: C.card, borderWidth: 2, borderColor: C.border, borderStyle: "dashed", alignItems: "center", justifyContent: "center", padding: 3 },
+  mark: { fontSize: 30, fontWeight: "900", lineHeight: 34 },
+  cellName: { color: C.text, fontSize: 9, fontWeight: "600", textAlign: "center" },
+  sheet: { backgroundColor: C.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, paddingTop: 8 },
+  grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 14 },
   pair: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, flexWrap: "wrap" },
-  chip: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.surface2, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },
-  chipText: { color: C.text, fontFamily: F.bold, fontSize: 13 },
-  yourGuess: { textAlign: "center", fontFamily: F.bold, fontSize: 12, marginVertical: 10 },
-  input: { backgroundColor: C.surface2, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, color: C.text, fontFamily: F.bold, fontSize: 16 },
-  suggestions: { maxHeight: 220, marginTop: 8, borderRadius: 10, borderWidth: 1, borderColor: C.surface2 },
-  noResult: { color: C.textMute, fontFamily: F.body, fontSize: 13, textAlign: "center", padding: 12 },
-  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 10, paddingVertical: 8 },
-  avatar: { width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center" },
-  avatarText: { color: "rgba(255,255,255,0.9)", fontFamily: F.black, fontSize: 11 },
-  suggestionName: { flex: 1, color: C.text, fontFamily: F.bold, fontSize: 14 },
+  chip: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.bg, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
+  chipText: { color: C.text, fontWeight: "700", fontSize: 14 },
+  inputWrap: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.bg, borderRadius: R.button, paddingHorizontal: 12 },
+  input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
+  suggestions: { maxHeight: 230, marginTop: 10, borderRadius: R.button, borderWidth: 1, borderColor: C.border },
+  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
+  suggestionDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
+  avatar: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
+  avatarText: { color: "white", fontWeight: "800", fontSize: 12 },
 });

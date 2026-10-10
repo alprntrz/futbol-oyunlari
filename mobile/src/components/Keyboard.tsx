@@ -2,51 +2,50 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import type { TileMark } from "@/lib/types";
 
-import { useI18n } from "~/lib/i18n";
 import { haptic } from "~/lib/haptics";
-import { C, F } from "~/lib/theme";
+import { useI18n } from "~/lib/i18n";
+import { C } from "~/lib/theme";
+
+import { Icon } from "./ui";
 
 const ROWS = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+const MARK_BG: Record<TileMark, string> = { correct: C.tileCorrect, present: C.tilePresent, absent: C.tileAbsent };
 
-const KEY_BG: Record<TileMark | "none", string> = {
-  correct: C.tileCorrect,
-  present: C.tilePresent,
-  absent: C.tileAbsent,
-  none: "#71717a",
-};
-
-/** On-screen letter keyboard; letters, "ENTER" or "DELETE". */
+/** Light on-screen keyboard; emits a letter, "ENTER" or "DELETE". */
 export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks: Record<string, TileMark> }) {
   const { t } = useI18n();
 
-  const key = (label: string, value: string, bg: string, color = "white", wide = false) => (
-    <Pressable
-      key={value}
-      onPress={() => {
-        haptic.tap();
-        onKey(value);
-      }}
-      style={({ pressed }) => [
-        styles.key,
-        wide ? styles.wide : styles.letter,
-        { backgroundColor: bg },
-        pressed && { opacity: 0.7, transform: [{ scale: 0.94 }] },
-      ]}
-    >
-      <Text style={[styles.label, { color, fontSize: value === "DELETE" ? 20 : wide ? 12 : 16 }]}>{label}</Text>
-    </Pressable>
-  );
+  const press = (value: string) => {
+    haptic.tap();
+    onKey(value);
+  };
 
   return (
-    <View style={{ gap: 7 }}>
+    <View style={{ gap: 8 }}>
       {ROWS.map((row, ri) => (
         <View key={row} style={styles.row}>
-          {ri === 2 && key(t("keyboardEnter"), "ENTER", C.indigo, "white", true)}
+          {ri === 2 && (
+            <Pressable onPress={() => press("ENTER")} style={({ pressed }) => [styles.key, styles.wide, { backgroundColor: C.green }, pressed && styles.pressed]}>
+              <Text style={[styles.label, { color: "white", fontSize: 13 }]}>{t("guess")}</Text>
+            </Pressable>
+          )}
           {row.split("").map((ch) => {
             const m = marks[ch];
-            return key(ch, ch, KEY_BG[m ?? "none"], m === "present" ? "black" : m === "absent" ? C.textDim : "white");
+            return (
+              <Pressable
+                key={ch}
+                onPress={() => press(ch)}
+                style={({ pressed }) => [styles.key, styles.letter, { backgroundColor: m ? MARK_BG[m] : C.key }, pressed && styles.pressed]}
+              >
+                <Text style={[styles.label, { color: m ? "white" : C.text }]}>{ch}</Text>
+              </Pressable>
+            );
           })}
-          {ri === 2 && key("⌫", "DELETE", "#52525b", "white", true)}
+          {ri === 2 && (
+            <Pressable onPress={() => press("DELETE")} style={({ pressed }) => [styles.key, styles.wide, pressed && styles.pressed]}>
+              <Icon name="delete.left" size={20} color={C.text} fallback="⌫" />
+            </Pressable>
+          )}
         </View>
       ))}
     </View>
@@ -55,8 +54,9 @@ export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks
 
 const styles = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "center", gap: 5 },
-  key: { height: 50, borderRadius: 6, alignItems: "center", justifyContent: "center" },
+  key: { height: 50, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: C.key },
   letter: { flex: 1, maxWidth: 38 },
-  wide: { flex: 1.6, maxWidth: 62 },
-  label: { fontFamily: F.black },
+  wide: { flex: 1.7, maxWidth: 66 },
+  label: { fontSize: 17, fontWeight: "700" },
+  pressed: { opacity: 0.6, transform: [{ scale: 0.94 }] },
 });

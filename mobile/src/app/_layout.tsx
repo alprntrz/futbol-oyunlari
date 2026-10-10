@@ -1,37 +1,26 @@
-import { Nunito_600SemiBold, Nunito_800ExtraBold, Nunito_900Black, useFonts } from "@expo-google-fonts/nunito";
-import { PressStart2P_400Regular } from "@expo-google-fonts/press-start-2p";
 import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
 
 import { I18nProvider } from "~/lib/i18n";
-import { C, F } from "~/lib/theme";
+import { C } from "~/lib/theme";
 
-SplashScreen.preventAutoHideAsync();
-
+/** Tabs live in (tabs); every game screen is pushed full-screen on top. */
 export default function RootLayout() {
-  const [loaded] = useFonts({ PressStart2P_400Regular, Nunito_600SemiBold, Nunito_800ExtraBold, Nunito_900Black });
-
-  useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
-
-  if (!loaded) return null;
-
   return (
     <I18nProvider>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: C.bg },
           headerTintColor: C.text,
-          headerTitleStyle: { fontFamily: F.black },
+          headerTitleStyle: { fontWeight: "700" },
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           contentStyle: { backgroundColor: C.bg },
         }}
-      />
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
     </I18nProvider>
   );
 }

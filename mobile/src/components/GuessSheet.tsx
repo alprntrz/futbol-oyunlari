@@ -6,22 +6,29 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Difficulty, LineupPlayer, TileMark } from "@/lib/types";
 import { answerLetters, evaluateGuess, keyboardState } from "@/lib/wordle";
 
-import { useI18n } from "~/lib/i18n";
 import { haptic } from "~/lib/haptics";
-import { C, F } from "~/lib/theme";
+import { useI18n } from "~/lib/i18n";
+import { C, T } from "~/lib/theme";
 
+import { TileLegend } from "./HowTo";
 import { Keyboard } from "./Keyboard";
+import { Icon } from "./ui";
 
-const GAP = 4;
-const WORD_GAP = 10;
+const GAP = 5;
+const capitalize = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
+const WORD_GAP = 12;
+const MARK_BG: Record<TileMark, string> = { correct: C.tileCorrect, present: C.tilePresent, absent: C.tileAbsent };
 
-function Tile({ ch, mark, size }: { ch: string; mark?: TileMark; size: number }) {
-  const bg = mark === "correct" ? C.tileCorrect : mark === "present" ? C.tilePresent : mark === "absent" ? C.tileAbsent : "transparent";
-  const border = mark ? bg : ch ? "#a1a1aa" : "#52525b";
-  const color = mark === "present" ? "black" : mark === "absent" ? "#d4d4d8" : "white";
+function Tile({ ch, mark, size, hint }: { ch: string; mark?: TileMark; size: number; hint?: boolean }) {
   return (
-    <View style={[styles.tile, { width: size, height: size, backgroundColor: bg, borderColor: border }]}>
-      <Text style={{ color, fontFamily: F.black, fontSize: size * 0.5 }}>{ch}</Text>
+    <View
+      style={[
+        styles.tile,
+        { width: size, height: size },
+        mark ? { backgroundColor: MARK_BG[mark], borderColor: MARK_BG[mark] } : ch ? { borderColor: "#9AA3B2" } : null,
+      ]}
+    >
+      <Text style={{ color: mark ? "white" : hint ? C.text3 : C.text, fontWeight: "800", fontSize: size * 0.5 }}>{ch}</Text>
     </View>
   );
 }
@@ -60,9 +67,10 @@ export function GuessSheet({
   const display = player?.answer ?? "";
   const answer = answerLetters(display);
   const maxGuesses = difficulty === "hard" ? 4 : 6;
+  const left = maxGuesses - pastGuesses.length;
   const spaces = display.split(" ").length - 1;
-  const usable = Math.min(width, 520) - 32 - (answer.length - 1) * GAP - spaces * WORD_GAP;
-  const tileSize = Math.max(14, Math.min(46, Math.floor(usable / Math.max(answer.length, 1))));
+  const usable = Math.min(width, 560) - 40 - (answer.length - 1) * GAP - spaces * WORD_GAP;
+  const tileSize = Math.max(16, Math.min(48, Math.floor(usable / Math.max(answer.length, 1))));
 
   const showHint = difficulty === "normal" && pastGuesses.length >= 3 && !pastGuesses.some((g) => g[0] === answer[0]);
 
@@ -70,10 +78,10 @@ export function GuessSheet({
     haptic.error();
     shakeX.set(
       withSequence(
-      withTiming(-8, { duration: 50 }),
-      withTiming(8, { duration: 50 }),
-      withTiming(-5, { duration: 50 }),
-      withTiming(5, { duration: 50 }),
+        withTiming(-8, { duration: 50 }),
+        withTiming(8, { duration: 50 }),
+        withTiming(-5, { duration: 50 }),
+        withTiming(5, { duration: 50 }),
         withTiming(0, { duration: 50 })
       )
     );
@@ -93,8 +101,8 @@ export function GuessSheet({
     return display.split("").map((ch, j) => {
       if (ch === " ") return <View key={j} style={{ width: WORD_GAP - GAP }} />;
       li++;
-      const letter = hintFirst && li === 0 && !letters ? answer[0] : (letters[li] ?? "");
-      return <Tile key={j} ch={letter} mark={marks?.[li]} size={tileSize} />;
+      const isHint = !!hintFirst && li === 0 && !letters;
+      return <Tile key={j} ch={isHint ? answer[0] : (letters[li] ?? "")} mark={marks?.[li]} size={tileSize} hint={isHint} />;
     });
   };
 
@@ -104,11 +112,19 @@ export function GuessSheet({
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 10 }]}>
         <View style={styles.grabber} />
         <View style={styles.header}>
-          <Text style={styles.headerText}>
-            #{player?.number} · {answer.length} {t("letters")} · {maxGuesses - pastGuesses.length}/{maxGuesses} {t("guessesLeft")}
-          </Text>
-          <Pressable onPress={onClose} hitSlop={12}>
-            <Text style={{ color: C.textDim, fontSize: 18 }}>✕</Text>
+          <View style={styles.numberBadge}>
+            <Text style={styles.numberText}>{player?.number}</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={T.headline}>
+              {answer.length} {t("letters")}
+            </Text>
+            <Text style={T.caption}>
+              {capitalize(t("guessesLeft"))}: {left}/{maxGuesses}
+            </Text>
+          </View>
+          <Pressable onPress={onClose} hitSlop={12} style={styles.close}>
+            <Icon name="xmark" size={14} color={C.text2} fallback="✕" />
           </Pressable>
         </View>
 
@@ -119,7 +135,10 @@ export function GuessSheet({
             </View>
           ))}
           <Animated.View style={[styles.row, shakeStyle]}>{row(current, undefined, showHint)}</Animated.View>
-          {showHint && <Text style={styles.hint}>💡 {answer[0]}…</Text>}
+        </View>
+
+        <View style={{ alignItems: "center", marginBottom: 14 }}>
+          <TileLegend compact />
         </View>
 
         <Keyboard onKey={handleKey} marks={keyboardState(pastGuesses, answer)} />
@@ -129,19 +148,14 @@ export function GuessSheet({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.55)" },
-  sheet: {
-    backgroundColor: "#18181b",
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-    paddingHorizontal: 10,
-    paddingTop: 8,
-  },
-  grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#52525b", marginBottom: 8 },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 6, marginBottom: 12 },
-  headerText: { color: C.textDim, fontFamily: F.bold, fontSize: 13 },
-  rows: { alignItems: "center", gap: 6, marginBottom: 16 },
+  backdrop: { flex: 1, backgroundColor: "rgba(11,18,32,0.35)" },
+  sheet: { backgroundColor: C.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 12, paddingTop: 8 },
+  grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 10 },
+  header: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 8, marginBottom: 16 },
+  numberBadge: { width: 40, height: 40, borderRadius: 12, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
+  numberText: { color: C.greenDark, fontWeight: "800", fontSize: 16 },
+  close: { width: 30, height: 30, borderRadius: 15, backgroundColor: C.bg, alignItems: "center", justifyContent: "center" },
+  rows: { alignItems: "center", gap: GAP, marginBottom: 14 },
   row: { flexDirection: "row", gap: GAP },
-  tile: { borderWidth: 2, borderRadius: 5, alignItems: "center", justifyContent: "center" },
-  hint: { color: C.amber, fontFamily: F.bold, fontSize: 12 },
+  tile: { borderWidth: 2, borderColor: "#D5DAE1", borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: C.card },
 });

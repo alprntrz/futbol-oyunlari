@@ -5,16 +5,16 @@ import { FORMATIONS } from "@/lib/formations";
 import type { Difficulty, Match, SlotState } from "@/lib/types";
 
 import { useI18n } from "~/lib/i18n";
-import { C, F } from "~/lib/theme";
+import { C, R, T } from "~/lib/theme";
 
 import { GuessSheet } from "./GuessSheet";
 import { Jersey } from "./Jersey";
-import { Button, Tap } from "./ui";
+import { Button, Card, Icon, Tap } from "./ui";
 
 const SLOT_W = 86;
-const SLOT_H = 58;
+const SLOT_H = 60;
 
-/** Scoreboard + pitch + footer + guess sheet for one Eksik 11 game. */
+/** Match card + progress + pitch + guess sheet for one Eksik 11 game. */
 export function MissingXIBoard({
   match,
   difficulty,
@@ -51,38 +51,69 @@ export function MissingXIBoard({
     }
   }, [open, openSlot, done]);
 
+  const confirmGiveUp = () =>
+    Alert.alert(t("giveUp"), t("giveUpConfirm"), [
+      { text: t("cancel"), style: "cancel" },
+      { text: t("giveUp"), style: "destructive", onPress: onGiveUp },
+    ]);
+
   return (
     <View style={{ width: "100%" }}>
-      <View style={styles.scoreboard}>
-        <Text style={styles.competition}>
-          {match.competition[locale]} · {match.season}
+      {/* Match */}
+      <Card style={{ padding: 16 }}>
+        <Text style={[T.caption, { textAlign: "center" }]} numberOfLines={1}>
+          {match.competition[locale]} · {match.season} · {match.date}
         </Text>
         <View style={styles.scoreRow}>
-          <Text style={styles.team} numberOfLines={1} adjustsFontSizeToFit>
+          <Text style={[styles.team, { textAlign: "right" }]} numberOfLines={2}>
             {match.team}
           </Text>
           <View style={styles.score}>
             <Text style={styles.scoreText}>{match.score}</Text>
           </View>
-          <Text style={styles.opponent} numberOfLines={1} adjustsFontSizeToFit>
+          <Text style={[styles.team, { color: C.text3, fontWeight: "600" }]} numberOfLines={2}>
             {match.opponent}
           </Text>
         </View>
-        <Text style={styles.date}>
-          {match.date} · {match.team} {t("guessThe")}
-        </Text>
+        <View style={styles.findRow}>
+          <Icon name="magnifyingglass" size={13} color={C.greenDark} fallback="🔎" />
+          <Text style={styles.findText}>
+            {t("findXI")} {match.team}
+          </Text>
+        </View>
         {headerExtra}
+      </Card>
+
+      {/* Progress */}
+      <View style={styles.progressRow}>
+        <Text style={T.headline}>
+          {solved}/11 <Text style={[T.body, { fontSize: 15 }]}>{t("found")}</Text>
+        </Text>
+        <Text style={T.caption}>
+          {t("totalGuesses")}: {totalGuesses}
+        </Text>
+      </View>
+      <View style={styles.bar}>
+        <View style={[styles.barFill, { width: `${(solved / 11) * 100}%` }]} />
       </View>
 
-      <View style={[styles.pitch, { height: pitchH || undefined }]} onLayout={(e) => setPitchW(e.nativeEvent.layout.width)}>
+      {!done && totalGuesses === 0 && (
+        <View style={styles.hint}>
+          <Icon name="hand.tap.fill" size={16} color={C.blue} fallback="👆" />
+          <Text style={styles.hintText}>{t("tapShirtHint")}</Text>
+        </View>
+      )}
+
+      {/* Pitch */}
+      <View style={styles.pitch} onLayout={(e) => setPitchW(e.nativeEvent.layout.width)}>
         {Array.from({ length: 8 }, (_, i) => (
           <View key={i} style={{ flex: 1, backgroundColor: i % 2 ? C.pitchB : C.pitchA }} />
         ))}
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <View style={[styles.line, { top: "50%", left: 0, right: 0, height: 2 }]} />
-          <View style={[styles.circle, { left: pitchW / 2 - 44, top: pitchH / 2 - 44 }]} />
-          <View style={[styles.box, { top: -2, borderTopWidth: 0, left: pitchW / 2 - 80 }]} />
-          <View style={[styles.box, { bottom: -2, borderBottomWidth: 0, left: pitchW / 2 - 80 }]} />
+          <View style={[styles.line, { top: "50%", left: 0, right: 0, height: 1.5 }]} />
+          <View style={[styles.circle, { left: pitchW / 2 - 40, top: pitchH / 2 - 40 }]} />
+          <View style={[styles.box, { top: -2, borderTopWidth: 0, left: pitchW / 2 - 76 }]} />
+          <View style={[styles.box, { bottom: -2, borderBottomWidth: 0, left: pitchW / 2 - 76 }]} />
         </View>
 
         {pitchW > 0 &&
@@ -107,24 +138,15 @@ export function MissingXIBoard({
                   goals={p.goals}
                   faded={s.failed && !done}
                 />
-                <View
-                  style={[
-                    styles.label,
-                    s.solved ? styles.labelSolved : s.failed ? styles.labelFailed : styles.labelOpen,
-                  ]}
-                >
+                <View style={[styles.label, s.solved ? { backgroundColor: C.green } : s.failed ? { backgroundColor: C.red } : null]}>
                   {revealed ? (
-                    <Text style={[styles.labelText, { color: s.solved || s.failed ? "white" : "#27272a" }]} numberOfLines={1} adjustsFontSizeToFit>
+                    <Text style={[styles.labelText, { color: s.solved || s.failed ? "white" : C.text }]} numberOfLines={1} adjustsFontSizeToFit>
                       {p.name}
                     </Text>
                   ) : (
-                    <Text style={[styles.labelText, { color: "#71717a", letterSpacing: 1.5 }]} numberOfLines={1}>
-                      {p.answer
-                        .slice(0, 12)
-                        .split("")
-                        .map((ch) => (ch === " " ? " " : "·"))
-                        .join("")}
-                      {s.guesses.length > 0 ? ` ${s.guesses.length}` : ""}
+                    <Text style={[styles.labelText, { color: C.text2 }]} numberOfLines={1}>
+                      {answerLength(p.answer)} {t("letters")}
+                      {s.guesses.length > 0 ? ` · ${s.guesses.length}×` : ""}
                     </Text>
                   )}
                 </View>
@@ -133,22 +155,7 @@ export function MissingXIBoard({
           })}
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.count}>
-          {solved}
-          <Text style={{ color: C.textMute }}>/11</Text>
-          <Text style={styles.guesses}>
-            {"   "}
-            {t("totalGuesses")}: {totalGuesses}
-          </Text>
-        </Text>
-        {!done && <Button title={t("giveUp")} color={C.red} onPress={() =>
-              Alert.alert(t("giveUp"), t("giveUpConfirm"), [
-                { text: t("cancel"), style: "cancel" },
-                { text: t("giveUp"), style: "destructive", onPress: onGiveUp },
-              ])
-            } style={{ paddingVertical: 9 }} />}
-      </View>
+      {!done && <Button title={t("giveUp")} kind="ghost" icon="flag" onPress={confirmGiveUp} style={{ marginTop: 8, alignSelf: "center" }} />}
 
       <GuessSheet
         player={openSlot !== null && !done ? match.lineup[openSlot] : null}
@@ -161,26 +168,25 @@ export function MissingXIBoard({
   );
 }
 
+const answerLength = (a: string) => a.replace(/ /g, "").length;
+
 const styles = StyleSheet.create({
-  scoreboard: { alignItems: "center", marginBottom: 10 },
-  competition: { color: C.emeraldLight, fontFamily: F.bold, fontSize: 11, letterSpacing: 1.2, textTransform: "uppercase", textAlign: "center" },
-  scoreRow: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 4, maxWidth: "100%" },
-  team: { color: C.text, fontFamily: F.black, fontSize: 18, flexShrink: 1 },
-  opponent: { color: C.textDim, fontFamily: F.bold, fontSize: 18, flexShrink: 1 },
-  score: { backgroundColor: C.surface2, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2 },
-  scoreText: { color: C.emeraldLight, fontFamily: F.black, fontSize: 17, fontVariant: ["tabular-nums"] },
-  date: { color: C.textMute, fontFamily: F.body, fontSize: 12, marginTop: 2 },
-  pitch: { width: "100%", aspectRatio: 3 / 4, borderRadius: 14, borderWidth: 4, borderColor: C.pitchBorder, overflow: "hidden" },
-  line: { position: "absolute", backgroundColor: "rgba(255,255,255,0.6)" },
-  circle: { position: "absolute", width: 88, height: 88, borderRadius: 44, borderWidth: 2, borderColor: "rgba(255,255,255,0.6)" },
-  box: { position: "absolute", width: 160, height: 52, borderWidth: 2, borderColor: "rgba(255,255,255,0.6)" },
-  slot: { position: "absolute", width: SLOT_W, height: SLOT_H, alignItems: "center", justifyContent: "flex-start", gap: 2 },
-  label: { minWidth: 44, maxWidth: SLOT_W, borderRadius: 3, borderWidth: 1, paddingHorizontal: 4, paddingVertical: 2 },
-  labelOpen: { backgroundColor: "white", borderColor: "#3f3f46" },
-  labelSolved: { backgroundColor: C.emerald, borderColor: "#065f46" },
-  labelFailed: { backgroundColor: "rgba(239,68,68,0.92)", borderColor: "#991b1b" },
-  labelText: { fontFamily: F.black, fontSize: 10, textAlign: "center" },
-  footer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 12 },
-  count: { color: C.text, fontFamily: F.black, fontSize: 20 },
-  guesses: { color: C.textDim, fontFamily: F.body, fontSize: 13 },
+  scoreRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 10 },
+  team: { flex: 1, fontSize: 17, fontWeight: "800", color: C.text },
+  score: { backgroundColor: C.bg, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6 },
+  scoreText: { fontSize: 17, fontWeight: "800", color: C.text, fontVariant: ["tabular-nums"] },
+  findRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12, backgroundColor: C.greenSoft, borderRadius: 10, paddingVertical: 7 },
+  findText: { color: C.greenDark, fontWeight: "700", fontSize: 14 },
+  progressRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginTop: 18, marginHorizontal: 4 },
+  bar: { height: 8, borderRadius: 4, backgroundColor: "#E2E6EC", marginTop: 8, overflow: "hidden" },
+  barFill: { height: "100%", borderRadius: 4, backgroundColor: C.green },
+  hint: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 12, backgroundColor: C.blueSoft, borderRadius: 12, padding: 10 },
+  hintText: { flex: 1, color: "#1E40AF", fontWeight: "600", fontSize: 14 },
+  pitch: { width: "100%", aspectRatio: 3 / 4, borderRadius: R.card, overflow: "hidden", marginTop: 12 },
+  line: { position: "absolute", backgroundColor: C.pitchLine },
+  circle: { position: "absolute", width: 80, height: 80, borderRadius: 40, borderWidth: 1.5, borderColor: C.pitchLine },
+  box: { position: "absolute", width: 152, height: 48, borderWidth: 1.5, borderColor: C.pitchLine },
+  slot: { position: "absolute", width: SLOT_W, height: SLOT_H, alignItems: "center", gap: 3 },
+  label: { maxWidth: SLOT_W, backgroundColor: "rgba(255,255,255,0.95)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
+  labelText: { fontSize: 10, fontWeight: "700", textAlign: "center" },
 });
