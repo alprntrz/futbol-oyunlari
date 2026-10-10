@@ -103,6 +103,8 @@ function htCode() {
 const QZ_MAX = 5;
 const QZ_INTRO_MS = 3000;
 const QZ_REVEAL_MS = 4000;
+/** the phones animate the old options out and the new ones in before the clock runs */
+const QZ_GAP_MS = 900;
 /** an open random room starts this long after it was opened */
 const QZ_FILL_MS = 15_000;
 /** code -> quiz room */
@@ -143,7 +145,8 @@ function qzSettings(s) {
   return { seconds, maxPlayers, category };
 }
 
-function qzPublic(room) {
+/** `viewer`: once they've answered, they see what the others picked (like the answers landing live). */
+function qzPublic(room, viewer) {
   const q = room.questions[room.index];
   const showQ = room.phase === "question" || room.phase === "reveal";
   const reveal = room.phase === "reveal" || room.phase === "done";
@@ -163,7 +166,7 @@ function qzPublic(room) {
       nick: p.nick,
       score: p.score,
       answered: room.answers.has(p.id),
-      choice: reveal ? (room.answers.get(p.id)?.choice ?? null) : null,
+      choice: reveal || (viewer && room.answers.has(viewer)) || p.id === viewer ? (room.answers.get(p.id)?.choice ?? null) : null,
       gained: reveal ? (p.gained ?? 0) : 0,
     })),
   };
@@ -667,7 +670,9 @@ app.prepare().then(() => {
     });
 
     // ── Quiz ──
-    const qzEmit = (room) => io.to("qz:" + room.code).emit("qz:update", qzPublic(room));
+    const qzEmit = (room) => {
+      for (const p of room.players) if (!p.bot) io.sockets.sockets.get(p.id)?.emit("qz:update", qzPublic(room, p.id));
+    };
     const qzClear = (room) => {
       clearTimeout(room.timer);
       room.botTimers.forEach(clearTimeout);
@@ -702,14 +707,14 @@ app.prepare().then(() => {
       }
       const limit = room.settings.seconds * 1000;
       room.phase = "question";
-      room.qStart = Date.now();
+      room.qStart = Date.now() + QZ_GAP_MS;
       room.deadline = room.qStart + limit;
-      room.timer = setTimeout(() => qzReveal(room), limit);
+      room.timer = setTimeout(() => qzReveal(room), limit + QZ_GAP_MS);
       // house players answer like people: a few seconds in, right most of the time
       const q = room.questions[room.index];
       for (const p of room.players.filter((x) => x.bot)) {
         if (Math.random() < 0.05) continue; // now and then they run out of time
-        const ms = 2500 + Math.random() * (limit - 3500);
+        const ms = QZ_GAP_MS + 2500 + Math.random() * (limit - 3500);
         room.botTimers.push(
           setTimeout(() => {
             const wrong = [0, 1, 2, 3].filter((i) => i !== q.answer);
@@ -739,7 +744,7 @@ app.prepare().then(() => {
     const qzAnswer = (room, id, choice) => {
       if (room.phase !== "question" || room.answers.has(id) || !room.players.some((p) => p.id === id)) return;
       if (!Number.isInteger(choice) || choice < 0 || choice > 3) return;
-      room.answers.set(id, { choice, ms: Date.now() - room.qStart });
+      room.answers.set(id, { choice, ms: Math.max(0, Date.now() - room.qStart) });
       if (room.players.every((p) => room.answers.has(p.id))) {
         clearTimeout(room.timer);
         room.timer = setTimeout(() => qzReveal(room), 500);

@@ -1,20 +1,23 @@
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { Share, StyleSheet, View } from "react-native";
-import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated";
+import { Pressable, ScrollView, Share, StyleSheet, View } from "react-native";
+import Animated, { FadeIn, FadeOut, FadeOutUp, Keyframe, SlideInDown, ZoomIn } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 import { quizQuestions, type QuizCategory } from "@/lib/quiz";
 
 import { Confetti } from "~/components/motion";
+import { NIGHT, StadiumHeader, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
-import { WaitingAnimation } from "~/components/WaitingAnimation";
-import { Button, Card, Icon, Page, Tap } from "~/components/ui";
+import { Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { loadNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 type L = { tr: string; en: string };
 interface QzPlayer {
@@ -39,17 +42,19 @@ interface QzRoom {
   players: QzPlayer[];
 }
 
-const LETTERS = ["A", "B", "C", "D"];
+const HEADER = 150;
+const RIGHT = "#4ADE80";
+const WRONG = "#F87171";
 
 function avatarColor(name: string) {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return `hsl(${h % 360}, 45%, 48%)`;
+  return `hsl(${h % 360}, 50%, 45%)`;
 }
 
-function Avatar({ name, size = 30, ring }: { name: string; size?: number; ring?: string }) {
+function Avatar({ name, size = 30, ring = "white" }: { name: string; size?: number; ring?: string }) {
   return (
-    <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, backgroundColor: avatarColor(name) }, ring ? { borderWidth: 2, borderColor: ring } : null]}>
+    <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, backgroundColor: avatarColor(name), borderColor: ring }]}>
       <Text allowFontScaling={false} style={[styles.avatarText, { fontSize: size * 0.42 }]}>
         {(name.trim()[0] ?? "?").toUpperCase()}
       </Text>
@@ -57,9 +62,62 @@ function Avatar({ name, size = 30, ring }: { name: string; size?: number; ring?:
   );
 }
 
-/** One quiz room, from the waiting list through the questions to the final standings. */
+/*
+ * Motion, taken from the reference recording:
+ * - the question card stays put; its text fades out and the next one fades in
+ * - options leave bottom-up, one after another, and arrive top-down the same way
+ * - picks land on the options as small avatars; points float up from your option
+ * - at full time the board lifts away and the podium springs up from below
+ */
+const OPTION_IN = (i: number) =>
+  new Keyframe({
+    0: { opacity: 0, transform: [{ scale: 0.94 }] },
+    100: { opacity: 1, transform: [{ scale: 1 }] },
+  })
+    .delay(430 + i * 95)
+    .duration(230);
+const OPTION_OUT = (i: number) => FadeOut.delay((3 - i) * 70).duration(160);
+const TEXT_IN = FadeIn.delay(360).duration(260);
+const TEXT_OUT = FadeOut.duration(150);
+const POINTS_UP = new Keyframe({
+  0: { opacity: 0, transform: [{ translateY: 8 }, { scale: 0.8 }] },
+  25: { opacity: 1, transform: [{ translateY: -6 }, { scale: 1.1 }] },
+  80: { opacity: 1, transform: [{ translateY: -18 }, { scale: 1 }] },
+  100: { opacity: 0, transform: [{ translateY: -26 }, { scale: 1 }] },
+}).duration(1400);
+
+/** Countdown ring, like a stopwatch face. */
+function TimerRing({ fraction, seconds, low }: { fraction: number; seconds: number; low: boolean }) {
+  const r = 17;
+  const len = 2 * Math.PI * r;
+  return (
+    <View style={styles.ring}>
+      <Svg width={44} height={44} style={StyleSheet.absoluteFill}>
+        <Circle cx={22} cy={22} r={r} stroke="rgba(255,255,255,0.18)" strokeWidth={4} fill="none" />
+        <Circle
+          cx={22}
+          cy={22}
+          r={r}
+          stroke={low ? WRONG : "white"}
+          strokeWidth={4}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={`${len}`}
+          strokeDashoffset={len * (1 - fraction)}
+          transform="rotate(-90 22 22)"
+        />
+      </Svg>
+      <Text allowFontScaling={false} style={[styles.ringText, low && { color: WRONG }]}>
+        {seconds}
+      </Text>
+    </View>
+  );
+}
+
+/** One quiz room, from the waiting list through the questions to the podium. */
 export default function QuizRoom() {
   const { t, locale } = useI18n();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
   const [room, setRoom] = useState<QzRoom | null>(null);
@@ -70,7 +128,7 @@ export default function QuizRoom() {
   const [picked, setPicked] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
   const [confetti, setConfetti] = useState(0);
-  const lastPhase = useRef<string>("");
+  const lastPhase = useRef("");
 
   useEffect(() => {
     const socket = getSocket();
@@ -78,19 +136,15 @@ export default function QuizRoom() {
       setRoom(r);
       setDeadline(Date.now() + r.remainingMs);
       const key = `${r.phase}-${r.index}`;
-      if (key !== lastPhase.current) {
-        lastPhase.current = key;
-        if (r.phase === "question") setPicked(null);
-        if (r.phase === "reveal") {
-          const me = r.players.find((p) => p.id === socket.id);
-          if (me?.choice === r.answer) haptic.success();
-          else haptic.error();
-        }
-        if (r.phase === "done") {
-          const top = [...r.players].sort((a, b) => b.score - a.score)[0];
-          if (top?.id === socket.id) setConfetti(Date.now());
-        }
+      if (key === lastPhase.current) return;
+      lastPhase.current = key;
+      if (r.phase === "question") setPicked(null);
+      if (r.phase === "reveal") {
+        const me = r.players.find((p) => p.id === socket.id);
+        if (me?.choice === r.answer) haptic.success();
+        else haptic.error();
       }
+      if (r.phase === "done" && [...r.players].sort((a, b) => b.score - a.score)[0]?.id === socket.id) setConfetti(Date.now());
     };
     const onConnect = () => setMyId(socket.id ?? "");
     socket.on("qz:update", apply);
@@ -109,7 +163,6 @@ export default function QuizRoom() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-  // Clock for the question and the short pauses between them
   const ticking = room?.phase === "question" || room?.phase === "intro" || room?.phase === "reveal";
   useEffect(() => {
     if (!ticking) return;
@@ -118,317 +171,381 @@ export default function QuizRoom() {
   }, [ticking]);
 
   const tx = (l: L) => (locale === "tr" ? l.tr : l.en);
+  const me = room?.players.find((p) => p.id === myId);
+  const nameOf = (p: QzPlayer) => (p.id === myId ? t("you") : p.nick || t("opponent"));
+  const standings = room ? [...room.players].sort((a, b) => b.score - a.score) : [];
+  const maxScore = (room?.total ?? 10) * 10;
+  const runners: Runner[] | undefined =
+    room && room.phase !== "done"
+      ? room.players.map((p) => ({
+          id: p.id,
+          name: p.nick || "?",
+          color: avatarColor(p.nick || "?"),
+          progress: Math.min(1, p.score / maxScore),
+          label: room.phase === "lobby" ? undefined : String(p.score),
+          me: p.id === myId,
+        }))
+      : undefined;
+
+  const leave = (
+    <Pressable onPress={() => router.back()} style={[styles.leave, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
+      <Icon name="chevron.left" size={18} color="white" fallback="‹" />
+    </Pressable>
+  );
+
+  let body: React.ReactNode = null;
 
   if (error) {
-    return (
-      <Page>
-        <Stack.Screen options={{ title: t("qzName") }} />
-        <Card style={{ alignItems: "center", gap: 12, paddingVertical: 28 }}>
-          <Icon name="exclamationmark.triangle.fill" size={30} color={C.amber} fallback="⚠️" />
-          <Text style={[T.headline, { textAlign: "center" }]}>{error}</Text>
-          <Button title={t("close")} kind="secondary" icon="chevron.left" onPress={() => router.back()} />
-        </Card>
-      </Page>
+    body = (
+      <View style={[styles.card, { alignItems: "center", gap: 12, paddingVertical: 28 }]}>
+        <Icon name="exclamationmark.triangle.fill" size={30} color={C.amber} fallback="⚠️" />
+        <Text style={styles.cardTitle}>{error}</Text>
+        <WideButton title={t("close")} kind="ghost" onPress={() => router.back()} />
+      </View>
     );
-  }
-  if (!room) return <Page>{null}</Page>;
-
-  const me = room.players.find((p) => p.id === myId);
-  const isHost = room.hostId === myId;
-  const nameOf = (p: QzPlayer) => (p.id === myId ? t("you") : p.nick || t("opponent"));
-  const standings = [...room.players].sort((a, b) => b.score - a.score);
-  const leftMs = Math.max(0, deadline - now);
-  const limitMs = room.settings.seconds * 1000;
-
-  // ── waiting room ──
-  if (room.phase === "lobby") {
+  } else if (room?.phase === "lobby") {
+    const isHost = room.hostId === myId;
     const copy = async () => {
       await Clipboard.setStringAsync(code);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     };
-    return (
-      <Page>
-        <Stack.Screen options={{ title: t("qzName") }} />
+    body = (
+      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24, gap: 14 }} showsVerticalScrollIndicator={false}>
         {room.random ? (
-          <Card style={{ alignItems: "center", paddingVertical: 24, gap: 10 }}>
-            <WaitingAnimation width={240} />
-            <Text style={T.title}>{t("qzSearching")}</Text>
-            <Text style={[T.body, { textAlign: "center" }]}>{t("qzSearchingDesc")}</Text>
-          </Card>
+          <Animated.View entering={FadeIn.duration(250)} style={{ alignItems: "center", gap: 6, paddingVertical: 8 }}>
+            <Text style={styles.big}>{t("qzSearching")}</Text>
+            <Text style={styles.sub}>{t("qzSearchingDesc")}</Text>
+          </Animated.View>
         ) : (
-          <Card style={{ alignItems: "center", gap: 12, padding: 22 }}>
-            <Text style={T.caption}>{t("roomCode")}</Text>
+          <Animated.View entering={FadeIn.duration(250)} style={[styles.card, { alignItems: "center", gap: 10 }]}>
+            <Text style={styles.caption}>{t("roomCode")}</Text>
             <Tap onPress={copy} style={{ flexDirection: "row", alignItems: "center", gap: 10 }} accessibilityLabel={`${t("roomCode")} ${code.split("").join(" ")}`}>
               <Text style={styles.code}>{code}</Text>
               <Icon name={copied ? "checkmark.circle.fill" : "doc.on.doc"} size={20} color={copied ? C.green : C.text3} fallback="⧉" />
             </Tap>
-            <Text style={T.caption}>
+            <Text style={styles.caption}>
               {room.total} {t("qzSummary")}, {room.settings.seconds} {t("qzSecShort")}, {room.settings.maxPlayers} {t("qzMaxPlayers")}
             </Text>
-            <Button
-              title={t("shareCode")}
-              kind="secondary"
-              icon="square.and.arrow.up"
-              onPress={() => Share.share({ message: `${t("qzInvite")} ${code}` })}
-              style={{ alignSelf: "stretch" }}
-            />
-          </Card>
+            <WideButton title={t("shareCode")} kind="ghost" icon="square.and.arrow.up" onPress={() => Share.share({ message: `${t("qzInvite")} ${code}` })} />
+          </Animated.View>
         )}
-
-        <Card style={{ marginTop: 16, padding: 0, overflow: "hidden" }}>
+        <View style={styles.seats}>
           {Array.from({ length: room.settings.maxPlayers }, (_, i) => {
             const p = room.players[i];
-            return (
-              <View key={p?.id ?? `empty-${i}`} style={[styles.seat, i > 0 && styles.divider]}>
-                {p ? (
-                  <Animated.View entering={FadeIn.duration(200)} style={styles.seatInner}>
-                    <Avatar name={p.nick || "?"} size={34} />
-                    <Text style={[T.headline, { flex: 1 }]}>{nameOf(p)}</Text>
-                    {p.id === room.hostId && !room.random && <Icon name="crown.fill" size={14} color={C.amber} fallback="👑" />}
-                  </Animated.View>
-                ) : (
-                  <View style={styles.seatInner}>
-                    <View style={styles.emptySeat} />
-                    <Text style={[T.body, { color: C.text3 }]}>…</Text>
-                  </View>
-                )}
+            return p ? (
+              <Animated.View key={p.id} entering={ZoomIn.duration(220)} style={styles.seat}>
+                <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} />
+                <Text style={styles.seatName} numberOfLines={1}>
+                  {nameOf(p)}
+                </Text>
+              </Animated.View>
+            ) : (
+              <View key={`empty-${i}`} style={styles.seat}>
+                <View style={styles.emptySeat} />
+                <Text style={[styles.seatName, { opacity: 0.4 }]}> </Text>
               </View>
             );
           })}
-        </Card>
-
-        {!room.random && (
-          <View style={{ marginTop: 18, gap: 8 }}>
-            {isHost ? (
-              <>
-                <Button title={t("start")} icon="play.fill" disabled={room.players.length < 2} onPress={() => getSocket().emit("qz:start")} />
-                {room.players.length < 2 && <Text style={[T.caption, { textAlign: "center" }]}>{t("qzStartNeeds")}</Text>}
-              </>
-            ) : (
-              <Text style={[T.body, { textAlign: "center" }]}>{t("waitingHost")}</Text>
-            )}
-          </View>
-        )}
-      </Page>
-    );
-  }
-
-  // ── get ready ──
-  if (room.phase === "intro") {
-    return (
-      <Page>
-        <Stack.Screen options={{ title: t("qzName") }} />
-        <View style={{ alignItems: "center", paddingTop: 60, gap: 14 }}>
-          <Animated.View entering={ZoomIn.duration(240)}>
-            <Text style={styles.ready}>{t("qzGetReady")}</Text>
-          </Animated.View>
-          <Text style={T.body}>
-            {room.total} {t("qzSummary")}, {room.settings.seconds} {t("qzSecShort")}
-          </Text>
-          <View style={styles.introAvatars}>
-            {room.players.map((p) => (
-              <View key={p.id} style={{ alignItems: "center", gap: 4, width: 62 }}>
-                <Avatar name={p.nick || "?"} size={44} ring={p.id === myId ? C.greenMid : undefined} />
-                <Text style={[T.caption, { fontSize: 12 }]} numberOfLines={1}>
-                  {nameOf(p)}
-                </Text>
-              </View>
-            ))}
-          </View>
-          <View style={[styles.bar, { width: 220, marginTop: 20 }]}>
-            <View style={[styles.barFill, { width: `${(1 - leftMs / 3000) * 100}%`, backgroundColor: C.greenMid }]} />
-          </View>
         </View>
-      </Page>
+        {!room.random &&
+          (isHost ? (
+            <>
+              <WideButton title={t("start")} icon="play.fill" disabled={room.players.length < 2} onPress={() => getSocket().emit("qz:start")} />
+              {room.players.length < 2 && <Text style={[styles.sub, { textAlign: "center" }]}>{t("qzStartNeeds")}</Text>}
+            </>
+          ) : (
+            <Text style={[styles.sub, { textAlign: "center" }]}>{t("waitingHost")}</Text>
+          ))}
+      </ScrollView>
     );
-  }
-
-  // ── final standings ──
-  if (room.phase === "done") {
-    const place = standings.findIndex((p) => p.id === myId) + 1;
-    const placeText = place === 1 ? t("qzWinner") : locale === "tr" ? `${place}${t("qzPlace")}` : `${place}${["st", "nd", "rd"][place - 1] ?? "th"}${t("qzPlace")}`;
-    return (
-      <Page>
-        <Stack.Screen options={{ title: t("qzName") }} />
-        <Animated.View entering={ZoomIn.duration(240)} style={{ alignItems: "center", marginTop: 8, gap: 6 }}>
-          <Icon name="trophy.fill" size={44} color={place === 1 ? "#E0A100" : C.text3} fallback="🏆" />
-          <Text style={styles.ready}>{placeText}</Text>
-          <Text style={T.body}>
-            {me?.score ?? 0} {t("qzPoints")}
-          </Text>
+  } else if (room?.phase === "intro") {
+    body = (
+      <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(200)} style={{ alignItems: "center", paddingTop: 30, gap: 10 }}>
+        <Animated.View entering={ZoomIn.duration(260)}>
+          <Text style={[styles.big, { fontSize: 44, lineHeight: 48 }]}>{t("qzGetReady")}</Text>
         </Animated.View>
-        <Card style={{ marginTop: 18, padding: 0, overflow: "hidden" }}>
-          {standings.map((p, i) => (
-            <Animated.View key={p.id} entering={FadeInDown.delay(i * 80).duration(220)} style={[styles.row, i > 0 && styles.divider, p.id === myId && { backgroundColor: C.greenSoft }]}>
-              <Text style={styles.rank}>{i + 1}</Text>
-              <Avatar name={p.nick || "?"} size={32} />
-              <Text style={[T.headline, { flex: 1 }]} numberOfLines={1}>
+        <Text style={styles.sub}>
+          {room.total} {t("qzSummary")}, {room.settings.seconds} {t("qzSecShort")}
+        </Text>
+        <View style={[styles.seats, { marginTop: 18 }]}>
+          {room.players.map((p, i) => (
+            <Animated.View key={p.id} entering={ZoomIn.delay(150 + i * 90).duration(220)} style={styles.seat}>
+              <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} />
+              <Text style={styles.seatName} numberOfLines={1}>
                 {nameOf(p)}
               </Text>
-              <Text style={styles.score}>{p.score}</Text>
             </Animated.View>
           ))}
-        </Card>
-        <View style={{ marginTop: 18, gap: 10 }}>
-          {params.random ? (
-            <Button title={t("htNewGame")} icon="play.fill" onPress={() => router.replace("/bilgi/rastgele")} />
-          ) : isHost ? (
-            <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category) })} />
-          ) : (
-            <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
-          )}
-          <Button title={t("close")} kind="secondary" onPress={() => router.back()} />
         </View>
-        <Confetti fire={confetti} />
-      </Page>
+      </Animated.View>
     );
-  }
+  } else if (room?.phase === "done") {
+    const place = standings.findIndex((p) => p.id === myId) + 1;
+    const placeText = place === 1 ? t("qzWinner") : locale === "tr" ? `${place}${t("qzPlace")}` : `${place}${["st", "nd", "rd"][place - 1] ?? "th"}${t("qzPlace")}`;
+    const isHost = room.hostId === myId;
+    const podium = [standings[1], standings[0], standings[2]];
+    body = (
+      <View style={{ flex: 1 }}>
+        <Animated.View entering={SlideInDown.springify().damping(17).mass(0.9)} style={styles.podiumCard}>
+          <Text style={styles.podiumTitle}>{placeText}</Text>
+          <View style={styles.podium}>
+            {podium.map((p, k) =>
+              p ? (
+                <View key={p.id} style={[styles.podiumSpot, { marginTop: k === 1 ? 0 : 26 }]}>
+                  <Text style={styles.podiumRank}>{k === 1 ? 1 : k === 0 ? 2 : 3}.</Text>
+                  <Avatar name={p.nick || "?"} size={k === 1 ? 64 : 52} ring={p.id === myId ? NIGHT.accent : "white"} />
+                  <Text style={styles.podiumName} numberOfLines={1}>
+                    {nameOf(p)}
+                  </Text>
+                  <Text style={styles.podiumScore}>{p.score}</Text>
+                </View>
+              ) : (
+                <View key={k} style={styles.podiumSpot} />
+              )
+            )}
+          </View>
+          {standings.slice(3).map((p, i) => (
+            <View key={p.id} style={[styles.restRow, p.id === myId && { backgroundColor: "#E0F9FF" }]}>
+              <Text style={styles.restRank}>{i + 4}.</Text>
+              <Avatar name={p.nick || "?"} size={26} />
+              <Text style={styles.restName} numberOfLines={1}>
+                {nameOf(p)}
+              </Text>
+              <Text style={styles.restScore}>{p.score}</Text>
+            </View>
+          ))}
+          <View style={styles.myStrip}>
+            <Icon name="star.fill" size={15} color="#FACC15" fallback="★" />
+            <Text style={styles.myStripText}>
+              {me?.score ?? 0} {t("qzPoints")}
+            </Text>
+          </View>
+        </Animated.View>
+        <Animated.View entering={FadeIn.delay(550).duration(300)} style={styles.endButtons}>
+          <RoundButton icon="house.fill" label={t("tabHome")} onPress={() => router.dismissTo("/")} />
+          {params.random ? (
+            <RoundButton icon="arrow.clockwise" label={t("htNewGame")} onPress={() => router.replace("/bilgi/rastgele")} />
+          ) : isHost ? (
+            <RoundButton icon="arrow.clockwise" label={t("htRematch")} onPress={() => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category) })} />
+          ) : (
+            <View style={{ alignItems: "center", width: 120 }}>
+              <Text style={[styles.sub, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
+            </View>
+          )}
+        </Animated.View>
+      </View>
+    );
+  } else if (room?.question) {
+    const q = room.question;
+    const reveal = room.phase === "reveal";
+    const limitMs = room.settings.seconds * 1000;
+    const leftMs = reveal ? 0 : Math.min(limitMs, Math.max(0, deadline - now));
+    const low = !reveal && leftMs <= 5000;
+    const mine = reveal ? (me?.choice ?? null) : picked;
+    const others = room.players.filter((p) => p.id !== myId);
 
-  // ── question / reveal ──
-  const q = room.question!;
-  const reveal = room.phase === "reveal";
-  const mine = reveal ? (me?.choice ?? null) : picked;
-  const low = !reveal && leftMs <= 5000;
-  const answered = room.players.filter((p) => p.answered).length;
-
-  return (
-    <Page>
-      <Stack.Screen options={{ title: `${t("qzQuestionOf")} ${room.index + 1}/${room.total}` }} />
-      <View style={styles.top}>
-        <View style={[styles.timer, low && { backgroundColor: C.redSoft }]}>
-          <Icon name="stopwatch.fill" size={15} color={low ? C.red : C.text2} fallback="⏱" />
-          <Text style={[styles.timerText, low && { color: C.red }]}>{reveal ? 0 : Math.ceil(leftMs / 1000)}</Text>
+    body = (
+      <Animated.View exiting={FadeOutUp.duration(280)} style={{ flex: 1 }}>
+        <View style={styles.topBar}>
+          <View style={styles.countChip}>
+            <Text allowFontScaling={false} style={styles.countText}>
+              {room.index + 1}/{room.total}
+            </Text>
+          </View>
+          <Icon name={q.context ? "sportscourt.fill" : "person.fill"} size={26} color="white" fallback="⚽" />
+          <TimerRing fraction={leftMs / limitMs} seconds={Math.ceil(leftMs / 1000)} low={low} />
         </View>
-        <View style={{ flex: 1 }} />
-        <Text style={T.caption}>{t("qzYourScore")}</Text>
-        <Text style={styles.myScore}>{me?.score ?? 0}</Text>
-      </View>
-      <View style={[styles.bar, { marginTop: 10 }]}>
-        <View style={[styles.barFill, { width: `${reveal ? 0 : (leftMs / limitMs) * 100}%`, backgroundColor: low ? C.red : C.greenMid }]} />
-      </View>
 
-      <Animated.View key={room.index} entering={FadeIn.duration(220)}>
-        <Card style={styles.question}>
-          {q.context && <Text style={[T.caption, { textAlign: "center" }]}>{tx(q.context)}</Text>}
-          <Text style={styles.questionText}>{tx(q.text)}</Text>
-        </Card>
+        {/* the card stays; only its text changes */}
+        <View style={styles.qCard}>
+          <Animated.View key={room.index} entering={TEXT_IN} exiting={TEXT_OUT} style={{ alignItems: "center", gap: 8 }}>
+            {q.context && <Text style={styles.qContext}>{tx(q.context)}</Text>}
+            <Text style={styles.qText}>{tx(q.text)}</Text>
+          </Animated.View>
+        </View>
 
-        <View style={{ gap: 10, marginTop: 14 }}>
+        <View style={styles.pillSlot}>
+          {!reveal && picked !== null && room.players.some((p) => !p.answered) && (
+            <Animated.View entering={FadeIn.duration(180)} exiting={FadeOut.duration(150)} style={styles.pill}>
+              <Text style={styles.pillText}>{t("qzWaitingOthers")}</Text>
+            </Animated.View>
+          )}
+        </View>
+
+        <View style={{ gap: 12 }}>
           {q.options.map((o, i) => {
             const right = reveal && i === room.answer;
-            const wrongPick = reveal && mine === i && i !== room.answer;
+            const wrong = reveal && mine === i && i !== room.answer;
             const chosen = !reveal && mine === i;
-            const pickers = reveal ? room.players.filter((p) => p.choice === i) : [];
+            const bg = right ? RIGHT : wrong ? WRONG : chosen ? NIGHT.accent : "white";
+            const pickers = others.filter((p) => p.choice === i);
             return (
-              <Tap
-                key={i}
-                disabled={reveal || picked !== null}
-                onPress={() => {
-                  setPicked(i);
-                  haptic.press();
-                  getSocket().emit("qz:answer", { choice: i });
-                }}
-                style={[
-                  styles.option,
-                  chosen && styles.optionChosen,
-                  right && styles.optionRight,
-                  wrongPick && styles.optionWrong,
-                  reveal && !right && !wrongPick && { opacity: 0.55 },
-                ]}
-                accessibilityLabel={`${LETTERS[i]}: ${tx(o)}`}
-              >
-                <View style={[styles.letter, (chosen || right || wrongPick) && { backgroundColor: "rgba(255,255,255,0.25)" }]}>
-                  <Text style={[styles.letterText, (chosen || right || wrongPick) && { color: "white" }]}>{LETTERS[i]}</Text>
-                </View>
-                <Text style={[styles.optionText, (chosen || right || wrongPick) && { color: "white" }]} numberOfLines={2}>
-                  {tx(o)}
-                </Text>
-                <View style={{ flexDirection: "row", marginLeft: "auto" }}>
+              <Animated.View key={`${room.index}-${i}`} entering={OPTION_IN(i)} exiting={OPTION_OUT(i)}>
+                <Tap
+                  disabled={reveal || picked !== null}
+                  onPress={() => {
+                    setPicked(i);
+                    haptic.press();
+                    getSocket().emit("qz:answer", { choice: i });
+                  }}
+                  style={[styles.option, { backgroundColor: bg }]}
+                  accessibilityLabel={tx(o)}
+                >
+                  <Text style={styles.optionText} numberOfLines={2}>
+                    {tx(o)}
+                  </Text>
+                </Tap>
+                {mine === i && me && (
+                  <Animated.View entering={ZoomIn.duration(180)} style={styles.myPick}>
+                    <Avatar name={me.nick || "?"} size={30} ring={NIGHT.accent} />
+                  </Animated.View>
+                )}
+                <View style={styles.theirPicks}>
                   {pickers.map((p, k) => (
-                    <View key={p.id} style={{ marginLeft: k ? -8 : 0 }}>
-                      <Avatar name={p.nick || "?"} size={24} ring="white" />
-                    </View>
+                    <Animated.View key={p.id} entering={ZoomIn.duration(180)} style={{ marginLeft: k ? -12 : 0 }}>
+                      <Avatar name={p.nick || "?"} size={30} />
+                    </Animated.View>
                   ))}
                 </View>
-                {right && <Icon name="checkmark.circle.fill" size={20} color="white" fallback="✓" />}
-                {wrongPick && <Icon name="xmark.circle.fill" size={20} color="white" fallback="×" />}
-              </Tap>
+                {reveal && mine === i && (me?.gained ?? 0) > 0 && (
+                  <Animated.View entering={POINTS_UP} style={styles.pointsUp}>
+                    <Text style={styles.pointsUpText}>+{me?.gained}</Text>
+                  </Animated.View>
+                )}
+              </Animated.View>
             );
           })}
         </View>
-      </Animated.View>
 
-      {reveal ? (
-        <Animated.View entering={FadeIn.duration(200)} style={{ marginTop: 16 }}>
-          <View style={styles.result}>
-            <Text style={[styles.resultText, { color: me?.choice === room.answer ? C.green : C.red }]}>
-              {me?.choice === room.answer ? `${t("qzCorrect")} +${me?.gained ?? 0}` : me?.choice == null ? t("qzTimeUp") : t("qzWrong")}
-            </Text>
-          </View>
-          <Card style={{ marginTop: 10, padding: 0, overflow: "hidden" }}>
-            {standings.map((p, i) => (
-              <View key={p.id} style={[styles.row, styles.rowSmall, i > 0 && styles.divider, p.id === myId && { backgroundColor: C.greenSoft }]}>
-                <Text style={[styles.rank, { fontSize: 17 }]}>{i + 1}</Text>
-                <Avatar name={p.nick || "?"} size={26} />
-                <Text style={[T.body, { flex: 1, color: C.text, fontWeight: "600" }]} numberOfLines={1}>
-                  {nameOf(p)}
-                </Text>
-                {p.gained > 0 && <Text style={styles.gained}>+{p.gained}</Text>}
-                <Text style={[styles.score, { fontSize: 19 }]}>{p.score}</Text>
-              </View>
-            ))}
-          </Card>
+        {reveal && (me?.choice == null || me.choice !== room.answer) && (
+          <Animated.View entering={FadeIn.delay(200).duration(200)} style={{ alignItems: "center", marginTop: 16 }}>
+            <Text style={[styles.verdict, { color: me?.choice == null ? "#FDE68A" : WRONG }]}>{me?.choice == null ? t("qzTimeUp") : t("qzWrong")}</Text>
+          </Animated.View>
+        )}
+      </Animated.View>
+    );
+  }
+
+  return (
+    <View style={styles.screen}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="light" />
+      <Svg style={StyleSheet.absoluteFill}>
+        <Defs>
+          <LinearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0.3" stopColor={NIGHT.body} />
+            <Stop offset="1" stopColor={NIGHT.bodyLow} />
+          </LinearGradient>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#bg)" />
+      </Svg>
+      {room?.phase !== "done" ? (
+        <Animated.View exiting={FadeOutUp.duration(350)} style={StyleSheet.absoluteFill} pointerEvents="none">
+          <StadiumHeader runners={runners} height={HEADER} />
         </Animated.View>
-      ) : (
-        <View style={styles.waiting}>
-          <View style={{ flexDirection: "row" }}>
-            {room.players.map((p, k) => (
-              <View key={p.id} style={{ marginLeft: k ? -6 : 0, opacity: p.answered ? 1 : 0.3 }}>
-                <Avatar name={p.nick || "?"} size={28} ring="white" />
-              </View>
-            ))}
-          </View>
-          <Text style={T.caption}>
-            {picked !== null ? t("qzWaitingOthers") : ""} {answered}/{room.players.length}
-          </Text>
-        </View>
-      )}
-    </Page>
+      ) : null}
+      {leave}
+      <View style={[styles.content, { paddingTop: room?.phase === "done" ? insets.top + 56 : insets.top + HEADER + 6 }]}>{body}</View>
+      <Confetti fire={confetti} />
+    </View>
+  );
+}
+
+function WideButton({
+  title,
+  icon,
+  kind = "primary",
+  disabled,
+  onPress,
+}: {
+  title: string;
+  icon?: "play.fill" | "square.and.arrow.up";
+  kind?: "primary" | "ghost";
+  disabled?: boolean;
+  onPress: () => void;
+}) {
+  const primary = kind === "primary";
+  return (
+    <Tap onPress={onPress} disabled={disabled} style={[styles.wide, primary ? styles.widePrimary : styles.wideGhost, disabled && { opacity: 0.45 }]}>
+      {icon && <Icon name={icon} size={16} color={primary ? NIGHT.bodyLow : C.text} />}
+      <Text style={[styles.wideText, { color: primary ? NIGHT.bodyLow : C.text }]}>{title}</Text>
+    </Tap>
+  );
+}
+
+function RoundButton({ icon, label, onPress }: { icon: "house.fill" | "arrow.clockwise"; label: string; onPress: () => void }) {
+  return (
+    <Tap onPress={onPress} style={{ alignItems: "center", gap: 8, width: 120 }} accessibilityLabel={label}>
+      <View style={styles.round}>
+        <Icon name={icon} size={26} color="white" fallback="•" />
+      </View>
+      <Text style={styles.roundLabel}>{label}</Text>
+    </Tap>
   );
 }
 
 const styles = StyleSheet.create({
-  avatar: { alignItems: "center", justifyContent: "center" },
+  screen: { flex: 1, backgroundColor: NIGHT.body },
+  content: { flex: 1, paddingHorizontal: 16 },
+  leave: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.16)", alignItems: "center", justifyContent: "center" },
+
+  avatar: { alignItems: "center", justifyContent: "center", borderWidth: 2 },
   avatarText: { color: "white", fontWeight: "800" },
-  code: { fontFamily: F.black, fontSize: 52, letterSpacing: 6, color: C.text },
-  seat: { paddingHorizontal: 14, paddingVertical: 10 },
-  seatInner: { flexDirection: "row", alignItems: "center", gap: 12, minHeight: 34 },
-  emptySeat: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, borderStyle: "dashed", borderColor: C.border },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
-  ready: { fontFamily: F.black, fontSize: 40, lineHeight: 44, color: C.text, textAlign: "center" },
-  introAvatars: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 10, marginTop: 16 },
-  bar: { height: 6, borderRadius: 3, backgroundColor: "#E2E6EC", overflow: "hidden" },
-  barFill: { height: "100%", borderRadius: 3 },
-  top: { flexDirection: "row", alignItems: "center", gap: 8 },
-  timer: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4, borderWidth: 1, borderColor: C.border },
-  timerText: { fontFamily: F.display, fontSize: 22, lineHeight: 26, color: C.text, fontVariant: ["tabular-nums"], minWidth: 24, textAlign: "center" },
-  myScore: { fontFamily: F.black, fontSize: 26, color: C.text },
-  question: { marginTop: 16, paddingVertical: 22, paddingHorizontal: 18, gap: 10, alignItems: "center" },
-  questionText: { fontFamily: F.display, fontSize: 25, lineHeight: 29, color: C.text, textAlign: "center" },
-  option: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: C.card, borderRadius: R.card, borderWidth: 1.5, borderColor: C.border, paddingHorizontal: 12, paddingVertical: 12, minHeight: 58 },
-  optionChosen: { backgroundColor: C.blue, borderColor: C.blue },
-  optionRight: { backgroundColor: C.green, borderColor: C.green },
-  optionWrong: { backgroundColor: C.red, borderColor: C.red },
-  letter: { width: 32, height: 32, borderRadius: 10, backgroundColor: C.bg, alignItems: "center", justifyContent: "center" },
-  letterText: { fontFamily: F.black, fontSize: 17, color: C.text2 },
-  optionText: { flexShrink: 1, fontSize: 17, fontWeight: "700", color: C.text },
-  result: { alignItems: "center" },
-  resultText: { fontFamily: F.black, fontSize: 28 },
-  row: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 14, paddingVertical: 10 },
-  rowSmall: { paddingVertical: 7 },
-  rank: { fontFamily: F.black, fontSize: 20, width: 22, textAlign: "center", color: C.text2 },
-  score: { fontFamily: F.black, fontSize: 22, color: C.text, minWidth: 34, textAlign: "right" },
-  gained: { fontFamily: F.display, fontSize: 16, color: C.green },
-  waiting: { alignItems: "center", gap: 6, marginTop: 18 },
+
+  card: { backgroundColor: "white", borderRadius: 24, padding: 20 },
+  cardTitle: { fontFamily: F.display, fontSize: 22, color: C.text, textAlign: "center" },
+  caption: { fontSize: 13, fontWeight: "600", color: C.text2 },
+  code: { fontFamily: F.black, fontSize: 48, letterSpacing: 6, color: C.text },
+  big: { fontFamily: F.black, fontSize: 30, lineHeight: 34, color: "white", textAlign: "center" },
+  sub: { fontSize: 15, color: "rgba(255,255,255,0.75)", fontWeight: "500" },
+
+  seats: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 14 },
+  seat: { width: 62, alignItems: "center", gap: 6 },
+  seatName: { fontSize: 12, fontWeight: "700", color: "white", maxWidth: 62 },
+  emptySeat: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.35)" },
+
+  topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
+  countChip: { borderWidth: 2, borderColor: "rgba(255,255,255,0.7)", borderRadius: 9, paddingHorizontal: 8, paddingVertical: 3, minWidth: 48, alignItems: "center" },
+  countText: { fontFamily: F.display, fontSize: 16, color: "white" },
+  ring: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
+  ringText: { fontFamily: F.display, fontSize: 17, color: "white", fontVariant: ["tabular-nums"] },
+
+  qCard: { backgroundColor: "white", borderRadius: 26, minHeight: 138, paddingHorizontal: 18, paddingVertical: 18, justifyContent: "center" },
+  qContext: { fontSize: 13, fontWeight: "600", color: C.text2, textAlign: "center" },
+  qText: { fontSize: 19, lineHeight: 25, fontWeight: "700", color: C.text, textAlign: "center" },
+
+  pillSlot: { height: 34, alignItems: "center", justifyContent: "center" },
+  pill: { backgroundColor: "#F59E0B", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 3 },
+  pillText: { fontSize: 12, fontWeight: "800", color: "#3B2300" },
+
+  option: { borderRadius: 999, minHeight: 52, paddingHorizontal: 44, paddingVertical: 10, alignItems: "center", justifyContent: "center" },
+  optionText: { fontSize: 16, fontWeight: "800", color: C.text, textAlign: "center" },
+  myPick: { position: "absolute", left: -6, top: -8 },
+  theirPicks: { position: "absolute", right: -6, top: -8, flexDirection: "row" },
+  pointsUp: { position: "absolute", right: 34, top: -26 },
+  pointsUpText: { fontFamily: F.black, fontSize: 30, color: "#FDE047", textShadowColor: "rgba(0,0,0,0.35)", textShadowRadius: 4 },
+  verdict: { fontFamily: F.black, fontSize: 26 },
+
+  podiumCard: { backgroundColor: "#16A34A", borderRadius: 28, paddingTop: 18, paddingBottom: 16, paddingHorizontal: 14, gap: 8 },
+  podiumTitle: { fontFamily: F.black, fontSize: 30, lineHeight: 34, color: "white", textAlign: "center" },
+  podium: { flexDirection: "row", justifyContent: "space-around", alignItems: "flex-start", marginBottom: 8 },
+  podiumSpot: { width: 100, alignItems: "center", gap: 4 },
+  podiumRank: { fontFamily: F.black, fontSize: 22, color: "white" },
+  podiumName: { fontSize: 13, fontWeight: "700", color: "white", maxWidth: 100 },
+  podiumScore: { fontFamily: F.display, fontSize: 20, color: "white" },
+  restRow: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "white", borderRadius: 999, paddingHorizontal: 14, paddingVertical: 7 },
+  restRank: { fontFamily: F.display, fontSize: 17, color: C.text2, width: 22 },
+  restName: { flex: 1, fontSize: 15, fontWeight: "700", color: C.text },
+  restScore: { fontFamily: F.display, fontSize: 19, color: C.text },
+  myStrip: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "center", backgroundColor: "rgba(0,0,0,0.22)", borderRadius: 999, paddingHorizontal: 14, paddingVertical: 4, marginTop: 4 },
+  myStripText: { fontFamily: F.display, fontSize: 18, color: "white" },
+  endButtons: { flexDirection: "row", justifyContent: "center", gap: 20, marginTop: 34 },
+  round: { width: 64, height: 64, borderRadius: 32, backgroundColor: "rgba(255,255,255,0.14)", borderWidth: 2, borderColor: "rgba(255,255,255,0.35)", alignItems: "center", justifyContent: "center" },
+  roundLabel: { fontSize: 14, fontWeight: "700", color: "white" },
+
+  wide: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 999, minHeight: 50, alignSelf: "stretch" },
+  widePrimary: { backgroundColor: "white" },
+  wideGhost: { backgroundColor: C.bg },
+  wideText: { fontFamily: F.display, fontSize: 20 },
 });

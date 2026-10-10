@@ -150,7 +150,7 @@ export const dict = {
     qzGetReady: "Hazır ol",
     qzQuestionOf: "Soru",
     qzYourScore: "Puanın",
-    qzWaitingOthers: "Diğerleri bekleniyor",
+    qzWaitingOthers: "Rakipler bekleniyor",
     qzTimeUp: "Süre doldu",
     qzCorrect: "Doğru",
     qzWrong: "Yanlış",
