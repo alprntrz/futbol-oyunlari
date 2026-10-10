@@ -114,19 +114,20 @@ const CROWD = (() => {
   let s = 7;
   const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
   const dots: { x: number; y: number; o: number }[] = [];
-  for (let i = 0; i < 260; i++) {
+  // far away: a dense speckle of small heads rather than a few big ones
+  for (let i = 0; i < 520; i++) {
     const x = r() * VB_W;
-    const y = 58 + r() * 70;
-    if (y < standTop(x) + 4) continue;
-    dots.push({ x, y, o: 0.05 + r() * 0.12 });
+    const y = 96 + r() * 62;
+    if (y < standTop(x) + 3) continue;
+    dots.push({ x, y, o: 0.05 + r() * 0.1 });
   }
   return dots;
 })();
 
-/** Top edge of the stands: a shallow bowl, higher at the corners like the far end of a ground. */
+/** Top edge of the stands, seen from across the ground: low and nearly flat, rising a touch at the corners. */
 function standTop(x: number) {
   const t = x / VB_W - 0.5;
-  return 62 + 30 * (1 - 4 * t * t) * 0.6;
+  return 98 - 10 * (4 * t * t);
 }
 
 /**
@@ -145,16 +146,13 @@ const TRACK_D = (() => {
   return pts.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
 })();
 
-/** Floodlight mast with a lit panel and a soft glow. */
+/** Floodlight mast in the distance: thin pole, small lit panel, soft glow. */
 function Floodlight({ x }: { x: number }) {
   return (
     <G>
-      <Circle cx={x} cy={18} r={46} fill="url(#glow)" />
-      <Line x1={x} y1={22} x2={x} y2={90} stroke={NIGHT.pole} strokeWidth={3} />
-      <Rect x={x - 13} y={10} width={26} height={13} rx={2} fill="#F7FBE8" opacity={0.92} />
-      {[0, 1, 2].map((i) => (
-        <Line key={i} x1={x - 13 + 6.5 * (i + 1)} y1={10} x2={x - 13 + 6.5 * (i + 1)} y2={23} stroke="#C8D9C0" strokeWidth={0.8} />
-      ))}
+      <Circle cx={x} cy={52} r={24} fill="url(#glow)" />
+      <Line x1={x} y1={56} x2={x} y2={standTop(x) - 6} stroke={NIGHT.pole} strokeWidth={1.6} />
+      <Rect x={x - 7} y={48} width={14} height={7} rx={1} fill="#F7FBE8" opacity={0.92} />
     </G>
   );
 }
@@ -163,7 +161,7 @@ function Floodlight({ x }: { x: number }) {
 const Silhouette = memo(function Silhouette({ track }: { track: boolean }) {
   const roof = Array.from({ length: 41 }, (_, i) => {
     const x = (i / 40) * VB_W;
-    return `${i ? "L" : "M"}${x.toFixed(1)} ${(standTop(x) - 16).toFixed(1)}`;
+    return `${i ? "L" : "M"}${x.toFixed(1)} ${(standTop(x) - 7).toFixed(1)}`;
   }).join(" ");
   const tierTop = Array.from({ length: 41 }, (_, i) => {
     const x = (i / 40) * VB_W;
@@ -191,17 +189,19 @@ const Silhouette = memo(function Silhouette({ track }: { track: boolean }) {
         </LinearGradient>
       </Defs>
       <Rect width={VB_W} height={VB_H} fill="url(#sky)" />
-      <Floodlight x={46} />
-      <Floodlight x={354} />
+      <Floodlight x={34} />
+      <Floodlight x={148} />
+      <Floodlight x={252} />
+      <Floodlight x={366} />
       {/* roof edge with its supports */}
-      <Path d={roof} stroke={NIGHT.roof} strokeWidth={4} fill="none" />
-      {Array.from({ length: 9 }, (_, i) => {
-        const x = 20 + i * 45;
-        return <Line key={i} x1={x} y1={standTop(x) - 16} x2={x} y2={standTop(x)} stroke={NIGHT.roof} strokeWidth={1.5} />;
+      <Path d={roof} stroke={NIGHT.roof} strokeWidth={2.2} fill="none" />
+      {Array.from({ length: 17 }, (_, i) => {
+        const x = 12 + i * 24;
+        return <Line key={i} x1={x} y1={standTop(x) - 7} x2={x} y2={standTop(x)} stroke={NIGHT.roof} strokeWidth={0.8} />;
       })}
       {/* stands */}
       <Path d={`M0 ${VB_H} ${tierTop} L${VB_W} ${VB_H} Z`} fill={NIGHT.stand} />
-      {[14, 28, 42].map((dy) => (
+      {[9, 18, 27, 36, 45].map((dy) => (
         <Path
           key={dy}
           d={Array.from({ length: 41 }, (_, i) => {
@@ -214,7 +214,7 @@ const Silhouette = memo(function Silhouette({ track }: { track: boolean }) {
         />
       ))}
       {CROWD.map((d, i) => (
-        <Circle key={i} cx={d.x} cy={d.y} r={1.3} fill={NIGHT.crowd} opacity={d.o} />
+        <Circle key={i} cx={d.x} cy={d.y} r={0.8} fill={NIGHT.crowd} opacity={d.o} />
       ))}
       {/* the stands melt into the page instead of ending on a hard edge */}
       {!track && <Rect x={0} y={VB_H - 34} width={VB_W} height={34} fill="url(#melt)" />}
@@ -225,6 +225,8 @@ const Silhouette = memo(function Silhouette({ track }: { track: boolean }) {
           <Path d={TRACK_D} stroke={NIGHT.track} strokeWidth={4} strokeLinecap="round" fill="none" />
         </>
       )}
+      {/* last row in the page colour: the sky would otherwise bleed through the anti-aliased edge */}
+      <Rect x={0} y={VB_H - 1.5} width={VB_W} height={2} fill={NIGHT.body} />
     </Svg>
   );
 });
