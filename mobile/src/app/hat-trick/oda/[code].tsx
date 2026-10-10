@@ -5,6 +5,7 @@ import { Share, StyleSheet, View } from "react-native";
 
 import { generateGrid } from "@/lib/tiki";
 
+import { GameActions } from "~/components/GameActions";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
@@ -28,17 +29,22 @@ interface HtRoom {
   board: (HtCell | null)[];
   turn: Mark;
   winner: Winner;
-  flash: { mark: Mark; reason: "wrong" | "timeout" } | null;
+  flash: { mark: Mark; reason: "wrong" | "timeout" | "declined" } | null;
   remainingMs: number;
   steals: Record<Mark, number> | null;
   used: string[];
+  /** mark of the player with a pending draw offer */
+  drawOffer: Mark | null;
+  /** how a finished game ended, when it wasn't on the board */
+  endReason: "forfeit" | "agreed" | null;
   players: HtPlayer[];
 }
 
 /** Online Hat-trick room: waiting screen, then the shared board driven by the server. */
 export default function HatTrickRoom() {
   const { t } = useI18n();
-  const params = useLocalSearchParams<{ code: string }>();
+  // `random` is set when the room came from the random queue: offer a new match after the game
+  const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
   const [room, setRoom] = useState<HtRoom | null>(null);
   const [deadline, setDeadline] = useState(0);
@@ -169,9 +175,22 @@ export default function HatTrickRoom() {
   }
 
   const myTurn = !!me && room.turn === me.mark && !room.winner;
-  const flash = room.flash ? `${nameOf(room.players.find((p) => p.mark === room.flash!.mark))}: ${t(room.flash.reason === "wrong" ? "ttWrong" : "ttTimeout")}` : null;
+  const f = room.flash;
+  const flash = !f
+    ? null
+    : f.reason === "declined"
+      ? f.mark === me?.mark
+        ? t("htDrawDeclined")
+        : null
+      : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.reason === "wrong" ? "ttWrong" : "ttTimeout")}`;
+  const iWon = room.winner === me?.mark;
   const winnerText =
-    room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? t("htYouWin") : t("htYouLose");
+    room.winner === "draw"
+      ? t(room.endReason === "agreed" ? "htDrawAgreed" : "ttDraw")
+      : room.endReason === "forfeit"
+        ? t(iWon ? "htTheyForfeited" : "htYouForfeited")
+        : t(iWon ? "htYouWin" : "htYouLose");
+  const draw = !room.drawOffer || !me ? null : room.drawOffer === me.mark ? "sent" : "received";
 
   return (
     <Page>
@@ -189,22 +208,28 @@ export default function HatTrickRoom() {
         canMove={myTurn && !peerLeft}
         status={myTurn ? t("htYourTurn") : t("htTheirTurn")}
         flash={flash}
-        celebrate={room.winner === me?.mark}
+        celebrate={iWon}
         winnerText={winnerText}
         onMove={(cell, name) => getSocket().emit("ht:move", { cell, name })}
         footer={
           room.winner ? (
-            isHost ? (
-              <Button
-                title={t("htRematch")}
-                icon="arrow.clockwise"
-                onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(generateGrid()) })}
-                style={{ marginTop: 18 }}
-              />
-            ) : (
-              <Text style={[T.body, { textAlign: "center", marginTop: 18 }]}>{t("htWaitRematch")}</Text>
-            )
-          ) : null
+            <View style={{ marginTop: 18, gap: 10 }}>
+              {isHost ? (
+                <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(generateGrid()) })} />
+              ) : (
+                <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
+              )}
+              {params.random && <Button title={t("htNewGame")} kind="secondary" icon="play.fill" onPress={() => router.replace("/hat-trick/rastgele")} />}
+            </View>
+          ) : (
+            <GameActions
+              draw={draw}
+              disabled={peerLeft}
+              onOfferDraw={() => getSocket().emit("ht:draw-offer")}
+              onReplyDraw={(accept) => getSocket().emit("ht:draw-reply", { accept })}
+              onForfeit={() => getSocket().emit("ht:forfeit")}
+            />
+          )
         }
       />
     </Page>

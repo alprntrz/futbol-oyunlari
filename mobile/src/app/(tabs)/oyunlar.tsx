@@ -53,6 +53,15 @@ export default function Games() {
       bg: "#E4ECFD",
     },
     {
+      icon: "person.fill.questionmark",
+      fallback: "?",
+      title: t("myName"),
+      desc: t("myShort"),
+      href: "/gizli",
+      color: "#B7791F",
+      bg: "#FFF4DC",
+    },
+    {
       image: BRAND.icon.practice,
       title: t("practice"),
       desc: t("practiceShort"),
@@ -137,12 +146,11 @@ export default function Games() {
                 {match.competition[locale]}, {match.season}
               </Text>
             </View>
+            <View style={styles.go}>
+              <Icon name="chevron.right" size={14} color={C.greenDark} fallback="›" />
+            </View>
           </View>
 
-          <View style={styles.cta}>
-            <Icon name="play.fill" size={16} color={C.greenDark} fallback="▶" />
-            <Text style={styles.ctaText}>{cta}</Text>
-          </View>
         </Tap>
       </Animated.View>
 
@@ -244,17 +252,7 @@ const styles = StyleSheet.create({
     color: "#E3F2E8",
     marginTop: 2,
   },
-  cta: {
-    marginTop: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: "white",
-    borderRadius: R.button,
-    paddingVertical: 11,
-  },
-  ctaText: { fontFamily: F.display, fontSize: 22, color: C.greenDark },
+  go: { width: 30, height: 30, borderRadius: 15, backgroundColor: "white", alignItems: "center", justifyContent: "center" },
 
   list: {
     marginTop: 16,
@@ -269,16 +267,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    minHeight: 62,
+    paddingVertical: 8,
+    minHeight: 58,
   },
   rowDivider: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.border,
   },
   rowIcon: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",

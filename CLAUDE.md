@@ -31,7 +31,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`, incl. `ht:queue` matchmaking:
   server owns turn, 45 s clock and result; the host's phone deals the grid as
   criterion ids; a queue match gets `HT_INTRO_MS` before X's clock for the VS screen,
-  and an empty queue falls back to a clearly labelled local bot, `mobile/src/lib/htBot.ts`).
+  after 20 s an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
+  mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
+  `ht:forfeit` end games early). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
   Possession Play uses `pp:*` (same pattern, two chess clocks;
   the mover's phone computes claimed hexes). Football Bingo is offline (daily
   seeded card, `mobile/src/lib/bingo.ts`). The Missing 11 race (`room:*`, `race:*`) is still served for

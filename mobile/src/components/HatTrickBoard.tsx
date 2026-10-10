@@ -81,12 +81,12 @@ export function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }
   return <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>{c.icon}</Text>;
 }
 
-/** A placed mark pops in once: small scale-up, one light overshoot, settle. */
+/** A placed name settles in with a barely-there bounce. */
 const MARK_IN = new Keyframe({
-  0: { opacity: 0, transform: [{ scale: 0.6 }] },
-  55: { opacity: 1, transform: [{ scale: 1.12 }] },
+  0: { opacity: 0, transform: [{ scale: 0.92 }] },
+  60: { opacity: 1, transform: [{ scale: 1.03 }] },
   100: { opacity: 1, transform: [{ scale: 1 }] },
-}).duration(260);
+}).duration(240);
 
 /**
  * Hat-trick board: whose-turn card, the 3×3 criteria grid and the guess sheet.

@@ -9,12 +9,10 @@ import { C, F, T } from "~/lib/theme";
 
 import { MARK } from "./HatTrickBoard";
 import { Text } from "./Text";
-import { Icon } from "./ui";
 
 export interface Side {
   name: string;
   mark: Mark;
-  bot?: boolean;
 }
 
 const COUNT = 3;
@@ -73,12 +71,6 @@ function Player({ side, you }: { side: Side; you: boolean }) {
       <Text style={styles.name} numberOfLines={1}>
         {you ? t("you") : side.name}
       </Text>
-      {side.bot && side.name !== t("htBotTag") && (
-        <View style={styles.bot}>
-          <Icon name="cpu" size={12} color={C.text2} fallback="⚙︎" />
-          <Text style={styles.botText}>{t("htBotTag")}</Text>
-        </View>
-      )}
     </Animated.View>
   );
 }
@@ -91,8 +83,6 @@ const styles = StyleSheet.create({
   disc: { width: 96, height: 96, borderRadius: 48, borderWidth: 3, alignItems: "center", justifyContent: "center" },
   mark: { fontFamily: F.black, fontSize: 52, lineHeight: 58 },
   name: { fontFamily: F.display, fontSize: 22, color: C.text, maxWidth: 120 },
-  bot: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: C.border, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 },
-  botText: { fontSize: 12, fontWeight: "800", color: C.text2 },
   vs: { fontFamily: F.black, fontSize: 30, color: C.text3, marginTop: 30 },
   countSlot: { height: 110, justifyContent: "center", marginTop: 20 },
   count: { fontFamily: F.black, fontSize: 88, lineHeight: 96, color: C.text },

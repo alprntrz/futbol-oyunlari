@@ -83,6 +83,8 @@ function htPublic(room) {
     remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : HT_TURN_MS,
     steals: room.steals,
     used: room.used,
+    drawOffer: room.drawOffer ?? null,
+    endReason: room.endReason ?? null,
     players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
   };
 }
@@ -510,6 +512,7 @@ app.prepare().then(() => {
       } else {
         room.flash = { mark: me.mark, reason: "wrong" };
       }
+      room.drawOffer = null;
       if (room.winner) {
         clearTimeout(room.timer);
         room.deadline = null;
@@ -520,6 +523,41 @@ app.prepare().then(() => {
       htEmit(room);
     });
 
+    const htEnd = (room, winner, endReason) => {
+      clearTimeout(room.timer);
+      room.deadline = null;
+      room.winner = winner;
+      room.endReason = endReason;
+      room.drawOffer = null;
+      htEmit(room);
+    };
+
+    // Either player can offer a draw once it's pending-free; the other accepts or declines
+    socket.on("ht:draw-offer", () => {
+      const room = htRooms.get(socket.data.htCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || !room.started || room.winner || room.drawOffer || room.players.length < 2) return;
+      room.drawOffer = me.mark;
+      htEmit(room);
+    });
+
+    socket.on("ht:draw-reply", ({ accept }) => {
+      const room = htRooms.get(socket.data.htCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || room.winner || !room.drawOffer || room.drawOffer === me.mark) return;
+      if (accept) return htEnd(room, "draw", "agreed");
+      room.flash = { mark: room.drawOffer, reason: "declined" };
+      room.drawOffer = null;
+      htEmit(room);
+    });
+
+    socket.on("ht:forfeit", () => {
+      const room = htRooms.get(socket.data.htCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || !room.started || room.winner) return;
+      htEnd(room, me.mark === "X" ? "O" : "X", "forfeit");
+    });
+
     // Host deals a new grid; marks swap so the other player starts
     socket.on("ht:rematch", ({ grid }) => {
       const room = htRooms.get(socket.data.htCode);
@@ -528,6 +566,8 @@ app.prepare().then(() => {
       room.board = Array(9).fill(null);
       room.winner = null;
       room.flash = null;
+      room.drawOffer = null;
+      room.endReason = null;
       for (const p of room.players) p.mark = p.mark === "X" ? "O" : "X";
       if (room.steals) room.steals = { X: 3, O: 3 };
       room.used = [];

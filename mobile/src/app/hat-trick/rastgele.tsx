@@ -10,44 +10,41 @@ import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Page } from "~/components/ui";
 import { gridToIds, type Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { loadNick, randomNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
 
-/** After this long with nobody found, offer a bot; a bit later, start one. */
-const OFFER_BOT_MS = 10_000;
-const AUTO_BOT_MS = 25_000;
+/** Nobody found by then: play the house bot, which looks and plays like any other opponent. */
+const BOT_AFTER_MS = 20_000;
 
-interface Matched {
-  code: string;
-  players: { id: string; nick: string; mark: Mark }[];
-}
+type Matched = { kind: "room"; code: string; me: Mark; opponent: string } | { kind: "bot"; opponent: string };
 
-/** Random opponent: wait in the server queue, show the VS intro, then jump into the matched room. */
+/** Random opponent: wait in the server queue, show the VS intro, then jump into the game. */
 export default function HatTrickRandom() {
   const { t } = useI18n();
   const [error, setError] = useState<string | null>(null);
   const [matched, setMatched] = useState<Matched | null>(null);
-  const [waited, setWaited] = useState(0);
 
-  // Nobody around: offer a bot, then switch to one
   useEffect(() => {
     if (matched) return;
-    const started = Date.now();
-    const id = setInterval(() => {
-      const ms = Date.now() - started;
-      setWaited(ms);
-      if (ms >= AUTO_BOT_MS) router.replace("/hat-trick/bot");
-    }, 500);
-    return () => clearInterval(id);
+    const id = setTimeout(() => {
+      getSocket().emit("ht:unqueue");
+      setMatched({ kind: "bot", opponent: randomNick() });
+    }, BOT_AFTER_MS);
+    return () => clearTimeout(id);
   }, [matched]);
 
   useEffect(() => {
     const socket = getSocket();
-    const onMatched = (m: Matched) => setMatched(m);
+    const onMatched = (m: { code: string; players: { id: string; nick: string; mark: Mark }[] }) => {
+      const me = m.players.find((p) => p.id === socket.id) ?? m.players[0];
+      const them = m.players.find((p) => p !== me);
+      setMatched({ kind: "room", code: m.code, me: me.mark, opponent: them?.nick || t("opponent") });
+    };
     const onError = () => setError(t("serverUnreachable"));
-    const enqueue = () => {
+    const enqueue = async () => {
       setError(null);
-      socket.emit("ht:queue", { nick: "", grid: gridToIds(generateGrid()) });
+      socket.emit("ht:queue", { nick: await loadNick(), grid: gridToIds(generateGrid()) });
     };
     socket.on("ht:matched", onMatched);
     socket.on("connect_error", onError);
@@ -63,16 +60,20 @@ export default function HatTrickRandom() {
   }, []);
 
   if (matched) {
-    const myId = getSocket().id;
-    const me = matched.players.find((p) => p.id === myId) ?? matched.players[0];
-    const them = matched.players.find((p) => p !== me);
+    const me: Mark = matched.kind === "room" ? matched.me : "X";
     return (
       <Page>
         <Stack.Screen options={{ title: t("htRandom") }} />
         <MatchIntro
-          me={{ name: t("you"), mark: me.mark }}
-          opponent={{ name: them?.nick || t("opponent"), mark: them?.mark ?? (me.mark === "X" ? "O" : "X") }}
-          onDone={() => router.replace({ pathname: "/hat-trick/oda/[code]", params: { code: matched.code } })}
+          me={{ name: t("you"), mark: me }}
+          opponent={{ name: matched.opponent, mark: me === "X" ? "O" : "X" }}
+          onDone={() =>
+            router.replace(
+              matched.kind === "room"
+                ? { pathname: "/hat-trick/oda/[code]", params: { code: matched.code, random: "1" } }
+                : { pathname: "/hat-trick/bot", params: { nick: matched.opponent } }
+            )
+          }
         />
       </Page>
     );
@@ -87,13 +88,6 @@ export default function HatTrickRandom() {
         <Text style={[T.body, { textAlign: "center" }]}>{t("htSearchingDesc")}</Text>
         {error && <Text style={[T.body, { color: C.red, fontWeight: "600" }]}>{error}</Text>}
       </Card>
-      {waited >= OFFER_BOT_MS && (
-        <Card style={{ marginTop: 16, gap: 10 }}>
-          <Text style={T.headline}>{t("htNoOne")}</Text>
-          <Text style={T.body}>{t("htBotOffer")}</Text>
-          <Button title={t("htPlayBot")} icon="cpu" onPress={() => router.replace("/hat-trick/bot")} />
-        </Card>
-      )}
       <View style={{ marginTop: 16 }}>
         <Button title={t("cancel")} kind="secondary" onPress={() => router.back()} />
       </View>

@@ -1,9 +1,10 @@
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 
 import { generateGrid, type Grid } from "@/lib/tiki";
 
+import { GameActions } from "~/components/GameActions";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
 import { Text } from "~/components/Text";
@@ -26,6 +27,8 @@ export default function HatTrickLocal() {
   const [stealMode, setStealMode] = useState(false);
   const [steals, setSteals] = useState<Record<Mark, number>>({ X: 3, O: 3 });
   const [usedNames, setUsedNames] = useState<string[]>([]);
+  // set when the game ended by forfeit: the mark that gave up
+  const [forfeited, setForfeited] = useState<Mark | null>(null);
 
   const nextTurn = (message: string | null) => {
     setFlash(message);
@@ -64,7 +67,19 @@ export default function HatTrickLocal() {
     } else nextTurn(null);
   };
 
+  const offerDraw = () =>
+    Alert.alert(t("htLocalDrawAsk"), t("htLocalDrawAskDesc"), [
+      { text: t("cancel"), style: "cancel" },
+      { text: t("htAccept"), onPress: () => setWinner("draw") },
+    ]);
+
+  const forfeit = () => {
+    setForfeited(turn);
+    setWinner(other(turn));
+  };
+
   const newGrid = () => {
+    setForfeited(null);
     setSteals({ X: 3, O: 3 });
     setUsedNames([]);
     setGrid(generateGrid());
@@ -106,10 +121,14 @@ export default function HatTrickLocal() {
         status={`${t("ttTurn")}: ${turn}`}
         flash={flash}
         celebrate
-        winnerText={winner === "draw" ? t("ttDraw") : `${winner} ${t("ttWins")}`}
+        winnerText={winner === "draw" ? t("ttDraw") : forfeited ? `${forfeited} ${t("htLocalForfeited")}, ${winner} ${t("ttWins")}` : `${winner} ${t("ttWins")}`}
         onMove={onMove}
         footer={
-          <Button title={t("ttNewGrid")} kind={winner ? "primary" : "secondary"} icon="arrow.clockwise" onPress={newGrid} style={{ marginTop: 18 }} />
+          winner ? (
+            <Button title={t("ttNewGrid")} icon="arrow.clockwise" onPress={newGrid} style={{ marginTop: 18 }} />
+          ) : (
+            <GameActions draw={null} onOfferDraw={offerDraw} onForfeit={forfeit} />
+          )
         }
       />
     </Page>

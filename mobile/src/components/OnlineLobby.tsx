@@ -1,10 +1,11 @@
 import { router, Stack, type Href } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
 import { Text } from "./Text";
 import { Button, Card, Icon, Page, SectionLabel } from "./ui";
 import { useI18n } from "~/lib/i18n";
+import { loadNick, saveNick } from "~/lib/nick";
 import { setNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, F, T } from "~/lib/theme";
@@ -36,6 +37,11 @@ export function OnlineLobby({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Start from this phone's saved nickname
+  useEffect(() => {
+    loadNick().then(setNickInput);
+  }, []);
+
   /** Emit with an ack, failing cleanly if the server can't be reached. */
   const call = <R,>(event: string, payload: object, done: (res: R) => void) => {
     setBusy(true);
@@ -51,6 +57,7 @@ export function OnlineLobby({
 
   const goToRoom = (roomCode: string) => {
     setNick(nick);
+    saveNick(nick);
     router.push(roomHref(roomCode));
   };
 
