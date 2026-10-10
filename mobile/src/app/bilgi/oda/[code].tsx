@@ -45,8 +45,11 @@ interface QzRoom {
 }
 
 const HEADER = 150;
-const RIGHT = "#4ADE80";
-const WRONG = "#F87171";
+// on the light pitch: the app's own green and red, with white text on them
+const RIGHT = NIGHT.light ? C.green : "#4ADE80";
+const WRONG = NIGHT.light ? "#E5484D" : "#F87171";
+/** your pick before the reveal: dark green, so it never reads as "right" */
+const PICKED = NIGHT.light ? C.greenDark : NIGHT.accent;
 
 function avatarColor(name: string) {
   let h = 0;
@@ -305,7 +308,8 @@ export default function QuizRoom() {
               p ? (
                 <View key={p.id} style={[styles.podiumSpot, { marginTop: k === 1 ? 0 : 26 }]}>
                   <Text style={styles.podiumRank}>{k === 1 ? 1 : k === 0 ? 2 : 3}.</Text>
-                  <Avatar name={p.nick || "?"} size={k === 1 ? 64 : 52} ring={p.id === myId ? NIGHT.accent : "white"} />
+                  {/* gold ring for you: the accent green would vanish on the green podium */}
+                  <Avatar name={p.nick || "?"} size={k === 1 ? 64 : 52} ring={p.id === myId ? "#FACC15" : "white"} />
                   <Text style={styles.podiumName} numberOfLines={1}>
                     {nameOf(p)}
                   </Text>
@@ -317,7 +321,7 @@ export default function QuizRoom() {
             )}
           </View>
           {standings.slice(3).map((p, i) => (
-            <View key={p.id} style={[styles.restRow, p.id === myId && { backgroundColor: "#E0F9FF" }]}>
+            <View key={p.id} style={[styles.restRow, p.id === myId && { backgroundColor: NIGHT.light ? C.greenSoft : "#E0F9FF" }]}>
               <Text style={styles.restRank}>{i + 4}.</Text>
               <Avatar name={p.nick || "?"} size={26} />
               <Text style={styles.restName} numberOfLines={1}>
@@ -394,7 +398,8 @@ export default function QuizRoom() {
             const right = reveal && i === room.answer;
             const wrong = reveal && mine === i && i !== room.answer;
             const chosen = !reveal && mine === i;
-            const bg = right ? RIGHT : wrong ? WRONG : chosen ? NIGHT.accent : "white";
+            const bg = right ? RIGHT : wrong ? WRONG : chosen ? PICKED : "white";
+            const onColour = NIGHT.light && (right || wrong || chosen);
             const pickers = others.filter((p) => p.choice === i);
             return (
               <Animated.View key={`${room.index}-${i}`} entering={OPTION_IN(i)} exiting={OPTION_OUT(i)}>
@@ -405,10 +410,10 @@ export default function QuizRoom() {
                     haptic.press();
                     getSocket().emit("qz:answer", { choice: i });
                   }}
-                  style={[styles.option, { backgroundColor: bg }]}
+                  style={[styles.option, { backgroundColor: bg }, bg !== "white" && { borderColor: bg }]}
                   accessibilityLabel={tx(o)}
                 >
-                  <Text style={styles.optionText} numberOfLines={2}>
+                  <Text style={[styles.optionText, onColour && { color: "white" }]} numberOfLines={2}>
                     {tx(o)}
                   </Text>
                 </Tap>
