@@ -1,13 +1,13 @@
-# App Store v1 kontrol listesi
+# Tiktako: App Store v1 kontrol listesi
 
 Durum işaretleri: [x] yapıldı · [ ] senin yapman gereken · [~] karar bekliyor
 
 ## 1. Hesaplar ve kimlik
 
 - [ ] **Apple Developer Program** üyeliği (yıllık 99 $). Bireysel ya da şirket; şirket olursa D-U-N-S numarası gerekir ve onay birkaç gün sürer.
-- [ ] **App Store Connect**'te yeni uygulama: platform iOS, dil Türkçe (ikinci dil İngilizce), bundle ID `com.alprntrz.futboloyunlari` (app.json'da hazır; isim kesinleşince değiştirmek istersen ilk yüklemeden önce söyle, sonra değişmez).
+- [ ] **App Store Connect**'te yeni uygulama: platform iOS, dil Türkçe (ikinci dil İngilizce), bundle ID `com.alprntrz.tiktako` (app.json'da hazır; ilk yüklemeden sonra değişmez, kullanıcı görmez).
 - [ ] **Expo hesabı** + `npx eas login`, ardından `cd mobile && npx eas init` (projeye EAS id'si yazılır).
-- [~] **Uygulama adı** (App Store'da 30 karakter) ve **alt başlık** (30 karakter).
+- [x] **Uygulama adı**: Tiktako (bkz. §9 riskler). Alt başlık ve metinler: `metadata.md`.
 
 ## 2. Sunucu (en kritik madde)
 
@@ -37,8 +37,11 @@ Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.j
 
 ## 5. Gizlilik
 
-- [ ] **Gizlilik politikası URL'si zorunlu.** Taslak: `docs/release/gizlilik.md`. Repo public olduğu için GitHub Pages ile yayınlamak en kolayı.
-- [ ] **Destek URL'si** zorunlu (bir e-posta adresi içeren basit bir sayfa yeterli).
+- [x] **Gizlilik politikası**: `site/privacy.html` → https://alprntrz.github.io/futbol-oyunlari/privacy.html
+- [x] **Destek sayfası**: `site/support.html` → https://alprntrz.github.io/futbol-oyunlari/support.html
+- [ ] GitHub → Settings → Pages → Source: **GitHub Actions**; `main`'e merge edilince `.github/workflows/pages.yml` yayımlar. Linkler açılmadan incelemeye gönderme.
+- [x] Uygulama içinde: Ayarlar → Gizlilik politikası / Destek / **Verilerimi sil** (telefon + sunucu kaydı)
+- [x] Commit yazar e-postaları GitHub noreply adresine çevrildi; repoda kişisel bilgi, anahtar ya da `.env` yok.
 - [ ] **App Privacy (beslenme etiketi)** soruları, doğru cevaplar:
   - Takip (tracking): **Hayır**. Reklam yok, analitik SDK yok.
   - Toplanan veri: **Kullanıcı İçeriği → Oyun içeriği** (takma ad, maç sonuçları), **Tanımlayıcılar → Kullanıcı Kimliği** (rastgele cihaz kimliği). İkisi de "uygulama işlevselliği" için, kimliğe bağlı değil, takip için değil.
@@ -54,6 +57,8 @@ Kopyala-yapıştır taslağı:
 - [~] **Bot rakipler**: Rastgele modda bot olduğu belli olmayan rakipler var. Apple "yanıltıcı davranış" (Guideline 2.3/5.6) açısından bunu sorun yapabilir. Not içinde açıkça söylemek riski azaltır. Daha güvenli seçenek: botları "CPU" etiketiyle göstermek. Karar senin.
 
 ## 7. Bilinen riskler
+
+- **İsim çakışması (önemli)**: App Store'da "Tiki Taka Toe" (Digital Football Games Ltd.) var ve çekirdek oyunu bizim Hat-trick ile aynı. "Tiktako" hem bu isme hem TikTok'un "Tako" asistanına çok yakın. Apple 4.1 (taklit) ve 5.2 (marka) gerekçesiyle reddedebilir ya da hak sahibi itiraz edebilir. İsim tek yerden değişiyor: `mobile/app.json` (`name`, `CFBundleDisplayName`), `src/lib/strings.ts` (`appName`), `site/*.html`.
 
 - **Veri lisansı (Guideline 5.2.1)**: Oyuncu/maç verisi Transfermarkt kaynaklı. İlk incelemede genellikle sorun çıkmaz (logo yok, gerçek fotoğraf yok, sadece isim ve renkler). Lisansı yayından sonra almak planın; bir hak sahibi itiraz ederse Apple uygulamayı kaldırabilir, o yüzden ertelememek iyi olur.
 - **Kulüp isimleri / formalar**: Arma yok, renkler genel; bu kabul edilen bir uygulama. Mağaza görsellerinde gerçek arma, oyuncu fotoğrafı ya da "resmi" ibaresi kullanma.

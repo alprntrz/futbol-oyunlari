@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { Alert, Linking, View } from "react-native";
 
 import { InfoSheet, MissingXISteps, TikiSteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
@@ -9,12 +9,26 @@ import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
+import { PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
+import { deleteMyData, restartApp } from "~/lib/privacy";
 import { play, setSoundsOn, soundsOn } from "~/lib/sound";
 import { C, T } from "~/lib/theme";
 
 export default function SettingsTab() {
   const { t, locale, setLocale } = useI18n();
   const [sheet, setSheet] = useState<"xi" | "tiki" | null>(null);
+  const confirmDelete = () =>
+    Alert.alert(t("deleteDataAsk"), t("deleteDataDesc"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("deleteData"),
+        style: "destructive",
+        onPress: async () => {
+          const { server } = await deleteMyData();
+          Alert.alert(t("deleteDataDone"), server ? undefined : t("deleteDataOffline"), [{ text: "OK", onPress: restartApp }]);
+        },
+      },
+    ]);
   const [sound, setSound] = useState(soundsOn() ? "on" : "off");
 
   return (
@@ -50,6 +64,13 @@ export default function SettingsTab() {
         <Row image={BRAND.icon.team} title={t("missingXI")} onPress={() => setSheet("xi")} />
         <Row image={BRAND.icon.tiki} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} last={!ONBOARDING} />
         {ONBOARDING && <Row icon="sparkles" iconFallback="✨" color={C.greenMid} soft={C.greenSoft} title={t("obReplay")} onPress={() => router.push("/onboarding")} last />}
+      </Card>
+
+      <SectionLabel>{t("privacyTitle")}</SectionLabel>
+      <Card style={{ padding: 0, overflow: "hidden" }}>
+        <Row icon="hand.raised.fill" iconFallback="🛡" color={C.greenMid} soft={C.greenSoft} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
+        <Row icon="questionmark.circle.fill" iconFallback="?" color={C.greenMid} soft={C.greenSoft} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
+        <Row icon="trash.fill" iconFallback="🗑" color={C.red} soft={C.redSoft} title={t("deleteData")} onPress={confirmDelete} last />
       </Card>
 
       <SectionLabel>{t("about")}</SectionLabel>

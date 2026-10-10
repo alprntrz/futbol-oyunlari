@@ -6,7 +6,15 @@ export type Locale = "tr" | "en";
 
 export const dict = {
   tr: {
-    appName: "Futbol Oyunları",
+    appName: "Tiktako",
+    privacyTitle: "Gizlilik",
+    privacyPolicy: "Gizlilik politikası",
+    support: "Destek",
+    deleteData: "Verilerimi sil",
+    deleteDataAsk: "Tüm verilerin silinsin mi?",
+    deleteDataDesc: "İstatistiklerin, serin, kupaların, takma adın ve Bilgi Yarışı seviyen telefondan ve sunucumuzdan kalıcı olarak silinir. Bu geri alınamaz.",
+    deleteDataDone: "Verilerin silindi",
+    deleteDataOffline: "Sunucuya ulaşılamadı. Telefondaki veriler silindi; sunucudaki Bilgi Yarışı kaydın için tekrar dene ya da destek sayfasından bize yaz.",
     missingXI: "Eksik 11",
     xiShort: "Pratik ya da takımını seç",
     xiHubDesc: "Maçın ilk 11'ini tamamla. Günün maçı Oyunlar sekmesinin en üstünde.",
@@ -374,7 +382,15 @@ export const dict = {
     ttStep3: "Doğru bilirsen kare senin. Üçünü yan yana getiren kazanır.",
   },
   en: {
-    appName: "Football Games",
+    appName: "Tiktako",
+    privacyTitle: "Privacy",
+    privacyPolicy: "Privacy policy",
+    support: "Support",
+    deleteData: "Delete my data",
+    deleteDataAsk: "Delete all your data?",
+    deleteDataDesc: "Your stats, streak, trophies, nickname and Football Quiz level are permanently deleted from this phone and from our server. This can't be undone.",
+    deleteDataDone: "Your data has been deleted",
+    deleteDataOffline: "We couldn't reach the server. Data on this phone is gone; for your Football Quiz record try again, or write to us from the support page.",
     missingXI: "Missing 11",
     xiShort: "Practice or pick a team",
     xiHubDesc: "Fill in a match's starting XI. Today's match is at the top of the Games tab.",

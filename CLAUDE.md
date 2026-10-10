@@ -16,7 +16,7 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
   saved progress; two tabs for the online race).
 - Node 22.18+ (`.nvmrc` = 24): the data scripts import `.ts` files directly.
 
-## Mobile app (`mobile/`)
+## Mobile app (`mobile/`), released as Tiktako
 
 Native iOS/Android app in Expo (SDK 57, Expo Router, React Native) — real native
 UI, not a WebView. It reuses the web project's game logic and data directly:
@@ -47,6 +47,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   at full time the server adds XP (points + 10 + podium bonus) to `data/quiz-stats.json` (gitignored;
   `QZ_STATS_FILE` overrides) and emits `qz:progress`; `qz:profile` / `qz:standings` read it. House
   players never get a record. On a real deployment that file needs a persistent disk (or a database).
+- Release: `docs/release/` (checklist, App Store metadata). Public pages (privacy, support) live
+  in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
+  analytics/ads/tracking SDKs, no IP logging, quiz record = random id + nick + counts only, and
+  Settings > Delete my data (`qz:forget` + local wipe). Keep them true when adding anything.
 - Reward moments: `Victory.tsx` (ceremony) with art from `docs/design/oyun-hissi-brief.md`
   → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
   Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via

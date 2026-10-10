@@ -1,19 +1,21 @@
 {
   "expo": {
-    "name": "Futbol Oyunları",
+    "name": "Tiktako",
     "slug": "futbol-oyunlari",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/brand/app-icon.png",
-    "scheme": "futboloyunlari",
+    "scheme": "tiktako",
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/brand/app-icon.png",
-      "bundleIdentifier": "com.alprntrz.futboloyunlari",
+      "bundleIdentifier": "com.alprntrz.tiktako",
       "supportsTablet": false,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDisplayName": "Tiktako"
+      },
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +23,7 @@
         "foregroundImage": "./assets/brand/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.alprntrz.futboloyunlari"
+      "package": "com.alprntrz.tiktako"
     },
     "web": {
       "output": "static",

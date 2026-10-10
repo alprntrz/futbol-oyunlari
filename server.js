@@ -176,12 +176,26 @@ function qzPoints(ms, limit) {
   return Math.round(5 + 5 * left);
 }
 
+/** A {tr, en} pair of short strings: questions come from a phone and go to other phones. */
+const qzText = (l, max) => l && typeof l.tr === "string" && typeof l.en === "string" && l.tr.length <= max && l.en.length <= max;
+
 function qzValidQuestions(qs) {
   return (
     Array.isArray(qs) &&
     qs.length >= 1 &&
     qs.length <= 20 &&
-    qs.every((q) => q && q.text && Array.isArray(q.options) && q.options.length === 4 && Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4)
+    qs.every(
+      (q) =>
+        q &&
+        qzText(q.text, 200) &&
+        (q.context == null || qzText(q.context, 200)) &&
+        Array.isArray(q.options) &&
+        q.options.length === 4 &&
+        q.options.every((o) => qzText(o, 80)) &&
+        Number.isInteger(q.answer) &&
+        q.answer >= 0 &&
+        q.answer < 4
+    )
   );
 }
 
@@ -326,7 +340,8 @@ function ppCode() {
 
 app.prepare().then(() => {
   const server = createServer((req, res) => handle(req, res));
-  const io = new Server(server, { cors: { origin: "*" } });
+  // small payload cap: the biggest message is a 20-question quiz (a few KB)
+  const io = new Server(server, { cors: { origin: "*" }, maxHttpBufferSize: 64 * 1024 });
 
   io.on("connection", (socket) => {
     let joinedCode = null;
@@ -1000,6 +1015,14 @@ app.prepare().then(() => {
       }
       qzSaveStats();
     };
+
+    // "Delete my data" in the app: drop this player's quiz record for good
+    socket.on("qz:forget", ({ pid } = {}, cb) => {
+      if (!qzValidPid(pid)) return cb?.({ ok: false });
+      delete qzStats[pid];
+      qzSaveStats();
+      cb?.({ ok: true });
+    });
 
     socket.on("qz:profile", ({ pid } = {}, cb) => {
       if (!qzValidPid(pid)) return cb?.({ ok: false });
