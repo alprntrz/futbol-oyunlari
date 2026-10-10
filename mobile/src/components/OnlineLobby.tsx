@@ -5,7 +5,7 @@ import { StyleSheet, TextInput, View } from "react-native";
 import { Text } from "./Text";
 import { Button, Card, Icon, Page, SectionLabel } from "./ui";
 import { useI18n } from "~/lib/i18n";
-import { loadNick, saveNick } from "~/lib/nick";
+import { loadNick, loadPlayerId, saveNick } from "~/lib/nick";
 import { setNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, F, T } from "~/lib/theme";
@@ -38,8 +38,10 @@ export function OnlineLobby({
   const [busy, setBusy] = useState(false);
 
   // Start from this phone's saved nickname
+  const [pid, setPid] = useState("");
   useEffect(() => {
     loadNick().then(setNickInput);
+    loadPlayerId().then(setPid);
   }, []);
 
   /** Emit with an ack, failing cleanly if the server can't be reached. */
@@ -62,13 +64,13 @@ export function OnlineLobby({
   };
 
   const create = () =>
-    call<{ ok: boolean; room?: { code: string } }>(`${game}:create`, { nick, ...createPayload() }, (res) => {
+    call<{ ok: boolean; room?: { code: string } }>(`${game}:create`, { nick, pid, ...createPayload() }, (res) => {
       if (res.ok && res.room) goToRoom(res.room.code);
     });
 
   const join = () => {
     if (code.trim().length < 5) return;
-    call<{ ok: boolean; error?: string; room?: { code: string } }>(`${game}:join`, { code: code.trim().toUpperCase(), nick }, (res) => {
+    call<{ ok: boolean; error?: string; room?: { code: string } }>(`${game}:join`, { code: code.trim().toUpperCase(), nick, pid }, (res) => {
       if (res.ok && res.room) goToRoom(res.room.code);
       else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
     });

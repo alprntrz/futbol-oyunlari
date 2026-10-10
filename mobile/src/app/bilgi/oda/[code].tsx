@@ -10,13 +10,14 @@ import { quizQuestions, type QuizCategory } from "@/lib/quiz";
 
 import { GrassPattern } from "~/components/GrassPattern";
 import { Confetti } from "~/components/motion";
+import { LevelProgress, type QuizProfile } from "~/components/QuizLevel";
 import { RunningPlayer } from "~/components/RunningPlayer";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { loadNick } from "~/lib/nick";
+import { loadNick, loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, F } from "~/lib/theme";
 
@@ -130,6 +131,7 @@ export default function QuizRoom() {
   const [copied, setCopied] = useState(false);
   const [confetti, setConfetti] = useState(0);
   const lastPhase = useRef("");
+  const [progress, setProgress] = useState<{ gained: number; before: QuizProfile; after: QuizProfile } | null>(null);
 
   useEffect(() => {
     const socket = getSocket();
@@ -140,6 +142,7 @@ export default function QuizRoom() {
       if (key === lastPhase.current) return;
       lastPhase.current = key;
       if (r.phase === "question") setPicked(null);
+      if (r.phase === "intro") setProgress(null);
       if (r.phase === "reveal") {
         const me = r.players.find((p) => p.id === socket.id);
         if (me?.choice === r.answer) haptic.success();
@@ -148,16 +151,22 @@ export default function QuizRoom() {
       if (r.phase === "done" && [...r.players].sort((a, b) => b.score - a.score)[0]?.id === socket.id) setConfetti(Date.now());
     };
     const onConnect = () => setMyId(socket.id ?? "");
+    const onProgress = (p: { gained: number; before: QuizProfile; after: QuizProfile }) => {
+      setProgress(p);
+      if (p.after.level > p.before.level) setTimeout(() => haptic.success(), 1100);
+    };
+    socket.on("qz:progress", onProgress);
     socket.on("qz:update", apply);
     socket.on("connect", onConnect);
-    loadNick().then((nick) =>
-      socket.emit("qz:join", { code, nick }, (res: { ok: boolean; error?: string; room?: QzRoom }) => {
+    Promise.all([loadNick(), loadPlayerId()]).then(([nick, pid]) =>
+      socket.emit("qz:join", { code, nick, pid }, (res: { ok: boolean; error?: string; room?: QzRoom }) => {
         if (res.ok && res.room) apply(res.room);
         else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
       })
     );
     return () => {
       socket.emit("qz:leave");
+      socket.off("qz:progress", onProgress);
       socket.off("qz:update", apply);
       socket.off("connect", onConnect);
     };
@@ -324,6 +333,11 @@ export default function QuizRoom() {
             </Text>
           </View>
         </Animated.View>
+        {progress && (
+          <View style={{ marginTop: 14 }}>
+            <LevelProgress {...progress} />
+          </View>
+        )}
         <Animated.View entering={FadeIn.delay(550).duration(300)} style={styles.endButtons}>
           <RoundButton icon="house.fill" label={t("tabHome")} onPress={() => router.dismissTo("/")} />
           {params.random ? (
@@ -544,7 +558,7 @@ const styles = StyleSheet.create({
   restScore: { fontFamily: F.display, fontSize: 19, color: C.text },
   myStrip: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "center", backgroundColor: "rgba(0,0,0,0.22)", borderRadius: 999, paddingHorizontal: 14, paddingVertical: 4, marginTop: 4 },
   myStripText: { fontFamily: F.display, fontSize: 18, color: "white" },
-  endButtons: { flexDirection: "row", justifyContent: "center", gap: 20, marginTop: 34 },
+  endButtons: { flexDirection: "row", justifyContent: "center", gap: 20, marginTop: 24 },
   round: { width: 64, height: 64, borderRadius: 32, backgroundColor: "rgba(255,255,255,0.14)", borderWidth: 2, borderColor: "rgba(255,255,255,0.35)", alignItems: "center", justifyContent: "center" },
   roundLabel: { fontSize: 14, fontWeight: "700", color: "white" },
 

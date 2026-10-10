@@ -1,13 +1,17 @@
-import { router, Stack, type Href } from "expo-router";
+import { router, Stack, useFocusEffect, type Href } from "expo-router";
+import { useCallback, useState } from "react";
 import type { SymbolViewProps } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { LevelCard, type QuizProfile } from "~/components/QuizLevel";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
+import { loadPlayerId } from "~/lib/nick";
+import { getSocket } from "~/lib/socket";
 import { F } from "~/lib/theme";
 
 const HEADER = 130;
@@ -16,6 +20,20 @@ const HEADER = 130;
 export default function QuizHome() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
+  const [profile, setProfile] = useState<QuizProfile | null>(null);
+
+  // Fresh level every time the hub comes back into view (after a game)
+  useFocusEffect(
+    useCallback(() => {
+      loadPlayerId().then((pid) =>
+        getSocket()
+          .timeout(5000)
+          .emit("qz:profile", { pid }, (err: Error | null, res?: { ok: boolean; profile: QuizProfile }) => {
+            if (!err && res?.ok) setProfile(res.profile);
+          })
+      );
+    }, [])
+  );
   const modes: { icon: SymbolViewProps["name"]; title: string; desc: string; href: Href; bg: string }[] = [
     { icon: "person.3.fill", title: t("htRandom"), desc: t("qzRandomDesc"), href: "/bilgi/rastgele", bg: "#2563EB" },
     { icon: "person.2.badge.plus", title: t("htFriend"), desc: t("qzFriendsDesc"), href: "/bilgi/oda", bg: "#F59E0B" },
@@ -33,6 +51,14 @@ export default function QuizHome() {
         <Animated.View entering={FadeIn.duration(200)}>
           <Text style={styles.title}>{t("qzName")}</Text>
           <Text style={styles.sub}>{t("qzTagline")}</Text>
+        </Animated.View>
+        <Animated.View entering={FadeIn.duration(200)} style={{ gap: 10 }}>
+          <LevelCard profile={profile} />
+          <Tap onPress={() => router.push("/bilgi/siralama")} style={styles.standings} accessibilityLabel={t("qzStandingsTitle")}>
+            <Icon name="trophy.fill" size={18} color="#FACC15" fallback="🏆" />
+            <Text style={styles.standingsText}>{t("qzStandingsTitle")}</Text>
+            <Icon name="chevron.right" size={14} color="rgba(255,255,255,0.7)" fallback="›" />
+          </Tap>
         </Animated.View>
         {modes.map((m) => (
           <Animated.View key={m.title} entering={FadeIn.duration(200)}>
@@ -65,6 +91,8 @@ const styles = StyleSheet.create({
   card: { flexDirection: "row", alignItems: "center", gap: 14, borderRadius: 26, paddingHorizontal: 22, paddingVertical: 24, minHeight: 124 },
   cardTitle: { fontFamily: F.black, fontSize: 28, lineHeight: 31, color: "white" },
   cardDesc: { fontSize: 15, fontWeight: "600", lineHeight: 20, color: "rgba(255,255,255,0.9)" },
+  standings: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 16, paddingHorizontal: 14, paddingVertical: 13 },
+  standingsText: { flex: 1, fontFamily: F.display, fontSize: 19, color: "white" },
   rules: { gap: 10, backgroundColor: "rgba(0,0,0,0.18)", borderRadius: 20, padding: 16, marginTop: 4 },
   bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: NIGHT.accent, marginTop: 8 },
   rule: { flex: 1, fontSize: 15, lineHeight: 21, color: "rgba(255,255,255,0.88)" },

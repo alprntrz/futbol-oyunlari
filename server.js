@@ -5,6 +5,8 @@
 const { createServer } = require("http");
 const next = require("next");
 const { Server } = require("socket.io");
+const fs = require("fs");
+const path = require("path");
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -171,6 +173,55 @@ function qzPublic(room, viewer) {
     })),
   };
 }
+
+// ── Quiz levels and standings ─────────────────────────────────────────────
+// Each phone sends a random player id (no accounts). The server keeps XP and
+// points per id in a JSON file, so the numbers can't be edited on the phone.
+// House players never get a record: the standings are people only.
+const QZ_STATS_FILE = process.env.QZ_STATS_FILE || path.join(__dirname, "data", "quiz-stats.json");
+/** pid -> { nick, xp, points, games, wins, week, weekXp } */
+let qzStats = {};
+try {
+  qzStats = JSON.parse(fs.readFileSync(QZ_STATS_FILE, "utf8"));
+} catch {}
+let qzSaveTimer = null;
+function qzSaveStats() {
+  clearTimeout(qzSaveTimer);
+  qzSaveTimer = setTimeout(() => {
+    fs.mkdirSync(path.dirname(QZ_STATS_FILE), { recursive: true });
+    fs.writeFile(QZ_STATS_FILE, JSON.stringify(qzStats), () => {});
+  }, 1000);
+}
+
+/** Weeks start on Monday (UTC). */
+const qzWeek = () => Math.floor((Date.now() / 86_400_000 + 3) / 7);
+
+/** Level from total XP: level 2 at 100 XP, each next level needs 50 more than the last. */
+function qzLevel(xp) {
+  let level = 1;
+  let need = 100;
+  let into = xp;
+  while (into >= need) {
+    into -= need;
+    level++;
+    need = 100 + (level - 1) * 50;
+  }
+  return { level, into, need };
+}
+
+/** XP for one finished game: the points scored, a finishing bonus and a bonus for the podium. */
+const QZ_PLACE_XP = [30, 20, 10, 5, 0];
+function qzGameXp(points, place, players) {
+  return points + 10 + (players > 1 ? QZ_PLACE_XP[place] ?? 0 : 0);
+}
+
+function qzProfile(pid) {
+  const st = qzStats[pid];
+  if (!st) return { level: 1, into: 0, need: 100, xp: 0, points: 0, games: 0, wins: 0 };
+  return { ...qzLevel(st.xp), xp: st.xp, points: st.points, games: st.games, wins: st.wins };
+}
+
+const qzValidPid = (pid) => typeof pid === "string" && /^[a-z0-9]{8,40}$/i.test(pid);
 
 // ── Possession Play (31 hexes) online rooms ───────────────────────────────
 // The host's phone deals the board (criterion ids). The mover's phone works
@@ -703,6 +754,7 @@ app.prepare().then(() => {
       if (room.index >= room.questions.length) {
         room.phase = "done";
         room.deadline = null;
+        qzAward(room);
         return qzEmit(room);
       }
       const limit = room.settings.seconds * 1000;
@@ -774,7 +826,7 @@ app.prepare().then(() => {
         deadline: null,
         timer: null,
         botTimers: [],
-        players: [{ id: socket.id, nick: String(nick || "").slice(0, 20), score: 0 }],
+        players: [{ id: socket.id, pid: socket.data.qzPid, nick: String(nick || "").slice(0, 20), score: 0 }],
       };
       qzRooms.set(code, room);
       socket.data.qzCode = code;
@@ -800,21 +852,23 @@ app.prepare().then(() => {
       else qzEmit(room);
     };
 
-    socket.on("qz:create", ({ nick, settings, questions }, cb) => {
+    socket.on("qz:create", ({ pid, nick, settings, questions }, cb) => {
+      if (qzValidPid(pid)) socket.data.qzPid = pid;
       if (!qzValidQuestions(questions)) return cb?.({ ok: false, error: "bad_questions" });
       if (socket.data.qzCode) qzLeave();
       const room = qzNewRoom(socket, nick, qzSettings(settings), questions, false);
       cb?.({ ok: true, room: qzPublic(room) });
     });
 
-    socket.on("qz:join", ({ code, nick }, cb) => {
+    socket.on("qz:join", ({ code, pid, nick }, cb) => {
+      if (qzValidPid(pid)) socket.data.qzPid = pid;
       const room = qzRooms.get(String(code || "").toUpperCase());
       if (!room) return cb?.({ ok: false, error: "not_found" });
       if (room.players.some((p) => p.id === socket.id)) return cb?.({ ok: true, room: qzPublic(room) });
       if (room.phase !== "lobby") return cb?.({ ok: false, error: "started" });
       if (room.players.length >= room.settings.maxPlayers) return cb?.({ ok: false, error: "full" });
       if (socket.data.qzCode) qzLeave();
-      room.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), score: 0 });
+      room.players.push({ id: socket.id, pid: socket.data.qzPid, nick: String(nick || "").slice(0, 20), score: 0 });
       socket.data.qzCode = room.code;
       socket.join("qz:" + room.code);
       cb?.({ ok: true, room: qzPublic(room) });
@@ -823,12 +877,13 @@ app.prepare().then(() => {
     });
 
     // Random: join the open room, or open one that starts after QZ_FILL_MS
-    socket.on("qz:queue", ({ nick, questions }, cb) => {
+    socket.on("qz:queue", ({ pid, nick, questions }, cb) => {
+      if (qzValidPid(pid)) socket.data.qzPid = pid;
       if (!qzValidQuestions(questions)) return cb?.({ ok: false, error: "bad_questions" });
       if (socket.data.qzCode) qzLeave();
       const open = qzOpenCode && qzRooms.get(qzOpenCode);
       if (open && open.phase === "lobby" && open.players.length < open.settings.maxPlayers) {
-        open.players.push({ id: socket.id, nick: String(nick || "").slice(0, 20), score: 0 });
+        open.players.push({ id: socket.id, pid: socket.data.qzPid, nick: String(nick || "").slice(0, 20), score: 0 });
         socket.data.qzCode = open.code;
         socket.join("qz:" + open.code);
         cb?.({ ok: true, code: open.code });
@@ -848,6 +903,50 @@ app.prepare().then(() => {
       }, QZ_FILL_MS);
       room.fillAt = Date.now() + QZ_FILL_MS;
       cb?.({ ok: true, code: room.code });
+    });
+
+    // Full time: XP and points for every person in the room, then each one hears how they did
+    const qzAward = (room) => {
+      const standings = [...room.players].sort((a, b) => b.score - a.score);
+      const week = qzWeek();
+      for (const p of room.players) {
+        if (p.bot || !p.pid) continue;
+        const place = standings.indexOf(p);
+        const gained = qzGameXp(p.score, place, room.players.length);
+        const before = qzProfile(p.pid);
+        const st = (qzStats[p.pid] ??= { nick: "", xp: 0, points: 0, games: 0, wins: 0, week, weekXp: 0 });
+        if (st.week !== week) {
+          st.week = week;
+          st.weekXp = 0;
+        }
+        st.nick = p.nick || st.nick;
+        st.xp += gained;
+        st.weekXp += gained;
+        st.points += p.score;
+        st.games++;
+        if (place === 0 && room.players.length > 1) st.wins++;
+        const after = qzProfile(p.pid);
+        io.sockets.sockets.get(p.id)?.emit("qz:progress", { gained, before, after });
+      }
+      qzSaveStats();
+    };
+
+    socket.on("qz:profile", ({ pid } = {}, cb) => {
+      if (!qzValidPid(pid)) return cb?.({ ok: false });
+      cb?.({ ok: true, profile: qzProfile(pid) });
+    });
+
+    // Standings: people only, all time (by XP) or this week (XP earned this week)
+    socket.on("qz:standings", ({ pid, period } = {}, cb) => {
+      const week = qzWeek();
+      const weekly = period === "week";
+      const rows = Object.entries(qzStats)
+        .map(([id, st]) => ({ id, nick: st.nick || "?", level: qzLevel(st.xp).level, xp: weekly ? (st.week === week ? st.weekXp : 0) : st.xp, points: st.points, wins: st.wins }))
+        .filter((r) => r.xp > 0)
+        .sort((a, b) => b.xp - a.xp);
+      const mine = rows.findIndex((r) => r.id === pid);
+      const strip = ({ id, ...r }, i) => ({ ...r, rank: i + 1, me: id === pid });
+      cb?.({ ok: true, top: rows.slice(0, 50).map(strip), me: mine >= 0 ? strip(rows[mine], mine) : null, total: rows.length });
     });
 
     socket.on("qz:start", () => {

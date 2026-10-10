@@ -38,6 +38,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
   until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5
   by speed). Random rooms (`qz:queue`) start after 15 s and fill up with house players.
+  Levels/standings: phones send a random install id (`pid`, `loadPlayerId` in `mobile/src/lib/nick.ts`);
+  at full time the server adds XP (points + 10 + podium bonus) to `data/quiz-stats.json` (gitignored;
+  `QZ_STATS_FILE` overrides) and emits `qz:progress`; `qz:profile` / `qz:standings` read it. House
+  players never get a record. On a real deployment that file needs a persistent disk (or a database).
 - Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.

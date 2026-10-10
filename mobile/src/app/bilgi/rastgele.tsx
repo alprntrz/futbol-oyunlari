@@ -10,7 +10,7 @@ import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/Stadi
 import { Text } from "~/components/Text";
 import { Icon } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
-import { loadNick } from "~/lib/nick";
+import { loadNick, loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { F } from "~/lib/theme";
 
@@ -29,7 +29,7 @@ export default function QuizRandom() {
     const socket = getSocket();
     const enqueue = async () => {
       setError(null);
-      socket.timeout(6000).emit("qz:queue", { nick: await loadNick(), questions: quizQuestions(10, "mixed") }, (err: Error | null, res?: { ok: boolean; code?: string }) => {
+      socket.timeout(6000).emit("qz:queue", { nick: await loadNick(), pid: await loadPlayerId(), questions: quizQuestions(10, "mixed") }, (err: Error | null, res?: { ok: boolean; code?: string }) => {
         if (err || !res?.ok || !res.code) return setError(t("serverUnreachable"));
         router.replace({ pathname: "/bilgi/oda/[code]", params: { code: res.code, random: "1" } });
       });

@@ -35,3 +35,18 @@ export async function saveNick(nick: string): Promise<string> {
   await AsyncStorage.setItem(KEY, cached).catch(() => {});
   return cached;
 }
+
+const PID_KEY = "player-id";
+let pid: string | null = null;
+
+/** Random id for this install: the server keys quiz levels and standings on it (no accounts). */
+export async function loadPlayerId(): Promise<string> {
+  if (pid) return pid;
+  try {
+    const saved = await AsyncStorage.getItem(PID_KEY);
+    if (saved) return (pid = saved);
+  } catch {}
+  pid = Array.from({ length: 20 }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]).join("");
+  await AsyncStorage.setItem(PID_KEY, pid).catch(() => {});
+  return pid;
+}
