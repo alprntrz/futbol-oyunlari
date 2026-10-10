@@ -1,11 +1,10 @@
 import { router, Stack, type Href } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import type { SymbolViewProps } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { NIGHT, StadiumHeader } from "~/components/StadiumHeader";
+import { NIGHT, StadiumHeader, useNightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
@@ -15,6 +14,7 @@ const HEADER = 130;
 
 /** Football Quiz hub: big coloured mode cards under the stadium, like the game screens. */
 export default function QuizHome() {
+  useNightStatusBar();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const modes: { icon: SymbolViewProps["name"]; title: string; desc: string; href: Href; bg: string }[] = [
@@ -25,7 +25,6 @@ export default function QuizHome() {
   return (
     <View style={{ flex: 1, backgroundColor: NIGHT.body }}>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar style="light" />
       <StadiumHeader height={HEADER} />
       <Pressable onPress={() => router.back()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
         <Icon name="chevron.left" size={18} color="white" fallback="‹" />

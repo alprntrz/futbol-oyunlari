@@ -5,7 +5,7 @@ import { View } from "react-native";
 import { quizQuestions } from "@/lib/quiz";
 
 import { Text } from "~/components/Text";
-import { WaitingAnimation } from "~/components/WaitingAnimation";
+import { RunningPlayer } from "~/components/RunningPlayer";
 import { Button, Card, Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { loadNick } from "~/lib/nick";
@@ -41,7 +41,7 @@ export default function QuizRandom() {
     <Page>
       <Stack.Screen options={{ title: t("qzName") }} />
       <Card style={{ alignItems: "center", paddingVertical: 32, gap: 14 }}>
-        <WaitingAnimation width={260} />
+        <RunningPlayer ground="rgba(21,128,61,0.35)" />
         <Text style={T.title}>{t("qzSearching")}</Text>
         {error && <Text style={[T.body, { color: C.red, fontWeight: "600" }]}>{error}</Text>}
       </Card>

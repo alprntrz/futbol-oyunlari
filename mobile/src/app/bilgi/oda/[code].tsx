@@ -1,6 +1,5 @@
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, Share, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut, FadeOutUp, Keyframe, SlideInDown, ZoomIn } from "react-native-reanimated";
@@ -9,8 +8,10 @@ import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg"
 
 import { quizQuestions, type QuizCategory } from "@/lib/quiz";
 
+import { GrassPattern } from "~/components/GrassPattern";
 import { Confetti } from "~/components/motion";
-import { NIGHT, StadiumHeader, type Runner } from "~/components/StadiumHeader";
+import { RunningPlayer } from "~/components/RunningPlayer";
+import { NIGHT, StadiumHeader, useNightStatusBar, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
@@ -116,6 +117,7 @@ function TimerRing({ fraction, seconds, low }: { fraction: number; seconds: numb
 
 /** One quiz room, from the waiting list through the questions to the podium. */
 export default function QuizRoom() {
+  useNightStatusBar();
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ code: string; random?: string }>();
@@ -214,6 +216,7 @@ export default function QuizRoom() {
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24, gap: 14 }} showsVerticalScrollIndicator={false}>
         {room.random ? (
           <Animated.View entering={FadeIn.duration(250)} style={{ alignItems: "center", gap: 6, paddingVertical: 8 }}>
+            <RunningPlayer />
             <Text style={styles.big}>{t("qzSearching")}</Text>
             <Text style={styles.sub}>{t("qzSearchingDesc")}</Text>
           </Animated.View>
@@ -430,7 +433,6 @@ export default function QuizRoom() {
   return (
     <View style={styles.screen}>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar style="light" />
       <Svg style={StyleSheet.absoluteFill}>
         <Defs>
           <LinearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
@@ -440,6 +442,8 @@ export default function QuizRoom() {
         </Defs>
         <Rect width="100%" height="100%" fill="url(#bg)" />
       </Svg>
+      {/* the pitch shows once the questions start */}
+      {(room?.phase === "question" || room?.phase === "reveal") && <GrassPattern />}
       {room?.phase !== "done" ? (
         <Animated.View exiting={FadeOutUp.duration(350)} style={StyleSheet.absoluteFill} pointerEvents="none">
           <StadiumHeader runners={runners} height={HEADER} />

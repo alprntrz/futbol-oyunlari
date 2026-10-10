@@ -6,7 +6,7 @@ import { generateGrid } from "@/lib/tiki";
 
 import { MatchIntro } from "~/components/MatchIntro";
 import { Text } from "~/components/Text";
-import { WaitingAnimation } from "~/components/WaitingAnimation";
+import { RunningPlayer } from "~/components/RunningPlayer";
 import { Button, Card, Page } from "~/components/ui";
 import { gridToIds, type Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
@@ -83,7 +83,7 @@ export default function HatTrickRandom() {
     <Page>
       <Stack.Screen options={{ title: t("htRandom") }} />
       <Card style={{ alignItems: "center", paddingVertical: 32, gap: 14 }}>
-        <WaitingAnimation width={260} />
+        <RunningPlayer ground="rgba(21,128,61,0.35)" />
         <Text style={T.title}>{t("htSearching")}</Text>
         <Text style={[T.body, { textAlign: "center" }]}>{t("htSearchingDesc")}</Text>
         {error && <Text style={[T.body, { color: C.red, fontWeight: "600" }]}>{error}</Text>}

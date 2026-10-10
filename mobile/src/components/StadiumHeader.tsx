@@ -1,4 +1,6 @@
-import { memo, useEffect } from "react";
+import { useFocusEffect } from "expo-router";
+import { setStatusBarStyle } from "expo-status-bar";
+import { memo, useCallback, useEffect } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,6 +9,16 @@ import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect,
 import { F } from "~/lib/theme";
 
 import { Text } from "./Text";
+
+/** Light status bar while a night screen is in front; back to dark when it leaves. */
+export function useNightStatusBar() {
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle("light", true);
+      return () => setStatusBarStyle("dark", true);
+    }, [])
+  );
+}
 
 /** Night-match palette shared by the immersive game screens. */
 export const NIGHT = {
