@@ -11,7 +11,7 @@ import { quizQuestions, type QuizCategory } from "@/lib/quiz";
 import { GrassPattern } from "~/components/GrassPattern";
 import { Confetti } from "~/components/motion";
 import { RunningPlayer } from "~/components/RunningPlayer";
-import { NIGHT, StadiumHeader, useNightStatusBar, type Runner } from "~/components/StadiumHeader";
+import { NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
@@ -117,7 +117,6 @@ function TimerRing({ fraction, seconds, low }: { fraction: number; seconds: numb
 
 /** One quiz room, from the waiting list through the questions to the podium. */
 export default function QuizRoom() {
-  useNightStatusBar();
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ code: string; random?: string }>();
@@ -432,7 +431,8 @@ export default function QuizRoom() {
 
   return (
     <View style={styles.screen}>
-      <Stack.Screen options={{ headerShown: false }} />
+      <Stack.Screen options={{ headerShown: false, animation: "none", contentStyle: { backgroundColor: NIGHT.body } }} />
+      <NightStatusBar />
       <Svg style={StyleSheet.absoluteFill}>
         <Defs>
           <LinearGradient id="bg" x1="0" y1="0" x2="0" y2="1">

@@ -13,10 +13,9 @@ const SHOULDER = { x: 70, y: 40 };
 
 /**
  * A footballer dribbling to the right, drawn from simple shapes and animated
- * in place: legs and arms swing, the body bobs, the ball rolls ahead and the
- * pitch markings slide past underneath.
+ * in place: legs and arms swing, the body bobs and the ball rolls ahead.
  */
-export function RunningPlayer({ shirt = "#16A34A", shorts = "#FFFFFF", ground = "rgba(255,255,255,0.35)" }: { shirt?: string; shorts?: string; ground?: string }) {
+export function RunningPlayer({ shirt = "#16A34A", shorts = "#FFFFFF" }: { shirt?: string; shorts?: string }) {
   const phase = useSharedValue(0);
   const reduce = useReducedMotion();
 
@@ -32,18 +31,9 @@ export function RunningPlayer({ shirt = "#16A34A", shorts = "#FFFFFF", ground = 
     // touched once a stride: nudged ahead, then it drifts back towards the boot
     return { transform: [{ translateX: Math.sin(a) * 5 }, { translateY: -Math.max(0, Math.sin(a * 2)) * 2 }, { rotate: `${phase.get() * 360}deg` }] };
   });
-  const lines = useAnimatedStyle(() => ({ transform: [{ translateX: -phase.get() * 40 }] }));
 
   return (
     <View style={styles.box} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      {/* pitch sliding under the feet */}
-      <View style={styles.groundClip}>
-        <Animated.View style={[styles.groundRow, lines]}>
-          {Array.from({ length: 8 }, (_, i) => (
-            <View key={i} style={[styles.dash, { backgroundColor: ground }]} />
-          ))}
-        </Animated.View>
-      </View>
       <View style={styles.shadow} />
 
       <Animated.View style={[StyleSheet.absoluteFill, bob]}>
@@ -103,9 +93,6 @@ function Arm({ phase, offset, skin, sleeve, back }: { phase: SharedValue<number>
 
 const styles = StyleSheet.create({
   box: { width: 170, height: 130, alignSelf: "center" },
-  groundClip: { position: "absolute", left: 0, right: 0, top: 120, height: 3, overflow: "hidden" },
-  groundRow: { flexDirection: "row", gap: 16, width: 400 },
-  dash: { width: 24, height: 3, borderRadius: 2 },
   shadow: { position: "absolute", left: 52, top: 117, width: 64, height: 5, borderRadius: 3, backgroundColor: "rgba(0,0,0,0.12)" },
 
   torso: { position: "absolute", left: SHOULDER.x - 13, top: SHOULDER.y - 6, width: 24, height: 36, borderRadius: 8, transform: [{ rotate: "10deg" }] },

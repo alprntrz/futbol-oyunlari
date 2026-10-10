@@ -1,6 +1,6 @@
 import { useFocusEffect } from "expo-router";
-import { setStatusBarStyle } from "expo-status-bar";
-import { memo, useCallback, useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { memo, useCallback, useEffect, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -10,14 +10,19 @@ import { F } from "~/lib/theme";
 
 import { Text } from "./Text";
 
-/** Light status bar while a night screen is in front; back to dark when it leaves. */
-export function useNightStatusBar() {
+/**
+ * Light status bar while a night screen is in front. A mounted <StatusBar> wins over
+ * the app's dark one, so it's only rendered while focused (screens behind stay mounted).
+ */
+export function NightStatusBar() {
+  const [focused, setFocused] = useState(false);
   useFocusEffect(
     useCallback(() => {
-      setStatusBarStyle("light", true);
-      return () => setStatusBarStyle("dark", true);
+      setFocused(true);
+      return () => setFocused(false);
     }, [])
   );
+  return focused ? <StatusBar style="light" /> : null;
 }
 
 /** Night-match palette shared by the immersive game screens. */

@@ -1,10 +1,10 @@
 import { router, Stack, type Href } from "expo-router";
 import type { SymbolViewProps } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { NIGHT, StadiumHeader, useNightStatusBar } from "~/components/StadiumHeader";
+import { NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
@@ -14,7 +14,6 @@ const HEADER = 130;
 
 /** Football Quiz hub: big coloured mode cards under the stadium, like the game screens. */
 export default function QuizHome() {
-  useNightStatusBar();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const modes: { icon: SymbolViewProps["name"]; title: string; desc: string; href: Href; bg: string }[] = [
@@ -24,18 +23,19 @@ export default function QuizHome() {
 
   return (
     <View style={{ flex: 1, backgroundColor: NIGHT.body }}>
-      <Stack.Screen options={{ headerShown: false }} />
+      <Stack.Screen options={{ headerShown: false, contentStyle: { backgroundColor: NIGHT.body } }} />
+      <NightStatusBar />
       <StadiumHeader height={HEADER} />
       <Pressable onPress={() => router.back()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("close")} hitSlop={8}>
         <Icon name="chevron.left" size={18} color="white" fallback="‹" />
       </Pressable>
       <ScrollView contentContainerStyle={{ paddingTop: insets.top + HEADER - 10, paddingHorizontal: 16, paddingBottom: insets.bottom + 24, gap: 14 }}>
-        <Animated.View entering={FadeInDown.duration(300)}>
+        <Animated.View entering={FadeIn.duration(200)}>
           <Text style={styles.title}>{t("qzName")}</Text>
           <Text style={styles.sub}>{t("qzTagline")}</Text>
         </Animated.View>
-        {modes.map((m, i) => (
-          <Animated.View key={m.title} entering={FadeInDown.delay(90 + i * 90).springify().damping(18)}>
+        {modes.map((m) => (
+          <Animated.View key={m.title} entering={FadeIn.duration(200)}>
             <Tap onPress={() => router.push(m.href)} style={[styles.card, { backgroundColor: m.bg }]} accessibilityLabel={`${m.title}. ${m.desc}`}>
               <View style={{ flex: 1, gap: 4 }}>
                 <Text style={styles.cardTitle}>{m.title}</Text>
@@ -45,7 +45,7 @@ export default function QuizHome() {
             </Tap>
           </Animated.View>
         ))}
-        <Animated.View entering={FadeInDown.delay(300).duration(300)} style={styles.rules}>
+        <Animated.View entering={FadeIn.duration(200)} style={styles.rules}>
           {[t("qzRule1"), t("qzRule2"), t("qzRule3")].map((r) => (
             <View key={r} style={{ flexDirection: "row", gap: 10 }}>
               <View style={styles.bullet} />

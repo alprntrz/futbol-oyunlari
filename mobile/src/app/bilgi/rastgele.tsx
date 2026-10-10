@@ -1,20 +1,28 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { quizQuestions } from "@/lib/quiz";
 
-import { Text } from "~/components/Text";
 import { RunningPlayer } from "~/components/RunningPlayer";
-import { Button, Card, Page } from "~/components/ui";
+import { NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
+import { Text } from "~/components/Text";
+import { Icon } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { loadNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
-import { C, T } from "~/lib/theme";
+import { F } from "~/lib/theme";
 
-/** Random quiz: get a seat in the open room, then wait for it there. */
+const HEADER = 150;
+
+/**
+ * Random quiz: get a seat in the open room, then hand over to the room screen.
+ * Drawn exactly like the room's waiting state so the hand-over doesn't show.
+ */
 export default function QuizRandom() {
   const { t } = useI18n();
+  const insets = useSafeAreaInsets();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,16 +46,25 @@ export default function QuizRandom() {
   }, []);
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: t("qzName") }} />
-      <Card style={{ alignItems: "center", paddingVertical: 32, gap: 14 }}>
-        <RunningPlayer ground="rgba(21,128,61,0.35)" />
-        <Text style={T.title}>{t("qzSearching")}</Text>
-        {error && <Text style={[T.body, { color: C.red, fontWeight: "600" }]}>{error}</Text>}
-      </Card>
-      <View style={{ marginTop: 16 }}>
-        <Button title={t("cancel")} kind="secondary" onPress={() => router.back()} />
+    <View style={styles.screen}>
+      <Stack.Screen options={{ headerShown: false, animation: "fade", contentStyle: { backgroundColor: NIGHT.body } }} />
+      <NightStatusBar />
+      <StadiumHeader height={HEADER} runners={[]} />
+      <Pressable onPress={() => router.back()} style={[styles.back, { top: insets.top + 6 }]} accessibilityRole="button" accessibilityLabel={t("cancel")} hitSlop={8}>
+        <Icon name="chevron.left" size={18} color="white" fallback="‹" />
+      </Pressable>
+      <View style={{ paddingTop: insets.top + HEADER + 14, alignItems: "center", gap: 6, paddingHorizontal: 16 }}>
+        <RunningPlayer />
+        <Text style={styles.big}>{t("qzSearching")}</Text>
+        <Text style={styles.sub}>{error ?? t("qzSearchingDesc")}</Text>
       </View>
-    </Page>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: NIGHT.body },
+  back: { position: "absolute", left: 12, zIndex: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.16)", alignItems: "center", justifyContent: "center" },
+  big: { fontFamily: F.black, fontSize: 30, lineHeight: 34, color: "white", textAlign: "center" },
+  sub: { fontSize: 15, color: "rgba(255,255,255,0.75)", fontWeight: "500", textAlign: "center" },
+});
