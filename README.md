@@ -1,7 +1,7 @@
 # ⚽ Futbol Oyunları
 
 Futbol temalı iki bulmaca oyunu içeren bir web uygulaması: **Eksik 11** (tarihi
-maçların ilk 11'ini tahmin et) ve **Tiki Taka Toe** (kulüp/ülke/başarı
+maçların ilk 11'ini tahmin et) ve **Hat-trick** (eski adı Tiki Taka Toe; kulüp/ülke/başarı
 kriterlerini sağlayan futbolcuyu bul, 3×3 tic-tac-toe). Arayüz Türkçe + İngilizce.
 
 **Teknolojiler:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 ·
@@ -91,7 +91,10 @@ ipucu. Zor: 4 hak, ipucu yok. Gol atanların formasında top işareti var.
   aynı kadroyu yarışarak çözerler. Kazanan: önce 11'i bilen → daha çok bilen → daha
   az tahmin → berabere.
 
-### 2) Tiki Taka Toe — `/tiki-taka-toe`
+### 2) Hat-trick (eski adı Tiki Taka Toe) — `/tiki-taka-toe`
+
+Arayüzde adı **Hat-trick**; kodda (`tiki.ts`, `TikiTakaToe`, `/tiki-taka-toe`) eski
+adlar duruyor.
 3×3 ızgara; her satır/sütun bir kriter (**kulüp**, **ülke** veya **başarı rozeti**).
 Boş kareye o satır ve sütunun ikisini de sağlayan bir futbolcu yazılır. İki oyuncu
 aynı cihazda (X / O) sırayla oynar, **hamle başına 45 sn**; 3'ü yan yana getiren

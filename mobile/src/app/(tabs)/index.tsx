@@ -93,7 +93,7 @@ export default function Home() {
           image={BRAND.icon.tiki}
           title={t("tikiTakaName")}
           subtitle={t("tikiShort")}
-          onPress={() => router.push("/tiki-taka-toe")}
+          onPress={() => router.push("/hat-trick")}
           last
         />
       </Card>
