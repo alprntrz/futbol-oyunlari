@@ -112,8 +112,8 @@ const qzRooms = new Map();
 /** the random room currently taking players, if any */
 let qzOpenCode = null;
 
-const QZ_NAMES = ["emre", "burak", "mert", "kerem", "can", "ozan", "baris", "efe", "arda", "yusuf", "selin", "zeynep", "ece", "deniz", "berk", "kaan", "onur", "tolga", "hakan", "cem", "umut", "eren", "furkan", "batu", "sinan", "melis", "volkan", "tuna", "doruk", "lucas", "mateo", "jonas", "luca"];
-const QZ_TAILS = ["", "", "07", "10", "1907", "1903", "1905", "34", "35", "06", "16", "61", "99", "23", "_fb", "_gs", "_bjk", "_ts"];
+const QZ_NAMES = ["lucas", "mateo", "jonas", "luca", "liam", "noah", "oliver", "james", "jack", "harry", "ethan", "leo", "hugo", "louis", "jules", "theo", "enzo", "paul", "felix", "max", "finn", "lukas", "niklas", "matteo", "lorenzo", "marco", "giulia", "sofia", "alejandro", "diego", "pablo", "javi", "lucia", "carlos", "joao", "rafa", "tiago", "bruno", "pedro", "gabriel", "thiago", "nico", "santi", "martina", "valentina", "sven", "lars", "erik", "mats", "anders", "piotr", "kuba", "marek", "ivan", "luka", "nikola", "dmitri", "andrei", "yuki", "kenji", "minjun", "jisoo", "wei", "arjun", "rohan", "omar", "youssef", "karim", "amir", "kofi", "kwame", "chidi", "emma", "chloe", "mia", "ana", "nina", "sara", "eva"];
+const QZ_TAILS = ["", "", "", "7", "9", "10", "11", "22", "23", "99", "88", "04", "12", "_fc", "_10", "_gol", "fc", "_99", "77", "14"];
 function qzNick() {
   const pick = (xs) => xs[Math.floor(Math.random() * xs.length)];
   const name = pick(QZ_NAMES);

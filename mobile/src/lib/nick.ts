@@ -3,15 +3,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const KEY = "nick";
 
 const NAMES = [
-  "emre", "burak", "mert", "kerem", "can", "ozan", "baris", "efe", "arda", "yusuf", "omer", "selin", "zeynep", "ece",
-  "deniz", "berk", "kaan", "onur", "tolga", "serkan", "hakan", "cem", "umut", "alper", "eren", "furkan", "batu",
-  "ilkay", "goktug", "sinan", "melis", "ayse", "ali", "volkan", "tuna", "doruk", "lucas", "mateo", "jonas", "luca",
+  "lucas", "mateo", "jonas", "luca", "liam", "noah", "oliver", "james", "jack", "harry", "ethan", "leo", "hugo", "louis", "jules", "theo", "enzo", "paul", "felix", "max", "finn", "lukas", "niklas", "matteo", "lorenzo", "marco", "giulia", "sofia", "alejandro", "diego", "pablo", "javi", "lucia", "carlos", "joao", "rafa", "tiago", "bruno", "pedro", "gabriel", "thiago", "nico", "santi", "martina", "valentina", "sven", "lars", "erik", "mats", "anders", "piotr", "kuba", "marek", "ivan", "luka", "nikola", "dmitri", "andrei", "yuki", "kenji", "minjun", "jisoo", "wei", "arjun", "rohan", "omar", "youssef", "karim", "amir", "kofi", "kwame", "chidi", "emma", "chloe", "mia", "ana", "nina", "sara", "eva",
 ];
-const TAILS = ["", "", "07", "10", "1907", "1903", "1905", "34", "35", "06", "16", "61", "99", "23", "_fb", "_gs", "_bjk", "_ts", "10x"];
+const TAILS = ["", "", "", "7", "9", "10", "11", "22", "23", "99", "88", "04", "12", "_fc", "_10", "_gol", "fc", "_99", "77", "14"];
 
 const pick = <T>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
 
-/** A nickname that reads like one a person picked: "kerem1907", "Ozan_gs", "selin". */
+/** A nickname that reads like one a person picked: "lucas10", "Mateo_fc", "yuki". */
 export function randomNick(): string {
   const name = pick(NAMES);
   const cased = Math.random() < 0.4 ? name[0].toUpperCase() + name.slice(1) : name;
