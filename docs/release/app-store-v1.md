@@ -1,5 +1,7 @@
 # Tiktako: App Store v1 kontrol listesi
 
+**Durum (12.10.2026): 1.0 (build 3) incelemeye gönderildi.** Metinler `mobile/store.config.json` → `npx eas-cli metadata:push`; gizlilik etiketi, fiyat (ücretsiz, 175 ülke) ve içerik hakları App Store Connect'te elle girildi.
+
 Durum işaretleri: [x] yapıldı · [ ] senin yapman gereken · [~] karar bekliyor
 
 ## 1. Hesaplar ve kimlik
@@ -32,7 +34,7 @@ Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.j
 ## 4. Mağaza sayfası
 
 - [x] **Ekran görüntüleri** (6.9", 1320×2868, RGB, şeffaflık yok): yüklenecek son hali `store/tr/` ve `store/en/`, dosya adı sırasıyla. Ham çekimler `screenshots/`, üretim promptları `screenshot-prompts.md`; `store/*/validation.json` her görseldeki ekranın ham çekimle piksel piksel aynı olduğunu kaydeder (Guideline 2.3.3).
-  - [ ] App Store Connect → iOS → 6.9" Display: `store/tr` Türkçe sayfaya, `store/en` İngilizce sayfaya.
+  - [x] Yüklendi. Apple artık **6.3" (1206×2622)** boyutunu zorunlu istiyor: `store/tr-6.3`, `store/en-6.3` (6.9" setin orantılı küçültmesi) zorunlu alana, 6.9" set "large display" alanına.
 - [ ] **Açıklama** (TR + EN), **anahtar kelimeler** (100 karakter), **tanıtım metni** (170 karakter, inceleme gerektirmeden değişir).
 - [ ] **Uygulama ikonu** 1024×1024: `mobile/assets/brand/app-icon.png` hazır (şeffaflık olmamalı, kontrol et).
 - [ ] **Kategori**: Oyunlar → Bilgi Yarışması (Trivia); ikinci kategori Spor.
