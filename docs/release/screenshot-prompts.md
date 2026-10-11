@@ -106,20 +106,20 @@ Subline: "Hesap yok, reklam yok"
 
 ### İngilizce set (ikinci dil)
 
-Aynı promptlar, başlıklar İngilizce. Ekranların içi Türkçe kalırsa İngilizce sayfada
-tuhaf durur; İngilizce set için uygulamayı İngilizceye çevirip aynı ekranları ayrıca
-çekmem gerekir (söylemen yeterli).
+Ham görüntüler `docs/release/screenshots/en/` içinde, uygulama İngilizceyken çekildi
+(Eksik 11 ekranı: Liverpool 4-0 Barcelona, 2019). Aynı sohbette ortak promptu bir kez
+daha gönderip aşağıdaki başlıklarla üret.
 
-| # | Headline | Subline |
-|---|---|---|
-| 1 | TIC-TAC-TOE WITH FOOTBALLERS | Name a player who fits the row and column |
-| 2 | FIRST TO 3 WINS | Play a friend or an online rival |
-| 3 | LIVE QUIZ FOR UP TO 5 | Fast and right wins |
-| 4 | NAME THE STARTING XI | Tap a shirt, type the surname |
-| 5 | TAKE OVER THE PITCH | Claim hexes, steal your rival's ground |
-| 6 | THOUSANDS OF PLAYERS | From the Süper Lig to the Premier League |
-| 7 | 6 FOOTBALL GAMES | All in one app |
-| 8 | A NEW GRID EVERY DAY | No account, no ads |
+| # | Dosya | Headline | Subline |
+|---|---|---|---|
+| 1 | `01-hattrick.png` | TIC-TAC-TOE WITH FOOTBALLERS | Name a player who fits the row and column |
+| 2 | `02-victory.png` | FIRST TO 3 WINS | Play a friend or an online rival |
+| 3 | `03-quiz.png` | LIVE QUIZ FOR UP TO 5 | Fast and right wins |
+| 4 | `04-missing-11.png` | NAME THE STARTING XI | Tap a shirt, type the surname |
+| 5 | `05-possession.png` | TAKE OVER THE PITCH | Claim hexes, steal your rival's ground |
+| 6 | `06-hattrick-answer.png` | THOUSANDS OF PLAYERS | From the Süper Lig to the Premier League |
+| 7 | `07-games.png` | 6 FOOTBALL GAMES | All in one app |
+| 8 | `08-home.png` | A NEW GRID EVERY DAY | No account, no ads |
 
 ## B planı: ChatGPT ekranı bozarsa
 

@@ -28,7 +28,7 @@ Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.j
 
 ## 4. Mağaza sayfası
 
-- [~] **Ekran görüntüleri**: 6.9" (1320×2868) zorunlu. Ham Türkçe set hazır: `screenshots/tr/` (8 ekran). Başlık + çerçeve için ChatGPT promptları: `screenshot-prompts.md`.
+- [~] **Ekran görüntüleri**: 6.9" (1320×2868) zorunlu. Ham setler hazır: `screenshots/tr/` ve `screenshots/en/` (8'er ekran). Başlık + çerçeve için ChatGPT promptları: `screenshot-prompts.md`.
 - [ ] **Açıklama** (TR + EN), **anahtar kelimeler** (100 karakter), **tanıtım metni** (170 karakter, inceleme gerektirmeden değişir).
 - [ ] **Uygulama ikonu** 1024×1024: `mobile/assets/brand/app-icon.png` hazır (şeffaflık olmamalı, kontrol et).
 - [ ] **Kategori**: Oyunlar → Bilgi Yarışması (Trivia); ikinci kategori Spor.
