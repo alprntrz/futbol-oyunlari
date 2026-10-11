@@ -1,7 +1,8 @@
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Image, Modal, ScrollView, StyleSheet, TextInput, View, type ImageSourcePropType } from "react-native";
 
+import { syncProfile, useAccount } from "~/lib/account";
 import { AVATARS, loadAvatar, saveAvatar, type AvatarId } from "~/lib/avatar";
 import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
@@ -13,6 +14,7 @@ import { loadXp, type XpGame } from "~/lib/xp";
 
 import { Avatar } from "./Avatar";
 import { LevelBadge } from "./QuizLevel";
+import { SignInCard } from "./SignInCard";
 import { Text } from "./Text";
 import { Button, Card, Icon, SectionLabel, Tap } from "./ui";
 
@@ -35,15 +37,19 @@ export function ProfileCard() {
   const [xp, setXp] = useState<Xp | null>(null);
   const [trophies, setTrophies] = useState(0);
   const [editing, setEditing] = useState(false);
+  const account = useAccount();
 
-  useFocusEffect(
-    useCallback(() => {
-      loadNick().then(setNick);
-      loadAvatar().then(setAvatar);
-      loadXp().then(setXp);
-      loadTrophies().then(setTrophies);
-    }, [])
-  );
+  const refresh = useCallback(() => {
+    loadNick().then(setNick);
+    loadAvatar().then(setAvatar);
+    loadXp().then(setXp);
+    loadTrophies().then(setTrophies);
+  }, []);
+  useFocusEffect(refresh);
+  // signing in / out swaps the XP, nickname and avatar
+  useEffect(() => {
+    if (account !== undefined) refresh();
+  }, [account, refresh]);
 
   const level = xp?.level ?? 1;
   const fraction = xp ? xp.into / xp.need : 0;
@@ -59,8 +65,10 @@ export function ProfileCard() {
             <Text style={T.title} numberOfLines={1}>
               {nick}
             </Text>
-            <View style={styles.guest}>
-              <Text style={styles.guestText}>{t("guest")}</Text>
+            <View style={[styles.guest, account && { backgroundColor: C.greenSoft }]}>
+              <Text style={[styles.guestText, account && { color: C.greenDark }]}>
+                {account ? t(account.provider === "apple" ? "signedInApple" : "signedInGoogle") : t("guest")}
+              </Text>
             </View>
           </View>
           <Tap onPress={() => setEditing(true)} style={styles.edit} accessibilityLabel={t("editProfile")}>
@@ -83,8 +91,10 @@ export function ProfileCard() {
             <Text style={[T.caption, { marginTop: 4 }]}>{t("totalXp").replace("{n}", String(xp?.xp ?? 0))}</Text>
           </View>
         </View>
-        <Text style={[T.caption, { marginTop: 12 }]}>{t("guestNote")}</Text>
+        {!account && <Text style={[T.caption, { marginTop: 12 }]}>{t("guestNote")}</Text>}
       </Card>
+
+      {account === null && <SignInCard />}
 
       <SectionLabel>{t("xpByGame")}</SectionLabel>
       <Card style={{ paddingVertical: 6 }}>
@@ -108,9 +118,11 @@ export function ProfileCard() {
         avatar={avatar}
         onClose={() => setEditing(false)}
         onSave={async (n, a) => {
-          setNick(await saveNick(n));
+          const savedNick = await saveNick(n);
+          setNick(savedNick);
           setAvatar(await saveAvatar(a));
           setEditing(false);
+          syncProfile(savedNick, a);
         }}
       />
     </>

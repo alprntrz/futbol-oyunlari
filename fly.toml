@@ -10,6 +10,10 @@ primary_region = "fra"
   NODE_ENV = "production"
   PORT = "8080"
   QZ_STATS_FILE = "/data/quiz-stats.json"
+  ACCOUNTS_DB = "/data/accounts.db"
+  # Apple tokens are issued for the app bundle; GOOGLE_CLIENT_IDS and the APPLE_* key
+  # are secrets: flyctl secrets set ...
+  APPLE_AUDIENCES = "com.alprntrz.tiktako"
 
 [mounts]
   source = "tiktako_data"

@@ -6,6 +6,8 @@ import { levelOf, XP, type LevelInfo } from "@/lib/levels";
 
 /** Which game an award came from (per-game totals on the profile). */
 export type XpGame = "xi" | "ht" | "qz" | "mystery" | "bingo" | "pp";
+/** "bonus" = the daily sign-in bonus (adds to the total, not to a game) */
+export type XpSource = XpGame | "bonus";
 
 interface XpState {
   xp: number;
@@ -19,7 +21,7 @@ interface XpState {
 
 export interface XpAward {
   gained: number;
-  game: XpGame;
+  game: XpSource;
   before: LevelInfo & { xp: number };
   after: LevelInfo & { xp: number };
 }
@@ -45,6 +47,7 @@ async function load(): Promise<XpState> {
 
 /** Total XP, level and per-game XP for the profile. */
 export async function loadXp() {
+  await queue; // after any pending award or server sync
   const s = await load();
   // copies: screens memoise on identity, so never hand out the live object
   return { xp: s.xp, byGame: { ...s.byGame }, ...levelOf(s.xp) };
@@ -78,10 +81,41 @@ export function awardXp(key: string, game: XpGame, amount: number, opts: { pract
     await AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
     const award: XpAward = { gained, game, before, after: { ...levelOf(s.xp), xp: s.xp } };
     listeners.forEach((fn) => fn(award));
+    sink?.(key, game, gained);
     return award;
   });
   queue = run.catch(() => {});
   return run;
+}
+
+/** Signed in: every award is also sent to the account (lib/account.ts registers this). */
+let sink: ((key: string, game: XpGame, amount: number) => void) | null = null;
+export function setAwardSink(fn: typeof sink) {
+  sink = fn;
+}
+
+/**
+ * Take the account's totals from the server (signed in, or after a sync). `announce`
+ * shows the toast for XP that came from the server (the daily bonus).
+ */
+export function applyServerTotals(xp: number, byGame: Partial<Record<XpGame, number>>, announce?: { gained: number; source: XpSource }) {
+  queue = queue.then(async () => {
+    const s = await load();
+    const before = { ...levelOf(s.xp), xp: s.xp };
+    s.xp = xp;
+    s.byGame = { ...byGame };
+    await AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
+    if (announce && announce.gained > 0) {
+      const award: XpAward = { gained: announce.gained, game: announce.source, before, after: { ...levelOf(s.xp), xp: s.xp } };
+      listeners.forEach((fn) => fn(award));
+    }
+  });
+}
+
+/** Signed out: this phone starts again as a fresh guest (the XP stays in the account). */
+export async function resetLocalXp() {
+  cache = empty();
+  await AsyncStorage.removeItem(KEY).catch(() => {});
 }
 
 /** A full-screen ceremony (Victory modal) is up: the toast waits until it closes. */

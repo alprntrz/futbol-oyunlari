@@ -6,6 +6,7 @@ import { Alert, Linking, View } from "react-native";
 import { InfoSheet, MissingXISteps, TikiSteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
+import { deleteAccount, signOut, useAccount } from "~/lib/account";
 import { BRAND } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
@@ -17,13 +18,27 @@ import { C, T } from "~/lib/theme";
 export default function SettingsTab() {
   const { t, locale, setLocale } = useI18n();
   const [sheet, setSheet] = useState<"xi" | "tiki" | null>(null);
+  const account = useAccount();
+  const confirmSignOut = () =>
+    Alert.alert(t("signOutAsk"), t("signOutDesc"), [
+      { text: t("cancel"), style: "cancel" },
+      { text: t("signOut"), style: "destructive", onPress: () => signOut() },
+    ]);
+  // signed in: the account goes first (server), then everything on the phone
   const confirmDelete = () =>
-    Alert.alert(t("deleteDataAsk"), t("deleteDataDesc"), [
+    Alert.alert(account ? t("deleteAccount") : t("deleteDataAsk"), account ? t("deleteAccountDesc") : t("deleteDataDesc"), [
       { text: t("cancel"), style: "cancel" },
       {
-        text: t("deleteData"),
+        text: account ? t("deleteAccount") : t("deleteData"),
         style: "destructive",
         onPress: async () => {
+          if (account) {
+            try {
+              await deleteAccount();
+            } catch {
+              return Alert.alert(t("deleteAccountFailed"));
+            }
+          }
           const { server } = await deleteMyData();
           Alert.alert(t("deleteDataDone"), server ? undefined : t("deleteDataOffline"), [{ text: "OK", onPress: restartApp }]);
         },
@@ -66,11 +81,29 @@ export default function SettingsTab() {
         {ONBOARDING && <Row icon="sparkles" iconFallback="✨" color={C.greenMid} soft={C.greenSoft} title={t("obReplay")} onPress={() => router.push("/onboarding")} last />}
       </Card>
 
+      {account && (
+        <>
+          <SectionLabel>{t("accountSection")}</SectionLabel>
+          <Card style={{ padding: 0, overflow: "hidden" }}>
+            <Row
+              icon="rectangle.portrait.and.arrow.right"
+              iconFallback="↩"
+              color={C.text2}
+              soft="#EEF2EF"
+              title={t("signOut")}
+              subtitle={t(account.provider === "apple" ? "signedInApple" : "signedInGoogle")}
+              onPress={confirmSignOut}
+              last
+            />
+          </Card>
+        </>
+      )}
+
       <SectionLabel>{t("privacyTitle")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
         <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
         <Row image={BRAND.settings.support} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
-        <Row image={BRAND.settings.delete} title={t("deleteData")} onPress={confirmDelete} last />
+        <Row image={BRAND.settings.delete} title={account ? t("deleteAccount") : t("deleteData")} onPress={confirmDelete} last />
       </Card>
 
       <SectionLabel>{t("about")}</SectionLabel>

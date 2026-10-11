@@ -51,6 +51,12 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
   analytics/ads/tracking SDKs, no IP logging, quiz record = random id + nick + counts only, and
   Settings > Delete my data (`qz:forget` + local wipe). Keep them true when adding anything.
+- Accounts (v1.1, optional): Sign in with Apple / Google; `server-accounts.js` (node:sqlite, `ACCOUNTS_DB`,
+  `/api/account/*`) verifies the provider token and stores only provider + opaque sub, nick, avatar,
+  XP — never name or e-mail (no scopes requested). App side `mobile/src/lib/account.ts` (session in
+  SecureStore, awards queued to `/xp`, daily +20 bonus, `DELETE /api/account` + Apple revoke).
+  Env/secrets: `APPLE_AUDIENCES`, `GOOGLE_CLIENT_IDS`, `APPLE_TEAM_ID/KEY_ID/PRIVATE_KEY`;
+  app: `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` + the reversed id as `iosUrlScheme` in app.json.
 - XP and levels (v1.1): every game pays XP through `awardXp` / `useXpAward` in `mobile/src/lib/xp.ts`
   (local, AsyncStorage `xp-v1`); amounts in `XP` and the curve in `levelOf`, both in `src/lib/levels.ts`.
   Each award has a unique key so a game never pays twice; unlimited modes pass `practice` (daily cap).

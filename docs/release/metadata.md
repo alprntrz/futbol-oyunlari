@@ -30,7 +30,7 @@ FUTBOL BINGO ve POSSESSION PLAY
 Kartı en az futbolcuyla doldur ya da altıgen sahada rakibinin bölgesini çal.
 
 GİZLİLİK
-Hesap yok, reklam yok, takip yok. İlerlemen telefonunda kalır; istediğin an Ayarlar'dan tüm verilerini silebilirsin.
+Hesap isteğe bağlı, reklam yok, takip yok. Misafir olarak oyna ya da Apple veya Google ile giriş yapıp ilerlemeni sakla; istediğin an Ayarlar'dan hesabını ve tüm verilerini silebilirsin.
 
 **Anahtar kelimeler (100):**
 futbol,bilgi,yarışma,quiz,xox,ilk 11,kadro,süper lig,derbi,trivia,futbolcu,maç,tahmin
@@ -67,7 +67,7 @@ FOOTBALL BINGO and POSSESSION PLAY
 Fill the card with the fewest footballers, or steal your rival's ground on a hex pitch.
 
 PRIVACY
-No account, no ads, no tracking. Your progress stays on your phone, and you can delete all your data from Settings at any time.
+Account optional, no ads, no tracking. Play as a guest, or sign in with Apple or Google to keep your progress; you can delete your account and all your data from Settings at any time.
 
 **Keywords (100):**
 football,soccer,trivia,quiz,tic tac toe,starting xi,lineup,premier league,derby,footballer,guess

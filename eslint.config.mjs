@@ -6,8 +6,8 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    // server.js is a plain CommonJS Node entry point (not bundled by Next).
-    files: ["server.js"],
+    // server.js (+ server-accounts.js) are plain CommonJS Node files (not bundled by Next).
+    files: ["server.js", "server-accounts.js"],
     rules: { "@typescript-eslint/no-require-imports": "off" },
   },
   {

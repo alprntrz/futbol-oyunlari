@@ -7,6 +7,7 @@ const next = require("next");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
+const { handleAccountApi } = require("./server-accounts");
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -339,7 +340,11 @@ function ppCode() {
 }
 
 app.prepare().then(() => {
-  const server = createServer((req, res) => handle(req, res));
+  const server = createServer(async (req, res) => {
+    // /api/account/*: sign-in and the account's XP (server-accounts.js); the rest is the Next site
+    if (req.url.startsWith("/api/account") && (await handleAccountApi(req, res, cleanNick))) return;
+    handle(req, res);
+  });
   // small payload cap: the biggest message is a 20-question quiz (a few KB)
   const io = new Server(server, { cors: { origin: "*" }, maxHttpBufferSize: 64 * 1024 });
 
