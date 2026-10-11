@@ -16,6 +16,61 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
   saved progress; two tabs for the online race).
 - Node 22.18+ (`.nvmrc` = 24): the data scripts import `.ts` files directly.
 
+## Mobile app (`mobile/`), released as Tiktako
+
+Native iOS/Android app in Expo (SDK 57, Expo Router, React Native) — real native
+UI, not a WebView. It reuses the web project's game logic and data directly:
+`@/…` in `mobile/` resolves to `../src/…` (tsconfig paths + `watchFolders` in
+`mobile/metro.config.js`); the app's own code is imported as `~/…`.
+
+- Shared, keep platform-free: `src/lib/{types,wordle,formations,daily,tiki,strings}.ts`
+  and `src/data/*`. No DOM/`localStorage`/React in these.
+- UI strings live in `src/lib/strings.ts` (used by both apps).
+- `cd mobile && npx expo start --ios` (Expo Go on the simulator). Online play
+  talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
+- Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`, incl. `ht:queue` matchmaking:
+  server owns turn, 45 s clock and result; the host's phone deals the grid as
+  criterion ids; a queue match gets `HT_INTRO_MS` before X's clock for the VS screen,
+  after 20 s an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
+  mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
+  `ht:forfeit` end games early; a match is a series, first to `HT_TARGET` = 3 game wins,
+  wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
+- Leagues (`src/lib/leagues.ts`): Hat-trick grids per league (`leagueGrid`, only that league's
+  clubs plus countries/honours; leagues need 3+ clubs in tiki CLUBS); the pick lives in
+  `mobile/src/lib/league.ts` and rooms/queue carry `league`. Missing 11 categories (`XI_CATEGORIES`)
+  filter matches by tag/competition.
+- Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
+  data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
+  until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5
+  by speed). Random rooms (`qz:queue`) start after 15 s and fill up with house players.
+  Levels/standings: phones send a random install id (`pid`, `loadPlayerId` in `mobile/src/lib/nick.ts`);
+  at full time the server adds XP (points + 10 + podium bonus) to `data/quiz-stats.json` (gitignored;
+  `QZ_STATS_FILE` overrides) and emits `qz:progress`; `qz:profile` / `qz:standings` read it. House
+  players never get a record. On a real deployment that file needs a persistent disk (or a database).
+- Release: `docs/release/` (checklist, App Store metadata). Public pages (privacy, support) live
+  in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
+  analytics/ads/tracking SDKs, no IP logging, quiz record = random id + nick + counts only, and
+  Settings > Delete my data (`qz:forget` + local wipe). Keep them true when adding anything.
+- Reward moments: `Victory.tsx` (ceremony) with art from `docs/design/oyun-hissi-brief.md`
+  → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
+  Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via
+  `play()` in `mobile/src/lib/sound.ts` (expo-audio; respects the silent switch; toggle in Settings).
+- Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
+  board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
+  rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.
+  The match screen opts out of React Compiler memoization because the engine mutates `game`.
+  Possession Play uses `pp:*` (same pattern, two chess clocks;
+  the mover's phone computes claimed hexes). Football Bingo is offline (daily
+  seeded card, `mobile/src/lib/bingo.ts`). The Missing 11 race (`room:*`, `race:*`) is still served for
+  the web app but has no screen in the mobile app.
+- `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
+- Read `mobile/AGENTS.md`: Expo APIs change per SDK, check the versioned docs.
+- Brand images (`mobile/assets/brand/`) are generated: originals from the
+  ChatGPT brief (`docs/design/ikon-brief.md`) → `python3 scripts/brand-assets.py <dir>`.
+  Shirts are three layers per collar style (body / sleeves tinted with kit
+  colours, grey shade multiplied on top); the number is text. The full-size
+  originals are not committed.
+
 ## Conventions that are easy to break
 
 - `Match.lineup` is ordered by `FORMATIONS[formation]` slots in
@@ -30,6 +85,6 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
     `scripts/leagues-to-ts.mjs`
 - The daily puzzle is `MATCHES[hash(day) % MATCHES.length]`: adding or removing
   matches reshuffles future days.
-- Every new UI string goes into both `tr` and `en` in `src/lib/i18n.tsx`.
+- Every new UI string goes into both `tr` and `en` in `src/lib/strings.ts`.
 - Scrapers hit Transfermarkt; keep the request gap (`TM_GAP_MS`, ≥ 2.2 s) and the
   on-disk cache. Their data is under Transfermarkt's terms — see README.

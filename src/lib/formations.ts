@@ -67,9 +67,9 @@ export const FORMATIONS: Record<FormationKey, { x: number; y: number }[]> = {
   // Sweeper + wing-backs (BVB '97): SW behind two CBs
   "3-5-2": [
     { x: 50, y: 92 },
-    { x: 50, y: 82 }, { x: 72, y: 74 }, { x: 28, y: 74 },
-    { x: 90, y: 54 }, { x: 10, y: 54 },
-    { x: 64, y: 58 }, { x: 36, y: 58 },
+    { x: 50, y: 78 }, { x: 72, y: 70 }, { x: 28, y: 70 },
+    { x: 90, y: 52 }, { x: 10, y: 52 },
+    { x: 64, y: 56 }, { x: 36, y: 58 },
     { x: 50, y: 40 },
     { x: 63, y: 22 }, { x: 37, y: 22 },
   ],

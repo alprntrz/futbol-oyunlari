@@ -1,7 +1,7 @@
 # ⚽ Futbol Oyunları
 
 Futbol temalı iki bulmaca oyunu içeren bir web uygulaması: **Eksik 11** (tarihi
-maçların ilk 11'ini tahmin et) ve **Tiki Taka Toe** (kulüp/ülke/başarı
+maçların ilk 11'ini tahmin et) ve **Hat-trick** (eski adı Tiki Taka Toe; kulüp/ülke/başarı
 kriterlerini sağlayan futbolcuyu bul, 3×3 tic-tac-toe). Arayüz Türkçe + İngilizce.
 
 **Teknolojiler:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 ·
@@ -27,11 +27,12 @@ var, aşağıda açıklandı).
    kişisel bir site için risk düşük; **gelir getiren bir ürün için yayından önce
    karar verilmeli** (Wikipedia/Wikidata ile yeniden doğrulama ya da lisanslı bir
    futbol veri API'si).
-3. **Mobil uygulama planı.** Hedef, aynı kodu Capacitor ile App Store / Google Play
-   uygulamasına çevirmek; uygulamada tarayıcı arayüzü (adres çubuğu vb.) görünmemeli.
-   Kabaca: sunucuyu yayına almak → statik export'a uyum (`/eksik-11/oda/[code]`
-   dinamik rotası `?code=` parametresine dönmeli) → mobil cila (seçim/zoom/
-   pull-to-refresh kapatma, safe-area, splash, haptik) → mağaza hazırlığı.
+3. **Mobil uygulama (`mobile/`).** Expo + React Native ile native iOS/Android
+   uygulaması (WebView değil). Oyun mantığı ve veri web projesiyle ortak
+   (`src/lib`, `src/data`); ekranlar native olarak yeniden yazıldı. Çalıştırma:
+   `cd mobile && npm ci && npx expo start --ios`. Online yarış için `server.js`'in
+   yayında olması ve `EXPO_PUBLIC_SOCKET_URL` ile adresinin verilmesi gerekir.
+   Kalanlar: sunucuyu yayına almak, uygulama ikonu/splash, mağaza hazırlığı (EAS).
 
 İlk gün yapılacaklar: aşağıdaki "Hızlı başlangıç"ı çalıştır, iki oyunu da bir tur
 oyna, sonra "Proje yapısı" ve "Veri modeli" bölümlerini oku.
@@ -90,7 +91,10 @@ ipucu. Zor: 4 hak, ipucu yok. Gol atanların formasında top işareti var.
   aynı kadroyu yarışarak çözerler. Kazanan: önce 11'i bilen → daha çok bilen → daha
   az tahmin → berabere.
 
-### 2) Tiki Taka Toe — `/tiki-taka-toe`
+### 2) Hat-trick (eski adı Tiki Taka Toe) — `/tiki-taka-toe`
+
+Arayüzde adı **Hat-trick**; kodda (`tiki.ts`, `TikiTakaToe`, `/tiki-taka-toe`) eski
+adlar duruyor.
 3×3 ızgara; her satır/sütun bir kriter (**kulüp**, **ülke** veya **başarı rozeti**).
 Boş kareye o satır ve sütunun ikisini de sağlayan bir futbolcu yazılır. İki oyuncu
 aynı cihazda (X / O) sırayla oynar, **hamle başına 45 sn**; 3'ü yan yana getiren
@@ -118,7 +122,7 @@ src/
     formations.ts              # 13 formasyonun saha koordinatları (slot sırası = lineup sırası)
     daily.ts                   # günlük seçim + globalMatches() / turkishMatches() havuzları
     wordle.ts                  # tahmin değerlendirme + normalizeAnswer
-    i18n.tsx                   # TR/EN sözlük (yeni metin iki dile de eklenmeli)
+    strings.ts, i18n.tsx       # TR/EN sözlük (web + mobil ortak; yeni metin iki dile de eklenmeli)
     tiki.ts                    # Tiki Taka kriterleri (CLUBS/COUNTRIES/BADGES) + ızgara/arama
     socket.ts, stats.ts
   data/                        # OYUN VERİSİ (aşağıya bak)

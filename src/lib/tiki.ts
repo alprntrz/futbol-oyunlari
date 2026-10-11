@@ -171,16 +171,17 @@ export function validateCell(guess: string, row: Criterion, col: Criterion, used
 
 export interface Grid { rows: Criterion[]; cols: Criterion[]; }
 
-function shuffle<T>(a: T[]): T[] { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
+function shuffle<T>(a: T[], rand: () => number = Math.random): T[] { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
 
 /**
  * Generate a solvable grid: 3 rows, then 3 cols each guaranteed solvable against
  * every row (so every one of the 9 cells has ≥1 player). At most 2 badge
  * criteria total, and no country×country cells (a player has one nationality).
  */
-export function generateGrid(): Grid {
+/** `rand` lets callers seed the grid (e.g. one shared daily grid). */
+export function generateGrid(rand: () => number = Math.random): Grid {
   for (let attempt = 0; attempt < 400; attempt++) {
-    const shuffled = shuffle(ALL_CRITERIA);
+    const shuffled = shuffle(ALL_CRITERIA, rand);
     const rows = shuffled.slice(0, 3);
     const cands = shuffled
       .slice(3)
@@ -195,4 +196,16 @@ export function generateGrid(): Grid {
   }
   const by = (id: string) => ALL_CRITERIA.find((c) => c.id === id)!;
   return { rows: [by("realmadrid"), by("barcelona"), by("brazil")], cols: [by("milan"), by("inter"), by("chelsea")] };
+}
+
+/** Small deterministic PRNG (mulberry32) for seeded grids. */
+export function seededRandom(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }

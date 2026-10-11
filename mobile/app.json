@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "Tiktako",
+    "slug": "futbol-oyunlari",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/brand/app-icon.png",
+    "scheme": "tiktako",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "icon": "./assets/brand/app-icon.png",
+      "bundleIdentifier": "com.alprntrz.tiktako",
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDisplayName": "Tiktako"
+      },
+      "buildNumber": "1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#16A34A",
+        "foregroundImage": "./assets/brand/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.alprntrz.tiktako"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/brand/icon-team.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F2F4F7",
+          "image": "./assets/brand/splash-logo.png",
+          "imageWidth": 160
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "backgroundColor": "#F2F4F7"
+  }
+}

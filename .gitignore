@@ -53,3 +53,6 @@ next-env.d.ts
 
 # Transfermarkt match-sheet cache (scripts/build-league-derbies.mjs)
 scripts/.cache/tm/
+
+# quiz levels/standings written by server.js
+/data

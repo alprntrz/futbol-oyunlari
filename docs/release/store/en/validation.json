@@ -1,0 +1,122 @@
+[
+  {
+    "file": "01-hattrick.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "e153276718ebe59c47f390a8ec3a3b294b5eff9a898e1fd9da129fbfa604708b",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "02-victory.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "cf0e1de3cb6cda307b178a1c8c31abce683c7748a70011e615448dc82b0030d1",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "03-quiz.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "9747c1a4598ec9a83dc9a6f8040c4e8ecde755edb74291984d4e20043513d650",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "04-missing-11.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "d20ee249d8f0c8edbbc09112acfd3f3527b3a82c3cd938d10b20046c5f019d1b",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "05-possession.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "95f9108f3bf755483e024b9954ecbe1ac0ca8bd88fa8a2f3ded06ecba9a75978",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "06-hattrick-answer.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "19837bb680e244fffaefbe4a61b23beb3b1f65693945883b5d24ed69697d7a51",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "07-games.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "ec2bd77b34ca048056fd0cf38bbf5f18d7fd59716b5adce92f2fde2fc506a579",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "08-home.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "ba8ecaeb21905c5deb41473160cb1637672c7e19386b56aa88d5a5ef161b8558",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  }
+]
