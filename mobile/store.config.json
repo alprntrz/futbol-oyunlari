@@ -1,0 +1,101 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "version": "1.0",
+    "release": {
+      "automaticRelease": true
+    },
+    "info": {
+      "en-US": {
+        "title": "Tiktako",
+        "subtitle": "Football trivia games",
+        "promoText": "Test your football knowledge: noughts and crosses with footballers, starting XIs of classic matches, a 5-player quiz and more. Play a friend or online opponents.",
+        "description": "Watching football is one thing. Knowing it is another. Tiktako turns football knowledge into short, fast, competitive games.\n\nHAT-TRICK\nNoughts and crosses with footballers. Name a player who fits the club, country or trophy in the row and column to take the square. First to 3 games wins the series. Play a friend on one phone, online with a code, or a random opponent. Pick a league: Süper Lig, Premier League, La Liga, Serie A, Bundesliga.\n\nMISSING 11\nFill in the starting XI of a classic match. A new match every day, unlimited practice, or pick your team. Derbies, European nights, international finals.\n\nFOOTBALL QUIZ\nOnline quiz for up to 5 players. 10 questions, 15 seconds, 4 options. Fast and right wins. Level up and climb the weekly standings.\n\nMYSTERY PLAYER\nName the footballer from their clubs, country and trophies. Every wrong guess opens another clue.\n\nFOOTBALL BINGO and POSSESSION PLAY\nFill the card with the fewest footballers, or steal your rival's ground on a hex pitch.\n\nPRIVACY\nNo account, no ads, no tracking. Your progress stays on your phone, and you can delete all your data from Settings at any time.",
+        "keywords": [
+          "football",
+          "soccer",
+          "trivia",
+          "quiz",
+          "tic tac toe",
+          "starting xi",
+          "lineup",
+          "premier league",
+          "derby",
+          "footballer",
+          "guess"
+        ],
+        "marketingUrl": "https://alprntrz.github.io/futbol-oyunlari/",
+        "supportUrl": "https://alprntrz.github.io/futbol-oyunlari/support.html",
+        "privacyPolicyUrl": "https://alprntrz.github.io/futbol-oyunlari/privacy.html"
+      },
+      "tr": {
+        "title": "Tiktako",
+        "subtitle": "Futbol bilgi oyunları",
+        "promoText": "Futbol bilgini sına: futbolcuyla XOX, tarihi maçların ilk 11'i, 5 kişilik bilgi yarışı ve daha fazlası. Arkadaşınla ya da online rakiplerle oyna.",
+        "description": "Futbolu izlemek bir şey, bilmek başka. Tiktako futbol bilgini kısa, hızlı ve rekabetçi oyunlara çeviriyor.\n\nHAT-TRICK\nFutbolcuyla XOX. Satır ve sütundaki kulübe, ülkeye ya da kupaya uyan futbolcuyu bul, kareyi kap. 3 oyun alan seriyi kazanır. Arkadaşınla aynı telefonda, kodla online ya da rastgele bir rakiple oyna. Lig seç: Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga.\n\nEKSİK 11\nTarihi bir maçın ilk 11'ini tamamla. Her gün yeni bir maç, sınırsız pratik ya da takımını seç. Derbiler, Avrupa kupaları, milli maçlar.\n\nBİLGİ YARIŞI\n5 kişiye kadar online yarış. 10 soru, 15 saniye, 4 şık. Hızlı ve doğru olan kazanır. Seviye atla, haftalık puan durumunda yüksel.\n\nGİZLİ OYUNCU\nKulüplerinden, ülkesinden ve kupalarından futbolcuyu bul. Her yanlış tahmin yeni bir ipucu açar.\n\nFUTBOL BINGO ve POSSESSION PLAY\nKartı en az futbolcuyla doldur ya da altıgen sahada rakibinin bölgesini çal.\n\nGİZLİLİK\nHesap yok, reklam yok, takip yok. İlerlemen telefonunda kalır; istediğin an Ayarlar'dan tüm verilerini silebilirsin.",
+        "keywords": [
+          "futbol",
+          "bilgi",
+          "yarışma",
+          "quiz",
+          "xox",
+          "ilk 11",
+          "kadro",
+          "süper lig",
+          "derbi",
+          "trivia",
+          "futbolcu",
+          "maç",
+          "tahmin"
+        ],
+        "marketingUrl": "https://alprntrz.github.io/futbol-oyunlari/",
+        "supportUrl": "https://alprntrz.github.io/futbol-oyunlari/support.html",
+        "privacyPolicyUrl": "https://alprntrz.github.io/futbol-oyunlari/privacy.html"
+      }
+    },
+    "advisory": {
+      "ageRatingOverride": "NONE",
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "kidsAgeBand": null,
+      "koreaAgeRatingOverride": "NONE",
+      "lootBox": false,
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "NONE",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "unrestrictedWebAccess": false,
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "advertising": false,
+      "ageAssurance": false,
+      "ageRatingOverrideV2": "NONE",
+      "developerAgeRatingInfoUrl": null,
+      "gunsOrOtherWeapons": "NONE",
+      "healthOrWellnessTopics": false,
+      "messagingAndChat": false,
+      "parentalControls": false,
+      "userGeneratedContent": false
+    },
+    "copyright": "© 2026 Alperen Terzi",
+    "categories": [
+      [
+        "GAMES",
+        "GAMES_TRIVIA",
+        "GAMES_SPORTS"
+      ],
+      "SPORTS"
+    ],
+    "review": {
+      "firstName": "Alperen",
+      "lastName": "Terzi",
+      "demoRequired": false,
+      "notes": "No login is required. Single-player and same-phone games work offline. Online modes (Hat-trick \"With a friend\" and \"Random opponent\", Football Quiz, Possession Play online) connect to our game server over HTTPS. When no other player is searching, random-opponent modes pair the player with a computer opponent so a game can always start. Nicknames shown to other players are filtered for offensive words on the server, and Settings > Delete my data removes everything from the phone and the server. There are no purchases, ads, analytics or tracking in this version.\n\nTo try an online room alone: open Football Quiz > Random opponent; a game starts within 15 seconds."
+    }
+  }
+}
