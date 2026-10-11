@@ -11,5 +11,5 @@
       "env": { "EXPO_PUBLIC_SOCKET_URL": "https://tiktako.fly.dev" }
     }
   },
-  "submit": { "production": {} }
+  "submit": { "production": { "ios": { "ascAppId": "6821740252" } } }
 }
