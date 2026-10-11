@@ -14,8 +14,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "Tiktako"
-      },
-      "buildNumber": "1"
+      }
     },
     "android": {
       "adaptiveIcon": {
