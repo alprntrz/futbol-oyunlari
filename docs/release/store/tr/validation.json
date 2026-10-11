@@ -1,0 +1,122 @@
+[
+  {
+    "file": "01-hattrick.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "bfd43a55f0258cd5924f57d016c7fe6adde61b1ef553af43446e87d5a8806329",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "02-zafer.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "6162696819a204afbdae4bf4307f13c15bd56b5ab8351a13a730c1c0d2145661",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "03-bilgi-yarisi.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "2a4feb5ee25c12cf0c416496661a6fb5a5ecc835458bd31d06bdaa8d7f995cee",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "04-eksik-11.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "8f25d3d9051a1ec8d325279bd89db9d6c54ef1ff41d4c3d7d4b74c5b53948a96",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "05-possession.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "ed1c33ae570760b16e23a3dc9af2046354176eb260b047d0673477e62cd954cb",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "06-hattrick-cevap.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "07a4a41f37464b205a76915065fa4aedfd40d49233d9b5654a4ddf7dfad69861",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "07-oyunlar.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "fb3b9b61a19996caa199603ad92266fb80900b607f6a61ce17fd08e44ae8ddd3",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  },
+  {
+    "file": "08-ana-sayfa.png",
+    "size": [
+      1320,
+      2868
+    ],
+    "source_sha256": "e0d678c8aafced47e7889a0f50a2f573542b94ac0c6fcfe29b3ec71b089e704e",
+    "screen_composite_matches_resized_original": true,
+    "screen_bounds": [
+      210,
+      790,
+      900,
+      1955
+    ]
+  }
+]
