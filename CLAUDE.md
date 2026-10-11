@@ -64,6 +64,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   seeded card, `mobile/src/lib/bingo.ts`). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
+- After any dependency change in `mobile/` (incl. `npx expo install`), run
+  `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`
+  peers from the lock and then `npm ci` fails on CI and on EAS Build.
 - Read `mobile/AGENTS.md`: Expo APIs change per SDK, check the versioned docs.
 - Brand images (`mobile/assets/brand/`) are generated: originals from the
   ChatGPT brief (`docs/design/ikon-brief.md`) → `python3 scripts/brand-assets.py <dir>`.
