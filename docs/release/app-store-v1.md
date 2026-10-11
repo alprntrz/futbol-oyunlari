@@ -15,9 +15,8 @@ Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.j
 
 - [x] Kurulum hazır: `Dockerfile` + `fly.toml` (Frankfurt, tek makine, hiç uyumaz, 512 MB, 1 GB kalıcı disk `tiktako_data`; Bilgi Yarışı puanları diskte). Yerelde aynı dosyalarla build + çalıştırma + WebSocket testi geçti. Aylık ~4 $.
 - [x] `flyctl` kurulu (`~/.fly/bin/flyctl`).
-- [ ] **Fly hesabı**: `~/.fly/bin/flyctl auth signup` (ya da `auth login`) → tarayıcıda hesap aç, kart ekle.
-- [ ] İlk deploy (giriş yapıldıktan sonra, Claude yapabilir):
-  `flyctl apps create tiktako` → `flyctl volumes create tiktako_data -r fra -s 1 -a tiktako -y` → `flyctl deploy` → `flyctl scale count 1 -y`.
+- [x] **Canlı**: https://tiktako.fly.dev (Fly app `tiktako`, makine `fra`, disk `/data`). HTTPS + WebSocket dışarıdan test edildi.
+- Güncelleme: `server.js` değişince repo kökünde `~/.fly/bin/flyctl deploy --remote-only --ha=false` (main'e push otomatik deploy etmez). Loglar: `flyctl logs -a tiktako`.
 - [x] `mobile/eas.json` → `https://tiktako.fly.dev`.
 
 ## 3. Build
@@ -26,8 +25,8 @@ Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.j
 - [x] `ITSAppUsesNonExemptEncryption: false` (sadece HTTPS; ihracat uyumluluk sorusu otomatik geçer)
 - [x] Mikrofon / arka plan ses izni kapalı (expo-audio)
 - [x] Onboarding v1'de kapalı (`mobile/src/lib/features.ts`)
-- [ ] `cd mobile && npx eas-cli login` (Expo hesabı), sonra `npx eas-cli init` ve
-  `npx eas-cli build -p ios --profile production --auto-submit`: ilk seferde Apple ID ile giriş ister (2FA), sertifikaları EAS kendisi üretir ve build TestFlight'a gider.
+- [x] EAS projesi `@alperenterzi/tiktako`, sertifika/profil EAS'ta, App Store Connect uygulaması `6821740252`, gönderim anahtarı EAS'ta.
+- [x] Build 3 (1.0.0) TestFlight'a yüklendi. Yeni build: `cd mobile && npx eas-cli build -p ios --profile production --auto-submit --non-interactive` (build numarasını EAS artırır).
 - [ ] TestFlight'ta kendi telefonunda bir tur: her oyunu aç, online maçı iki telefonla dene.
 
 ## 4. Mağaza sayfası
