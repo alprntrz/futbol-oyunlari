@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 
+import { PLAYERS_SEASON, PLAYERS_UPDATED } from "@/data/players";
 import { LEAGUES, type LeagueId } from "@/lib/leagues";
 
 import { HelpButton } from "~/components/HelpButton";
@@ -15,7 +16,7 @@ import { C, T } from "~/lib/theme";
 
 /** Hat-trick hub: four ways to play. */
 export default function HatTrickHome() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [league, setLeague] = useHtLeague();
   const modes: Mode[] = [
     {
@@ -82,6 +83,13 @@ export default function HatTrickHome() {
       <Card style={{ padding: 20 }}>
         <TikiSteps />
       </Card>
+
+      {/* when the squads were last scraped, so players know new transfers are in */}
+      <Text style={[T.caption, { textAlign: "center", marginTop: 16 }]}>
+        {t("htDataUpdated")
+          .replace("{date}", new Date(`${PLAYERS_UPDATED}T12:00:00`).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" }))
+          .replace("{season}", `${PLAYERS_SEASON}/${String(PLAYERS_SEASON + 1).slice(2)}`)}
+      </Text>
     </Page>
   );
 }

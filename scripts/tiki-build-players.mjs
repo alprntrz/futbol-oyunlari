@@ -80,6 +80,9 @@ const CHUNK = 4000;
 const chunks = [];
 for (let i = 0; i < out.length; i += CHUNK) chunks.push(out.slice(i, i + CHUNK));
 const body = chunks.map((ch, i) => `const _P${i}: GridPlayer[] = [\n` + ch.map((p) => "  " + JSON.stringify(p) + ",").join("\n") + `\n];`).join("\n\n");
-const exportLine = `\n\nexport const PLAYERS: GridPlayer[] = [${chunks.map((_, i) => `..._P${i}`).join(", ")}];\n`;
+// Last season scraped + the day this file was built: shown in Hat-trick ("player data: …")
+const lastSeason = Math.max(...JSON.parse(readFileSync("scripts/.cache/raw-squads.json", "utf8")).done.map((k) => Number(k.split("_")[1])));
+const meta = `\n\n/** Newest season in the data (2026 = 2026/27) and the build date, YYYY-MM-DD. */\nexport const PLAYERS_SEASON = ${lastSeason};\nexport const PLAYERS_UPDATED = "${new Date().toLocaleDateString("sv-SE")}";`;
+const exportLine = `${meta}\n\nexport const PLAYERS: GridPlayer[] = [${chunks.map((_, i) => `..._P${i}`).join(", ")}];\n`;
 writeFileSync("src/data/players.ts", header + body + exportLine);
 console.error(`scraped: ${scrapedCount}, curated-only added: ${curNew}, TOTAL: ${out.length} → src/data/players.ts`);

@@ -60,7 +60,7 @@ for (const j of jobs) {
   const key = `${j.id}_${j.s}`;
   if (done.has(key)) continue;
   const html = await get(`https://www.transfermarkt.us/x/kader/verein/${j.id}/saison_id/${j.s}/plus/1`);
-  await sleep(1300);
+  await sleep(2200); // TM_GAP_MS: keep ≥ 2.2 s between Transfermarkt requests
   if (html) {
     for (const p of parse(html)) {
       const rec = byId[p.id] || (byId[p.id] = { name: p.name, nat: p.nat, clubs: [] });
