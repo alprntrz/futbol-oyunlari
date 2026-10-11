@@ -13,9 +13,12 @@ Durum işaretleri: [x] yapıldı · [ ] senin yapman gereken · [~] karar bekliy
 
 Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.js`'e bağlanıyor. Şu an sadece bilgisayarında çalışıyor. **İnceleme ekibi online moda girdiğinde sunucu açık olmalı**, yoksa "çalışmıyor" diye reddedilir (Guideline 2.1).
 
-- [x] Kurulum tanımı hazır: `render.yaml` (Frankfurt, Starter planı ~7 $/ay, sürekli açık, 1 GB kalıcı disk, Bilgi Yarışı puanları diskte; `main`'e her push'ta yeniden deploy).
-- [ ] **Render**: render.com → GitHub ile giriş → New → **Blueprint** → `futbol-oyunlari` reposu → Apply → ödeme yöntemi. Servis adı `tiktako` kalmalı (adres `https://tiktako.onrender.com`).
-- [x] `mobile/eas.json` bu adrese ayarlı. Render başka bir adres verirse orayı değiştir.
+- [x] Kurulum hazır: `Dockerfile` + `fly.toml` (Frankfurt, tek makine, hiç uyumaz, 512 MB, 1 GB kalıcı disk `tiktako_data`; Bilgi Yarışı puanları diskte). Yerelde aynı dosyalarla build + çalıştırma + WebSocket testi geçti. Aylık ~4 $.
+- [x] `flyctl` kurulu (`~/.fly/bin/flyctl`).
+- [ ] **Fly hesabı**: `~/.fly/bin/flyctl auth signup` (ya da `auth login`) → tarayıcıda hesap aç, kart ekle.
+- [ ] İlk deploy (giriş yapıldıktan sonra, Claude yapabilir):
+  `flyctl apps create tiktako` → `flyctl volumes create tiktako_data -r fra -s 1 -a tiktako -y` → `flyctl deploy` → `flyctl scale count 1 -y`.
+- [x] `mobile/eas.json` → `https://tiktako.fly.dev`.
 
 ## 3. Build
 

@@ -1,0 +1,12 @@
+# Only the Next site + server.js go into the image
+/.git
+/node_modules
+/.next
+/mobile
+/docs
+/site
+/data
+/data-drafts
+/scripts
+*.tsbuildinfo
+/.env*

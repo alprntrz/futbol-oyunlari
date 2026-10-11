@@ -4,11 +4,11 @@
     "development": { "developmentClient": true, "distribution": "internal" },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_SOCKET_URL": "https://tiktako.onrender.com" }
+      "env": { "EXPO_PUBLIC_SOCKET_URL": "https://tiktako.fly.dev" }
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_SOCKET_URL": "https://tiktako.onrender.com" }
+      "env": { "EXPO_PUBLIC_SOCKET_URL": "https://tiktako.fly.dev" }
     }
   },
   "submit": { "production": {} }
