@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Tiktako",
-    "slug": "futbol-oyunlari",
+    "slug": "tiktako",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/brand/app-icon.png",
@@ -23,7 +23,10 @@
         "foregroundImage": "./assets/brand/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.alprntrz.tiktako"
+      "package": "com.alprntrz.tiktako",
+      "permissions": [
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "output": "static",
@@ -46,12 +49,20 @@
           "recordAudioAndroid": false,
           "enableBackgroundPlayback": false
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "backgroundColor": "#F2F4F7"
+    "backgroundColor": "#F2F4F7",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5400971b-df0a-49b3-a040-59109e62fa30"
+      }
+    },
+    "owner": "alperenterzi"
   }
 }
