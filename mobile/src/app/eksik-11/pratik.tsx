@@ -64,6 +64,7 @@ function PracticeGame({ match, difficulty, onNext }: { match: Match; difficulty:
         totalGuesses={progress.totalGuesses}
         onGuess={guess}
         onGiveUp={giveUp}
+        onNext={onNext}
       />
     </>
   );

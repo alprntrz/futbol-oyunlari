@@ -34,6 +34,7 @@ export function MissingXIBoard({
   totalGuesses,
   onGuess,
   onGiveUp,
+  onNext,
   headerExtra,
 }: {
   match: Match;
@@ -43,6 +44,8 @@ export function MissingXIBoard({
   totalGuesses: number;
   onGuess: (idx: number, guess: string) => void;
   onGiveUp: () => void;
+  /** practice modes: "Next match" under the pitch once the game is over */
+  onNext?: () => void;
   headerExtra?: React.ReactNode;
 }) {
   const { t, locale } = useI18n();
@@ -169,7 +172,8 @@ export function MissingXIBoard({
           ))}
       </View>
 
-      {!done && <Button title={t("giveUp")} kind="ghost" icon="flag" onPress={confirmGiveUp} style={{ marginTop: 8, alignSelf: "center" }} />}
+      {!done && <Button title={t("giveUp")} kind="danger" icon="flag.fill" onPress={confirmGiveUp} style={{ marginTop: 12 }} />}
+      {done && onNext && <Button title={t("nextMatch")} icon="arrow.right" onPress={onNext} style={{ marginTop: 12 }} />}
 
       <GuessSheet
         player={openSlot !== null && !done ? match.lineup[openSlot] : null}

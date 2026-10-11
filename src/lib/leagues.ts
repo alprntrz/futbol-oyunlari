@@ -20,12 +20,12 @@ export interface League {
 
 export const LEAGUES: League[] = [
   { id: "all", name: { tr: "Tüm takımlar", en: "All clubs" }, clubs: [] },
-  { id: "tr", name: { tr: "Süper Lig", en: "Turkish league" }, flag: "turkey", clubs: ["galatasaray", "fenerbahce", "besiktas"] },
   { id: "en", name: { tr: "Premier Lig", en: "Premier League" }, flag: "england", clubs: ["manutd", "mancity", "liverpool", "chelsea", "arsenal", "tottenham"] },
   { id: "es", name: { tr: "La Liga", en: "La Liga" }, flag: "spain", clubs: ["realmadrid", "barcelona", "atletico", "sevilla", "valencia", "villarreal"] },
   { id: "it", name: { tr: "Serie A", en: "Serie A" }, flag: "italy", clubs: ["juventus", "milan", "inter", "napoli", "roma"] },
   { id: "de", name: { tr: "Bundesliga", en: "Bundesliga" }, flag: "germany", clubs: ["bayern", "dortmund", "schalke", "leverkusen"] },
   { id: "pt", name: { tr: "Portekiz Ligi", en: "Portuguese league" }, flag: "portugal", clubs: ["porto", "benfica", "sporting"] },
+  { id: "tr", name: { tr: "Süper Lig", en: "Turkish league" }, flag: "turkey", clubs: ["galatasaray", "fenerbahce", "besiktas"] },
 ];
 
 export const leagueById = (id: string | undefined) => LEAGUES.find((l) => l.id === id) ?? LEAGUES[0];

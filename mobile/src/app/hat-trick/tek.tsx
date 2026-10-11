@@ -44,7 +44,9 @@ const surname = (name: string) => name.trim().split(/\s+/).slice(-1)[0];
 export default function HatTrickSolo() {
   const { t, locale } = useI18n();
   const day = dayNumber();
-  const grid = useMemo(() => generateGrid(seededRandom(day * 7919 + 17)), [day]);
+  // null = today's shared grid (saved); a number = an extra random grid after it (not saved)
+  const [seed, setSeed] = useState<number | null>(null);
+  const grid = useMemo(() => generateGrid(seededRandom(seed ?? day * 7919 + 17)), [day, seed]);
   const [run, setRun] = useState<Run | null | undefined>(undefined);
   const [limit, setLimit] = useState<"3" | "none">("3");
   const [query, setQuery] = useState("");
@@ -66,8 +68,8 @@ export default function HatTrickSolo() {
   }, [day]);
 
   useEffect(() => {
-    if (run) AsyncStorage.setItem(key(day), JSON.stringify(run)).catch(() => {});
-  }, [run, day]);
+    if (run && seed === null) AsyncStorage.setItem(key(day), JSON.stringify(run)).catch(() => {});
+  }, [run, day, seed]);
 
   // Clock: tick while a timed run is live, end it at zero
   useEffect(() => {
@@ -95,6 +97,13 @@ export default function HatTrickSolo() {
   const start = () => {
     haptic.press();
     setRun({ cells: Array.from({ length: 9 }, () => []), limit: limit === "3", deadline: limit === "3" ? Date.now() + TIME_LIMIT * 1000 : null, finished: false });
+  };
+
+  const newGrid = () => {
+    haptic.press();
+    setQuery("");
+    setSeed(Math.floor(Math.random() * 1e9));
+    setRun({ cells: Array.from({ length: 9 }, () => []), limit: run?.limit ?? limit === "3", deadline: (run?.limit ?? limit === "3") ? Date.now() + TIME_LIMIT * 1000 : null, finished: false });
   };
 
   const pick = (p: GridPlayer) => {
@@ -285,8 +294,13 @@ export default function HatTrickSolo() {
               <Text style={T.caption}>{t("bbOfAll")}</Text>
             </View>
           </View>
-          <Button title={t("share")} icon="square.and.arrow.up" onPress={share} style={{ alignSelf: "stretch", marginTop: 8 }} />
-          <Text style={[T.caption, { marginTop: 8 }]}>{t("htSoloComeBackLine")}</Text>
+          <Button title={t("ttNewGrid")} icon="arrow.clockwise" onPress={newGrid} style={{ alignSelf: "stretch", marginTop: 8 }} />
+          {seed === null && (
+            <>
+              <Button title={t("share")} icon="square.and.arrow.up" kind="secondary" onPress={share} style={{ alignSelf: "stretch", marginTop: 8 }} />
+              <Text style={[T.caption, { marginTop: 8, textAlign: "center" }]}>{t("htSoloExtraLine")}</Text>
+            </>
+          )}
         </Card>
       )}
     </Page>
