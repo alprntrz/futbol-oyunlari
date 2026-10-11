@@ -13,9 +13,9 @@ Durum işaretleri: [x] yapıldı · [ ] senin yapman gereken · [~] karar bekliy
 
 Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.js`'e bağlanıyor. Şu an sadece bilgisayarında çalışıyor. **İnceleme ekibi online moda girdiğinde sunucu açık olmalı**, yoksa "çalışmıyor" diye reddedilir (Guideline 2.1).
 
-- [ ] `server.js`'i bir yere kur: Render, Railway, Fly.io (hepsinde Node + WebSocket çalışır, aylık ~5-7 $). HTTPS zorunlu.
-- [ ] Bilgi Yarışı seviye/puan durumu `data/quiz-stats.json` dosyasına yazılıyor; sunucuda **kalıcı disk** gerekir (Render "Disk", Railway "Volume"), yoksa her deploy'da sıfırlanır.
-- [ ] `mobile/eas.json` içindeki `https://REPLACE-WITH-SERVER-URL` adresini gerçek adresle değiştir.
+- [x] Kurulum tanımı hazır: `render.yaml` (Frankfurt, Starter planı ~7 $/ay, sürekli açık, 1 GB kalıcı disk, Bilgi Yarışı puanları diskte; `main`'e her push'ta yeniden deploy).
+- [ ] **Render**: render.com → GitHub ile giriş → New → **Blueprint** → `futbol-oyunlari` reposu → Apply → ödeme yöntemi. Servis adı `tiktako` kalmalı (adres `https://tiktako.onrender.com`).
+- [x] `mobile/eas.json` bu adrese ayarlı. Render başka bir adres verirse orayı değiştir.
 
 ## 3. Build
 
@@ -23,7 +23,8 @@ Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.j
 - [x] `ITSAppUsesNonExemptEncryption: false` (sadece HTTPS; ihracat uyumluluk sorusu otomatik geçer)
 - [x] Mikrofon / arka plan ses izni kapalı (expo-audio)
 - [x] Onboarding v1'de kapalı (`mobile/src/lib/features.ts`)
-- [ ] `npx eas build -p ios --profile production` → `npx eas submit -p ios`
+- [ ] `cd mobile && npx eas-cli login` (Expo hesabı), sonra `npx eas-cli init` ve
+  `npx eas-cli build -p ios --profile production --auto-submit`: ilk seferde Apple ID ile giriş ister (2FA), sertifikaları EAS kendisi üretir ve build TestFlight'a gider.
 - [ ] TestFlight'ta kendi telefonunda bir tur: her oyunu aç, online maçı iki telefonla dene.
 
 ## 4. Mağaza sayfası
