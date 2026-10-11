@@ -6,6 +6,7 @@ import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 
 import { PLAYERS, type GridPlayer } from "@/data/players";
 import { dayNumber } from "@/lib/daily";
+import { XP } from "@/lib/levels";
 import { generateGrid, searchPlayers, seededRandom, type Criterion } from "@/lib/tiki";
 
 import { CriterionBadge } from "~/components/HatTrickBoard";
@@ -15,6 +16,7 @@ import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/compon
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
+import { useXpAward } from "~/lib/xp";
 
 const TIME_LIMIT = 180;
 const key = (day: number) => `hattrick-box-${day}`;
@@ -91,6 +93,10 @@ export default function HatTrickSolo() {
   }, [toast]);
 
   const suggestions = useMemo(() => searchPlayers(query, 6), [query]);
+
+  // today's grid pays once a day; extra grids count towards the practice cap
+  const placed = run ? run.cells.reduce((n, c) => n + c.length, 0) : 0;
+  useXpAward(!!run?.finished, seed === null ? `ht-solo-${day}` : `ht-solo-x-${seed}`, "ht", Math.min(XP.htSoloCap, placed * XP.htSoloPerPlayer), { practice: seed !== null });
 
   if (run === undefined) return <Page>{null}</Page>;
 

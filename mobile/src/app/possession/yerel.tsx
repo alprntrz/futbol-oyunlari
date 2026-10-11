@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 
 import type { GridPlayer } from "@/data/players";
+import { XP } from "@/lib/levels";
 
 import { PossessionBoard } from "~/components/PossessionBoard";
 import { Button, Page } from "~/components/ui";
@@ -9,6 +10,7 @@ import { haptic } from "~/lib/haptics";
 import { other, type Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { claimsFor, CLOCK_SECONDS, generateBoard, HEX_COUNT, resultOf, type PpCell } from "~/lib/possession";
+import { useXpAward } from "~/lib/xp";
 
 const fresh = () => ({ X: CLOCK_SECONDS * 1000, O: CLOCK_SECONDS * 1000 });
 
@@ -25,6 +27,8 @@ export default function PossessionLocal() {
   const [winner, setWinner] = useState<Mark | "draw" | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [usedNames, setUsedNames] = useState<string[]>([]);
+  // both players share this phone: a small thank-you per finished board
+  useXpAward(!!winner, `pp-local-${board.slice(0, 4).map((c) => c.id).join(",")}`, "pp", XP.sameScreen);
 
   const left = (m: Mark) => (m === turn && !winner ? bank[m] - (now - turnStart) : bank[m]);
 

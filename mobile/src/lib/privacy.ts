@@ -3,6 +3,7 @@ import { reloadAppAsync } from "expo";
 
 import { loadPlayerId } from "./nick";
 import { getSocket } from "./socket";
+import { resetXpCache } from "./xp";
 
 /**
  * "Delete my data": the server forgets this phone's quiz record, every local
@@ -18,6 +19,7 @@ export async function deleteMyData(): Promise<{ server: boolean }> {
       .emit("qz:forget", { pid }, (err: Error | null, res?: { ok: boolean }) => resolve(!err && !!res?.ok));
   });
   await AsyncStorage.clear().catch(() => {});
+  resetXpCache();
   return { server };
 }
 

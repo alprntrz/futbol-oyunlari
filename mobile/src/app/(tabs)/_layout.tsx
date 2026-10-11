@@ -17,8 +17,8 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Icon src={BRAND.tab.games} renderingMode="template" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="istatistik">
-        <NativeTabs.Trigger.Label>{t("tabStats")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon src={BRAND.tab.stats} renderingMode="template" />
+        <NativeTabs.Trigger.Label>{t("tabProfile")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: "person.crop.circle", selected: "person.crop.circle.fill" }} />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="ayarlar">
         <NativeTabs.Trigger.Label>{t("tabSettings")}</NativeTabs.Trigger.Label>

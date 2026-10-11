@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 
 import { dailyMatch } from "@/lib/daily";
+import { XP } from "@/lib/levels";
 import type { Difficulty, Match } from "@/lib/types";
 
 import { GameIntro } from "~/components/GameIntro";
@@ -12,6 +13,7 @@ import { Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { loadDayState, recordResult, saveDayState, type DayState } from "~/lib/storage";
 import { useMissingXI } from "~/lib/useMissingXI";
+import { useXpAward } from "~/lib/xp";
 
 export default function DailyScreen() {
   const { t } = useI18n();
@@ -48,6 +50,8 @@ function DailyGame({ match, day, difficulty, saved }: { match: Match; day: numbe
     recordResult(won, day, found);
   });
   const { slots, gaveUp, progress } = game;
+  // keyed by day: reopening a finished day pays nothing more
+  useXpAward(progress.done, `xi-daily-${day}`, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0) + XP.xiDailyBonus);
 
   useEffect(() => {
     saveDayState(day, { matchId: match.id, difficulty, slots, gaveUp, recorded });

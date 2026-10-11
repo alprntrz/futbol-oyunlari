@@ -5,6 +5,7 @@ import { Share, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
+import { XP } from "@/lib/levels";
 import type { Criterion } from "@/lib/tiki";
 
 import { SOFT_IN } from "~/components/motion";
@@ -15,6 +16,7 @@ import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
+import { useXpAward } from "~/lib/xp";
 
 const key = (day: number) => `bingo-${day}`;
 
@@ -68,6 +70,10 @@ export default function Bingo() {
     const id = setTimeout(() => setWrongSquare(null), 700);
     return () => clearTimeout(id);
   }, [wrongSquare]);
+
+  // one card a day: pays once, more for a full card
+  const bingoFull = !!run && run.placed.filter(Boolean).length === CARD_SIZE;
+  useXpAward(!!run && (bingoFull || run.index >= stream.length), `bingo-${day}`, "bingo", bingoFull ? XP.bingoComplete : XP.bingoPlayed);
 
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
 

@@ -51,6 +51,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
   analytics/ads/tracking SDKs, no IP logging, quiz record = random id + nick + counts only, and
   Settings > Delete my data (`qz:forget` + local wipe). Keep them true when adding anything.
+- XP and levels (v1.1): every game pays XP through `awardXp` / `useXpAward` in `mobile/src/lib/xp.ts`
+  (local, AsyncStorage `xp-v1`); amounts in `XP` and the curve in `levelOf`, both in `src/lib/levels.ts`.
+  Each award has a unique key so a game never pays twice; unlimited modes pass `practice` (daily cap).
+  The "+XP" toast (`XpToast`, root layout) waits while a `Victory` modal is open. The Stats tab is now
+  Profile (`app/(tabs)/istatistik.tsx` + `ProfileCard`): nickname, preset avatar (`lib/avatar.ts`), level.
 - Reward moments: `Victory.tsx` (ceremony) with art from `docs/design/oyun-hissi-brief.md`
   → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
   Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via

@@ -22,6 +22,7 @@ import { useI18n } from "~/lib/i18n";
 import { loadNick, loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, F } from "~/lib/theme";
+import { awardXp } from "~/lib/xp";
 
 type L = { tr: string; en: string };
 interface QzPlayer {
@@ -166,6 +167,8 @@ export default function QuizRoom() {
     const onConnect = () => setMyId(socket.id ?? "");
     const onProgress = (p: { gained: number; before: QuizProfile; after: QuizProfile }) => {
       setProgress(p);
+      // the same XP also counts towards the overall level (the server's game count keys it)
+      awardXp(`qz-${code}-${p.after.games}`, "qz", p.gained);
       // the level-up sting comes after the ceremony's own sounds
       if (p.after.level > p.before.level) setTimeout(() => (haptic.success(), play("levelup")), 2300);
     };

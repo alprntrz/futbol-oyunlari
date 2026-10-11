@@ -1,6 +1,8 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 
+import { XP } from "@/lib/levels";
+
 import { PossessionBoard } from "~/components/PossessionBoard";
 import { Text } from "~/components/Text";
 import { WaitingRoom } from "~/components/WaitingRoom";
@@ -12,6 +14,7 @@ import { boardFromIds, boardToIds, claimsFor, generateBoard, type PpCell } from 
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
+import { useXpAward } from "~/lib/xp";
 
 interface PpPlayer {
   id: string;
@@ -43,6 +46,15 @@ export default function PossessionRoom() {
   const [error, setError] = useState<string | null>(null);
   const [peerLeft, setPeerLeft] = useState(false);
   const [myId, setMyId] = useState(() => getSocket().id ?? "");
+
+  // each game in the room (a rematch deals a new board) pays once
+  const myMark = room?.players.find((p) => p.id === myId)?.mark;
+  useXpAward(
+    !!room?.winner && !!myMark,
+    room ? `pp-${code}-${room.board.slice(0, 4).join(",")}` : null,
+    "pp",
+    room?.winner === "draw" ? XP.ppDraw : room?.winner === myMark ? XP.ppWin : XP.ppLoss
+  );
 
   useEffect(() => {
     const socket = getSocket();

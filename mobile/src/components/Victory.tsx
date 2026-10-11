@@ -8,6 +8,7 @@ import { REWARD } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { C, F } from "~/lib/theme";
+import { setOverlayOpen } from "~/lib/xp";
 
 import { Confetti, useCountUp } from "./motion";
 import { Text } from "./Text";
@@ -127,6 +128,12 @@ export function Victory({
   secondary?: { title: string; onPress: () => void };
 }) {
   const insets = useSafeAreaInsets();
+
+  // the "+XP" toast waits under this modal until it closes
+  useEffect(() => {
+    setOverlayOpen(visible);
+    return () => setOverlayOpen(false);
+  }, [visible]);
 
   // confetti fires each time a won ceremony opens
   const [fire, setFire] = useState(0);

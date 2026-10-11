@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 
 import { randomMatch, recentMatches } from "@/lib/daily";
 import { xiCategoryById } from "@/lib/leagues";
+import { XP } from "@/lib/levels";
 import { matchesOfTeam, teamsWithMatches } from "@/lib/teams";
 import type { Difficulty, Match } from "@/lib/types";
 
@@ -15,6 +16,7 @@ import { Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { T } from "~/lib/theme";
 import { useMissingXI } from "~/lib/useMissingXI";
+import { useXpAward } from "~/lib/xp";
 
 /** Random-match practice: every match since 2005, or one team's matches (`takim`). */
 export default function PracticeScreen() {
@@ -53,6 +55,8 @@ export default function PracticeScreen() {
 
 function PracticeGame({ match, difficulty, onNext }: { match: Match; difficulty: Difficulty; onNext: () => void }) {
   const { slots, progress, guess, giveUp } = useMissingXI(match, difficulty);
+  const [gameId] = useState(() => `xi-p-${match.id}-${Date.now()}`);
+  useXpAward(progress.done, gameId, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0), { practice: true });
   return (
     <>
       {progress.done && <ResultCard match={match} slots={slots} won={progress.won} onNewMatch={onNext} />}

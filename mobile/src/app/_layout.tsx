@@ -11,6 +11,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
+import { XpToast } from "~/components/XpToast";
 import { ONBOARDING } from "~/lib/features";
 import { I18nProvider } from "~/lib/i18n";
 import { initSounds } from "~/lib/sound";
@@ -56,6 +57,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: "fullScreenModal", animation: "fade" }} />
       </Stack>
+      <XpToast />
     </I18nProvider>
   );
 }

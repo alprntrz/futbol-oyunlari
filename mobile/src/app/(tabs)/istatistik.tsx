@@ -5,6 +5,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
 
+import { ProfileCard } from "~/components/ProfileCard";
 import { Text } from "~/components/Text";
 import { useCountUp } from "~/components/motion";
 import { Card, Icon, Page, SectionLabel } from "~/components/ui";
@@ -53,10 +54,13 @@ export default function StatsTab() {
 
   return (
     <Page topInset>
-      <Text style={T.largeTitle}>{t("tabStats")}</Text>
+      <Text style={T.largeTitle}>{t("tabProfile")}</Text>
 
+      <ProfileCard />
+
+      <SectionLabel>{t("dailyXiStats")}</SectionLabel>
       {s && s.played === 0 ? (
-        <Card style={{ alignItems: "center", paddingVertical: 32, gap: 12, marginTop: 20 }}>
+        <Card style={{ alignItems: "center", paddingVertical: 32, gap: 12 }}>
           <Image source={BRAND.illus.emptyStats} style={{ width: 220, height: 120 }} resizeMode="contain" />
           <Text style={[T.body, { textAlign: "center" }]}>{t("noStatsYet")}</Text>
         </Card>
@@ -121,7 +125,6 @@ export default function StatsTab() {
 
 const styles = StyleSheet.create({
   streakCard: {
-    marginTop: 20,
     flexDirection: "row",
     alignItems: "center",
     gap: 14,

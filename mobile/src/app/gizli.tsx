@@ -5,6 +5,7 @@ import { Share, StyleSheet, TextInput, View } from "react-native";
 import Animated, { Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
+import { XP } from "@/lib/levels";
 import { searchPlayers, type Criterion } from "@/lib/tiki";
 
 import { SOFT_IN } from "~/components/motion";
@@ -15,6 +16,7 @@ import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { compare, findPlayer, MAX_GUESSES, mysteryForDay, randomMystery, START_CLUES, type Clue, type Puzzle } from "~/lib/mystery";
 import { C, F, R, T } from "~/lib/theme";
+import { useXpAward } from "~/lib/xp";
 
 type Mode = "daily" | "free";
 interface Run {
@@ -49,6 +51,15 @@ export default function MysteryPlayer() {
   const over = won || left <= 0;
   const open = over ? puzzle.clues.length : Math.min(START_CLUES + spent, puzzle.clues.length);
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+
+  // the daily puzzle pays once a day; free puzzles count towards the practice cap
+  useXpAward(
+    over,
+    mode === "daily" ? `mystery-${day}` : `mystery-free-${day}-${answer.name}`,
+    "mystery",
+    won ? XP.mysteryWin + Math.max(0, MAX_GUESSES - spent) * XP.mysteryPerSpareGuess : XP.mysteryLoss,
+    { practice: mode === "free" }
+  );
   const suggestions = useMemo(() => (input.trim().length >= 2 ? searchPlayers(input).slice(0, 5) : []), [input]);
 
   // Today's run survives leaving the screen

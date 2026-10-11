@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
+import { XP } from "@/lib/levels";
+
 import { REWARD } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { addTrophy, loadTrophies } from "~/lib/trophies";
+import { awardXp } from "~/lib/xp";
 
 import { Victory } from "./Victory";
 
@@ -52,7 +55,9 @@ export function SeriesEnd({
     if (counted.current) return;
     counted.current = true;
     (won && countTrophy ? addTrophy() : loadTrophies()).then(setTrophies);
-  }, [over, won, countTrophy]);
+    // one award per finished series (shown after this ceremony closes)
+    awardXp(`ht-series-${Date.now()}`, "ht", countTrophy ? XP.htSeriesPlayed + mine * XP.htGameWin + (won ? XP.htSeriesWin : 0) : XP.sameScreen);
+  }, [over, won, countTrophy, mine]);
 
   return (
     <Victory
