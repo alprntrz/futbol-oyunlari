@@ -40,7 +40,7 @@ Online modlar (Hat-trick online/rastgele, Bilgi Yarışı, Possession) `server.j
 
 - [x] **Gizlilik politikası**: `site/privacy.html` → https://alprntrz.github.io/futbol-oyunlari/privacy.html
 - [x] **Destek sayfası**: `site/support.html` → https://alprntrz.github.io/futbol-oyunlari/support.html
-- [ ] GitHub → Settings → Pages → Source: **GitHub Actions**; `main`'e merge edilince `.github/workflows/pages.yml` yayımlar. Linkler açılmadan incelemeye gönderme.
+- [x] GitHub Pages açık (Source: GitHub Actions); `main`'e her push'ta `.github/workflows/pages.yml` yayımlar. Linkler canlı.
 - [x] Uygulama içinde: Ayarlar → Gizlilik politikası / Destek / **Verilerimi sil** (telefon + sunucu kaydı)
 - [x] Commit yazar e-postaları GitHub noreply adresine çevrildi; repoda kişisel bilgi, anahtar ya da `.env` yok.
 - [ ] **App Privacy (beslenme etiketi)** soruları, doğru cevaplar:
