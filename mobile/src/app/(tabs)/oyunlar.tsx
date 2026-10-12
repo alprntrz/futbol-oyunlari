@@ -5,6 +5,7 @@ import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native"
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import { dailyMatch } from "@/lib/daily";
+import { teamName } from "@/lib/teams";
 
 import { Jersey } from "~/components/Jersey";
 import { Text } from "~/components/Text";
@@ -102,7 +103,7 @@ export default function Games() {
         <Tap
           onPress={() => router.push("/eksik-11/gunluk")}
           style={styles.hero}
-          accessibilityLabel={`${t("daily")}. ${match.team} ${match.score} ${match.opponent}. ${statusText}`}
+          accessibilityLabel={`${t("daily")}. ${teamName(match.team, locale)} ${match.score} ${teamName(match.opponent, locale)}. ${statusText}`}
           accessibilityHint={cta}
         >
           <View style={StyleSheet.absoluteFill}>
@@ -136,7 +137,7 @@ export default function Games() {
             />
             <View style={{ flex: 1 }}>
               <Text style={styles.fixtureTeams} numberOfLines={2}>
-                {match.team} <Text style={{ color: "#BFE6CB" }}>{match.score}</Text> {match.opponent}
+                {teamName(match.team, locale)} <Text style={{ color: "#BFE6CB" }}>{match.score}</Text> {teamName(match.opponent, locale)}
               </Text>
               <Text style={styles.fixtureMeta} numberOfLines={2}>
                 {match.competition[locale]}, {match.season}

@@ -1,6 +1,7 @@
 import { Image, Share, StyleSheet, View } from "react-native";
 
 import type { Match, SlotState } from "@/lib/types";
+import { teamName } from "@/lib/teams";
 
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
@@ -23,7 +24,7 @@ export function ResultCard({
   day?: number;
   onNewMatch?: () => void;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const solved = slots.filter((s) => s.solved).length;
   const totalGuesses = slots.reduce((a, s) => a + s.guesses.length, 0);
 
@@ -31,7 +32,7 @@ export function ResultCard({
     const rows = slots
       .map((s) => (s.solved ? (s.guesses.length <= 2 ? "🟩" : s.guesses.length <= 4 ? "🟨" : "🟧") : "🟥"))
       .join("");
-    const title = day !== undefined ? `Eksik 11 #${day}` : `Eksik 11 · ${match.team}`;
+    const title = day !== undefined ? `Eksik 11 #${day}` : `Eksik 11 · ${teamName(match.team, locale)}`;
     Share.share({ message: `${title}\n${rows}\n${solved}/11 · ${totalGuesses} ${t("guessesWord")}` });
   };
 

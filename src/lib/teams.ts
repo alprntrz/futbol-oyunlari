@@ -70,10 +70,47 @@ const NATIONAL_EN: Record<string, string> = {
   Uruguay: "Uruguay",
   Portekiz: "Portugal",
   Yunanistan: "Greece",
+  Avusturya: "Austria",
+  "Güney Kore": "South Korea",
+  Gürcistan: "Georgia",
+  Japonya: "Japan",
+  Kolombiya: "Colombia",
+  Çekya: "Czechia",
+  Çin: "China",
+};
+
+/** Some match files name national teams in English: their Turkish names. */
+const NATIONAL_TR: Record<string, string> = {
+  Argentina: "Arjantin",
+  Belgium: "Belçika",
+  Brazil: "Brezilya",
+  Colombia: "Kolombiya",
+  "Costa Rica": "Kosta Rika",
+  Croatia: "Hırvatistan",
+  England: "İngiltere",
+  France: "Fransa",
+  Germany: "Almanya",
+  Ghana: "Gana",
+  Italy: "İtalya",
+  Morocco: "Fas",
+  Netherlands: "Hollanda",
+  Portugal: "Portekiz",
+  Russia: "Rusya",
+  Spain: "İspanya",
+  Sweden: "İsveç",
+  Ukraine: "Ukrayna",
 };
 
 /** English display names for clubs whose canonical name is Turkish. */
 const CLUB_EN: Record<string, string> = { "Bayern Münih": "Bayern Munich" };
+const CLUB_TR: Record<string, string> = { "Bayern Munich": "Bayern Münih" };
+
+/** A team name as shown in the UI language (match data mixes Turkish and English names). */
+export function teamName(name: string, locale: "tr" | "en"): string {
+  const clean = name.replace(/\s*\(-\s*\d{4}\)$/, ""); // "Dnipro Dnipropetrovsk (- 2020)"
+  if (locale === "en") return NATIONAL_EN[clean] ?? CLUB_EN[clean] ?? clean;
+  return NATIONAL_TR[clean] ?? CLUB_TR[clean] ?? clean;
+}
 
 export const canonicalTeam = (name: string) => ALIASES[name] ?? name;
 
