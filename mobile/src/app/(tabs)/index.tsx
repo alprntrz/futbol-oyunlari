@@ -10,6 +10,7 @@ import { generateGrid, seededRandom } from "@/lib/tiki";
 import { DailyRewardCard, QuestsCard } from "~/components/DailyCards";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { ModeList, type Mode } from "~/components/ModeGrid";
+import { QuickPlay } from "~/components/QuickPlay";
 import { Text } from "~/components/Text";
 import { Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
@@ -98,10 +99,14 @@ export default function Home() {
           </Tap>
         )}
       </View>
-      <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("tikiTakaName")}</Text>
-      <Text style={[T.body, { marginTop: 2 }]}>{t("homeHtTagline")}</Text>
+      <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("appName")}</Text>
 
+      {/* one tap into a game against someone; then today's grid, rewards and quests */}
       <Animated.View entering={enter(0)}>
+        <QuickPlay />
+      </Animated.View>
+
+      <Animated.View entering={enter(1)}>
         <Tap
           onPress={() => router.push("/hat-trick/tek")}
           style={styles.hero}
@@ -144,13 +149,13 @@ export default function Home() {
       </Animated.View>
 
       {/* come back tomorrow: the reward calendar and today's quests */}
-      <Animated.View entering={enter(1)}>
+      <Animated.View entering={enter(2)}>
         <DailyRewardCard />
         <QuestsCard />
       </Animated.View>
 
       <SectionLabel>{t("homeVersus")}</SectionLabel>
-      <Animated.View entering={enter(2)}>
+      <Animated.View entering={enter(3)}>
         <ModeList modes={versus} />
       </Animated.View>
 

@@ -176,7 +176,9 @@ const QZ_FILL_MS = 15_000;
 /** code -> quiz room */
 const qzRooms = new Map();
 /** the random room currently taking players, if any */
-let qzOpenCode = null;
+/** open random room per difficulty: players only meet others on the same level */
+const qzOpen = { easy: null, normal: null, hard: null };
+const qzLevelOf = (d) => (d === "easy" || d === "hard" ? d : "normal");
 
 const QZ_NAMES = ["lucas", "mateo", "jonas", "luca", "liam", "noah", "oliver", "james", "jack", "harry", "ethan", "leo", "hugo", "louis", "jules", "theo", "enzo", "paul", "felix", "max", "finn", "lukas", "niklas", "matteo", "lorenzo", "marco", "giulia", "sofia", "alejandro", "diego", "pablo", "javi", "lucia", "carlos", "joao", "rafa", "tiago", "bruno", "pedro", "gabriel", "thiago", "nico", "santi", "martina", "valentina", "sven", "lars", "erik", "mats", "anders", "piotr", "kuba", "marek", "ivan", "luka", "nikola", "dmitri", "andrei", "yuki", "kenji", "minjun", "jisoo", "wei", "arjun", "rohan", "omar", "youssef", "karim", "amir", "kofi", "kwame", "chidi", "emma", "chloe", "mia", "ana", "nina", "sara", "eva"];
 const QZ_TAILS = ["", "", "", "7", "9", "10", "11", "22", "23", "99", "88", "04", "12", "_fc", "_10", "_gol", "fc", "_99", "77", "14"];
@@ -222,7 +224,8 @@ function qzSettings(s) {
   const seconds = [10, 15, 20].includes(Number(s?.seconds)) ? Number(s.seconds) : 15;
   const maxPlayers = Math.max(2, Math.min(QZ_MAX, Number(s?.maxPlayers) || QZ_MAX));
   const category = ["mixed", "players", "matches"].includes(s?.category) ? s.category : "mixed";
-  return { seconds, maxPlayers, category };
+  const difficulty = qzLevelOf(s?.difficulty);
+  return { seconds, maxPlayers, category, difficulty };
 }
 
 /** `viewer`: once they've answered, they see what the others picked (like the answers landing live). */
@@ -905,7 +908,7 @@ app.prepare().then(() => {
 
     const qzBegin = (room) => {
       qzClear(room);
-      if (qzOpenCode === room.code) qzOpenCode = null;
+      for (const d of Object.keys(qzOpen)) if (qzOpen[d] === room.code) qzOpen[d] = null;
       for (const p of room.players) {
         p.score = 0;
         p.gained = 0;
@@ -969,7 +972,7 @@ app.prepare().then(() => {
       if (!qzHumans(room).length) {
         qzClear(room);
         qzRooms.delete(room.code);
-        if (qzOpenCode === room.code) qzOpenCode = null;
+        for (const d of Object.keys(qzOpen)) if (qzOpen[d] === room.code) qzOpen[d] = null;
         return;
       }
       if (room.hostId === socket.id) room.hostId = qzHumans(room)[0].id;
@@ -1002,11 +1005,12 @@ app.prepare().then(() => {
     });
 
     // Random: join the open room, or open one that starts after QZ_FILL_MS
-    socket.on("qz:queue", ({ pid, nick, questions }, cb) => {
+    socket.on("qz:queue", ({ pid, nick, questions, difficulty }, cb) => {
+      const level = qzLevelOf(difficulty);
       if (qzValidPid(pid)) socket.data.qzPid = pid;
       if (!qzValidQuestions(questions)) return cb?.({ ok: false, error: "bad_questions" });
       if (socket.data.qzCode) qzLeave();
-      const open = qzOpenCode && qzRooms.get(qzOpenCode);
+      const open = qzOpen[level] && qzRooms.get(qzOpen[level]);
       if (open && open.phase === "lobby" && open.players.length < open.settings.maxPlayers) {
         open.players.push({ id: socket.id, uid: socket.data.uid, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
         socket.data.qzCode = open.code;
@@ -1016,8 +1020,8 @@ app.prepare().then(() => {
         if (open.players.length >= open.settings.maxPlayers) qzBegin(open);
         return;
       }
-      const room = qzNewRoom(socket, nick, qzSettings({}), questions, true);
-      qzOpenCode = room.code;
+      const room = qzNewRoom(socket, nick, qzSettings({ difficulty: level }), questions, true);
+      qzOpen[level] = room.code;
       // a few others "find" the room while it waits
       const joins = 2 + Math.floor(Math.random() * 3);
       for (let i = 0; i < joins; i++) room.botTimers.push(setTimeout(() => qzAddBot(room), 2500 + Math.random() * (QZ_FILL_MS - 4000)));

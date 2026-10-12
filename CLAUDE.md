@@ -46,7 +46,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   Levels/standings: phones send a random install id (`pid`, `loadPlayerId` in `mobile/src/lib/nick.ts`);
   at full time the server adds XP (points + 10 + podium bonus) to `data/quiz-stats.json` (gitignored;
   `QZ_STATS_FILE` overrides) and emits `qz:progress`; `qz:profile` / `qz:standings` read it. House
-  players never get a record. On a real deployment that file needs a persistent disk (or a database).
+  players never get a record.
+  Difficulty (`QuizDifficulty` easy/normal/hard in quiz.ts): fame-ranked player pools (honours + classic-match
+  starts) and match pools (finals → big games → all); hard adds exact scores. Random rooms match per level
+  (`qzOpen[level]`); the pick is `useQuizDifficulty` (mobile/src/lib/quizLevel.ts). Home's `QuickPlay` card
+  starts a random game (Hat-trick / Quiz / Possession, last choice remembered). On a real deployment that file needs a persistent disk (or a database).
 - Release: `docs/release/` (checklist, App Store metadata). Public pages (privacy, support) live
   in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
   analytics/ads/tracking SDKs, no IP logging, quiz record = random id + nick + counts only, and

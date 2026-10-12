@@ -19,6 +19,14 @@ export interface QuizQuestion {
   answer: number;
 }
 export type QuizCategory = "mixed" | "players" | "matches";
+/**
+ * easy: superstars only (nationality, a club they played for, Ballon d'Or-type honours;
+ *       match questions only from finals);
+ * normal: well-known players, club links, starters and scorers of finals, derbies and
+ *       national-team matches;
+ * hard: exact scores, any match's starters and scorers, deeper player pool.
+ */
+export type QuizDifficulty = "easy" | "normal" | "hard";
 
 const same = (s: string): L => ({ tr: s, en: s });
 const crits = (kind: Criterion["kind"]) => ALL_CRITERIA.filter((c) => c.kind === kind);
@@ -29,7 +37,34 @@ const label = (c: Criterion): L => ({ tr: c.tr, en: c.en });
  * Well-known players only, so questions stay fair (the list is sorted by fame).
  * Single names ("Pedro", "Miguel") are skipped: too easy to mix up.
  */
-const FAMOUS = PLAYERS.slice(0, 450).filter((p) => p.name.includes(" "));
+const TWO_NAMES = PLAYERS.filter((p) => p.name.includes(" "));
+/**
+ * Fame: honours (World Cup, Champions League, Ballon d'Or, Euros) plus how often a
+ * player starts in our classic matches. Club count alone favours journeymen.
+ */
+const APPS = new Map<string, number>();
+for (const m of MATCHES) for (const p of m.lineup) APPS.set(p.name, (APPS.get(p.name) ?? 0) + 1);
+const fame = (p: GridPlayer) => (p.badges?.length ?? 0) * 4 + Math.min(APPS.get(p.name) ?? 0, 12);
+const BY_FAME = TWO_NAMES.map((p, i) => ({ p, f: fame(p), i }))
+  .sort((a, b) => b.f - a.f || a.i - b.i)
+  .map((x) => x.p);
+const POOL: Record<QuizDifficulty, GridPlayer[]> = {
+  easy: BY_FAME.slice(0, 100),
+  normal: BY_FAME.slice(0, 400),
+  hard: BY_FAME.slice(0, 1200),
+};
+/** Finals; then also derbies and national teams; then every match. */
+const isFinal = (m: Match) => /final/i.test(m.competition.en) && !/semi|quarter|1\/8|round/i.test(m.competition.en);
+const isBig = (m: Match) => isFinal(m) || m.tags?.includes("derbi") || /World Cup|EURO|European Championship|Nations League/.test(m.competition.en);
+const MATCH_POOL: Record<QuizDifficulty, Match[]> = {
+  easy: MATCHES.filter(isFinal),
+  normal: MATCHES.filter(isBig),
+  hard: MATCHES,
+};
+
+/** Generators read the pools of the current difficulty. */
+let FAMOUS = POOL.normal;
+let GAMES = MATCH_POOL.normal;
 
 function pick<T>(xs: T[], rand: () => number): T {
   return xs[Math.floor(rand() * xs.length)];
@@ -108,7 +143,7 @@ const matchLine = (m: Match): L => ({
 });
 
 function score(rand: () => number) {
-  const m = pick(MATCHES, rand);
+  const m = pick(GAMES, rand);
   const hit = /^(\d+)-(\d+)/.exec(m.score);
   if (!hit) return null;
   const [a, b] = [Number(hit[1]), Number(hit[2])];
@@ -120,7 +155,7 @@ function score(rand: () => number) {
 }
 
 function starter(rand: () => number) {
-  const m = pick(MATCHES, rand);
+  const m = pick(GAMES, rand);
   const names = new Set(m.lineup.map((p) => p.name));
   const right = pick(m.lineup, rand).name;
   const others = [...new Set(MATCHES.filter((x) => x.team !== m.team).flatMap((x) => x.lineup.map((p) => p.name)))].filter((n) => !names.has(n));
@@ -134,19 +169,33 @@ function starter(rand: () => number) {
 }
 
 function scorer(rand: () => number) {
-  const m = pick(MATCHES.filter((x) => x.lineup.some((p) => p.goals)), rand);
+  const m = pick(GAMES.filter((x) => x.lineup.some((p) => p.goals)), rand);
   if (!m) return null;
   const right = pick(m.lineup.filter((p) => p.goals), rand).name;
   const wrong = m.lineup.filter((p) => !p.goals && p.number !== 1).map((p) => p.name);
   return build({ tr: `Bu maçta ${m.team} için kim gol attı?`, en: `Who scored for ${m.team} in this match?` }, same(right), sample(wrong, 3, rand).map(same), rand, matchLine(m));
 }
 
-const PLAYER_Q = [nationality, playedFor, neverPlayed, honour, sharedClub];
-const MATCH_Q = [score, starter, scorer];
+const PLAYER_Q: Record<QuizDifficulty, ((rand: () => number) => QuizQuestion | null)[]> = {
+  easy: [nationality, playedFor, honour],
+  normal: [nationality, playedFor, neverPlayed, honour, sharedClub],
+  hard: [neverPlayed, sharedClub, playedFor],
+};
+const MATCH_Q: Record<QuizDifficulty, ((rand: () => number) => QuizQuestion | null)[]> = {
+  easy: [scorer],
+  normal: [starter, scorer],
+  hard: [score, score, starter, scorer],
+};
 
 /** `count` different questions; the same rand gives the same set. */
-export function quizQuestions(count: number, category: QuizCategory, rand: () => number = Math.random): QuizQuestion[] {
-  const makers = category === "players" ? PLAYER_Q : category === "matches" ? MATCH_Q : [...PLAYER_Q, ...MATCH_Q];
+export function quizQuestions(count: number, category: QuizCategory, difficulty: QuizDifficulty = "normal", rand: () => number = Math.random): QuizQuestion[] {
+  FAMOUS = POOL[difficulty];
+  GAMES = MATCH_POOL[difficulty];
+  // easy leans on players (everyone knows them); hard leans on matches (scores, line-ups)
+  const players = PLAYER_Q[difficulty];
+  const matches = MATCH_Q[difficulty];
+  const mixed = difficulty === "easy" ? [...players, ...players, ...matches] : difficulty === "hard" ? [...players, ...matches, ...matches] : [...players, ...matches];
+  const makers = category === "players" ? players : category === "matches" ? matches : mixed;
   const out: QuizQuestion[] = [];
   const seen = new Set<string>();
   for (let guard = 0; out.length < count && guard < count * 40; guard++) {

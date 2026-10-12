@@ -9,10 +9,11 @@ import { Rule } from "~/components/HowTo";
 import { LevelCard, type QuizProfile } from "~/components/QuizLevel";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
-import { Icon, Tap } from "~/components/ui";
+import { Icon, Segmented, Tap } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { loadPlayerId } from "~/lib/nick";
+import { useQuizDifficulty } from "~/lib/quizLevel";
 import { getSocket } from "~/lib/socket";
 import { C, F } from "~/lib/theme";
 
@@ -23,6 +24,7 @@ export default function QuizHome() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const [profile, setProfile] = useState<QuizProfile | null>(null);
+  const [level, setLevel] = useQuizDifficulty();
 
   // Fresh level every time the hub comes back into view (after a game)
   useFocusEffect(
@@ -37,8 +39,8 @@ export default function QuizHome() {
     }, [])
   );
   const modes: { icon: SymbolViewProps["name"]; image: ImageSourcePropType; title: string; desc: string; href: Href; bg: string }[] = [
-    { icon: "person.3.fill", title: t("htRandom"), desc: t("qzRandomDesc"), href: "/bilgi/rastgele", image: BRAND.mode.random, bg: NIGHT.light ? C.green : "#2563EB" },
-    { icon: "person.2.badge.plus", title: t("htFriend"), desc: t("qzFriendsDesc"), href: "/bilgi/oda", image: BRAND.mode.friend, bg: NIGHT.light ? C.greenDark : "#F59E0B" },
+    { icon: "person.3.fill", title: t("htRandom"), desc: t("qzRandomDesc"), href: { pathname: "/bilgi/rastgele", params: { zorluk: level } }, image: BRAND.mode.random, bg: NIGHT.light ? C.green : "#2563EB" },
+    { icon: "person.2.badge.plus", title: t("htFriend"), desc: t("qzFriendsDesc"), href: { pathname: "/bilgi/oda", params: { zorluk: level } }, image: BRAND.mode.friend, bg: NIGHT.light ? C.greenDark : "#F59E0B" },
   ];
 
   return (
@@ -61,6 +63,19 @@ export default function QuizHome() {
             <Text style={styles.standingsText}>{t("qzStandingsTitle")}</Text>
             <Icon name="chevron.right" size={14} color={NIGHT.ink3} fallback="›" />
           </Tap>
+        </Animated.View>
+        <Animated.View entering={FadeIn.duration(200)} style={styles.levelBox}>
+          <Text style={styles.levelLabel}>{t("qzDifficulty")}</Text>
+          <Segmented
+            value={level}
+            onChange={setLevel}
+            options={[
+              { value: "easy", label: t("qzEasy") },
+              { value: "normal", label: t("qzNormal") },
+              { value: "hard", label: t("qzHard") },
+            ]}
+          />
+          <Text style={styles.levelDesc}>{t(level === "easy" ? "qzEasyDesc" : level === "hard" ? "qzHardDesc" : "qzNormalDesc")}</Text>
         </Animated.View>
         {modes.map((m) => (
           <Animated.View key={m.title} entering={FadeIn.duration(200)}>
@@ -92,5 +107,8 @@ const styles = StyleSheet.create({
   cardDesc: { fontSize: 15, fontWeight: "600", lineHeight: 20, color: "rgba(255,255,255,0.9)" },
   standings: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: NIGHT.raised, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 16, paddingHorizontal: 14, paddingVertical: 13 },
   standingsText: { flex: 1, fontFamily: F.display, fontSize: 19, color: NIGHT.ink },
+  levelBox: { gap: 8 },
+  levelLabel: { fontFamily: F.display, fontSize: 19, color: NIGHT.ink },
+  levelDesc: { fontSize: 14, color: NIGHT.ink2 },
   rules: { gap: 14, backgroundColor: NIGHT.light ? NIGHT.raised : NIGHT.sunk, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, borderRadius: 20, padding: 16, marginTop: 4 },
 });

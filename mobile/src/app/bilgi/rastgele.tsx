@@ -1,9 +1,9 @@
-import { router, Stack } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { quizQuestions } from "@/lib/quiz";
+import { quizQuestions, type QuizDifficulty } from "@/lib/quiz";
 
 import { RunningPlayer } from "~/components/RunningPlayer";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar } from "~/components/StadiumHeader";
@@ -24,12 +24,14 @@ export default function QuizRandom() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const [error, setError] = useState<string | null>(null);
+  const { zorluk } = useLocalSearchParams<{ zorluk?: string }>();
+  const level: QuizDifficulty = zorluk === "easy" || zorluk === "hard" ? zorluk : "normal";
 
   useEffect(() => {
     const socket = getSocket();
     const enqueue = async () => {
       setError(null);
-      socket.timeout(6000).emit("qz:queue", { nick: await loadNick(), pid: await loadPlayerId(), questions: quizQuestions(10, "mixed") }, (err: Error | null, res?: { ok: boolean; code?: string }) => {
+      socket.timeout(6000).emit("qz:queue", { nick: await loadNick(), pid: await loadPlayerId(), difficulty: level, questions: quizQuestions(10, "mixed", level) }, (err: Error | null, res?: { ok: boolean; code?: string }) => {
         if (err || !res?.ok || !res.code) return setError(t("serverUnreachable"));
         router.replace({ pathname: "/bilgi/oda/[code]", params: { code: res.code, random: "1" } });
       });

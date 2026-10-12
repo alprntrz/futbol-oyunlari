@@ -6,7 +6,7 @@ import Animated, { FadeIn, FadeOut, FadeOutUp, Keyframe, SlideInDown, ZoomIn } f
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
-import { quizQuestions, type QuizCategory } from "@/lib/quiz";
+import { quizQuestions, type QuizCategory, type QuizDifficulty } from "@/lib/quiz";
 import { XP } from "@/lib/levels";
 
 import { ComboBurst, ComboChip } from "~/components/Combo";
@@ -40,7 +40,7 @@ interface QzRoom {
   code: string;
   random: boolean;
   hostId: string;
-  settings: { seconds: number; maxPlayers: number; category: QuizCategory };
+  settings: { seconds: number; maxPlayers: number; category: QuizCategory; difficulty?: QuizDifficulty };
   phase: "lobby" | "intro" | "question" | "reveal" | "done";
   index: number;
   total: number;
@@ -394,7 +394,7 @@ export default function QuizRoom() {
           {params.random ? (
             <RoundButton icon="arrow.clockwise" label={t("htNewGame")} onPress={() => router.replace("/bilgi/rastgele")} />
           ) : isHost ? (
-            <RoundButton icon="arrow.clockwise" label={t("htRematch")} onPress={() => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category) })} />
+            <RoundButton icon="arrow.clockwise" label={t("htRematch")} onPress={() => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category, room.settings.difficulty ?? "normal") })} />
           ) : (
             <View style={{ alignItems: "center", width: 120 }}>
               <Text style={[styles.sub, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
@@ -670,7 +670,7 @@ function QuizCeremony({
         random
           ? { title: t("htNewGame"), icon: "play.fill", onPress: () => router.replace("/bilgi/rastgele") }
           : isHost
-            ? { title: t("htRematch"), icon: "arrow.clockwise", onPress: () => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category) }) }
+            ? { title: t("htRematch"), icon: "arrow.clockwise", onPress: () => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category, room.settings.difficulty ?? "normal") }) }
             : { title: t("vcContinue"), onPress: onClose }
       }
       secondary={random || isHost ? { title: t("vcSeeTable"), onPress: onClose } : undefined}
