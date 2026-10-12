@@ -1,12 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 import { avatarById } from "~/lib/avatar";
-import { F } from "~/lib/theme";
 
-import { Text } from "./Text";
-
-/** Round avatar: the preset's colours with the nickname's first letter. */
-export function Avatar({ id, nick, size = 56, ring }: { id: string | null | undefined; nick: string; size?: number; ring?: string }) {
+/** Round avatar: the preset character on its tinted circle. */
+export function Avatar({ id, size = 56, ring }: { id: string | null | undefined; nick?: string; size?: number; ring?: string }) {
   const a = avatarById(id);
   return (
     <View
@@ -16,14 +13,12 @@ export function Avatar({ id, nick, size = 56, ring }: { id: string | null | unde
         ring ? { borderWidth: Math.max(2, size / 18), borderColor: ring } : null,
       ]}
     >
-      <Text allowFontScaling={false} style={[styles.letter, { color: a.fg, fontSize: size * 0.48, lineHeight: size * 0.6 }]}>
-        {(nick.trim()[0] ?? "?").toUpperCase()}
-      </Text>
+      {/* the bust sits on the bottom edge of the circle */}
+      <Image source={a.image} style={{ width: size * 0.92, height: size * 0.92, marginTop: size * 0.08 }} resizeMode="contain" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  circle: { alignItems: "center", justifyContent: "center" },
-  letter: { fontFamily: F.black, textAlign: "center" },
+  circle: { alignItems: "center", justifyContent: "flex-end", overflow: "hidden" },
 });

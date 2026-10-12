@@ -24,7 +24,12 @@ const APPLE_AUD = (process.env.APPLE_AUDIENCES || "com.alprntrz.tiktako").split(
 const GOOGLE_AUD = (process.env.GOOGLE_CLIENT_IDS || "").split(",").map((s) => s.trim()).filter(Boolean);
 const DAILY_BONUS = 20;
 const GAMES = new Set(["xi", "ht", "qz", "mystery", "bingo", "pp"]);
-const AVATARS = new Set(Array.from({ length: 12 }, (_, i) => `c${i + 1}`));
+// preset ids (mobile/src/lib/avatar.ts); c1..c12 are the colour ids of early v1.1 builds
+const AVATARS = new Set([
+  ...["striker", "keeper", "captain", "playmaker", "coach", "fan", "referee", "ball"],
+  ...["curls", "mohawk", "bun", "bald", "braids", "shades", "celebration", "retro-keeper"].map((x) => `legend-${x}`),
+  ...Array.from({ length: 12 }, (_, i) => `c${i + 1}`),
+]);
 const MAX_AWARD = 200; // one game never pays more than this (quiz max is ~140)
 
 fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
@@ -36,7 +41,7 @@ db.exec(`
     provider TEXT NOT NULL,
     sub TEXT NOT NULL,
     nick TEXT NOT NULL DEFAULT '',
-    avatar TEXT NOT NULL DEFAULT 'c1',
+    avatar TEXT NOT NULL DEFAULT 'striker',
     xp INTEGER NOT NULL DEFAULT 0,
     by_game TEXT NOT NULL DEFAULT '{}',
     bonus_day TEXT NOT NULL DEFAULT '',
@@ -277,7 +282,7 @@ async function handleAccountApi(req, res, cleanNick) {
       if (!user) {
         const id = crypto.randomUUID();
         const nick = cleanNick(String(b.nick || "")) || "";
-        const avatar = AVATARS.has(b.avatar) ? b.avatar : "c1";
+        const avatar = AVATARS.has(b.avatar) ? b.avatar : "striker";
         db.prepare("INSERT INTO users (id, provider, sub, nick, avatar, created) VALUES (?, ?, ?, ?, ?, ?)").run(id, provider, sub, nick, avatar, Date.now());
         user = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
       }

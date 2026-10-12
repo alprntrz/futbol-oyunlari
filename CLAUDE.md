@@ -66,7 +66,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   (local, AsyncStorage `xp-v1`); amounts in `XP` and the curve in `levelOf`, both in `src/lib/levels.ts`.
   Each award has a unique key so a game never pays twice; unlimited modes pass `practice` (daily cap).
   The "+XP" toast (`XpToast`, root layout) waits while a `Victory` modal is open. The Stats tab is now
-  Profile (`app/(tabs)/istatistik.tsx` + `ProfileCard`): nickname, preset avatar (`lib/avatar.ts`), level.
+  Profile (`app/(tabs)/istatistik.tsx` + `ProfileCard`): nickname, preset 3D avatar (`lib/avatar.ts`, art in `mobile/assets/brand/avatar/`, 256 px, trimmed and bottom-aligned; ids are stored on accounts, keep them stable), level.
 - Reward moments: `Victory.tsx` (ceremony) with art from `docs/design/oyun-hissi-brief.md`
   → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
   Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via

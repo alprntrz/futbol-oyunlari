@@ -202,7 +202,7 @@ function EditProfile({
               accessibilityState={{ selected: a.id === draftAvatar }}
               style={styles.gridCell}
             >
-              <Avatar id={a.id} nick={draftNick || "?"} size={56} ring={a.id === draftAvatar ? C.greenMid : undefined} />
+              <Avatar id={a.id} size={68} ring={a.id === draftAvatar ? C.greenMid : undefined} />
             </Tap>
           ))}
         </View>
@@ -231,6 +231,6 @@ const styles = StyleSheet.create({
   sheet: { padding: 20, paddingBottom: 48 },
   sheetHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   input: { backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, paddingVertical: 13, fontSize: 17, color: C.text },
-  grid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
-  gridCell: { padding: 2 },
+  grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 12 },
+  gridCell: { width: "25%", alignItems: "center" },
 });
