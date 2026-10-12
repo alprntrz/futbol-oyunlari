@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { RewardScreen } from "~/components/RewardScreen";
 import { XpToast } from "~/components/XpToast";
 import { initAccount } from "~/lib/account";
+import "~/lib/playStreak"; // counts finished games from app start
 import { ONBOARDING } from "~/lib/features";
 import { I18nProvider } from "~/lib/i18n";
 import { initSounds } from "~/lib/sound";

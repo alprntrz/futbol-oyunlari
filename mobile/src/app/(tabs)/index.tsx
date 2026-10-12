@@ -9,13 +9,13 @@ import { generateGrid, seededRandom } from "@/lib/tiki";
 
 import { DailyRewardCard, QuestsCard } from "~/components/DailyCards";
 import { CriterionBadge } from "~/components/HatTrickBoard";
+import { HomeStatus } from "~/components/HomeStatus";
 import { ModeList, type Mode } from "~/components/ModeGrid";
 import { QuickPlay } from "~/components/QuickPlay";
 import { Text } from "~/components/Text";
 import { Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
-import { loadStats } from "~/lib/storage";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 /** Filled squares of today's solo run, or null when it hasn't been started. */
@@ -30,7 +30,6 @@ export default function Home() {
   // same seed as the solo screen, so the preview is the grid you'll play
   const grid = useMemo(() => generateGrid(seededRandom(day * 7919 + 17)), [day]);
   const [today, setToday] = useState<Today>(null);
-  const [streak, setStreak] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -46,7 +45,6 @@ export default function Home() {
           setToday(run.finished || filled.some(Boolean) ? { filled, finished: run.finished } : null);
         })
         .catch(() => setToday(null));
-      loadStats().then((s) => setStreak(s.streak));
     }, [day])
   );
 
@@ -90,16 +88,9 @@ export default function Home() {
 
   return (
     <Page topInset>
-      <View style={styles.topRow}>
-        <Text style={T.caption}>{date}</Text>
-        {streak > 0 && (
-          <Tap onPress={() => router.push("/istatistik")} style={styles.streak} accessibilityLabel={`${t("streak")}: ${streak}`}>
-            <Icon name="flame.fill" size={16} color={C.amber} fallback="🔥" />
-            <Text style={styles.streakText}>{streak}</Text>
-          </Tap>
-        )}
-      </View>
-      <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("appName")}</Text>
+      {/* who you are and today's status: level, play streak, daily reward gift */}
+      <HomeStatus />
+      <Text style={[T.caption, { marginTop: 14 }]}>{date}</Text>
 
       {/* one tap into a game against someone; then today's grid, rewards and quests */}
       <Animated.View entering={enter(0)}>
@@ -171,22 +162,6 @@ const SQUARE = 34;
 const HERO = "#1F3B8C";
 
 const styles = StyleSheet.create({
-  topRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    minHeight: 30,
-  },
-  streak: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#FFF4DC",
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  streakText: { fontFamily: F.black, fontSize: 18, color: "#7A5205" },
 
   hero: { marginTop: 16, borderRadius: 24, padding: 16, backgroundColor: HERO, flexDirection: "row", gap: 12, ...shadow, shadowOpacity: 0.18 },
   heroText: { flex: 1, justifyContent: "space-between" },
