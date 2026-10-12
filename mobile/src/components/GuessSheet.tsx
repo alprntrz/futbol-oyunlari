@@ -103,7 +103,8 @@ export function GuessSheet({
   return (
     <Modal visible={!!openPlayer} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + 10 }]}>
+      {/* the keyboard sits a thumb-width above the bottom edge, where the hand rests */}
+      <View style={[styles.sheet, { paddingBottom: insets.bottom + 44 }]}>
         <View style={styles.grabber} />
         <View style={styles.header}>
           <View style={styles.numberBadge}>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { FORMATIONS } from "@/lib/formations";
@@ -51,7 +52,14 @@ export function MissingXIBoard({
   const { t, locale } = useI18n();
   const [openSlot, setOpenSlot] = useState<number | null>(null);
   const [pitchW, setPitchW] = useState(0);
-  const pitchH = (pitchW * 4) / 3;
+  // The pitch takes what's left of the screen so the whole board (and the button under it)
+  // fits without scrolling: 3:4 at most, never shorter than 360 pt on small phones.
+  const { height: screenH } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const pitchRef = useRef<View>(null);
+  const [pitchTop, setPitchTop] = useState(0);
+  const below = 12 + 52 + 16 + insets.bottom; // gap + button + breathing room
+  const pitchH = pitchW ? Math.round(Math.min((pitchW * 4) / 3, Math.max(360, screenH - pitchTop - below))) : 0;
   const positions = FORMATIONS[match.formation];
   const solved = slots.filter((s) => s.solved).length;
   const won = slots.every((s) => s.solved);
@@ -100,7 +108,7 @@ export function MissingXIBoard({
   return (
     <View style={{ width: "100%" }}>
       {/* Match */}
-      <Card style={{ padding: 16 }}>
+      <Card style={{ paddingVertical: 10, paddingHorizontal: 14 }}>
         <View style={styles.metaRow}>
           <Text style={T.caption} numberOfLines={1}>
             {match.competition[locale]}
@@ -110,12 +118,12 @@ export function MissingXIBoard({
         {/* both sides the same way: shirt over name; one-word names shrink to fit instead of breaking */}
         <View style={styles.scoreRow}>
           <View style={styles.side}>
-            <Jersey body={match.kit.body} sleeves={match.kit.sleeves} numberColor={match.kit.number} number={11} variant={style} size={40} hideNumber />
+            <Jersey body={match.kit.body} sleeves={match.kit.sleeves} numberColor={match.kit.number} number={11} variant={style} size={30} hideNumber />
             <TeamName name={match.team} />
           </View>
           <Text style={styles.score}>{match.score}</Text>
           <View style={styles.side}>
-            <Jersey body={rival.body} sleeves={rival.sleeves} pattern={rival.pattern} numberColor="#000" number={0} variant={style} size={40} hideNumber />
+            <Jersey body={rival.body} sleeves={rival.sleeves} pattern={rival.pattern} numberColor="#000" number={0} variant={style} size={30} hideNumber />
             <TeamName name={match.opponent} muted />
           </View>
         </View>
@@ -129,23 +137,33 @@ export function MissingXIBoard({
           <Text style={styles.countOf}>/11</Text>
           <Text style={[T.body, { marginLeft: 4 }]}>{t("found")}</Text>
         </View>
-        <Text style={T.caption}>
-          {t("totalGuesses")} <Text style={{ fontFamily: F.display, fontSize: 16, color: C.text2 }}>{totalGuesses}</Text>
-        </Text>
+        {/* before the first guess this spot says how to play (saves a row for the pitch) */}
+        {!done && totalGuesses === 0 ? (
+          <View style={styles.hint}>
+            <Icon name="hand.tap.fill" size={14} color={C.green} fallback="👆" />
+            <Text style={styles.hintText} numberOfLines={2}>
+              {t("tapShirtHint")}
+            </Text>
+          </View>
+        ) : (
+          <Text style={T.caption}>
+            {t("totalGuesses")} <Text style={{ fontFamily: F.display, fontSize: 16, color: C.text2 }}>{totalGuesses}</Text>
+          </Text>
+        )}
       </View>
       <View style={styles.bar}>
         <Animated.View style={[styles.barFill, barStyle]} />
       </View>
 
-      {!done && totalGuesses === 0 && (
-        <View style={styles.hint}>
-          <Icon name="hand.tap.fill" size={15} color={C.green} fallback="👆" />
-          <Text style={styles.hintText}>{t("tapShirtHint")}</Text>
-        </View>
-      )}
-
       {/* Pitch */}
-      <View style={styles.pitch} onLayout={(e) => setPitchW(e.nativeEvent.layout.width)}>
+      <View
+        ref={pitchRef}
+        style={[styles.pitch, pitchH ? { height: pitchH } : { aspectRatio: 3 / 4 }]}
+        onLayout={(e) => {
+          setPitchW(e.nativeEvent.layout.width);
+          pitchRef.current?.measureInWindow((_x, y) => setPitchTop(y));
+        }}
+      >
         {Array.from({ length: 8 }, (_, i) => (
           <View key={i} style={{ flex: 1, backgroundColor: i % 2 ? C.pitchB : C.pitchA }} />
         ))}
@@ -287,19 +305,19 @@ function TeamName({ name, muted }: { name: string; muted?: boolean }) {
 
 const styles = StyleSheet.create({
   metaRow: { flexDirection: "row", justifyContent: "space-between", gap: 12 },
-  scoreRow: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 10 },
-  side: { flex: 1, alignItems: "center", gap: 4 },
-  team: { fontFamily: F.display, fontSize: 20, color: C.text, lineHeight: 22, textAlign: "center" },
+  scoreRow: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 6 },
+  side: { flex: 1, alignItems: "center", gap: 2 },
+  team: { fontFamily: F.display, fontSize: 17, color: C.text, lineHeight: 19, textAlign: "center" },
   opponent: { color: C.text2 },
-  score: { fontFamily: F.black, fontSize: 30, color: C.text, fontVariant: ["tabular-nums"] },
-  progressRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginTop: 18, marginHorizontal: 4 },
-  bigCount: { fontFamily: F.black, fontSize: 40, lineHeight: 42, color: C.green },
+  score: { fontFamily: F.black, fontSize: 26, color: C.text, fontVariant: ["tabular-nums"] },
+  progressRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", gap: 12, marginTop: 10, marginHorizontal: 4 },
+  bigCount: { fontFamily: F.black, fontSize: 32, lineHeight: 34, color: C.green },
   countOf: { fontFamily: F.display, fontSize: 22, color: C.text3 },
   bar: { height: 10, borderRadius: 5, backgroundColor: "#DDE4DF", marginTop: 6, overflow: "hidden" },
   barFill: { height: "100%", borderRadius: 5, backgroundColor: C.green },
-  hint: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 12, paddingHorizontal: 4 },
-  hintText: { flex: 1, color: C.text2, fontWeight: "600", fontSize: 14 },
-  pitch: { width: "100%", aspectRatio: 3 / 4, borderRadius: R.card, overflow: "hidden", marginTop: 12 },
+  hint: { flexShrink: 1, flexDirection: "row", alignItems: "center", gap: 6, maxWidth: 220 },
+  hintText: { flexShrink: 1, color: C.text2, fontWeight: "600", fontSize: 13 },
+  pitch: { width: "100%", borderRadius: R.card, overflow: "hidden", marginTop: 10 },
   line: { position: "absolute", backgroundColor: C.pitchLine },
   circle: { position: "absolute", width: 80, height: 80, borderRadius: 40, borderWidth: 1.5, borderColor: C.pitchLine },
   box: { position: "absolute", width: 152, height: 48, borderWidth: 1.5, borderColor: C.pitchLine },
