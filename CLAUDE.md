@@ -65,7 +65,8 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   3/5/8/…; Missing 11 + Quiz), `components/RewardScreen.tsx` (awards with `stats` open a "Claim XP" screen
   instead of the toast; mounted in the root layout), daily quests `lib/quests.ts` (3/day from different
   games, `questEvent` / `useQuestOnce`), 7-day reward calendar `lib/dailyRewards.ts` (fixed amounts, no
-  random chests). Both pay XP as source "bonus". Home shows `HomeStatus` (level, play streak `lib/playStreak.ts`, gift that claims the day) + `QuestsCard`;
+  random chests). Both pay XP as source "bonus". Home shows `HomeStatus` (level, play streak `lib/playStreak.ts`, gift that claims the day), `TodayPuzzles`
+  (grid / Daily XI / Bingo read from their screens' save keys; the grid's big card folds into a row once done) + `QuestsCard`;
   the 7-day `DailyRewardCard` lives on Profile.
 - Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
   The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);

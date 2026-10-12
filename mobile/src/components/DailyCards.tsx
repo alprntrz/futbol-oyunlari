@@ -77,7 +77,8 @@ export function DailyRewardCard() {
   );
 }
 
-function hoursLeft() {
+/** Whole hours until local midnight (at least 1): when the daily things reset. */
+export function hoursLeft() {
   const now = new Date();
   const midnight = new Date(now);
   midnight.setHours(24, 0, 0, 0);
