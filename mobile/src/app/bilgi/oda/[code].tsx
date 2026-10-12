@@ -7,7 +7,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 import { quizQuestions, type QuizCategory } from "@/lib/quiz";
+import { XP } from "@/lib/levels";
 
+import { ComboBurst, ComboChip } from "~/components/Combo";
 import { GrassPattern } from "~/components/GrassPattern";
 import { Victory } from "~/components/Victory";
 import { LevelProgress, type QuizProfile } from "~/components/QuizLevel";
@@ -22,6 +24,7 @@ import { useI18n } from "~/lib/i18n";
 import { loadNick, loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, F } from "~/lib/theme";
+import { questEvent } from "~/lib/quests";
 import { awardXp } from "~/lib/xp";
 
 type L = { tr: string; en: string };
@@ -138,6 +141,9 @@ export default function QuizRoom() {
   const [ceremonyClosed, setCeremonyClosed] = useState(false);
   const lastPhase = useRef("");
   const [progress, setProgress] = useState<{ gained: number; before: QuizProfile; after: QuizProfile } | null>(null);
+  // run of right answers this game; the game's tallies feed the reward screen
+  const [combo, setCombo] = useState(0);
+  const tally = useRef({ combo: 0, best: 0, correct: 0, asked: 0, score: 0 });
 
   useEffect(() => {
     const socket = getSocket();
@@ -151,24 +157,43 @@ export default function QuizRoom() {
       if (r.phase === "intro") {
         setProgress(null);
         setCeremonyClosed(false);
+        tally.current = { combo: 0, best: 0, correct: 0, asked: 0, score: 0 };
+        setCombo(0);
         play("start");
       }
       if (r.phase === "reveal") {
         const me = r.players.find((p) => p.id === socket.id);
+        const tl = tally.current;
+        tl.asked++;
+        tl.score = me?.score ?? tl.score;
         if (me?.choice === r.answer) {
           haptic.success();
           play("correct");
+          tl.correct++;
+          tl.combo++;
+          tl.best = Math.max(tl.best, tl.combo);
+          questEvent("qz_correct", 1);
+          if (tl.combo >= 2) questEvent("combo", tl.combo);
         } else {
           haptic.error();
           play("wrong");
+          tl.combo = 0;
         }
+        setCombo(tl.combo);
       }
     };
     const onConnect = () => setMyId(socket.id ?? "");
     const onProgress = (p: { gained: number; before: QuizProfile; after: QuizProfile }) => {
       setProgress(p);
       // the same XP also counts towards the overall level (the server's game count keys it)
-      awardXp(`qz-${code}-${p.after.games}`, "qz", p.gained);
+      const tl = tally.current;
+      awardXp(`qz-${code}-${p.after.games}`, "qz", p.gained + tl.best * XP.comboStep, {
+        stats: [
+          { label: t("rwCorrect"), value: `${tl.correct}/${tl.asked}`, tone: "green" },
+          { label: t("rwBestCombo"), value: `x${tl.best}`, tone: "amber" },
+          { label: t("rwPoints"), value: String(tl.score), tone: "blue" },
+        ],
+      });
       // the level-up sting comes after the ceremony's own sounds
       if (p.after.level > p.before.level) setTimeout(() => (haptic.success(), play("levelup")), 2300);
     };
@@ -485,6 +510,12 @@ export default function QuizRoom() {
       </Svg>
       {/* the pitch shows once the questions start */}
       {(room?.phase === "question" || room?.phase === "reveal") && <GrassPattern />}
+      {(room?.phase === "question" || room?.phase === "reveal") && (
+        <View pointerEvents="none" style={[styles.comboSlot, { top: insets.top + HEADER - 34 }]}>
+          <ComboChip combo={combo} />
+        </View>
+      )}
+      <ComboBurst combo={combo} />
       {room?.phase !== "done" ? (
         <Animated.View exiting={FadeOutUp.duration(350)} style={StyleSheet.absoluteFill} pointerEvents="none">
           <StadiumHeader runners={runners} height={HEADER} />
@@ -569,6 +600,7 @@ const styles = StyleSheet.create({
   myPick: { position: "absolute", left: -6, top: -8 },
   theirPicks: { position: "absolute", right: -6, top: -8, flexDirection: "row" },
   pointsUp: { position: "absolute", right: 34, top: -26 },
+  comboSlot: { position: "absolute", right: 16, zIndex: 5 },
   pointsUpText: { fontFamily: F.black, fontSize: 30, color: NIGHT.gold, textShadowColor: NIGHT.light ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.35)", textShadowRadius: 4 },
   verdict: { fontFamily: F.black, fontSize: 26 },
 

@@ -16,6 +16,7 @@ import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
+import { useQuestOnce } from "~/lib/quests";
 import { useXpAward } from "~/lib/xp";
 
 const key = (day: number) => `bingo-${day}`;
@@ -73,7 +74,17 @@ export default function Bingo() {
 
   // one card a day: pays once, more for a full card
   const bingoFull = !!run && run.placed.filter(Boolean).length === CARD_SIZE;
-  useXpAward(!!run && (bingoFull || run.index >= stream.length), `bingo-${day}`, "bingo", bingoFull ? XP.bingoComplete : XP.bingoPlayed);
+  const bingoOver = !!run && (bingoFull || run.index >= stream.length);
+  useXpAward(bingoOver, `bingo-${day}`, "bingo", bingoFull ? XP.bingoComplete : XP.bingoPlayed, {
+    title: bingoFull ? t("rwBingo") : t("rwDone"),
+    stats: run
+      ? [
+          { label: t("rwSquares"), value: `${run.placed.filter(Boolean).length}/${CARD_SIZE}`, tone: "green" },
+          { label: t("rwPlayers"), value: String(Math.min(run.index, stream.length)), tone: "amber" },
+        ]
+      : [],
+  });
+  useQuestOnce(bingoOver, `bingo-${day}`, [["bingo_play", 1]]);
 
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
 

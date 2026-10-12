@@ -28,6 +28,8 @@ export const XP = {
   xiPerPlayer: 3,
   xiFullTeam: 15,
   xiDailyBonus: 10,
+  /** best run of consecutive right answers in a game, per step (Missing 11, Quiz) */
+  comboStep: 2,
   /** Hat-trick series (online, random, vs computer) */
   htGameWin: 10,
   htSeriesWin: 30,

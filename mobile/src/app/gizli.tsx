@@ -16,6 +16,7 @@ import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { compare, findPlayer, MAX_GUESSES, mysteryForDay, randomMystery, START_CLUES, type Clue, type Puzzle } from "~/lib/mystery";
 import { C, F, R, T } from "~/lib/theme";
+import { useQuestOnce } from "~/lib/quests";
 import { useXpAward } from "~/lib/xp";
 
 type Mode = "daily" | "free";
@@ -58,8 +59,13 @@ export default function MysteryPlayer() {
     mode === "daily" ? `mystery-${day}` : `mystery-free-${day}-${answer.name}`,
     "mystery",
     won ? XP.mysteryWin + Math.max(0, MAX_GUESSES - spent) * XP.mysteryPerSpareGuess : XP.mysteryLoss,
-    { practice: mode === "free" }
+    {
+      practice: mode === "free",
+      title: won ? t("rwSolved") : t("rwDone"),
+      stats: [{ label: t("rwTries"), value: won ? `${spent}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`, tone: won ? "green" : "coral" }],
+    }
   );
+  useQuestOnce(over && won, mode === "daily" ? `mystery-${day}` : `mystery-free-${day}-${answer.name}`, [["mystery_solve", 1]]);
   const suggestions = useMemo(() => (input.trim().length >= 2 ? searchPlayers(input).slice(0, 5) : []), [input]);
 
   // Today's run survives leaving the screen

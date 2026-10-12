@@ -57,6 +57,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   SecureStore, awards queued to `/xp`, daily +20 bonus, `DELETE /api/account` + Apple revoke).
   Env/secrets: `APPLE_AUDIENCES`, `GOOGLE_CLIENT_IDS`, `APPLE_TEAM_ID/KEY_ID/PRIVATE_KEY`;
   app: `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` + the reversed id as `iosUrlScheme` in app.json.
+- Game feel (v1.1, from a Duolingo study): `components/Combo.tsx` (`useCombo`, `ComboChip`, `ComboBurst` at
+  3/5/8/…; Missing 11 + Quiz), `components/RewardScreen.tsx` (awards with `stats` open a "Claim XP" screen
+  instead of the toast; mounted in the root layout), daily quests `lib/quests.ts` (3/day from different
+  games, `questEvent` / `useQuestOnce`), 7-day reward calendar `lib/dailyRewards.ts` (fixed amounts, no
+  random chests). Both pay XP as source "bonus". Home shows `DailyRewardCard` + `QuestsCard`.
 - Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
   The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
   server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live

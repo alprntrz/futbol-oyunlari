@@ -9,6 +9,7 @@ import type { Difficulty, Match } from "@/lib/types";
 
 import { GameIntro } from "~/components/GameIntro";
 import { HelpButton } from "~/components/HelpButton";
+import { useCombo } from "~/components/Combo";
 import { MissingXIBoard } from "~/components/MissingXIBoard";
 import { ResultCard } from "~/components/ResultCard";
 import { Text } from "~/components/Text";
@@ -16,7 +17,8 @@ import { Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
 import { T } from "~/lib/theme";
 import { useMissingXI } from "~/lib/useMissingXI";
-import { useXpAward } from "~/lib/xp";
+import { useQuestOnce } from "~/lib/quests";
+import { useXpAward, type XpStat } from "~/lib/xp";
 
 /** Random-match practice: every match since 2005, or one team's matches (`takim`). */
 export default function PracticeScreen() {
@@ -54,9 +56,19 @@ export default function PracticeScreen() {
 }
 
 function PracticeGame({ match, difficulty, onNext }: { match: Match; difficulty: Difficulty; onNext: () => void }) {
+  const { t } = useI18n();
   const { slots, progress, guess, giveUp } = useMissingXI(match, difficulty);
   const [gameId] = useState(() => `xi-p-${match.id}-${Date.now()}`);
-  useXpAward(progress.done, gameId, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0), { practice: true });
+  const { combo, best } = useCombo(progress.totalGuesses, progress.solved);
+  useXpAward(progress.done, gameId, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0) + best * XP.comboStep, {
+    practice: true,
+    title: progress.won ? t("rwFullXi") : t("rwDone"),
+    stats: xiStats(t, progress.solved, progress.totalGuesses, best),
+  });
+  useQuestOnce(progress.done, gameId, [
+    ["xi_finish", 1],
+    ["xi_players", progress.solved],
+  ]);
   return (
     <>
       {progress.done && <ResultCard match={match} slots={slots} won={progress.won} onNewMatch={onNext} />}
@@ -67,9 +79,19 @@ function PracticeGame({ match, difficulty, onNext }: { match: Match; difficulty:
         done={progress.done}
         totalGuesses={progress.totalGuesses}
         onGuess={guess}
+        combo={combo}
         onGiveUp={giveUp}
         onNext={onNext}
       />
     </>
   );
+}
+
+/** Reward-screen tiles for a finished Missing 11 game. */
+function xiStats(t: ReturnType<typeof useI18n>["t"], solved: number, guesses: number, best: number): XpStat[] {
+  return [
+    { label: t("rwFound"), value: `${solved}/11`, tone: "green" },
+    { label: t("rwBestCombo"), value: `x${best}`, tone: "amber" },
+    { label: t("rwGuesses"), value: String(guesses), tone: "blue" },
+  ];
 }

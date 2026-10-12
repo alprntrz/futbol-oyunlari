@@ -6,7 +6,7 @@ import { useSyncExternalStore } from "react";
 import { loadAvatar, saveAvatar, type AvatarId } from "./avatar";
 import { loadNick, loadPlayerId, saveNick } from "./nick";
 import { setSessionToken, SOCKET_URL } from "./socket";
-import { applyServerTotals, loadXp, resetLocalXp, setAwardSink, type XpGame } from "./xp";
+import { applyServerTotals, loadXp, resetLocalXp, setAwardSink, type XpSource } from "./xp";
 
 /**
  * Optional account (Sign in with Apple / Google). Guests keep playing as before;
@@ -19,7 +19,7 @@ export interface Account {
   nick: string;
   avatar: string;
   xp: number;
-  byGame: Partial<Record<XpGame, number>>;
+  byGame: Partial<Record<XpSource, number>>;
   bonusToday: boolean;
   /** skill rating per online game (ht, qz, pp) */
   ratings: Partial<Record<RatedGame, { rating: number; games: number; wins: number }>>;
@@ -81,7 +81,7 @@ async function forget() {
 
 // ── XP: awards made while signed in go to the account too (queued when offline)
 
-type Pending = { key: string; game: XpGame; amount: number };
+type Pending = { key: string; game: XpSource; amount: number };
 
 async function flushPending() {
   if (!token) return;
@@ -110,7 +110,7 @@ setAwardSink((key, game, amount) => {
 
 // ── Session
 
-/** On app start: restore the session, sync, and pay the daily sign-in bonus. */
+/** On app start: restore the session and sync XP. */
 export async function initAccount() {
   try {
     token = await SecureStore.getItemAsync(TOKEN_KEY);
@@ -123,20 +123,12 @@ export async function initAccount() {
     const { user } = await api<{ user: Account }>("/me");
     setAccount(user);
     applyServerTotals(user.xp, user.byGame);
-    claimDailyBonus();
   } catch {
     // offline: stay signed in, sync later
     if (account === undefined) setAccount(null);
   }
 }
 
-async function claimDailyBonus() {
-  try {
-    const { gained, user } = await api<{ gained: number; user: Account }>("/daily", { method: "POST" });
-    setAccount(user);
-    applyServerTotals(user.xp, user.byGame, { gained, source: "bonus" });
-  } catch {}
-}
 
 async function finishSignIn(provider: "apple" | "google", idToken: string, authorizationCode?: string | null) {
   const [nick, avatar, installId, guest] = await Promise.all([loadNick(), loadAvatar(), loadPlayerId(), loadXp()]);
@@ -153,7 +145,6 @@ async function finishSignIn(provider: "apple" | "google", idToken: string, autho
   }
   setAccount(res.user);
   applyServerTotals(res.user.xp, res.user.byGame);
-  claimDailyBonus();
   return res.user;
 }
 

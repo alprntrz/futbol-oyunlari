@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useI18n } from "~/lib/i18n";
 import { play } from "~/lib/sound";
 import { C, F } from "~/lib/theme";
-import { onOverlay, onXpAward, type XpAward } from "~/lib/xp";
+import { onOverlay, onRewardOpen, onXpAward, type XpAward } from "~/lib/xp";
 
 import { LevelBadge } from "./QuizLevel";
 import { Text } from "./Text";
@@ -27,27 +27,31 @@ export function XpToast() {
   const [pending, setPending] = useState<(XpAward & { id: number }) | null>(null);
   const [award, setAward] = useState<(XpAward & { id: number }) | null>(null);
   const [overlay, setOverlay] = useState(false);
+  const [reward, setReward] = useState(false);
 
   // several awards before it shows (rare) merge into one pill
   useEffect(
     () =>
-      onXpAward((a) =>
-        setPending((p) => ({ ...a, before: p?.before ?? a.before, gained: (p?.gained ?? 0) + a.gained, id: Date.now() }))
-      ),
+      onXpAward((a) => {
+        // awards with stats get the full reward screen instead
+        if (a.stats) return;
+        setPending((p) => ({ ...a, before: p?.before ?? a.before, gained: (p?.gained ?? 0) + a.gained, label: a.label ?? p?.label, id: Date.now() }));
+      }),
     []
   );
   useEffect(() => onOverlay(setOverlay), []);
+  useEffect(() => onRewardOpen(setReward), []);
 
   // show once no ceremony covers the screen; then play its sound
   useEffect(() => {
-    if (!pending || overlay) return;
+    if (!pending || overlay || reward) return;
     const id = setTimeout(() => {
       setAward(pending);
       setPending(null);
       play(pending.after.level > pending.before.level ? "levelup" : "coin");
     }, 600);
     return () => clearTimeout(id);
-  }, [pending, overlay]);
+  }, [pending, overlay, reward]);
 
   useEffect(() => {
     if (!award) return;
@@ -64,7 +68,7 @@ export function XpToast() {
       <Animated.View key={award.id} entering={DROP} exiting={FadeOutUp.duration(250)} style={styles.pill}>
         <LevelBadge level={award.after.level} size={36} />
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{levelled ? t("levelUpTo").replace("{n}", String(award.after.level)) : `+${award.gained} XP`}</Text>
+          <Text style={styles.title}>{levelled ? t("levelUpTo").replace("{n}", String(award.after.level)) : award.label ? `${t(award.label as Parameters<typeof t>[0])} · +${award.gained} XP` : `+${award.gained} XP`}</Text>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(4, fraction * 100)}%` }]} />
           </View>

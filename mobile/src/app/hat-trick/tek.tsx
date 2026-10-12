@@ -96,7 +96,15 @@ export default function HatTrickSolo() {
 
   // today's grid pays once a day; extra grids count towards the practice cap
   const placed = run ? run.cells.reduce((n, c) => n + c.length, 0) : 0;
-  useXpAward(!!run?.finished, seed === null ? `ht-solo-${day}` : `ht-solo-x-${seed}`, "ht", Math.min(XP.htSoloCap, placed * XP.htSoloPerPlayer), { practice: seed !== null });
+  const soloBoxes = run ? run.cells.filter((c) => c.length > 0).length : 0;
+  useXpAward(!!run?.finished, seed === null ? `ht-solo-${day}` : `ht-solo-x-${seed}`, "ht", Math.min(XP.htSoloCap, placed * XP.htSoloPerPlayer), {
+    practice: seed !== null,
+    title: t("rwGrid"),
+    stats: [
+      { label: t("rwSquares"), value: `${soloBoxes}/9`, tone: "green" },
+      { label: t("rwPlayers"), value: String(placed), tone: "amber" },
+    ],
+  });
 
   if (run === undefined) return <Page>{null}</Page>;
 

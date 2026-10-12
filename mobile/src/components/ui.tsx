@@ -71,7 +71,7 @@ export function Page({ children, scroll = true, topInset = false }: { children: 
 }
 
 /** Darker shade of each button colour: the edge the face sits on. */
-const EDGE = { primary: "#0F7A35", secondary: "#D3DBD6", danger: "#F3B5B5", ghost: "transparent" } as const;
+const EDGE = { primary: "#0F7A35", secondary: "#D3DBD6", danger: "#F3B5B5", ghost: "transparent", gold: "#CA8A04" } as const;
 const DEPTH = 4;
 
 /**
@@ -88,13 +88,13 @@ export function Button({
 }: {
   title: string;
   onPress: () => void;
-  kind?: "primary" | "secondary" | "danger" | "ghost";
+  kind?: "primary" | "secondary" | "danger" | "ghost" | "gold";
   icon?: SymbolName;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
-  const bg = { primary: C.green, secondary: C.card, danger: C.redSoft, ghost: "transparent" }[kind];
-  const fg = { primary: "white", secondary: C.text, danger: C.red, ghost: C.text2 }[kind];
+  const bg = { primary: C.green, secondary: C.card, danger: C.redSoft, ghost: "transparent", gold: "#FACC15" }[kind];
+  const fg = { primary: "white", secondary: C.text, danger: C.red, ghost: C.text2, gold: "#3B2A05" }[kind];
   const depth = kind === "ghost" ? 0 : DEPTH;
   // padding and height belong to the face; layout (margins, flex, width) to the outer edge
   const { padding, paddingHorizontal, paddingVertical, paddingLeft, paddingRight, paddingTop, paddingBottom, minHeight, ...outer } = StyleSheet.flatten(style) ?? {};

@@ -3,6 +3,8 @@ import { reloadAppAsync } from "expo";
 
 import { loadPlayerId } from "./nick";
 import { getSocket } from "./socket";
+import { resetDailyRewards } from "./dailyRewards";
+import { resetQuests } from "./quests";
 import { resetXpCache } from "./xp";
 
 /**
@@ -20,6 +22,8 @@ export async function deleteMyData(): Promise<{ server: boolean }> {
   });
   await AsyncStorage.clear().catch(() => {});
   resetXpCache();
+  resetQuests();
+  resetDailyRewards();
   return { server };
 }
 

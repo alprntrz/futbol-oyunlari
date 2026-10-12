@@ -5,6 +5,7 @@ import { XP } from "@/lib/levels";
 import { REWARD } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { addTrophy, loadTrophies } from "~/lib/trophies";
+import { questEvent } from "~/lib/quests";
 import { awardXp } from "~/lib/xp";
 
 import { Victory } from "./Victory";
@@ -56,6 +57,10 @@ export function SeriesEnd({
     counted.current = true;
     (won && countTrophy ? addTrophy() : loadTrophies()).then(setTrophies);
     // one award per finished series (shown after this ceremony closes)
+    if (countTrophy) {
+      questEvent("ht_series", 1);
+      questEvent("ht_win", mine);
+    }
     awardXp(`ht-series-${Date.now()}`, "ht", countTrophy ? XP.htSeriesPlayed + mine * XP.htGameWin + (won ? XP.htSeriesWin : 0) : XP.sameScreen);
   }, [over, won, countTrophy, mine]);
 

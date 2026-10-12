@@ -101,7 +101,7 @@ Subline: "Hepsi tek uygulamada"
 **8. `08-ana-sayfa.png`**
 ```
 Headline: "HER GÜN YENİ IZGARA"
-Subline: "Hesap yok, reklam yok"
+Subline: "Her gün yeni görevler ve ödüller"
 ```
 
 ### İngilizce set (ikinci dil)
@@ -119,7 +119,7 @@ daha gönderip aşağıdaki başlıklarla üret.
 | 5 | `05-possession.png` | TAKE OVER THE PITCH | Claim hexes, steal your rival's ground |
 | 6 | `06-hattrick-answer.png` | THOUSANDS OF PLAYERS | From the Süper Lig to the Premier League |
 | 7 | `07-games.png` | 6 FOOTBALL GAMES | All in one app |
-| 8 | `08-home.png` | A NEW GRID EVERY DAY | No account, no ads |
+| 8 | `08-home.png` | A NEW GRID EVERY DAY | New quests and rewards daily |
 
 ## B planı: ChatGPT ekranı bozarsa
 

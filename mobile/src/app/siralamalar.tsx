@@ -57,6 +57,9 @@ export default function Leaderboards() {
       />
       <Text style={[T.caption, { marginTop: 10 }]}>{board === "xp" ? t("boardXpNote") : t("boardRatingNote")}</Text>
       {account === null && <Text style={[T.caption, { marginTop: 6, color: C.greenDark, fontWeight: "700" }]}>{t("leaderboardSignIn")}</Text>}
+      {account && board !== "xp" && data && !data.me && (
+        <Text style={[T.caption, { marginTop: 6, color: C.greenDark, fontWeight: "700" }]}>{t("leaderboardPlayFirst")}</Text>
+      )}
 
       {error ? (
         <Text style={[T.body, styles.empty]}>{t("leaderboardError")}</Text>

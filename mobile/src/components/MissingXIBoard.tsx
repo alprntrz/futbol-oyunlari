@@ -16,6 +16,7 @@ import { GuessSheet } from "./GuessSheet";
 import { Jersey } from "./Jersey";
 import { FLIP_DURATION, FLIP_STAGGER } from "./LetterTile";
 import { Text } from "./Text";
+import { ComboBurst, ComboChip, comboColor } from "./Combo";
 import { Confetti } from "./motion";
 import { Button, Card, Tap } from "./ui";
 
@@ -37,6 +38,7 @@ export function MissingXIBoard({
   onGuess,
   onGiveUp,
   onNext,
+  combo = 0,
   headerExtra,
 }: {
   match: Match;
@@ -48,6 +50,8 @@ export function MissingXIBoard({
   onGiveUp: () => void;
   /** practice modes: "Next match" under the pitch once the game is over */
   onNext?: () => void;
+  /** current run of right guesses (useCombo) */
+  combo?: number;
   headerExtra?: React.ReactNode;
 }) {
   const { t, locale } = useI18n();
@@ -132,8 +136,9 @@ export function MissingXIBoard({
         {/* found so far: a slim bar with the count, inside the card (frees a row for the pitch) */}
         <View style={styles.progressRow}>
           <View style={styles.bar}>
-            <Animated.View style={[styles.barFill, barStyle]} />
+            <Animated.View style={[styles.barFill, { backgroundColor: comboColor(combo) }, barStyle]} />
           </View>
+          {combo >= 2 && <ComboChip combo={combo} />}
           <Text style={styles.count}>
             <Text style={{ color: C.green }}>{solved}</Text>/11
           </Text>
@@ -178,6 +183,8 @@ export function MissingXIBoard({
 
       {!done && <Button title={t("giveUp")} kind="danger" icon="flag.fill" onPress={confirmGiveUp} style={{ marginTop: 12 }} />}
       {done && onNext && <Button title={t("nextMatch")} icon="arrow.right" onPress={onNext} style={{ marginTop: 12 }} />}
+
+      <ComboBurst combo={combo} hold={openSlot !== null} />
 
       <GuessSheet
         player={openSlot !== null && !done ? match.lineup[openSlot] : null}

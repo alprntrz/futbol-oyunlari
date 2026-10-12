@@ -7,6 +7,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { dayNumber } from "@/lib/daily";
 import { generateGrid, seededRandom } from "@/lib/tiki";
 
+import { DailyRewardCard, QuestsCard } from "~/components/DailyCards";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { ModeList, type Mode } from "~/components/ModeGrid";
 import { Text } from "~/components/Text";
@@ -142,8 +143,14 @@ export default function Home() {
         </Tap>
       </Animated.View>
 
-      <SectionLabel>{t("homeVersus")}</SectionLabel>
+      {/* come back tomorrow: the reward calendar and today's quests */}
       <Animated.View entering={enter(1)}>
+        <DailyRewardCard />
+        <QuestsCard />
+      </Animated.View>
+
+      <SectionLabel>{t("homeVersus")}</SectionLabel>
+      <Animated.View entering={enter(2)}>
         <ModeList modes={versus} />
       </Animated.View>
 

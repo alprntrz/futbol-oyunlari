@@ -11,7 +11,7 @@ export type XpSource = XpGame | "bonus";
 
 interface XpState {
   xp: number;
-  byGame: Partial<Record<XpGame, number>>;
+  byGame: Partial<Record<XpSource, number>>;
   /** award keys already paid (a game can't pay twice); newest last, trimmed */
   keys: string[];
   /** unlimited-mode XP earned on `practiceDay` */
@@ -19,9 +19,31 @@ interface XpState {
   practiceToday: number;
 }
 
+/** One line on the end-of-game reward screen ("Found 9/11"). */
+export interface XpStat {
+  label: string;
+  value: string;
+  tone?: "green" | "amber" | "blue" | "coral";
+}
+
+export interface XpOptions {
+  /** unlimited mode: counts towards the daily practice cap */
+  practice?: boolean;
+  /** with stats the award opens the full reward screen ("Claim XP") instead of the toast */
+  stats?: XpStat[];
+  /** reward screen headline, e.g. "Full XI!" */
+  title?: string;
+  /** toast line instead of "+N XP", e.g. a finished quest */
+  label?: string;
+}
+
 export interface XpAward {
+  key: string;
   gained: number;
   game: XpSource;
+  stats?: XpStat[];
+  title?: string;
+  label?: string;
   before: LevelInfo & { xp: number };
   after: LevelInfo & { xp: number };
 }
@@ -58,7 +80,7 @@ export async function loadXp() {
  * daily cap so unlimited modes can't be farmed. Resolves to the award, or null if
  * the key was already paid or the cap is used up.
  */
-export function awardXp(key: string, game: XpGame, amount: number, opts: { practice?: boolean } = {}): Promise<XpAward | null> {
+export function awardXp(key: string, game: XpSource, amount: number, opts: XpOptions = {}): Promise<XpAward | null> {
   // serialise: two games finishing together must not both read the old total
   const run = queue.then(async () => {
     const s = await load();
@@ -79,7 +101,7 @@ export function awardXp(key: string, game: XpGame, amount: number, opts: { pract
     s.byGame = { ...s.byGame, [game]: (s.byGame[game] ?? 0) + gained };
     s.keys = [...s.keys, key].slice(-MAX_KEYS);
     await AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
-    const award: XpAward = { gained, game, before, after: { ...levelOf(s.xp), xp: s.xp } };
+    const award: XpAward = { key, gained, game, before, after: { ...levelOf(s.xp), xp: s.xp }, stats: opts.stats, title: opts.title, label: opts.label };
     listeners.forEach((fn) => fn(award));
     sink?.(key, game, gained);
     return award;
@@ -89,7 +111,7 @@ export function awardXp(key: string, game: XpGame, amount: number, opts: { pract
 }
 
 /** Signed in: every award is also sent to the account (lib/account.ts registers this). */
-let sink: ((key: string, game: XpGame, amount: number) => void) | null = null;
+let sink: ((key: string, game: XpSource, amount: number) => void) | null = null;
 export function setAwardSink(fn: typeof sink) {
   sink = fn;
 }
@@ -98,7 +120,7 @@ export function setAwardSink(fn: typeof sink) {
  * Take the account's totals from the server (signed in, or after a sync). `announce`
  * shows the toast for XP that came from the server (the daily bonus).
  */
-export function applyServerTotals(xp: number, byGame: Partial<Record<XpGame, number>>, announce?: { gained: number; source: XpSource }) {
+export function applyServerTotals(xp: number, byGame: Partial<Record<XpSource, number>>, announce?: { gained: number; source: XpSource }) {
   queue = queue.then(async () => {
     const s = await load();
     const before = { ...levelOf(s.xp), xp: s.xp };
@@ -106,7 +128,7 @@ export function applyServerTotals(xp: number, byGame: Partial<Record<XpGame, num
     s.byGame = { ...byGame };
     await AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
     if (announce && announce.gained > 0) {
-      const award: XpAward = { gained: announce.gained, game: announce.source, before, after: { ...levelOf(s.xp), xp: s.xp } };
+      const award: XpAward = { key: "server", gained: announce.gained, game: announce.source, before, after: { ...levelOf(s.xp), xp: s.xp } };
       listeners.forEach((fn) => fn(award));
     }
   });
@@ -133,6 +155,21 @@ export function onOverlay(fn: (open: boolean) => void) {
   };
 }
 
+/** The reward screen is up: the toast waits for it too. */
+let rewardOpen = false;
+const rewardListeners = new Set<(open: boolean) => void>();
+export function setRewardOpen(open: boolean) {
+  rewardOpen = open;
+  rewardListeners.forEach((fn) => fn(open));
+}
+export function onRewardOpen(fn: (open: boolean) => void) {
+  rewardListeners.add(fn);
+  fn(rewardOpen);
+  return () => {
+    rewardListeners.delete(fn);
+  };
+}
+
 /** Hear about every award (the "+XP" toast). Returns the unsubscribe. */
 export function onXpAward(fn: (a: XpAward) => void) {
   listeners.add(fn);
@@ -150,12 +187,16 @@ export function resetXpCache() {
  * Award once when `ready` turns true. `key` null = nothing to award (e.g. a game
  * reopened after it finished is still paid only once, by its key).
  */
-export function useXpAward(ready: boolean, key: string | null, game: XpGame, amount: number, opts?: { practice?: boolean }) {
+export function useXpAward(ready: boolean, key: string | null, game: XpSource, amount: number, opts?: XpOptions) {
   const sent = useRef<string | null>(null);
-  const practice = !!opts?.practice;
+  // latest options without re-running the effect when a stats array is rebuilt
+  const optsRef = useRef(opts);
+  useEffect(() => {
+    optsRef.current = opts;
+  });
   useEffect(() => {
     if (!ready || !key || sent.current === key) return;
     sent.current = key;
-    awardXp(key, game, amount, { practice });
-  }, [ready, key, game, amount, practice]);
+    awardXp(key, game, amount, optsRef.current);
+  }, [ready, key, game, amount]);
 }
