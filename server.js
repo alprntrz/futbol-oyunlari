@@ -7,7 +7,7 @@ const next = require("next");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
-const { handleAccountApi } = require("./server-accounts");
+const { handleAccountApi, recordResult, userIdFromToken } = require("./server-accounts");
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -126,6 +126,24 @@ function htSeries(room) {
   const X = of("X");
   const O = of("O");
   return { X, O, target: HT_TARGET, over: X >= HT_TARGET || O >= HT_TARGET };
+}
+
+/** Rate a two-player result (marks): winner first, or a draw. Guests (no uid) aren't rated. */
+function rateDuel(game, room, winnerMark) {
+  const [a, b] = room.players;
+  if (!a?.uid || !b?.uid) return;
+  if (winnerMark === "draw") return recordResult(game, [[a.uid, b.uid]]);
+  const w = room.players.find((p) => p.mark === winnerMark);
+  const l = room.players.find((p) => p.mark !== winnerMark);
+  if (w && l) recordResult(game, [[w.uid], [l.uid]]);
+}
+
+/** Hat-trick: once a series is decided, rate it (once per series). */
+function htRateSeries(room) {
+  const s = htSeries(room);
+  if (!s.over || room.seriesRated) return;
+  room.seriesRated = true;
+  rateDuel("ht", room, s.X >= HT_TARGET ? "X" : "O");
 }
 
 /** Count a finished game towards the series. */
@@ -349,6 +367,8 @@ app.prepare().then(() => {
   const io = new Server(server, { cors: { origin: "*" }, maxHttpBufferSize: 64 * 1024 });
 
   io.on("connection", (socket) => {
+    // signed-in app players send their session token: their online results are rated
+    socket.data.uid = userIdFromToken(socket.handshake.auth?.token);
     let joinedCode = null;
 
     socket.on("room:create", ({ nick, difficulty, matchId }, cb) => {
@@ -461,6 +481,7 @@ app.prepare().then(() => {
         room.flash = { mark: room.turn, reason: "timeout" };
         room.winner = room.turn === "X" ? "O" : "X";
         room.turnStart = null;
+        rateDuel("pp", room, room.winner);
         ppEmit(room);
       }, room.clocks[room.turn]);
     };
@@ -472,7 +493,7 @@ app.prepare().then(() => {
 
     socket.on("pp:create", ({ nick, board }, cb) => {
       if (!Array.isArray(board) || board.length !== PP_HEXES) return cb?.({ ok: false, error: "bad_board" });
-      const room = ppNewRoom(ppCode(), board, [{ id: socket.id, nick: cleanNick(nick), mark: "X" }]);
+      const room = ppNewRoom(ppCode(), board, [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }]);
       ppRooms.set(room.code, room);
       ppJoinRoom(socket, room);
       cb?.({ ok: true, room: ppPublic(room) });
@@ -484,7 +505,7 @@ app.prepare().then(() => {
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
-        room.players.push({ id: socket.id, nick: cleanNick(nick), mark });
+        room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark });
       }
       ppJoinRoom(socket, room);
       ppEmit(room);
@@ -523,6 +544,7 @@ app.prepare().then(() => {
       if (room.winner) {
         clearTimeout(room.timer);
         room.turnStart = null;
+        rateDuel("pp", room, room.winner);
       } else {
         room.turn = room.turn === "X" ? "O" : "X";
         ppStartTurn(room);
@@ -548,8 +570,8 @@ app.prepare().then(() => {
         return;
       }
       const room = ppNewRoom(ppCode(), waiting.board, [
-        { id: waiting.socket.id, nick: waiting.nick, mark: "X" },
-        { id: socket.id, nick: cleanNick(nick), mark: "O" },
+        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X" },
+        { id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "O" },
       ]);
       room.started = true;
       ppRooms.set(room.code, room);
@@ -567,6 +589,8 @@ app.prepare().then(() => {
       ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
       const room = ppRooms.get(socket.data.ppCode);
       if (!room) return;
+      const leaver = room.players.find((p) => p.id === socket.id);
+      if (leaver && room.started && !room.winner && room.players.length === 2) rateDuel("pp", room, leaver.mark === "X" ? "O" : "X");
       room.players = room.players.filter((p) => p.id !== socket.id);
       clearTimeout(room.timer);
       if (room.players.length === 0) {
@@ -612,7 +636,7 @@ app.prepare().then(() => {
         steals: steals ? { X: 3, O: 3 } : null,
         league: typeof league === "string" ? league.slice(0, 12) : "all",
         used: [],
-        players: [{ id: socket.id, nick: cleanNick(nick), mark: "X" }],
+        players: [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }],
       };
       htRooms.set(code, room);
       socket.data.htCode = code;
@@ -626,7 +650,7 @@ app.prepare().then(() => {
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
-        room.players.push({ id: socket.id, nick: cleanNick(nick), mark });
+        room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark });
       }
       socket.data.htCode = room.code;
       socket.join("ht:" + room.code);
@@ -662,8 +686,8 @@ app.prepare().then(() => {
         steals: null,
         used: [],
         players: [
-          { id: waiting.socket.id, nick: waiting.nick, mark: "X" },
-          { id: socket.id, nick: cleanNick(nick), mark: "O" },
+          { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X" },
+          { id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "O" },
         ],
       };
       htRooms.set(code, room);
@@ -715,6 +739,7 @@ app.prepare().then(() => {
         clearTimeout(room.timer);
         room.deadline = null;
         htTally(room);
+        htRateSeries(room);
       } else {
         room.turn = room.turn === "X" ? "O" : "X";
         htStartTurn(room);
@@ -733,6 +758,7 @@ app.prepare().then(() => {
         const p = room.players.find((x) => x.mark === winner);
         if (p) room.wins = { ...room.wins, [p.id]: HT_TARGET };
       } else htTally(room);
+      htRateSeries(room);
       htEmit(room);
     };
 
@@ -779,7 +805,10 @@ app.prepare().then(() => {
       const room = htRooms.get(socket.data.htCode);
       if (!room || !room.winner || room.players[0].id !== socket.id || !grid) return;
       // next game of the series, or a fresh series once it's decided
-      if (htSeries(room).over) room.wins = {};
+      if (htSeries(room).over) {
+        room.wins = {};
+        room.seriesRated = false;
+      }
       room.grid = grid;
       room.board = Array(9).fill(null);
       room.winner = null;
@@ -798,6 +827,12 @@ app.prepare().then(() => {
       htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
       const room = htRooms.get(socket.data.htCode);
       if (!room) return;
+      // walking out of a live series loses it (no dodging a defeat)
+      const leaver = room.players.find((p) => p.id === socket.id);
+      if (leaver && room.started && room.players.length === 2 && !htSeries(room).over && !room.seriesRated) {
+        room.seriesRated = true;
+        rateDuel("ht", room, leaver.mark === "X" ? "O" : "X");
+      }
       room.players = room.players.filter((p) => p.id !== socket.id);
       if (room.players.length === 0) {
         clearTimeout(room.timer);
@@ -916,7 +951,7 @@ app.prepare().then(() => {
         deadline: null,
         timer: null,
         botTimers: [],
-        players: [{ id: socket.id, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 }],
+        players: [{ id: socket.id, uid: socket.data.uid, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 }],
       };
       qzRooms.set(code, room);
       socket.data.qzCode = code;
@@ -958,7 +993,7 @@ app.prepare().then(() => {
       if (room.phase !== "lobby") return cb?.({ ok: false, error: "started" });
       if (room.players.length >= room.settings.maxPlayers) return cb?.({ ok: false, error: "full" });
       if (socket.data.qzCode) qzLeave();
-      room.players.push({ id: socket.id, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
+      room.players.push({ id: socket.id, uid: socket.data.uid, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
       socket.data.qzCode = room.code;
       socket.join("qz:" + room.code);
       cb?.({ ok: true, room: qzPublic(room) });
@@ -973,7 +1008,7 @@ app.prepare().then(() => {
       if (socket.data.qzCode) qzLeave();
       const open = qzOpenCode && qzRooms.get(qzOpenCode);
       if (open && open.phase === "lobby" && open.players.length < open.settings.maxPlayers) {
-        open.players.push({ id: socket.id, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
+        open.players.push({ id: socket.id, uid: socket.data.uid, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
         socket.data.qzCode = open.code;
         socket.join("qz:" + open.code);
         cb?.({ ok: true, code: open.code });
@@ -1019,6 +1054,15 @@ app.prepare().then(() => {
         io.sockets.sockets.get(p.id)?.emit("qz:progress", { gained, before, after });
       }
       qzSaveStats();
+      // rating: signed-in people only, ranked by score (house players don't count)
+      const rated = standings.filter((p) => !p.bot && p.uid);
+      const places = [];
+      for (const p of rated) {
+        const last = places[places.length - 1];
+        if (last && last.score === p.score) last.ids.push(p.uid);
+        else places.push({ score: p.score, ids: [p.uid] });
+      }
+      recordResult("qz", places.map((x) => x.ids));
     };
 
     // "Delete my data" in the app: drop this player's quiz record for good

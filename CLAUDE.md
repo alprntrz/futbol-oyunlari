@@ -57,6 +57,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   SecureStore, awards queued to `/xp`, daily +20 bonus, `DELETE /api/account` + Apple revoke).
   Env/secrets: `APPLE_AUDIENCES`, `GOOGLE_CLIENT_IDS`, `APPLE_TEAM_ID/KEY_ID/PRIVATE_KEY`;
   app: `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` + the reversed id as `iosUrlScheme` in app.json.
+- Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
+  The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
+  server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live
+  Hat-trick series / Possession game counts as a loss. Boards: `GET /api/account/leaderboard?board=xp|ht|qz|pp`,
+  screen `mobile/src/app/siralamalar.tsx`.
 - XP and levels (v1.1): every game pays XP through `awardXp` / `useXpAward` in `mobile/src/lib/xp.ts`
   (local, AsyncStorage `xp-v1`); amounts in `XP` and the curve in `levelOf`, both in `src/lib/levels.ts`.
   Each award has a unique key so a game never pays twice; unlimited modes pass `practice` (daily cap).

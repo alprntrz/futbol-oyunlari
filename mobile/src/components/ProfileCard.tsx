@@ -1,4 +1,4 @@
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Image, Modal, ScrollView, StyleSheet, TextInput, View, type ImageSourcePropType } from "react-native";
 
@@ -16,7 +16,7 @@ import { Avatar } from "./Avatar";
 import { LevelBadge } from "./QuizLevel";
 import { SignInCard } from "./SignInCard";
 import { Text } from "./Text";
-import { Button, Card, Icon, SectionLabel, Tap } from "./ui";
+import { Button, Card, Icon, Row, SectionLabel, Tap } from "./ui";
 
 type Xp = Awaited<ReturnType<typeof loadXp>>;
 
@@ -96,6 +96,10 @@ export function ProfileCard() {
 
       {account === null && <SignInCard />}
 
+      <Card style={{ padding: 0, overflow: "hidden", marginTop: 16 }}>
+        <Row icon="trophy.fill" iconFallback="🏆" color={C.amber} soft={C.amberSoft} title={t("leaderboards")} onPress={() => router.push("/siralamalar")} last />
+      </Card>
+
       <SectionLabel>{t("xpByGame")}</SectionLabel>
       <Card style={{ paddingVertical: 6 }}>
         {GAMES.map((g, i) => (
@@ -106,6 +110,11 @@ export function ProfileCard() {
             <View style={{ flex: 1 }}>
               <Text style={T.headline}>{t(g.name as Parameters<typeof t>[0])}</Text>
               {g.game === "ht" && trophies > 0 && <Text style={T.caption}>{t("trophiesN").replace("{n}", String(trophies))}</Text>}
+              {account && (g.game === "ht" || g.game === "qz" || g.game === "pp") && account.ratings[g.game] && (
+                <Text style={T.caption}>
+                  {t("ratingLabel")} {account.ratings[g.game]!.rating} · {(account.ratings[g.game]!.games === 1 ? t("gamesOne") : t("gamesN").replace("{n}", String(account.ratings[g.game]!.games)))}
+                </Text>
+              )}
             </View>
             <Text style={styles.gameXp}>{xp?.byGame[g.game] ?? 0} XP</Text>
           </View>

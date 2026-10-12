@@ -7,9 +7,21 @@ import { io, type Socket } from "socket.io-client";
 export const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL ?? "http://localhost:3000";
 
 let socket: Socket | null = null;
+let sessionToken: string | null = null;
 
 /** Singleton socket shared by the lobby and room screens. */
 export function getSocket(): Socket {
-  if (!socket) socket = io(SOCKET_URL, { transports: ["websocket"] });
+  // signed in: the session token rides along so the server can rate online results
+  if (!socket) socket = io(SOCKET_URL, { transports: ["websocket"], auth: (cb) => cb(sessionToken ? { token: sessionToken } : {}) });
   return socket;
+}
+
+/** Sign in / out (lib/account.ts): reconnect so the server sees the new identity. */
+export function setSessionToken(token: string | null) {
+  if (token === sessionToken) return;
+  sessionToken = token;
+  if (socket?.connected) {
+    socket.disconnect();
+    socket.connect();
+  }
 }

@@ -5,7 +5,7 @@ import { useSyncExternalStore } from "react";
 
 import { loadAvatar, saveAvatar, type AvatarId } from "./avatar";
 import { loadNick, loadPlayerId, saveNick } from "./nick";
-import { SOCKET_URL } from "./socket";
+import { setSessionToken, SOCKET_URL } from "./socket";
 import { applyServerTotals, loadXp, resetLocalXp, setAwardSink, type XpGame } from "./xp";
 
 /**
@@ -21,6 +21,26 @@ export interface Account {
   xp: number;
   byGame: Partial<Record<XpGame, number>>;
   bonusToday: boolean;
+  /** skill rating per online game (ht, qz, pp) */
+  ratings: Partial<Record<RatedGame, { rating: number; games: number; wins: number }>>;
+}
+
+export type RatedGame = "ht" | "qz" | "pp";
+export type Board = "xp" | RatedGame;
+export interface BoardRow {
+  rank: number;
+  nick: string;
+  avatar: string;
+  value: number;
+  level: number;
+  games?: number;
+  wins?: number;
+  me: boolean;
+}
+
+/** Public leaderboard (top 50 + this player's row when signed in). */
+export function fetchLeaderboard(board: Board) {
+  return api<{ top: BoardRow[]; me: BoardRow | null; total: number }>(`/leaderboard?board=${board}`);
 }
 
 const TOKEN_KEY = "session";
@@ -34,6 +54,7 @@ const listeners = new Set<(a: Account | null) => void>();
 
 function setAccount(a: Account | null) {
   account = a;
+  setSessionToken(a ? token : null);
   listeners.forEach((fn) => fn(a));
 }
 
