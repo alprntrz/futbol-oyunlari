@@ -5,6 +5,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
 
+import { DailyRewardCard } from "~/components/DailyCards";
 import { ProfileCard } from "~/components/ProfileCard";
 import { Text } from "~/components/Text";
 import { useCountUp } from "~/components/motion";
@@ -57,6 +58,7 @@ export default function StatsTab() {
       <Text style={T.largeTitle}>{t("tabProfile")}</Text>
 
       <ProfileCard />
+      <DailyRewardCard />
 
       <SectionLabel>{t("dailyXiStats")}</SectionLabel>
       {s && s.played === 0 ? (

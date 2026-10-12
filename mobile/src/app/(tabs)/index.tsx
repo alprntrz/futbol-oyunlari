@@ -7,7 +7,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { dayNumber } from "@/lib/daily";
 import { generateGrid, seededRandom } from "@/lib/tiki";
 
-import { DailyRewardCard, QuestsCard } from "~/components/DailyCards";
+import { QuestsCard } from "~/components/DailyCards";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { HomeStatus } from "~/components/HomeStatus";
 import { ModeList, type Mode } from "~/components/ModeGrid";
@@ -92,7 +92,7 @@ export default function Home() {
       <HomeStatus />
       <Text style={[T.caption, { marginTop: 14 }]}>{date}</Text>
 
-      {/* one tap into a game against someone; then today's grid, rewards and quests */}
+      {/* one tap into a game against someone; then today's grid and quests */}
       <Animated.View entering={enter(0)}>
         <QuickPlay />
       </Animated.View>
@@ -139,9 +139,8 @@ export default function Home() {
         </Tap>
       </Animated.View>
 
-      {/* come back tomorrow: the reward calendar and today's quests */}
+      {/* today's quests (the reward gift sits in the status strip) */}
       <Animated.View entering={enter(2)}>
-        <DailyRewardCard />
         <QuestsCard />
       </Animated.View>
 
