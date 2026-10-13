@@ -28,6 +28,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - UI strings live in `src/lib/strings.ts` (used by both apps).
 - `cd mobile && npx expo start --ios` (Expo Go on the simulator). Online play
   talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
+- Hat-trick is shown to players as "Tic-Tac-Toe" (v1.1 rename; code, routes and `ht:*` keep the old name).
 - Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`, incl. `ht:queue` matchmaking:
   server owns turn, 45 s clock and result; the host's phone deals the grid as
   criterion ids; a queue match gets `HT_INTRO_MS` before X's clock for the VS screen,

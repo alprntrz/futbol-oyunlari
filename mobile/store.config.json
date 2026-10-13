@@ -95,7 +95,7 @@
       "firstName": "Alperen",
       "lastName": "Terzi",
       "demoRequired": false,
-      "notes": "No login is required. Single-player and same-phone games work offline. Online modes (Hat-trick \"With a friend\" and \"Random opponent\", Football Quiz, Possession Play online) connect to our game server over HTTPS. When no other player is searching, random-opponent modes pair the player with a computer opponent so a game can always start. Nicknames shown to other players are filtered for offensive words on the server, and Settings > Delete my data removes everything from the phone and the server. There are no purchases, ads, analytics or tracking in this version.\n\nTo try an online room alone: open Football Quiz > Random opponent; a game starts within 15 seconds."
+      "notes": "No login is required. Single-player and same-phone games work offline. Online modes (Tic-Tac-Toe \"With a friend\" and \"Random opponent\", Football Quiz, Possession Play online) connect to our game server over HTTPS. When no other player is searching, random-opponent modes pair the player with a computer opponent so a game can always start. Nicknames shown to other players are filtered for offensive words on the server, and Settings > Delete my data removes everything from the phone and the server. There are no purchases, ads, analytics or tracking in this version.\n\nTo try an online room alone: open Football Quiz > Random opponent; a game starts within 15 seconds."
     }
   }
 }
