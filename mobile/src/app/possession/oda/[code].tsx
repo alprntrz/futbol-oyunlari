@@ -10,7 +10,7 @@ import { Button, Card, Icon, Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
-import { useDuelActivity } from "~/lib/liveActivity";
+import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
 import { boardFromIds, boardToIds, claimsFor, generateBoard, type PpCell } from "~/lib/possession";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
@@ -104,6 +104,7 @@ export default function PossessionRoom() {
     room?.started && myMark
       ? {
           game: t("ppName"),
+          icon: GAME_ICON.pp,
           me: myMark,
           opponent: rival?.nick || t("opponent"),
           turn: room.turn,

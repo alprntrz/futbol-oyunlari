@@ -4,7 +4,6 @@ import type { LiveActivity, LiveActivityDismissalPolicy, LiveActivityFactory } f
 
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
-import { C } from "~/lib/theme";
 import type { MatchActivityProps } from "~/widgets/MatchActivity";
 
 export type { MatchActivityProps };
@@ -29,6 +28,8 @@ try {
   factory = null;
 }
 
+/** the turn clock goes red this long before it runs out */
+const URGENT_MS = 10_000;
 /** how long a final result stays on the Lock Screen */
 const LINGER_MS = 2 * 60 * 1000;
 
@@ -49,9 +50,11 @@ export function showMatchActivity(props: MatchActivityProps, deepLink?: string, 
   const key = JSON.stringify(props);
   if (key === shown) return;
   shown = key;
+  // the clock turns red for its last seconds: iOS redraws at the stale date even with the app asleep
+  const stale = props.phase === "turn" && props.endsAt > 0 ? new Date(props.endsAt - URGENT_MS) : undefined;
   try {
-    if (current) current.update(props).catch(() => {});
-    else current = factory.start(props, deepLink);
+    if (current) current.update(props, stale).catch(() => {});
+    else current = factory.start(props, deepLink, stale);
   } catch {
     // Live Activities off, or too many running: the game goes on without it
     current = null;
@@ -89,11 +92,13 @@ export function useMatchActivity(props: MatchActivityProps | null, deepLink?: st
   useEffect(() => () => endMatchActivity(undefined, me), [me]);
 }
 
-const MARK_COLOR: Record<Mark, string> = { X: C.blue, O: C.coral };
+/** SF Symbols per game, shown in the compact Dynamic Island */
+export const GAME_ICON = { ht: "square.grid.3x3.fill", pp: "hexagon.fill" } as const;
 
 /** A two-player online game as the Live Activity sees it. */
 export interface Duel {
   game: string;
+  icon: string;
   me: Mark;
   opponent: string;
   turn: Mark;
@@ -114,16 +119,16 @@ export function useDuelActivity(d: Duel | null) {
   const { t } = useI18n();
   const props: MatchActivityProps | null = d && {
     game: d.game,
+    icon: d.icon,
     headline: d.winner
       ? t(d.winner === "draw" ? "liveDraw" : d.winner === d.me ? "liveWon" : "liveLost")
       : d.turn === d.me
         ? t("liveYourTurn")
         : t("liveTheirTurn").replace("{nick}", d.opponent),
-    color: d.winner ? (d.winner === "draw" ? C.amber : d.winner === d.me ? C.green : C.coral) : MARK_COLOR[d.turn],
+    tone: d.winner ? (d.winner === "draw" ? "draw" : d.winner === d.me ? "win" : "lose") : d.turn,
     line: `${t("you")} – ${d.opponent}`,
     score: `X ${d.score.X} – ${d.score.O} O`,
     mark: d.me,
-    markColor: MARK_COLOR[d.me],
     // whole seconds: the clock is re-sent on every server message, this keeps it from churning
     endsAt: d.winner ? 0 : Math.round(d.deadline / 1000) * 1000,
     since: d.winner ? 0 : Math.round(d.since / 1000) * 1000,
@@ -133,12 +138,12 @@ export function useDuelActivity(d: Duel | null) {
 }
 
 /** "Looking for an opponent" with a count-up while a queue screen waits. */
-export function useSearchActivity(game: string, searching: boolean) {
+export function useSearchActivity(game: string, icon: string, searching: boolean) {
   const { t } = useI18n();
   const [since] = useState(() => Date.now());
   useMatchActivity(
     searching
-      ? { game, headline: t("liveSearching"), color: C.greenMid, line: t("liveSearchingLine"), score: "", mark: "", markColor: C.greenMid, endsAt: 0, since, phase: "search" }
+      ? { game, icon, headline: t("liveSearching"), tone: "search", line: t("liveSearchingLine"), score: "", mark: "", endsAt: 0, since, phase: "search" }
       : null
   );
 }

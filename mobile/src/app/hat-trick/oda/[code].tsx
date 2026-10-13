@@ -14,7 +14,7 @@ import { haptic } from "~/lib/haptics";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid } from "~/lib/league";
-import { useDuelActivity } from "~/lib/liveActivity";
+import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, F, T } from "~/lib/theme";
@@ -128,6 +128,7 @@ export default function HatTrickRoom() {
     room?.started && me
       ? {
           game: t("tikiTakaName"),
+          icon: GAME_ICON.ht,
           me: me.mark,
           opponent: opponent?.nick || t("opponent"),
           turn: room.turn,

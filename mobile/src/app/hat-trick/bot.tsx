@@ -12,7 +12,7 @@ import { haptic } from "~/lib/haptics";
 import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
-import { useDuelActivity } from "~/lib/liveActivity";
+import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
 import { dealGrid } from "~/lib/league";
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -165,6 +165,7 @@ export default function HatTrickHouse() {
   // the house player's game looks like any online one, Live Activity included
   useDuelActivity({
     game: t("tikiTakaName"),
+    icon: GAME_ICON.ht,
     me,
     opponent: nick,
     turn,
