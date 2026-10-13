@@ -219,7 +219,7 @@ const LIGHT: typeof VIOLET = {
 };
 
 /** Which look the game screens use ("violet" = Draft Showdown copy, "stadium" = our football take). */
-export const LOOK = "light" as "violet" | "stadium" | "ucl" | "light";
+export const LOOK = "violet" as "violet" | "stadium" | "ucl" | "light";
 export const G = LOOK === "stadium" ? STADIUM : LOOK === "ucl" ? UCL : LOOK === "light" ? LIGHT : VIOLET;
 
 /** Rounded game type, white with a hard violet drop under it. */
