@@ -132,6 +132,9 @@ kendi karakteri var. İlk liste:
 | Portekiz (Yetenek) | En güçlü oyuncu +%20 | +%35 | +%55 |
 | Türkiye (Son dakika) | 80'den sonra +%15 | +%25 | +%40, son dakika golü şansı |
 
+Bu karakterler sabit kalıyor: bilinen futbol tarzlarını anlatıyorlar, kimseyi
+küçümsemiyorlar. Denge simülasyonunda hepsinin ilk 4 oranı %40–60 arasına çekilecek.
+
 Diğer ülkeler genel "Milli takım" bonusu alır: 2 / 3 / 5 oyuncuda takım gücü +%5 / +%9 / +%15.
 
 ### 5.3 Kupa sinerjileri
@@ -142,12 +145,17 @@ Diğer ülkeler genel "Milli takım" bonusu alır: 2 / 3 / 5 oyuncuda takım gü
 | 🥇 Ballon d'Or | 1 | Bu oyuncu maçta bir kez "anlık dahilik" yapar: garanti pozisyon |
 | 🌍 Avrupa Şampiyonu | 2 / 3 | Takım SAV +%10 / +%20 |
 
-### 5.4 Sezon havuzu
-16 bin oyuncunun hepsi bir oyunda olamaz. Her lobi için bir **sezon havuzu** seçilir:
-- ~**60 oyuncu** (13 / 13 / 13 / 12 / 9 kişi, maliyete göre)
-- ~**8 kulüp** ve ~**8 ülke** etrafında kurulur, böylece her sinerji tamamlanabilir.
-- Havuz her oyunda farklıdır. Bu, tekrar oynanabilirliği sağlar.
-- Havuz lig seçimine bağlanabilir: "Süper Lig sezonu", "Premier Lig sezonu", "Efsaneler".
+### 5.4 Maç havuzu (her oyuncu çıkabilir)
+Lig ya da dönem sınırı yok: FIFA kartları gibi veri tabanındaki **her oyuncu**
+herhangi bir oyunda çıkabilir. Ama 16 bin oyuncunun hepsi tek bir dükkâna
+sığmaz; o zaman aynı kulüpten iki kişi bulmak, 3 kopya toplamak imkânsız olur.
+Bu yüzden her lobi başında bütün veri tabanından rastgele bir **maç havuzu** çekilir:
+
+- Rastgele ~10 kulüp ve ~10 ülke seçilir (her oyun farklı).
+- ~60 oyuncu, bu kulüp ve ülkelerden **tüm veri tabanından** çekilir
+  (13 / 13 / 13 / 12 / 9 kişi, maliyete göre), her dönemden ve her ligden.
+- Böylece her oyuncu er geç bir oyunda karşına çıkar, ama bir oyun içinde
+  sinerjiler tamamlanabilir.
 
 ---
 
@@ -222,8 +230,11 @@ Eşyaların birleşip daha güçlü eşya olması (TFT'deki gibi) ikinci sürüm
 
 Bazı turlarda dükkândaki 5 karttan biri **gizli** gelir:
 - Kartta siluet ve 3 ipucu var: ülke bayrağı, bir eski kulübü ve mevkisi.
-- Adını yazıp bilirsen kart **1 altın ucuza** alınır ve hemen **parlayarak** açılır.
+- Adını yazıp bilirsen kart **1 altın ucuza** alınır (en az 1 altın) ve hemen
+  **parlayarak** açılır; kartın köşesinde küçük bir "gözcü" rozeti kalır.
+  Güç bonusu yok: avantaj sadece ekonomide.
 - Bilemezsen normal fiyatına alabilir ya da bırakabilirsin.
+- Bir aşamada en fazla 2 kez çıkar. Hedef: bilen oyuncunun ilk 4 oranı +%3–5.
 - İpuçları Gizli Oyuncu oyunundaki altyapıdan gelir.
 
 **Transfer günü** (aşama 3 ve 5'te):
@@ -342,10 +353,17 @@ Zorluk, botun karar kalitesiyle ayarlanır. Botlara Tic-Tac-Toe'daki gibi gerçe
 
 ---
 
-## 16. Açık sorular
+## 16. Kararlar
 
-1. ~~İsim~~ → **Taktik Tahtası / Pitch Chess** (karar verildi).
-2. **Oyun uzunluğu:** 12–15 dakika uygun mu, yoksa 8–10 dakikalık "hızlı mod" da olsun mu?
-3. **Gözcü raporu:** Bilgi avantajı ne kadar olsun? 1 altın indirim mi, yoksa ücretsiz mi?
-4. **Ülke karakterleri:** Tablodaki "Türkiye = son dakika", "İtalya = catenaccio" gibi kalıplar hoş mu, yoksa daha nötr mü olsun?
-5. **Sezon havuzu:** Başlangıçta tek "karışık" havuz mu, yoksa lig seçimi de olsun mu?
+1. **İsim:** Taktik Tahtası / Pitch Chess.
+2. **Süre:** 12–15 dakika.
+3. **Gözcü raporu:** 1 altın indirim ve "gözcü" rozeti, güç bonusu yok (bkz. 9).
+4. **Ülke karakterleri:** Tablodaki gibi kalıyor; denge simülasyonla ayarlanacak.
+5. **Havuz:** Lig sınırı yok, her oyuncu çıkabilir; her lobiye rastgele maç havuzu (bkz. 5.4).
+
+## 17. Görseller
+
+`mobile/assets/brand/taktik/` (kaynak: `tiktako-kadro` paketi, GPT Image):
+`hero` (oyun kartı), `card-scout` (gizli kart), `coach-pass-master`,
+`coach-defensive`, `coach-pressing`, ve 6 eşya: `item-golden-boot`, `item-gloves`,
+`item-shin-guard`, `item-captain-band`, `item-energy-drink`, `item-tactics-board`.

@@ -60,3 +60,4 @@ scripts/.cache/tm/
 scripts/.cache/raw-seasons.json
 scripts/.cache/tm-coaches/
 scripts/.cache/raw-coaches.json
+scripts/.cache/raw-positions.json
