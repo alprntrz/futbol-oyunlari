@@ -38,6 +38,17 @@ export function PlayerSearchSheet({
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const [input, setInput] = useState("");
+  // a fresh text field every time the sheet opens: on one shared phone the next
+  // player must never see (or inherit, mid-composition) the last player's text
+  const [opens, setOpens] = useState(0);
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
+    if (visible) {
+      setOpens((n) => n + 1);
+      setInput("");
+    }
+  }
   const suggestions = useMemo(() => searchPlayers(input), [input]);
 
   const close = () => {
@@ -65,6 +76,7 @@ export function PlayerSearchSheet({
           <View style={styles.inputWrap}>
             <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
             <TextInput
+              key={opens}
               autoFocus
               value={input}
               onChangeText={setInput}
