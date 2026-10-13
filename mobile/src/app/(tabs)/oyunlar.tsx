@@ -14,7 +14,8 @@ import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { jerseyStyle } from "~/lib/kits";
 import { loadDayState } from "~/lib/storage";
-import { C, F, R, shadow, T } from "~/lib/theme";
+import { C, F, R, shadow } from "~/lib/theme";
+import { GameBg, outline } from "~/components/game";
 
 type DailyStatus = { kind: "new" } | { kind: "playing"; solved: number } | { kind: "done"; solved: number };
 
@@ -95,8 +96,8 @@ export default function Games() {
   ];
 
   return (
-    <Page topInset>
-      <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("tabGames")}</Text>
+    <Page topInset background={<GameBg />}>
+      <Text style={[outline(40), { marginBottom: 6 }]}>{t("tabGames")}</Text>
 
       {/* Daily XI: a slice of pitch with today's fixture on it */}
       <Animated.View entering={enter(0)}>

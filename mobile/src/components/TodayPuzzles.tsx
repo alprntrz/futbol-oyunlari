@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect, type Href } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
 
 import { dailyMatch, dayNumber } from "@/lib/daily";
@@ -15,11 +15,11 @@ import { C, F, R, shadow, T } from "~/lib/theme";
 import { hoursLeft } from "./DailyCards";
 import { CriterionBadge } from "./HatTrickBoard";
 import { Text } from "./Text";
-import { Card, Icon, Tap } from "./ui";
+import { Card, Icon, OnDark, Tap } from "./ui";
 
 /** Where a daily puzzle stands: not opened, under way (with a count) or finished. */
-type Progress = { state: "new" | "started" | "done"; count: number };
-interface Today {
+export type Progress = { state: "new" | "started" | "done"; count: number };
+export interface Today {
   grid: Progress & { filled: boolean[] };
   xi: Progress;
   bingo: Progress;
@@ -38,7 +38,7 @@ async function readJSON<T>(key: string): Promise<T | null> {
 }
 
 /** Reads the three daily saves the game screens write (same keys and rules as those screens). */
-async function loadToday(day: number, xiMatchId: string, bingoLength: number): Promise<Today> {
+export async function loadToday(day: number, xiMatchId: string, bingoLength: number): Promise<Today> {
   const [box, xi, bingo] = await Promise.all([
     readJSON<{ cells: string[][]; finished: boolean }>(`hattrick-box-${day}`),
     loadDayState(day),
@@ -75,6 +75,7 @@ async function loadToday(day: number, xiMatchId: string, bingoLength: number): P
  */
 export function TodayPuzzles() {
   const { t } = useI18n();
+  const dark = useContext(OnDark);
   const day = useMemo(() => dayNumber(), []);
   // same seeds as the game screens, so the preview is the grid you'll play
   const grid = useMemo(() => generateGrid(seededRandom(day * 7919 + 17)), [day]);
@@ -115,8 +116,8 @@ export function TodayPuzzles() {
   return (
     <View style={{ marginTop: 22 }}>
       <View style={styles.head}>
-        <Text style={T.heading}>{t("homePuzzles")}</Text>
-        <Text style={[T.caption, doneCount === 3 && { color: C.greenDark, fontWeight: "700" }]}>
+        <Text style={[T.heading, dark && { color: "white" }]}>{t("homePuzzles")}</Text>
+        <Text style={[T.caption, dark && { color: "rgba(255,255,255,0.8)" }, doneCount === 3 && { color: dark ? "#9BE15D" : C.greenDark, fontWeight: "700" }]}>
           {doneCount === 3 ? t("homeNewIn").replace("{h}", String(hours)) : t("homePuzzlesDone").replace("{n}", String(doneCount))}
         </Text>
       </View>

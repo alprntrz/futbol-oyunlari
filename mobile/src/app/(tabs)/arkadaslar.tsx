@@ -1,4 +1,4 @@
-import { router, Stack, useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, Share, StyleSheet, TextInput, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -17,6 +17,7 @@ import { dealGrid, useHtLeague } from "~/lib/league";
 import { loadNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, F, R, T } from "~/lib/theme";
+import { GameBg, outline } from "~/components/game";
 
 /**
  * Friends: your code to share, add someone by theirs, and invite an online friend
@@ -102,11 +103,11 @@ export default function Friends() {
   };
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: t("friends") }} />
+    <Page topInset background={<GameBg />}>
+      <Text style={[outline(40), { marginBottom: 6 }]}>{t("friends")}</Text>
       {account === undefined ? null : !account ? (
         <>
-          <Text style={[T.body, { marginBottom: 12 }]}>{t("friendsSignIn")}</Text>
+          <Text style={[T.body, { marginBottom: 12, color: "white" }]}>{t("friendsSignIn")}</Text>
           <SignInCard />
         </>
       ) : (
@@ -150,10 +151,10 @@ export default function Friends() {
             />
             <Button title={t("friendsAdd")} onPress={add} disabled={busy === "add" || code.trim().length < 4} style={{ minWidth: 92 }} />
           </View>
-          {note && <Text style={[T.caption, { marginTop: 8, fontWeight: "700", color: note.ok ? C.greenDark : C.red }]}>{note.text}</Text>}
+          {note && <Text style={[T.caption, { marginTop: 8, fontWeight: "700", color: note.ok ? "#9BE15D" : "#FFB4B4" }]}>{note.text}</Text>}
 
           <SectionLabel>{t("friends")}</SectionLabel>
-          {info && info.friends.length === 0 && <Text style={T.body}>{t("friendsEmpty")}</Text>}
+          {info && info.friends.length === 0 && <Text style={[T.body, { color: "rgba(255,255,255,0.85)" }]}>{t("friendsEmpty")}</Text>}
           {info && info.friends.length > 0 && (
             <Card style={{ paddingVertical: 4 }}>
               {info.friends.map((f, i) => (
@@ -182,7 +183,7 @@ export default function Friends() {
               ))}
             </Card>
           )}
-          {info && info.friends.length > 0 && <Text style={[T.caption, { marginTop: 8, textAlign: "center" }]}>{t("friendsHoldToRemove")}</Text>}
+          {info && info.friends.length > 0 && <Text style={[T.caption, { marginTop: 8, textAlign: "center", color: "rgba(255,255,255,0.75)" }]}>{t("friendsHoldToRemove")}</Text>}
         </>
       )}
     </Page>

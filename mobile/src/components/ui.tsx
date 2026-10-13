@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
@@ -9,7 +10,7 @@ import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Text } from "./Text";
 
-type SymbolName = SymbolViewProps["name"];
+export type SymbolName = SymbolViewProps["name"];
 
 /** SF Symbol on iOS with an emoji/text fallback elsewhere. */
 export function Icon({ name, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {
@@ -46,9 +47,41 @@ export function Card({ children, style }: { children: React.ReactNode; style?: S
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
-/** Scrollable page on the grey background. */
-export function Page({ children, scroll = true, topInset = false }: { children: React.ReactNode; scroll?: boolean; topInset?: boolean }) {
+/** True on the dark game-style tab pages: loose text there is drawn light. */
+export const OnDark = createContext(false);
+
+/**
+ * Scrollable page on the grey background. `background` (the tabs' GameBg) draws
+ * under everything and makes the page dark: section titles turn light.
+ */
+export function Page({
+  children,
+  scroll = true,
+  topInset = false,
+  background,
+}: {
+  children: React.ReactNode;
+  scroll?: boolean;
+  topInset?: boolean;
+  background?: React.ReactNode;
+}) {
   const insets = useSafeAreaInsets();
+  if (background) {
+    return (
+      <OnDark.Provider value>
+        <View style={{ flex: 1 }}>
+          {background}
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingTop: insets.top + 12, paddingBottom: 32, flexGrow: 1, alignItems: "center" }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={{ width: "100%", maxWidth: 560 }}>{children}</View>
+          </ScrollView>
+        </View>
+      </OnDark.Provider>
+    );
+  }
   const pad = { paddingHorizontal: 16, paddingTop: topInset ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
   if (!scroll) return <View style={[{ flex: 1, backgroundColor: C.bg }, pad]}>{children}</View>;
   return (
@@ -178,7 +211,18 @@ export function Row({
 }
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <Text style={[T.heading, { marginTop: 26, marginBottom: 10, marginLeft: 2 }]}>{children}</Text>;
+  const dark = useContext(OnDark);
+  return (
+    <Text
+      style={[
+        T.heading,
+        { marginTop: 26, marginBottom: 10, marginLeft: 2 },
+        dark && { color: "white", textShadowColor: "rgba(0,0,0,0.4)", textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 0 },
+      ]}
+    >
+      {children}
+    </Text>
+  );
 }
 
 /** iOS-style segmented control. */

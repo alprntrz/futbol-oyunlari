@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { Alert, Linking, View } from "react-native";
 
@@ -47,8 +47,8 @@ export default function SettingsTab() {
   const [sound, setSound] = useState(soundsOn() ? "on" : "off");
 
   return (
-    <Page topInset>
-      <Text style={T.largeTitle}>{t("tabSettings")}</Text>
+    <Page>
+      <Stack.Screen options={{ title: t("tabSettings") }} />
 
       <SectionLabel>{t("settingsLanguage")}</SectionLabel>
       <Segmented
