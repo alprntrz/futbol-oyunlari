@@ -11,6 +11,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
+import { InviteBanner } from "~/components/InviteBanner";
 import { RewardScreen } from "~/components/RewardScreen";
 import { XpToast } from "~/components/XpToast";
 import { initAccount } from "~/lib/account";
@@ -64,6 +65,7 @@ export default function RootLayout() {
       </Stack>
       <RewardScreen />
       <XpToast />
+      <InviteBanner />
     </I18nProvider>
   );
 }

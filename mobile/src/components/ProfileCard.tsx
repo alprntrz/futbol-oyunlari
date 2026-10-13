@@ -112,6 +112,7 @@ export function ProfileCard() {
       {account === null && <SignInCard />}
 
       <Card style={{ padding: 0, overflow: "hidden", marginTop: 16 }}>
+        <Row icon="person.2.fill" iconFallback="👥" color={C.blue} soft={C.blueSoft} title={t("friends")} subtitle={t("friendsDesc")} onPress={() => router.push("/arkadaslar")} />
         <Row icon="trophy.fill" iconFallback="🏆" color={C.amber} soft={C.amberSoft} title={t("leaderboards")} onPress={() => router.push("/siralamalar")} last />
       </Card>
 

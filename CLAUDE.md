@@ -73,6 +73,13 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   steps; `components/Rank.tsx`). The rank index is the matchmaking tier: `ht:queue`, `pp:queue`, `qz:queue` carry `tier`
   (`loadTier` in lib/xp.ts); server.js `takePairs` / `tierGap` pair the same rank first and widen every `TIER_WIDEN_MS`
   (a 1 s sweep, `matchQueues`). Quiz random rooms are keyed `difficulty:tier` in `qzOpen`.
+- Friends (v1.1, signed-in): `friends` table + `users.friend_code` in server-accounts.js (`/api/account/friends`
+  GET/POST {code}/DELETE /:code; added both ways, max 100). Presence = any socket with that `uid`; `fr:invite`
+  {to: friend code, game: "ht", room} → `fr:invited` on the friend's sockets (3 s rate limit). App: `app/arkadaslar.tsx`,
+  `components/InviteBanner.tsx` (root layout; keeps a socket open while signed in). Friends see nick, avatar, level, online only.
+- Caps: the app sends `caps` in the socket handshake (lib/socket.ts `CAPS`); "mate" = can draw "played with" criteria
+  (`MATE_CRITERIA` / `withMate` in tiki.ts, data `src/data/teammates.ts` ← `scripts/tiki-scrape-seasons.mjs` →
+  `scripts/tiki-build-teammates.mjs`). server.js keeps mate grids away from phones without it (`knowsMates`).
 - Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
   The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
   server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live

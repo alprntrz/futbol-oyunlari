@@ -68,7 +68,16 @@ db.exec(`
     key TEXT NOT NULL,
     PRIMARY KEY (user_id, key)
   );
+  CREATE TABLE IF NOT EXISTS friends (
+    user_id TEXT NOT NULL,
+    friend_id TEXT NOT NULL,
+    created INTEGER NOT NULL,
+    PRIMARY KEY (user_id, friend_id)
+  );
 `);
+// friend code: a short public handle to share (users added later get one on first use)
+if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "friend_code")) db.exec("ALTER TABLE users ADD COLUMN friend_code TEXT");
+db.exec("CREATE UNIQUE INDEX IF NOT EXISTS users_friend_code ON users (friend_code)");
 
 // jose is ESM-only on some installs; load it lazily
 let josePromise = null;
@@ -129,6 +138,49 @@ function userFromRequest(req) {
   if (!m) return null;
   const s = db.prepare("SELECT user_id FROM sessions WHERE hash = ?").get(sha(m[1]));
   return s ? db.prepare("SELECT * FROM users WHERE id = ?").get(s.user_id) : null;
+}
+
+// ── Friends: added by code (sharing your code is the consent), both ways at once.
+// A friend sees your nickname, avatar, level and whether you're online. Nothing else.
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const MAX_FRIENDS = 100;
+/** server.js tells us who has a socket open */
+let isOnline = () => false;
+const setPresence = (fn) => (isOnline = fn);
+
+function friendCodeOf(user) {
+  if (user.friend_code) return user.friend_code;
+  for (;;) {
+    const code = Array.from(crypto.randomBytes(6), (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join("");
+    try {
+      db.prepare("UPDATE users SET friend_code = ? WHERE id = ?").run(code, user.id);
+      return (user.friend_code = code);
+    } catch {
+      // taken: try another
+    }
+  }
+}
+
+function friendList(user) {
+  const rows = db
+    .prepare("SELECT u.id, u.friend_code, u.nick, u.avatar, u.xp FROM friends f JOIN users u ON u.id = f.friend_id WHERE f.user_id = ? ORDER BY f.created DESC")
+    .all(user.id);
+  return {
+    code: friendCodeOf(user),
+    friends: rows.map((u) => ({ code: friendCodeOf(u), nick: u.nick, avatar: u.avatar, level: levelOf(u.xp), online: isOnline(u.id) })),
+  };
+}
+
+/** The user id behind a friend code, only if the two are friends (for invites). */
+function friendIdByCode(userId, code) {
+  const row = db.prepare("SELECT u.id FROM users u JOIN friends f ON f.friend_id = u.id WHERE f.user_id = ? AND u.friend_code = ?").get(userId, String(code || "").toUpperCase());
+  return row?.id ?? null;
+}
+
+/** Nickname and avatar to show on an invite. */
+function inviteCard(userId) {
+  const u = db.prepare("SELECT nick, avatar, friend_code FROM users WHERE id = ?").get(userId);
+  return u ? { nick: u.nick, avatar: u.avatar, code: u.friend_code } : null;
 }
 
 // ── Skill ratings (Elo) for the online modes: signed-in players only, no bots
@@ -344,6 +396,28 @@ async function handleAccountApi(req, res, cleanNick) {
       return send(res, 200, { user: publicUser({ ...user, nick, avatar }) }), true;
     }
 
+    if (url === "/api/account/friends" && req.method === "GET") return send(res, 200, friendList(user)), true;
+
+    if (url === "/api/account/friends" && req.method === "POST") {
+      const b = await readJson(req);
+      const code = String(b.code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+      const other = code && db.prepare("SELECT id FROM users WHERE friend_code = ?").get(code);
+      if (!other) return send(res, 404, { error: "not_found" }), true;
+      if (other.id === user.id) return send(res, 400, { error: "self" }), true;
+      const count = db.prepare("SELECT COUNT(*) AS n FROM friends WHERE user_id = ?").get(user.id).n;
+      if (count >= MAX_FRIENDS) return send(res, 400, { error: "limit" }), true;
+      const now = Date.now();
+      db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(user.id, other.id, now);
+      db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(other.id, user.id, now);
+      return send(res, 200, friendList(user)), true;
+    }
+
+    if (url.startsWith("/api/account/friends/") && req.method === "DELETE") {
+      const other = db.prepare("SELECT id FROM users WHERE friend_code = ?").get(url.slice("/api/account/friends/".length).toUpperCase());
+      if (other) db.prepare("DELETE FROM friends WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)").run(user.id, other.id, other.id, user.id);
+      return send(res, 200, friendList(user)), true;
+    }
+
     if (url === "/api/account/signout" && req.method === "POST") {
       const m = /^Bearer (\S+)$/.exec(req.headers.authorization || "");
       db.prepare("DELETE FROM sessions WHERE hash = ?").run(sha(m[1]));
@@ -354,6 +428,7 @@ async function handleAccountApi(req, res, cleanNick) {
     if (url === "/api/account" && req.method === "DELETE") {
       if (user.apple_refresh) await appleForm("revoke", { token: user.apple_refresh, token_type_hint: "refresh_token" }).catch(() => null);
       db.prepare("DELETE FROM awards WHERE user_id = ?").run(user.id);
+      db.prepare("DELETE FROM friends WHERE user_id = ? OR friend_id = ?").run(user.id, user.id);
       db.prepare("DELETE FROM ratings WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM sessions WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM users WHERE id = ?").run(user.id);
@@ -366,4 +441,4 @@ async function handleAccountApi(req, res, cleanNick) {
   }
 }
 
-module.exports = { handleAccountApi, recordResult, userIdFromToken };
+module.exports = { handleAccountApi, recordResult, userIdFromToken, setPresence, friendIdByCode, inviteCard };

@@ -212,6 +212,39 @@ export async function syncProfile(nick: string, avatar: string) {
   } catch {}
 }
 
+// ── Friends (server-accounts.js): added by code, both ways
+export interface Friend {
+  code: string;
+  nick: string;
+  avatar: string;
+  level: number;
+  online: boolean;
+}
+export interface FriendsInfo {
+  /** this account's own friend code */
+  code: string;
+  friends: Friend[];
+}
+
+export const fetchFriends = () => api<FriendsInfo>("/friends");
+export const removeFriend = (code: string) => api<FriendsInfo>(`/friends/${encodeURIComponent(code)}`, { method: "DELETE" });
+
+/** Add by code: the new list, or why not ("not_found" | "self" | "limit" | "error"). */
+export async function addFriend(code: string): Promise<FriendsInfo | "not_found" | "self" | "limit" | "error"> {
+  try {
+    const res = await fetch(`${API}/friends`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ code }),
+    });
+    if (res.ok) return (await res.json()) as FriendsInfo;
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    return body.error === "not_found" || body.error === "self" || body.error === "limit" ? body.error : "error";
+  } catch {
+    return "error";
+  }
+}
+
 /** Current account; null = guest, undefined = still loading. */
 export function useAccount() {
   return useSyncExternalStore(

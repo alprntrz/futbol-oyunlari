@@ -7,7 +7,7 @@ const next = require("next");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
-const { handleAccountApi, recordResult, userIdFromToken } = require("./server-accounts");
+const { handleAccountApi, recordResult, userIdFromToken, setPresence, friendIdByCode, inviteCard } = require("./server-accounts");
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -407,6 +407,9 @@ app.prepare().then(() => {
   // small payload cap: the biggest message is a 20-question quiz (a few KB)
   const io = new Server(server, { cors: { origin: "*" }, maxHttpBufferSize: 64 * 1024 });
   ioServer = io;
+  // a signed-in user is "online" for friends while any of their sockets is open
+  const socketsOf = (uid) => [...io.sockets.sockets.values()].filter((s) => uid && s.data.uid === uid);
+  setPresence((uid) => socketsOf(uid).length > 0);
 
   // pair waiting players as their allowed rank gap widens with time
   const matchQueues = () => {
@@ -423,6 +426,22 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     // signed-in app players send their session token: their online results are rated
     socket.data.uid = userIdFromToken(socket.handshake.auth?.token);
+    // Invite a friend into a room you opened: the friend's open app shows a banner
+    // with Join. Only between friends (friend codes), at most one every 3 s.
+    socket.on("fr:invite", ({ to, game, room }, cb) => {
+      const uid = socket.data.uid;
+      if (!uid || game !== "ht" || typeof room !== "string" || !htRooms.has(room.toUpperCase())) return cb?.({ ok: false });
+      if (Date.now() - (socket.data.lastInvite ?? 0) < 3000) return cb?.({ ok: false, error: "slow" });
+      const friend = friendIdByCode(uid, to);
+      if (!friend) return cb?.({ ok: false, error: "not_friend" });
+      const targets = socketsOf(friend);
+      if (!targets.length) return cb?.({ ok: false, error: "offline" });
+      socket.data.lastInvite = Date.now();
+      const from = inviteCard(uid);
+      for (const s of targets) s.emit("fr:invited", { from, game, room: room.toUpperCase() });
+      cb?.({ ok: true });
+    });
+
     // app features this phone knows (older apps send none): "mate" = "played with" grid criteria
     socket.data.caps = Array.isArray(socket.handshake.auth?.caps) ? socket.handshake.auth.caps.filter((c) => typeof c === "string").slice(0, 8) : [];
     let joinedCode = null;
