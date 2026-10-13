@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
 import { leagueGrid, type LeagueId } from "@/lib/leagues";
-import { generateGrid, type Grid } from "@/lib/tiki";
+import { generateGrid, withMate, type Grid } from "@/lib/tiki";
 
 const KEY = "ht-league";
 let current: LeagueId = "all";
@@ -33,6 +33,12 @@ export function useHtLeague(): [LeagueId, (l: LeagueId) => void] {
   return [league, set];
 }
 
-/** A grid for the league (falls back to all clubs if one can't be made). */
-export const dealGrid = (league: LeagueId | string | undefined): Grid =>
-  (league && league !== "all" ? leagueGrid(league as LeagueId) : null) ?? generateGrid();
+/**
+ * A grid for the league (falls back to all clubs if one can't be made). Half the
+ * time one line is a "played with" star; `mates: false` for a room with a phone
+ * on an older app that doesn't know those criteria.
+ */
+export const dealGrid = (league: LeagueId | string | undefined, mates = true): Grid => {
+  const grid = (league && league !== "all" ? leagueGrid(league as LeagueId) : null) ?? generateGrid();
+  return mates ? withMate(grid) : grid;
+};

@@ -1,9 +1,10 @@
 import { PLAYERS, type GridPlayer } from "@/data/players";
+import { TEAMMATES } from "@/data/teammates";
 import { normalizeAnswer } from "./wordle";
 
 /** A row/column criterion. `test` decides whether a player satisfies it. */
 export interface Criterion {
-  kind: "club" | "country" | "badge";
+  kind: "club" | "country" | "badge" | "mate";
   id: string;
   tr: string;
   en: string;
@@ -106,6 +107,41 @@ export const ALL_CRITERIA: Criterion[] = [
   ...COUNTRIES.map((c) => ({ kind: "country" as const, id: c.id, tr: c.tr, en: c.en, icon: c.flag, test: (p: GridPlayer) => p.country === c.id })),
   ...BADGES.map((b) => ({ kind: "badge" as const, id: b.id, tr: b.tr, en: b.en, icon: b.icon, test: (p: GridPlayer) => !!p.badges?.includes(b.id) })),
 ];
+
+/**
+ * "Played with X": club teammates of a star (src/data/teammates.ts). Not in
+ * ALL_CRITERIA, so seeded grids (daily) and other games stay as they were;
+ * `withMate` swaps one into a dealt grid. Ids are "mate-…".
+ */
+export const MATE_CRITERIA: Criterion[] = TEAMMATES.map((m) => {
+  const mates = new Set(m.mates);
+  return { kind: "mate" as const, id: `mate-${m.id}`, tr: `${m.name} ile oynadı`, en: `Played with ${m.name}`, short: m.name, test: (p: GridPlayer) => mates.has(p.name) };
+});
+
+const BY_ID = new Map([...ALL_CRITERIA, ...MATE_CRITERIA].map((c) => [c.id, c]));
+/** Any criterion by id, "played with" ones included (online grids travel as ids). */
+export const criterionById = (id: string): Criterion | undefined => BY_ID.get(id);
+
+/**
+ * Maybe (`chance`) swap one row or column of a grid for a "played with" star,
+ * keeping every square solvable. Returns the grid unchanged when none fits.
+ */
+export function withMate(grid: Grid, rand: () => number = Math.random, chance = 0.5): Grid {
+  if (!MATE_CRITERIA.length || rand() >= chance) return grid;
+  const lines = shuffle(["r0", "r1", "r2", "c0", "c1", "c2"], rand);
+  for (const mate of shuffle(MATE_CRITERIA, rand).slice(0, 12)) {
+    for (const line of lines) {
+      const i = Number(line[1]);
+      const cross = line[0] === "r" ? grid.cols : grid.rows;
+      const kept = line[0] === "r" ? grid.rows : grid.cols;
+      if (kept.some((c, k) => k !== i && c.kind === "mate")) continue;
+      if (!cross.every((c) => c.kind !== "mate" && cellSolvable(mate, c))) continue;
+      const next = kept.map((c, k) => (k === i ? mate : c));
+      return line[0] === "r" ? { rows: next, cols: grid.cols } : { rows: grid.rows, cols: next };
+    }
+  }
+  return grid;
+}
 
 /** All normalized answer forms accepted for a player (full name + surname + aliases). */
 function acceptedForms(p: GridPlayer): Set<string> {

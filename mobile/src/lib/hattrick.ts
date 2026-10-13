@@ -1,4 +1,4 @@
-import { ALL_CRITERIA, type Grid } from "@/lib/tiki";
+import { criterionById, type Grid } from "@/lib/tiki";
 
 /** Hat-trick (3×3 criteria grid) rules shared by the same-phone and online modes. */
 export type Mark = "X" | "O";
@@ -45,6 +45,6 @@ export function resultOf(board: (HtCell | null)[]): Winner {
 export const gridToIds = (g: Grid) => ({ rows: g.rows.map((c) => c.id), cols: g.cols.map((c) => c.id) });
 
 export function gridFromIds(ids: { rows: string[]; cols: string[] }): Grid {
-  const by = (id: string) => ALL_CRITERIA.find((c) => c.id === id)!;
+  const by = (id: string) => criterionById(id)!;
   return { rows: ids.rows.map(by), cols: ids.cols.map(by) };
 }

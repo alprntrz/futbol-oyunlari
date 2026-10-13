@@ -51,6 +51,13 @@ function tierGap(since) {
   const waited = Date.now() - since;
   return waited < TIER_WIDEN_MS ? 0 : waited < 2 * TIER_WIDEN_MS ? 1 : 99;
 }
+/** Does a Tic-Tac-Toe grid use "played with" criteria (ids "mate-…"), which older apps can't draw? */
+const gridHasMate = (grid) => [...(grid?.rows ?? []), ...(grid?.cols ?? [])].some((id) => typeof id === "string" && id.startsWith("mate-"));
+const knowsMates = (s) => !!s?.data.caps?.includes("mate");
+/** set once the socket server is up (module-level helpers look sockets up through it) */
+let ioServer = null;
+const htAllKnowMates = (room) => room.players.every((p) => knowsMates(ioServer?.sockets.sockets.get(p.id)));
+
 /** Pairs whoever in a queue can meet now, oldest first: { pairs: [older, newer][], rest }. */
 function takePairs(queue, same = () => true) {
   const waiting = queue.filter((w) => w.socket.connected).sort((a, b) => a.since - b.since);
@@ -146,6 +153,8 @@ function htPublic(room) {
     endReason: room.endReason ?? null,
     series: htSeries(room),
     league: room.league || "all",
+    // every phone in the room can draw "played with" criteria: the host may deal them
+    mates: htAllKnowMates(room),
     players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark, tier: p.tier ?? null })),
   };
 }
@@ -397,10 +406,12 @@ app.prepare().then(() => {
   });
   // small payload cap: the biggest message is a 20-question quiz (a few KB)
   const io = new Server(server, { cors: { origin: "*" }, maxHttpBufferSize: 64 * 1024 });
+  ioServer = io;
 
   // pair waiting players as their allowed rank gap widens with time
   const matchQueues = () => {
-    const ht = takePairs(htQueue, (a, b) => a.league === b.league);
+    // the older player's grid is used: the other phone must be able to draw it
+    const ht = takePairs(htQueue, (a, b) => a.league === b.league && (!gridHasMate(a.grid) || knowsMates(b.socket)));
     htQueue = ht.rest;
     for (const [a, b] of ht.pairs) a.pair(a, b);
     const pp = takePairs(ppQueue);
@@ -412,6 +423,8 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     // signed-in app players send their session token: their online results are rated
     socket.data.uid = userIdFromToken(socket.handshake.auth?.token);
+    // app features this phone knows (older apps send none): "mate" = "played with" grid criteria
+    socket.data.caps = Array.isArray(socket.handshake.auth?.caps) ? socket.handshake.auth.caps.filter((c) => typeof c === "string").slice(0, 8) : [];
     let joinedCode = null;
 
     socket.on("room:create", ({ nick, difficulty, matchId }, cb) => {
@@ -547,6 +560,7 @@ app.prepare().then(() => {
       if (!room) return cb?.({ ok: false, error: "not_found" });
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
+        if (gridHasMate(room.grid) && !knowsMates(socket)) return cb?.({ ok: false, error: "update_app" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
         room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark });
       }
@@ -692,6 +706,7 @@ app.prepare().then(() => {
       if (!room) return cb?.({ ok: false, error: "not_found" });
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
+        if (gridHasMate(room.grid) && !knowsMates(socket)) return cb?.({ ok: false, error: "update_app" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
         room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark });
       }
@@ -845,6 +860,7 @@ app.prepare().then(() => {
     socket.on("ht:rematch", ({ grid }) => {
       const room = htRooms.get(socket.data.htCode);
       if (!room || !room.winner || room.players[0].id !== socket.id || !grid) return;
+      if (gridHasMate(grid) && !htAllKnowMates(room)) return;
       // next game of the series, or a fresh series once it's decided
       if (htSeries(room).over) {
         room.wins = {};

@@ -41,6 +41,8 @@ interface HtRoom {
   /** game wins per mark this series; `over` once someone reaches `target` */
   series: { X: number; O: number; target: number; over: boolean };
   league: string;
+  /** every phone here knows "played with" criteria (server.js htAllKnowMates) */
+  mates?: boolean;
   players: HtPlayer[];
 }
 
@@ -106,11 +108,13 @@ export default function HatTrickRoom() {
   const seriesOver = room?.series?.over ?? false;
   const hostHere = room?.players[0]?.id === myId;
   const roomLeague = room?.league;
+  // an older app in the room can't draw "played with" criteria
+  const roomMates = room?.mates !== false;
   useEffect(() => {
     if (!room?.winner || seriesOver || !hostHere || peerLeft) return;
-    const id = setTimeout(() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(roomLeague)) }), NEXT_GAME_MS);
+    const id = setTimeout(() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(roomLeague, roomMates)) }), NEXT_GAME_MS);
     return () => clearTimeout(id);
-  }, [room?.winner, seriesOver, hostHere, peerLeft, roomLeague]);
+  }, [room?.winner, seriesOver, hostHere, peerLeft, roomLeague, roomMates]);
 
   const grid = useMemo(() => (room ? gridFromIds(room.grid) : null), [room?.grid]); // eslint-disable-line react-hooks/exhaustive-deps
   const me = room?.players.find((p) => p.id === myId);
@@ -237,7 +241,7 @@ export default function HatTrickRoom() {
           room.winner && !series.over ? null : room.winner ? (
             <View style={{ marginTop: 18, gap: 10 }}>
               {isHost ? (
-                <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league)) })} />
+                <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) })} />
               ) : (
                 <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
               )}
@@ -261,7 +265,7 @@ export default function HatTrickRoom() {
         won={iWon}
         mine={me ? series[me.mark] : 0}
         theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
-        onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league)) }) : null}
+        onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) }) : null}
       />
     </Page>
   );

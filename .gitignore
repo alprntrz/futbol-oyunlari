@@ -56,3 +56,5 @@ scripts/.cache/tm/
 
 # quiz levels/standings written by server.js
 /data
+# club-season squads for teammates (scripts/tiki-scrape-seasons.mjs), large and re-scrapable
+scripts/.cache/raw-seasons.json

@@ -7,7 +7,7 @@ import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 import { PLAYERS, type GridPlayer } from "@/data/players";
 import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
-import { generateGrid, searchPlayers, seededRandom, type Criterion } from "@/lib/tiki";
+import { generateGrid, searchPlayers, seededRandom, withMate, type Criterion } from "@/lib/tiki";
 
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
@@ -48,7 +48,12 @@ export default function HatTrickSolo() {
   const day = dayNumber();
   // null = today's shared grid (saved); a number = an extra random grid after it (not saved)
   const [seed, setSeed] = useState<number | null>(null);
-  const grid = useMemo(() => generateGrid(seededRandom(seed ?? day * 7919 + 17)), [day, seed]);
+  // today's grid stays plain (same for everyone, saved); extra grids may get a "played with" star
+  const grid = useMemo(() => {
+    const rand = seededRandom(seed ?? day * 7919 + 17);
+    const g = generateGrid(rand);
+    return seed === null ? g : withMate(g, rand);
+  }, [day, seed]);
   const [run, setRun] = useState<Run | null | undefined>(undefined);
   const [limit, setLimit] = useState<"3" | "none">("3");
   const [query, setQuery] = useState("");
