@@ -40,24 +40,46 @@ function shuffle<T>(xs: T[], rand: () => number): T[] {
 }
 
 /**
- * A grid from one league: three of its clubs down the side, three countries or
- * honours (or more of its clubs) across the top, every square answerable.
+ * A grid from one league, every square answerable. Usually club × club: some of
+ * the league's clubs down the side and some across the top (2 + 1 when the league
+ * only has three), the rest countries or honours; otherwise three clubs against
+ * three countries / honours.
  */
 export function leagueGrid(id: LeagueId, rand: () => number = Math.random): Grid | null {
   const league = leagueById(id);
   if (!league.clubs.length) return null;
   const clubs = ALL_CRITERIA.filter((c) => c.kind === "club" && league.clubs.includes(c.id));
   const others = ALL_CRITERIA.filter((c) => c.kind !== "club");
-  for (let attempt = 0; attempt < 600; attempt++) {
-    const rows = shuffle(clubs, rand).slice(0, 3);
-    const pool = shuffle([...others, ...clubs.filter((c) => !rows.includes(c))], rand);
-    const cols: Criterion[] = [];
-    for (const c of pool) {
-      if (cols.length === 3) break;
-      if (c.kind === "badge" && cols.some((x) => x.kind === "badge")) continue;
-      if (rows.every((r) => cellSolvable(r, c))) cols.push(c);
+  const pairs = rand() < 0.7;
+  for (let attempt = 0; attempt < 800; attempt++) {
+    const order = shuffle(clubs, rand);
+    // club × club: split the league's clubs between rows and columns
+    const rowClubs = pairs && attempt < 600 ? (clubs.length >= 5 ? 3 : 2) : 3;
+    const colClubs = pairs && attempt < 600 ? Math.min(clubs.length - rowClubs, clubs.length >= 5 ? 2 : 1) : 0;
+    const rows: Criterion[] = order.slice(0, rowClubs);
+    const colClubList = order.slice(rowClubs, rowClubs + colClubs);
+    const fill = shuffle(others, rand);
+    // fill the rows up to three with countries / honours
+    for (const c of fill) {
+      if (rows.length === 3) break;
+      if (rows.some((r) => r.kind === "badge") && c.kind === "badge") continue;
+      if (colClubList.every((k) => cellSolvable(c, k))) rows.push(c);
     }
-    if (cols.length === 3) return rand() < 0.5 ? { rows, cols } : { rows: cols, cols: rows };
+    if (rows.length < 3) continue;
+    const cols: Criterion[] = [];
+    for (const c of [...colClubList, ...fill, ...order.slice(rowClubs + colClubs)]) {
+      if (cols.length === 3) break;
+      if (cols.includes(c) || rows.includes(c)) continue;
+      if (c.kind === "badge" && [...rows, ...cols].filter((x) => x.kind === "badge").length >= 2) continue;
+      if (c.kind === "country" && rows.some((r) => r.kind === "country")) continue;
+      if (rows.every((r) => !(r.kind === "country" && c.kind === "country") && cellSolvable(r, c))) cols.push(c);
+    }
+    if (cols.length < 3) continue;
+    // a country row against a country column can't be answered: checked above for new cols
+    if (rows.some((r) => r.kind === "country") && cols.some((c) => c.kind === "country")) continue;
+    const r = shuffle(rows, rand);
+    const c = shuffle(cols, rand);
+    return rand() < 0.5 ? { rows: r, cols: c } : { rows: c, cols: r };
   }
   return null;
 }

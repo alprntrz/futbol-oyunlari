@@ -125,8 +125,12 @@ export const COACH_CRITERIA: Criterion[] = COACHES.map((m) => {
   return { kind: "coach" as const, id: `coach-${m.id}`, tr: `Hocası ${m.name}`, en: `Managed by ${m.name}`, short: m.name, test: (p: GridPlayer) => players.has(p.name) };
 });
 
-/** The "people" criteria (played with / managed by) that `withLink` can deal in. */
-const LINK_CRITERIA = [...MATE_CRITERIA, ...COACH_CRITERIA];
+/** The "people" criteria (played with / managed by) that `withLink` can deal in, with where they belong. */
+const LINKS: { c: Criterion; global: boolean; clubs: string[] }[] = [
+  ...TEAMMATES.map((m, i) => ({ c: MATE_CRITERIA[i], global: m.global, clubs: m.clubs })),
+  ...COACHES.map((m, i) => ({ c: COACH_CRITERIA[i], global: m.global, clubs: m.clubs })),
+];
+const LINK_CRITERIA = LINKS.map((l) => l.c);
 const isLink = (c: Criterion) => c.kind === "mate" || c.kind === "coach";
 
 const BY_ID = new Map([...ALL_CRITERIA, ...LINK_CRITERIA].map((c) => [c.id, c]));
@@ -136,13 +140,15 @@ export const criterionById = (id: string): Criterion | undefined => BY_ID.get(id
 /**
  * Maybe (`chance`) swap one row or column of a grid for a "played with" star or a
  * "managed by" coach, keeping every square solvable. At most one such line per
- * grid; returns the grid unchanged when none fits.
+ * grid. `leagueClubs`: a league grid gets the names who were at that league's
+ * clubs (local ones too); without it only world-class names are dealt.
  */
-export function withLink(grid: Grid, rand: () => number = Math.random, chance = 0.5): Grid {
-  if (!LINK_CRITERIA.length || rand() >= chance) return grid;
+export function withLink(grid: Grid, rand: () => number = Math.random, chance = 0.5, leagueClubs?: string[]): Grid {
+  if (!LINKS.length || rand() >= chance) return grid;
   if ([...grid.rows, ...grid.cols].some(isLink)) return grid;
+  const pool = LINKS.filter((l) => (leagueClubs?.length ? l.clubs.some((c) => leagueClubs.includes(c)) : l.global)).map((l) => l.c);
   const lines = shuffle(["r0", "r1", "r2", "c0", "c1", "c2"], rand);
-  for (const link of shuffle(LINK_CRITERIA, rand).slice(0, 12)) {
+  for (const link of shuffle(pool, rand).slice(0, 12)) {
     for (const line of lines) {
       const i = Number(line[1]);
       const cross = line[0] === "r" ? grid.cols : grid.rows;
@@ -227,7 +233,9 @@ function shuffle<T>(a: T[], rand: () => number = Math.random): T[] { const r = [
  * criteria total, and no country×country cells (a player has one nationality).
  */
 /** `rand` lets callers seed the grid (e.g. one shared daily grid). */
-export function generateGrid(rand: () => number = Math.random): Grid {
+export function generateGrid(rand: () => number = Math.random, opts: { clubPairs?: boolean } = {}): Grid {
+  // dealt grids: most of the time at least one club × club square (seeded daily grids keep the old rule)
+  const wantPair = !!opts.clubPairs && rand() < 0.7;
   for (let attempt = 0; attempt < 400; attempt++) {
     const shuffled = shuffle(ALL_CRITERIA, rand);
     const rows = shuffled.slice(0, 3);
@@ -240,6 +248,7 @@ export function generateGrid(rand: () => number = Math.random): Grid {
     // avoid the whole board being one kind (nicer variety)
     const kinds = new Set([...rows, ...cols].map((x) => x.kind));
     if (kinds.size < 2) continue;
+    if (wantPair && attempt < 300 && !(rows.some((c) => c.kind === "club") && cols.some((c) => c.kind === "club"))) continue;
     return { rows, cols };
   }
   const by = (id: string) => ALL_CRITERIA.find((c) => c.id === id)!;

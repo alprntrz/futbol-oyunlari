@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
-import { leagueGrid, type LeagueId } from "@/lib/leagues";
+import { leagueById, leagueGrid, type LeagueId } from "@/lib/leagues";
 import { generateGrid, withLink, type Grid } from "@/lib/tiki";
 
 const KEY = "ht-league";
@@ -39,6 +39,8 @@ export function useHtLeague(): [LeagueId, (l: LeagueId) => void] {
  * for a room with a phone on an older app that doesn't know those criteria.
  */
 export const dealGrid = (league: LeagueId | string | undefined, mates = true): Grid => {
-  const grid = (league && league !== "all" ? leagueGrid(league as LeagueId) : null) ?? generateGrid();
-  return mates ? withLink(grid) : grid;
+  const local = league && league !== "all" ? leagueGrid(league as LeagueId) : null;
+  const grid = local ?? generateGrid(Math.random, { clubPairs: true });
+  // the all-clubs grid only deals world-class names; a league grid its own (local ones too)
+  return mates ? withLink(grid, Math.random, 0.5, local ? leagueById(league).clubs : undefined) : grid;
 };

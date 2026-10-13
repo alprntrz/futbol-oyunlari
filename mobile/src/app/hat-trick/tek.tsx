@@ -51,8 +51,9 @@ export default function HatTrickSolo() {
   // today's grid stays plain (same for everyone, saved); extra grids may get a "played with" / "managed by" line
   const grid = useMemo(() => {
     const rand = seededRandom(seed ?? day * 7919 + 17);
-    const g = generateGrid(rand);
-    return seed === null ? g : withLink(g, rand);
+    // today's grid keeps the old rule (same grid as before the update); extra grids get club pairs
+    if (seed === null) return generateGrid(rand);
+    return withLink(generateGrid(rand, { clubPairs: true }), rand);
   }, [day, seed]);
   const [run, setRun] = useState<Run | null | undefined>(undefined);
   const [limit, setLimit] = useState<"3" | "none">("3");
