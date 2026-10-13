@@ -9,6 +9,7 @@ import { Button, Card, Page } from "~/components/ui";
 import { gridToIds, type Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid, useHtLeague } from "~/lib/league";
+import { useSearchActivity } from "~/lib/liveActivity";
 import { loadNick, randomNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
@@ -26,6 +27,7 @@ export default function HatTrickRandom() {
   const [error, setError] = useState<string | null>(null);
   const [matched, setMatched] = useState<Matched | null>(null);
   const [league] = useHtLeague();
+  useSearchActivity(t("tikiTakaName"), !matched);
 
   useEffect(() => {
     if (matched) return;

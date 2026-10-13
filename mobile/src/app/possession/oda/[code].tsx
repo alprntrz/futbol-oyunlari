@@ -10,6 +10,7 @@ import { Button, Card, Icon, Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { useDuelActivity } from "~/lib/liveActivity";
 import { boardFromIds, boardToIds, claimsFor, generateBoard, type PpCell } from "~/lib/possession";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
@@ -96,6 +97,25 @@ export default function PossessionRoom() {
   }, [room?.started, room?.winner]);
 
   const board = useMemo(() => (room ? boardFromIds(room.board) : null), [room?.board]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Lock Screen / Dynamic Island: whose move, the mover's chess clock, hexes held
+  const rival = room?.players.find((p) => p.id !== myId);
+  useDuelActivity(
+    room?.started && myMark
+      ? {
+          game: t("ppName"),
+          me: myMark,
+          opponent: rival?.nick || t("opponent"),
+          turn: room.turn,
+          winner: room.winner,
+          matchOver: !!room.winner || peerLeft,
+          score: { X: room.owners.filter((o) => o?.mark === "X").length, O: room.owners.filter((o) => o?.mark === "O").length },
+          since: receivedAt,
+          deadline: receivedAt + room.clocks[room.turn],
+          path: `/possession/oda/${room.code}`,
+        }
+      : null
+  );
 
   if (error) {
     return (

@@ -7,6 +7,7 @@ import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { useSearchActivity } from "~/lib/liveActivity";
 import { boardToIds, generateBoard } from "~/lib/possession";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
@@ -16,6 +17,7 @@ import { loadTier } from "~/lib/xp";
 export default function PossessionRandom() {
   const { t } = useI18n();
   const [error, setError] = useState<string | null>(null);
+  useSearchActivity(t("ppName"), true);
 
   useEffect(() => {
     const socket = getSocket();

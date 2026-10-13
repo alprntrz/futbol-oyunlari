@@ -12,6 +12,7 @@ import { haptic } from "~/lib/haptics";
 import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
+import { useDuelActivity } from "~/lib/liveActivity";
 import { dealGrid } from "~/lib/league";
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -160,6 +161,19 @@ export default function HatTrickHouse() {
 
   const iWon = winner === me;
   const score = `${wins.mine} – ${wins.theirs}`;
+
+  // the house player's game looks like any online one, Live Activity included
+  useDuelActivity({
+    game: t("tikiTakaName"),
+    me,
+    opponent: nick,
+    turn,
+    winner,
+    matchOver: seriesOver,
+    score: me === "X" ? { X: wins.mine, O: wins.theirs } : { X: wins.theirs, O: wins.mine },
+    since: deadline - TURN_SECONDS * 1000,
+    deadline,
+  });
   const winnerText =
     endReason === "forfeit"
       ? t(iWon ? "htTheyForfeited" : "htYouForfeited")

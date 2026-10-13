@@ -21,6 +21,12 @@
         "EXPO_PUBLIC_SOCKET_URL": "https://tiktako.fly.dev",
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "360213444851-nj294lghif6tnt08rn7tb7i9u6sukkj4.apps.googleusercontent.com"
       }
+    },
+    "simulator": {
+      "extends": "preview",
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {

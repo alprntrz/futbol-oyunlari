@@ -14,6 +14,7 @@ import { haptic } from "~/lib/haptics";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid } from "~/lib/league";
+import { useDuelActivity } from "~/lib/liveActivity";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, F, T } from "~/lib/theme";
@@ -120,6 +121,25 @@ export default function HatTrickRoom() {
   const me = room?.players.find((p) => p.id === myId);
   const isHost = room?.players[0]?.id === myId;
   const timeLeft = Math.min(TURN_SECONDS, Math.max(0, Math.ceil((deadline - now) / 1000)));
+  const opponent = room?.players.find((p) => p.id !== myId);
+
+  // Lock Screen / Dynamic Island: whose turn, the clock, the series score
+  useDuelActivity(
+    room?.started && me
+      ? {
+          game: t("tikiTakaName"),
+          me: me.mark,
+          opponent: opponent?.nick || t("opponent"),
+          turn: room.turn,
+          winner: room.winner,
+          matchOver: !!room.series?.over || peerLeft,
+          score: { X: room.series?.X ?? 0, O: room.series?.O ?? 0 },
+          since: deadline - TURN_SECONDS * 1000,
+          deadline,
+          path: `/hat-trick/oda/${code}`,
+        }
+      : null
+  );
 
   const copy = async () => {
     await Clipboard.setStringAsync(code);
