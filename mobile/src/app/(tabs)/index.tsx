@@ -17,7 +17,7 @@ import { Icon, Tap } from "~/components/ui";
 import { useAccount } from "~/lib/account";
 import { loadAvatar } from "~/lib/avatar";
 import { bingoForDay } from "~/lib/bingo";
-import { BRAND } from "~/lib/brand";
+import { BRAND, OYUN } from "~/lib/brand";
 import { CALENDAR, claimDaily, useDailyRewards } from "~/lib/dailyRewards";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -81,9 +81,9 @@ export default function Home() {
   }, []);
 
   const games: { id: GameId; name: string; art: ImageSourcePropType; play: Href; friend: Href; same: Href | null }[] = [
-    { id: "ht", name: t("tikiTakaName"), art: BRAND.icon.tiki, play: "/hat-trick/rastgele", friend: "/hat-trick/oda", same: "/hat-trick/yerel" },
-    { id: "qz", name: t("qzName"), art: BRAND.icon.quiz, play: { pathname: "/bilgi/rastgele", params: { zorluk: level } }, friend: { pathname: "/bilgi/oda", params: { zorluk: level } }, same: null },
-    { id: "pp", name: t("ppName"), art: BRAND.icon.possession, play: "/possession/rastgele", friend: "/possession/oda", same: "/possession/yerel" },
+    { id: "ht", name: t("tikiTakaName"), art: OYUN.hero.ht, play: "/hat-trick/rastgele", friend: "/hat-trick/oda", same: "/hat-trick/yerel" },
+    { id: "qz", name: t("qzName"), art: OYUN.hero.qz, play: { pathname: "/bilgi/rastgele", params: { zorluk: level } }, friend: { pathname: "/bilgi/oda", params: { zorluk: level } }, same: null },
+    { id: "pp", name: t("ppName"), art: OYUN.hero.pp, play: "/possession/rastgele", friend: "/possession/oda", same: "/possession/yerel" },
   ];
   const i = Math.max(0, games.findIndex((g) => g.id === game));
   const current = games[i];
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
   gear: { width: 40, borderRadius: 12, backgroundColor: "rgba(0,0,0,0.3)", alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "rgba(255,255,255,0.12)" },
   hero: { flex: 1, alignItems: "center", justifyContent: "center", minHeight: 150 },
   glow: { position: "absolute", width: 230, height: 230, borderRadius: 115, backgroundColor: "rgba(155,225,93,0.18)" },
-  heroArt: { width: 200, height: 200 },
+  heroArt: { width: 230, height: 230 },
   roadTrack: { height: 30, borderRadius: 15, backgroundColor: "rgba(0,0,0,0.35)", borderWidth: 2.5, borderColor: G.ink, overflow: "hidden", justifyContent: "center", marginHorizontal: 18 },
   roadFill: { position: "absolute", left: 0, top: 0, bottom: 0, backgroundColor: G.orange },
   roadText: { textAlign: "center" },

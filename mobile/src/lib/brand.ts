@@ -19,6 +19,23 @@ export const REWARD = {
   stars: require("../../assets/brand/odul/bg-stars.png"),
 };
 
+/** Game-look art (docs/design/showdown-ui-brief.md): Play-tab heroes, tab icons, background pattern. */
+export const OYUN = {
+  hero: {
+    ht: require("../../assets/brand/oyun/hero-tictactoe.png"),
+    qz: require("../../assets/brand/oyun/hero-quiz.png"),
+    pp: require("../../assets/brand/oyun/hero-possession.png"),
+  },
+  tab: {
+    games: require("../../assets/brand/oyun/tab-games.png"),
+    daily: require("../../assets/brand/oyun/tab-daily.png"),
+    play: require("../../assets/brand/oyun/tab-play.png"),
+    friends: require("../../assets/brand/oyun/tab-friends.png"),
+    profile: require("../../assets/brand/oyun/tab-profile.png"),
+  },
+  pattern: require("../../assets/brand/oyun/bg-pattern.png"),
+};
+
 export const BRAND = {
   icon: {
     daily: require("../../assets/brand/icon-daily.png"),

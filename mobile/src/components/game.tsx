@@ -1,7 +1,7 @@
 import { Image, Pressable, StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
-import { REWARD } from "~/lib/brand";
+import { OYUN } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { F } from "~/lib/theme";
@@ -62,7 +62,7 @@ export function GameBg({ from = G.top, to = G.bottom }: { from?: string; to?: st
         </Defs>
         <Rect width="100%" height="100%" fill="url(#bg)" />
       </Svg>
-      <Image source={REWARD.stars} resizeMode="repeat" style={[StyleSheet.absoluteFill, { opacity: 0.18, width: "100%", height: "100%" }]} />
+      <Image source={OYUN.pattern} resizeMode="repeat" style={[StyleSheet.absoluteFill, { opacity: 0.07, width: "100%", height: "100%" }]} />
     </View>
   );
 }

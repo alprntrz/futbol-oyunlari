@@ -2,18 +2,19 @@ import { TabList, Tabs, TabSlot, TabTrigger, type TabTriggerSlotProps } from "ex
 import { useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import { forwardRef, useCallback, useEffect } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { G, outline } from "~/components/game";
-import { Icon, type SymbolName } from "~/components/ui";
+import { Icon } from "~/components/ui";
+import { OYUN } from "~/lib/brand";
 import { useDailyRewards } from "~/lib/dailyRewards";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { useQuests } from "~/lib/quests";
 
-type TabDef = { name: string; href: "/oyunlar" | "/gunluk" | "/" | "/arkadaslar" | "/istatistik"; label: string; icon: SymbolName; fallback: string; color: string; edge: string };
+type TabDef = { name: string; href: "/oyunlar" | "/gunluk" | "/" | "/arkadaslar" | "/istatistik"; label: string; art: ImageSourcePropType; color: string; edge: string };
 
 /**
  * Game-style tab bar (after Draft Showdown): a dark strip of chunky coloured
@@ -34,11 +35,11 @@ export default function TabsLayout() {
   );
 
   const tabs: TabDef[] = [
-    { name: "oyunlar", href: "/oyunlar", label: t("tabGames"), icon: "square.grid.2x2.fill", fallback: "▦", color: G.blue, edge: G.blueEdge },
-    { name: "gunluk", href: "/gunluk", label: t("tabDaily"), icon: "calendar", fallback: "📅", color: G.orange, edge: G.orangeEdge },
-    { name: "index", href: "/", label: t("tabPlay"), icon: "soccerball", fallback: "⚽", color: G.lime, edge: G.limeEdge },
-    { name: "arkadaslar", href: "/arkadaslar", label: t("tabFriends"), icon: "person.2.fill", fallback: "👥", color: G.purple, edge: G.purpleEdge },
-    { name: "istatistik", href: "/istatistik", label: t("tabProfile"), icon: "person.crop.circle.fill", fallback: "👤", color: G.pink, edge: G.pinkEdge },
+    { name: "oyunlar", href: "/oyunlar", label: t("tabGames"), art: OYUN.tab.games, color: G.blue, edge: G.blueEdge },
+    { name: "gunluk", href: "/gunluk", label: t("tabDaily"), art: OYUN.tab.daily, color: G.orange, edge: G.orangeEdge },
+    { name: "index", href: "/", label: t("tabPlay"), art: OYUN.tab.play, color: G.lime, edge: G.limeEdge },
+    { name: "arkadaslar", href: "/arkadaslar", label: t("tabFriends"), art: OYUN.tab.friends, color: G.purple, edge: G.purpleEdge },
+    { name: "istatistik", href: "/istatistik", label: t("tabProfile"), art: OYUN.tab.profile, color: G.pink, edge: G.pinkEdge },
   ];
 
   return (
@@ -80,7 +81,7 @@ const TabButton = forwardRef<View, TabTriggerSlotProps & { tab: TabDef; badge: b
       <Animated.View style={[styles.tile, { backgroundColor: tab.edge }, !isFocused && styles.tileIdle, tileStyle]}>
         <View style={[styles.face, { backgroundColor: tab.color }]}>
           <View style={styles.shine} />
-          <Icon name={tab.icon} size={26} color="white" fallback={tab.fallback} />
+          <Image source={tab.art} style={styles.art} />
         </View>
         {badge && (
           <View style={styles.badge}>
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
   tile: { width: 58, height: 58, borderRadius: 16, paddingBottom: 5, borderWidth: 2.5, borderColor: G.ink },
   tileIdle: { opacity: 0.88 },
   face: { flex: 1, borderRadius: 12, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  art: { width: 44, height: 44 },
   shine: { position: "absolute", top: 3, left: 6, right: 6, height: "40%", borderRadius: 9, backgroundColor: "rgba(255,255,255,0.25)" },
   badge: {
     position: "absolute",
