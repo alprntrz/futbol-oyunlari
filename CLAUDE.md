@@ -82,6 +82,12 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `src/data/coaches.ts` ← `scripts/tiki-scrape-seasons.mjs` + `scripts/tiki-scrape-coaches.mjs` →
   `scripts/tiki-build-teammates.mjs` / `tiki-build-coaches.mjs`). server.js keeps such grids away from phones that
   can't draw them (`canDraw`, `htAllKnowMates`). Daily grids never get them (seeded, unchanged).
+  Each star / coach is "g" (world-class) or "l" (local) in the builders: the all-clubs grid (`dealGrid(... "all")`) only
+  deals "g" ones; a league grid deals anyone who was at that league's clubs. Dealt and league grids aim for club × club
+  squares (`generateGrid(rand, { clubPairs: true })`, `leagueGrid`); the seeded daily grid keeps the old rule.
+- Live Activities are behind `LIVE_ACTIVITIES` (mobile/src/lib/features.ts, off) and "expo-widgets" is out of app.json
+  plugins: the widget extension needs App Groups (group.com.alprntrz.tiktako) enabled on both App IDs in the Apple portal
+  first (EAS couldn't sync that capability with the API key).
 - Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
   The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
   server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live
