@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import { Pressable, StyleSheet, View, type ImageSourcePropType, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
 import { Image } from "react-native";
-import Svg, { Defs, G as SvgG, LinearGradient, Path, Pattern, Rect, Stop } from "react-native-svg";
+import Svg, { Defs, G as SvgG, LinearGradient, Path, Pattern, RadialGradient, Rect, Stop } from "react-native-svg";
 
 import { haptic } from "~/lib/haptics";
 import { play } from "~/lib/sound";
@@ -107,14 +107,61 @@ const STADIUM: typeof VIOLET = {
   tealEdge: "#0D6656",
 };
 
+/** Champions League night: deep navy, white and silver, starry sky, electric blue for Play. */
+const UCL: typeof VIOLET = {
+  bg: "#061A55",
+  star: "#0E2A73",
+  ink: "#020B2E",
+  glass: "rgba(2,11,46,0.55)",
+  plate: "#0B2468",
+  arrow: "#1E43A8",
+  arrowInk: "#FFFFFF",
+  tab1: "#2A4FB8",
+  tab2: "#0A1D5E",
+  tabIdle1: "#16318A",
+  tabIdle2: "#06154A",
+  tabRim: "#DCE6FF",
+  text: "#FFFFFF",
+  yellowText: "#FFFFFF",
+  cta1: "#4FD3FF",
+  cta2: "#1167E0",
+  ctaEdge: "#073A8C",
+  ctaText: "#FFFFFF",
+  ctaTextShadow: "#02205C",
+  bar1: "#F4F7FF",
+  bar2: "#9DB2DD",
+  barFrame: "#2A4DA8",
+  barInner: "#031444",
+  me1: "#3E6FE6",
+  me2: "#16389F",
+  quest1: "#E9EEF9",
+  quest2: "#A8B8DA",
+  questText: "#0A1D5E",
+  pill: "#0A1D5E",
+  track: "#031444",
+  trackFill: "#3FB8FF",
+  dot: "#3FB8FF",
+  avatarBg: "#DCE6FF",
+  slot1: "#2A57D0",
+  slot2: "#0F2F8C",
+  slotDone: "#031444",
+  green: "#2FC46A",
+  font: F.display,
+  upper: true,
+  blue: "#2C6FD6",
+  blueEdge: "#17448C",
+  teal: "#1FA98F",
+  tealEdge: "#0D6656",
+};
+
 /** Which look the game screens use ("violet" = Draft Showdown copy, "stadium" = our football take). */
-export const LOOK: "violet" | "stadium" = "stadium";
-export const G = LOOK === "stadium" ? STADIUM : VIOLET;
+export const LOOK = "ucl" as "violet" | "stadium" | "ucl";
+export const G = LOOK === "stadium" ? STADIUM : LOOK === "ucl" ? UCL : VIOLET;
 
 /** Rounded game type, white with a hard violet drop under it. */
 export const outline = (size: number, color = G.text, shadow = G.ink): TextStyle => ({
   fontFamily: G.font,
-  fontSize: LOOK === "stadium" ? size * 1.12 : size,
+  fontSize: LOOK === "violet" ? size : size * 1.12,
   color,
   textShadowColor: shadow,
   textShadowOffset: { width: 0, height: Math.max(1.5, size / 13) },
@@ -123,7 +170,48 @@ export const outline = (size: number, color = G.text, shadow = G.ink): TextStyle
 });
 
 export function GameBg() {
-  return LOOK === "stadium" ? <StadiumBg /> : <VioletBg />;
+  return LOOK === "stadium" ? <StadiumBg /> : LOOK === "ucl" ? <UclBg /> : <VioletBg />;
+}
+
+/** Champions League night: navy glow from the top, a sky of white stars, one soft light arc. */
+function UclBg() {
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
+  // fixed scatter so the sky never jumps between renders
+  const stars: [number, number, number, number][] = [];
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+  for (let i = 0; i < 46; i++) stars.push([rnd() * 400, rnd() * 860, 2 + rnd() * (i % 6 === 0 ? 9 : 4), 0.25 + rnd() * 0.6]);
+  const star = ([x, y, r, o]: [number, number, number, number], k: number) => {
+    const pts = Array.from({ length: 10 }, (_, i) => {
+      const a = (Math.PI / 5) * i - Math.PI / 2;
+      const rr = i % 2 ? r * 0.42 : r;
+      return `${(x + rr * Math.cos(a)).toFixed(1)},${(y + rr * Math.sin(a)).toFixed(1)}`;
+    });
+    return <Path key={k} d={`M${pts.join("L")}Z`} fill="#FFFFFF" fillOpacity={o} />;
+  };
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Svg width="100%" height="100%" viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice">
+        <Defs>
+          <LinearGradient id={`n${id}`} x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#0A2A86" />
+            <Stop offset="0.5" stopColor="#061A55" />
+            <Stop offset="1" stopColor="#030D33" />
+          </LinearGradient>
+          <RadialGradient id={`glow${id}`} cx="0.5" cy="0.32" r="0.55">
+            <Stop offset="0" stopColor="#3D7BFF" stopOpacity={0.35} />
+            <Stop offset="1" stopColor="#3D7BFF" stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <Rect width={400} height={860} fill={`url(#n${id})`} />
+        <Rect width={400} height={860} fill={`url(#glow${id})`} />
+        {/* a wide soft arc of light, like a stadium roof at night */}
+        <Path d="M-40,520 Q200,330 440,520" stroke="#BFD3FF" strokeOpacity={0.08} strokeWidth={26} fill="none" />
+        <Path d="M-40,560 Q200,380 440,560" stroke="#BFD3FF" strokeOpacity={0.05} strokeWidth={10} fill="none" />
+        {stars.map(star)}
+      </Svg>
+    </View>
+  );
 }
 
 /** Night stadium: navy sky fading into a floodlit pitch, two light beams, faint pitch lines. */
