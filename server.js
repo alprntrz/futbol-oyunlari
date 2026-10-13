@@ -121,6 +121,8 @@ function publicRoom(room) {
 const HT_TURN_MS = 45_000;
 /** a match is a series: first to this many game wins takes it */
 const HT_TARGET = 3;
+/** comeback bonus: whoever lost the last game of the series gets this much extra on each turn */
+const HT_COMEBACK_MS = 10_000;
 // matched random games open with a short VS screen before X's clock starts
 const HT_INTRO_MS = 3500;
 const HT_LINES = [
@@ -154,6 +156,10 @@ function htPublic(room) {
     winner: room.winner,
     flash: room.flash,
     remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : HT_TURN_MS,
+    // the current turn's full length (longer for the comeback player)
+    turnMs: htTurnMs(room),
+    // mark of the player with the comeback bonus this game, if any
+    comeback: room.players.find((p) => p.id === room.comeback)?.mark ?? null,
     steals: room.steals,
     used: room.used,
     drawOffer: room.drawOffer ?? null,
@@ -192,13 +198,20 @@ function htRateSeries(room) {
   rateDuel("ht", room, s.X >= HT_TARGET ? "X" : "O");
 }
 
-/** Count a finished game towards the series. */
+/** Count a finished game towards the series; the loser gets the comeback bonus next game. */
 function htTally(room) {
   if (room.winner !== "X" && room.winner !== "O") return;
   const p = room.players.find((x) => x.mark === room.winner);
   if (!p) return;
   room.wins = room.wins || {};
   room.wins[p.id] = (room.wins[p.id] || 0) + 1;
+  room.comeback = room.players.find((x) => x.mark !== room.winner)?.id ?? null;
+}
+
+/** Length of the turn now being played: the comeback player thinks a little longer. */
+function htTurnMs(room) {
+  const mover = room.players.find((p) => p.mark === room.turn);
+  return HT_TURN_MS + (mover && mover.id === room.comeback ? HT_COMEBACK_MS : 0);
 }
 
 function htCode() {
@@ -691,14 +704,15 @@ app.prepare().then(() => {
     // `graceMs` adds time before the first turn's clock (the "match found" intro)
     const htStartTurn = (room, graceMs = 0) => {
       clearTimeout(room.timer);
-      room.deadline = Date.now() + HT_TURN_MS + graceMs;
+      const turnMs = htTurnMs(room);
+      room.deadline = Date.now() + turnMs + graceMs;
       room.timer = setTimeout(() => {
         if (room.winner || !htRooms.has(room.code)) return;
         room.flash = { mark: room.turn, reason: "timeout" };
         room.turn = room.turn === "X" ? "O" : "X";
         htStartTurn(room);
         htEmit(room);
-      }, HT_TURN_MS + graceMs);
+      }, turnMs + graceMs);
     };
 
     socket.on("ht:create", ({ nick, grid, steals, league }, cb) => {
@@ -890,6 +904,7 @@ app.prepare().then(() => {
       if (htSeries(room).over) {
         room.wins = {};
         room.seriesRated = false;
+        room.comeback = null;
       }
       room.grid = grid;
       room.board = Array(9).fill(null);

@@ -5,11 +5,12 @@ import { View } from "react-native";
 import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
+import { SeriesBreak, useSeriesBreak } from "~/components/SeriesBreak";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { Button, Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
-import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
+import { COMEBACK_SECONDS, NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
 import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
@@ -43,13 +44,18 @@ export default function HatTrickHouse() {
   // series score: follows the people, marks swap every game
   const [wins, setWins] = useState({ mine: 0, theirs: 0 });
   const seriesOver = wins.mine >= SERIES_TARGET || wins.theirs >= SERIES_TARGET;
+  // comeback bonus, as online: whoever lost the last game gets longer turns
+  const [comeback, setComeback] = useState<"me" | "rival" | null>(null);
+  const turnSecondsOf = (m: Mark, meNow = me, cb = comeback) => TURN_SECONDS + ((cb === "me" ? meNow : cb === "rival" ? other(meNow) : null) === m ? COMEBACK_SECONDS : 0);
+  const seriesBreak = useSeriesBreak(winner, seriesOver);
 
   const nameOf = (m: Mark) => (m === me ? t("you") : nick);
 
   const nextTurn = () => {
-    setTurn(other);
-    setDeadline(Date.now() + TURN_SECONDS * 1000);
-    setTimeLeft(TURN_SECONDS);
+    const next = other(turn);
+    setTurn(next);
+    setDeadline(Date.now() + turnSecondsOf(next) * 1000);
+    setTimeLeft(turnSecondsOf(next));
   };
 
   const end = (w: Winner, reason: typeof endReason = null) => {
@@ -57,8 +63,13 @@ export default function HatTrickHouse() {
     setEndReason(reason);
     setDrawSent(false);
     if (reason === "forfeit") setWins((s) => (w === me ? { ...s, mine: SERIES_TARGET } : { ...s, theirs: SERIES_TARGET }));
-    else if (w === me) setWins((s) => ({ ...s, mine: s.mine + 1 }));
-    else if (w === rival) setWins((s) => ({ ...s, theirs: s.theirs + 1 }));
+    else if (w === me) {
+      setWins((s) => ({ ...s, mine: s.mine + 1 }));
+      setComeback("rival");
+    } else if (w === rival) {
+      setWins((s) => ({ ...s, theirs: s.theirs + 1 }));
+      setComeback("me");
+    }
   };
 
   const skip = () => {
@@ -138,7 +149,11 @@ export default function HatTrickHouse() {
 
   // Like the online rematch: new grid, marks swap so the other side starts
   const rematch = () => {
-    if (seriesOver) setWins({ mine: 0, theirs: 0 });
+    const cb = seriesOver ? null : comeback;
+    if (seriesOver) {
+      setWins({ mine: 0, theirs: 0 });
+      setComeback(null);
+    }
     setGrid(dealGrid(params.league));
     setBoard(Array(9).fill(null));
     setUsedNames([]);
@@ -147,8 +162,9 @@ export default function HatTrickHouse() {
     setWinner(null);
     setEndReason(null);
     setFlash(null);
-    setDeadline(Date.now() + TURN_SECONDS * 1000);
-    setTimeLeft(TURN_SECONDS);
+    // marks swap: this phone is `rival` from now on, and X moves first
+    setDeadline(Date.now() + turnSecondsOf("X", rival, cb) * 1000);
+    setTimeLeft(turnSecondsOf("X", rival, cb));
   };
 
   // next game of the series after a short look at the result
@@ -172,7 +188,7 @@ export default function HatTrickHouse() {
     winner,
     matchOver: seriesOver,
     score: me === "X" ? { X: wins.mine, O: wins.theirs } : { X: wins.theirs, O: wins.mine },
-    since: deadline - TURN_SECONDS * 1000,
+    since: deadline - turnSecondsOf(turn) * 1000,
     deadline,
   });
   const winnerText =
@@ -203,6 +219,8 @@ export default function HatTrickHouse() {
         winnerText={winnerText}
         winnerSub={seriesOver ? score : `${score}, ${t("htNextGame")}`}
         series={me === "X" ? { X: wins.mine, O: wins.theirs } : { X: wins.theirs, O: wins.mine }}
+        turnSeconds={turnSecondsOf(turn)}
+        comeback={comeback === "me" ? me : comeback === "rival" ? rival : null}
         onMove={play}
         footer={
           winner && !seriesOver ? null : winner ? (
@@ -221,6 +239,16 @@ export default function HatTrickHouse() {
           )
         }
       />
+      {seriesBreak.show && (
+        <SeriesBreak
+          me={t("you")}
+          opponent={nick}
+          hearts={{ me: SERIES_TARGET - wins.theirs, opp: SERIES_TARGET - wins.mine }}
+          loser={winner === "draw" || !winner ? null : winner === me ? "opp" : "me"}
+          game={seriesBreak.nextGame}
+          comeback={comeback === "me" ? "me" : comeback === "rival" ? "opp" : null}
+        />
+      )}
       <SeriesEnd over={seriesOver} won={wins.mine >= SERIES_TARGET} mine={wins.mine} theirs={wins.theirs} onRematch={rematch} />
     </Page>
   );

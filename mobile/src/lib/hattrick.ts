@@ -14,7 +14,11 @@ export const TURN_SECONDS = 45;
 export const SERIES_TARGET = 3;
 export type Series = Record<Mark, number>;
 /** pause on the result before the next game of a series deals in */
-export const NEXT_GAME_MS = 1800;
+export const NEXT_GAME_MS = 4600;
+/** the series break screen (SeriesBreak) comes up this long after a game ends, so the winning line is seen first */
+export const BREAK_AFTER_MS = 1000;
+/** comeback bonus: the loser of the last game gets this many extra seconds per turn (server.js HT_COMEBACK_MS) */
+export const COMEBACK_SECONDS = 10;
 
 export const LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
