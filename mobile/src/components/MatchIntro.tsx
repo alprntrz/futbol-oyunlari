@@ -8,11 +8,14 @@ import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
 
 import { MARK } from "./HatTrickBoard";
+import { TierChip } from "./Rank";
 import { Text } from "./Text";
 
 export interface Side {
   name: string;
   mark: Mark;
+  /** rank index; shown under the name when known */
+  tier?: number | null;
 }
 
 const COUNT = 3;
@@ -71,6 +74,7 @@ function Player({ side, you }: { side: Side; you: boolean }) {
       <Text style={styles.name} numberOfLines={1}>
         {you ? t("you") : side.name}
       </Text>
+      {side.tier != null && <TierChip tier={side.tier} />}
     </Animated.View>
   );
 }

@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useRef } from "react";
 
 import { dayNumber } from "@/lib/daily";
-import { levelOf, XP, type LevelInfo } from "@/lib/levels";
+import { levelOf, rankOf, XP, type LevelInfo } from "@/lib/levels";
 
 /** Which game an award came from (per-game totals on the profile). */
 export type XpGame = "xi" | "ht" | "qz" | "mystery" | "bingo" | "pp";
@@ -199,4 +199,10 @@ export function useXpAward(ready: boolean, key: string | null, game: XpSource, a
     sent.current = key;
     awardXp(key, game, amount, optsRef.current);
   }, [ready, key, game, amount]);
+}
+
+/** Matchmaking tier = rank index of this phone's level (sent with every queue request). */
+export async function loadTier() {
+  const { level } = await loadXp();
+  return rankOf(level).index;
 }

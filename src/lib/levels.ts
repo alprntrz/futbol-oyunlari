@@ -53,3 +53,40 @@ export const XP = {
   /** Unlimited modes (practice, extra grids) stop paying after this much a day */
   practiceDailyCap: 300,
 } as const;
+
+/**
+ * Ranks: a football career over the levels. Every rank but the last has bronze,
+ * silver and gold steps. The rank index is also the matchmaking tier (server.js
+ * `tierGap`): random opponents are looked for in the same rank first.
+ */
+export const RANKS = [
+  { id: "amateur", from: 1 },
+  { id: "academy", from: 5 },
+  { id: "bench", from: 10 },
+  { id: "starter", from: 15 },
+  { id: "captain", from: 20 },
+  { id: "star", from: 30 },
+  { id: "legend", from: 40 },
+] as const;
+
+export type RankId = (typeof RANKS)[number]["id"];
+export type Medal = "bronze" | "silver" | "gold";
+
+export interface RankInfo {
+  index: number;
+  id: RankId;
+  /** null for the top rank */
+  medal: Medal | null;
+  /** level where the next rank starts, null at the top */
+  nextAt: number | null;
+}
+
+export function rankOf(level: number): RankInfo {
+  let index = 0;
+  while (index + 1 < RANKS.length && level >= RANKS[index + 1].from) index++;
+  const { id, from } = RANKS[index];
+  const nextAt = index + 1 < RANKS.length ? RANKS[index + 1].from : null;
+  if (nextAt === null) return { index, id, medal: null, nextAt };
+  const step = Math.min(2, Math.floor(((level - from) * 3) / (nextAt - from)));
+  return { index, id, medal: (["bronze", "silver", "gold"] as const)[step], nextAt };
+}

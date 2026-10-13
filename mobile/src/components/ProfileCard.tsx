@@ -2,6 +2,8 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Image, Modal, ScrollView, StyleSheet, TextInput, View, type ImageSourcePropType } from "react-native";
 
+import { rankOf, RANKS } from "@/lib/levels";
+
 import { syncProfile, useAccount } from "~/lib/account";
 import { AVATARS, loadAvatar, saveAvatar, type AvatarId } from "~/lib/avatar";
 import { BRAND } from "~/lib/brand";
@@ -14,6 +16,7 @@ import { loadXp, type XpGame } from "~/lib/xp";
 
 import { Avatar } from "./Avatar";
 import { LevelBadge } from "./QuizLevel";
+import { RankChip } from "./Rank";
 import { SignInCard } from "./SignInCard";
 import { Text } from "./Text";
 import { Button, Card, Icon, Row, SectionLabel, Tap } from "./ui";
@@ -52,6 +55,7 @@ export function ProfileCard() {
   }, [account, refresh]);
 
   const level = xp?.level ?? 1;
+  const rank = rankOf(level);
   const fraction = xp ? xp.into / xp.need : 0;
 
   return (
@@ -90,6 +94,17 @@ export function ProfileCard() {
             </View>
             <Text style={[T.caption, { marginTop: 4 }]}>{t("totalXp").replace("{n}", String(xp?.xp ?? 0))}</Text>
           </View>
+        </View>
+        {/* rank: where this level sits in the career ladder, and the next step */}
+        <View style={styles.rankRow}>
+          <RankChip level={level} />
+          <Text style={T.caption} numberOfLines={1}>
+            {rank.nextAt === null
+              ? t("rankTop")
+              : t("rankNext")
+                  .replace("{rank}", t(`rank_${RANKS[rank.index + 1].id}` as Parameters<typeof t>[0]))
+                  .replace("{n}", String(rank.nextAt))}
+          </Text>
         </View>
         {!account && <Text style={[T.caption, { marginTop: 12 }]}>{t("guestNote")}</Text>}
       </Card>
@@ -219,6 +234,7 @@ const styles = StyleSheet.create({
   guest: { alignSelf: "flex-start", marginTop: 4, backgroundColor: "#EEF2EF", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3 },
   guestText: { fontSize: 13, fontWeight: "700", color: C.text2 },
   edit: { width: 36, height: 36, borderRadius: 18, backgroundColor: "#EEF2EF", alignItems: "center", justifyContent: "center" },
+  rankRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 14 },
   levelRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 18 },
   levelHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
   levelText: { fontFamily: F.display, fontSize: 20, color: C.text },

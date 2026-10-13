@@ -13,6 +13,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { rankOf } from "@/lib/levels";
+
 import { REWARD } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -22,6 +24,7 @@ import { onOverlay, onXpAward, setRewardOpen, type XpAward, type XpStat } from "
 
 import { Confetti, useCountUp } from "./motion";
 import { LevelBadge } from "./QuizLevel";
+import { useRankName } from "./Rank";
 import { Text } from "./Text";
 import { Button } from "./ui";
 
@@ -67,6 +70,8 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
   const [claimed, setClaimed] = useState(false);
   const [confetti, setConfetti] = useState(0);
   const levelled = award.after.level > award.before.level;
+  const rankedUp = rankOf(award.after.level).index > rankOf(award.before.level).index;
+  const rankName = useRankName();
   const stats = award.stats ?? [];
 
   // rays turn slowly the whole time
@@ -152,6 +157,11 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
               <Animated.View style={[styles.fill, barStyle]} />
             </View>
             {claimed && levelled && <Text style={styles.levelUp}>{t("levelUpTo").replace("{n}", String(award.after.level))}</Text>}
+            {claimed && rankedUp && (
+              <Animated.View entering={SLAM.delay(700)}>
+                <Text style={styles.rankUp}>{t("rankUp").replace("{rank}", rankName(award.after.level))}</Text>
+              </Animated.View>
+            )}
           </View>
           <Text style={styles.xp}>+{claimed ? xpShown : award.gained} XP</Text>
         </View>
@@ -187,6 +197,7 @@ const styles = StyleSheet.create({
   levelRow: { flexDirection: "row", alignItems: "center", gap: 12, alignSelf: "stretch", marginTop: 28 },
   track: { height: 14, borderRadius: 7, backgroundColor: "rgba(255,255,255,0.18)", overflow: "hidden" },
   fill: { height: 14, borderRadius: 7, backgroundColor: "#FACC15" },
+  rankUp: { fontFamily: F.black, fontSize: 18, color: "white", marginTop: 2 },
   levelUp: { fontFamily: F.display, fontSize: 16, color: "#FACC15", marginTop: 4 },
   xp: { fontFamily: F.black, fontSize: 26, color: "#FACC15", minWidth: 90, textAlign: "right" },
 });

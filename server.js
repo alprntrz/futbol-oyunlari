@@ -42,6 +42,36 @@ function cleanNick(nick) {
   return bad ? "player" + Math.floor(100 + Math.random() * 900) : raw;
 }
 
+// Random opponents by rank (tier = rank index of the app's level, 0 = Amateur):
+// same rank first, one rank either side after TIER_WIDEN_MS of waiting, anyone
+// after twice that. The app's own house-bot fallback still kicks in at 20 s.
+const TIER_WIDEN_MS = 6000;
+const cleanTier = (t) => (Number.isInteger(t) && t >= 0 && t < 10 ? t : 0);
+function tierGap(since) {
+  const waited = Date.now() - since;
+  return waited < TIER_WIDEN_MS ? 0 : waited < 2 * TIER_WIDEN_MS ? 1 : 99;
+}
+/** Pairs whoever in a queue can meet now, oldest first: { pairs: [older, newer][], rest }. */
+function takePairs(queue, same = () => true) {
+  const waiting = queue.filter((w) => w.socket.connected).sort((a, b) => a.since - b.since);
+  const taken = new Set();
+  const pairs = [];
+  for (const a of waiting) {
+    if (taken.has(a)) continue;
+    let best = null;
+    for (const b of waiting) {
+      if (b === a || taken.has(b) || !same(a, b)) continue;
+      const gap = Math.abs(a.tier - b.tier);
+      if (gap <= Math.max(tierGap(a.since), tierGap(b.since)) && (!best || gap < Math.abs(a.tier - best.tier))) best = b;
+    }
+    if (best) {
+      taken.add(a).add(best);
+      pairs.push([a, best]);
+    }
+  }
+  return { pairs, rest: waiting.filter((w) => !taken.has(w)) };
+}
+
 function makeCode() {
   let code = "";
   for (let i = 0; i < 5; i++) {
@@ -86,7 +116,7 @@ const HT_LINES = [
 ];
 /** code -> hat-trick room */
 const htRooms = new Map();
-/** players waiting for a random opponent: { socket, nick, grid } */
+/** players waiting for a random opponent: { socket, nick, grid, league, tier, since, pair } */
 let htQueue = [];
 
 function htResult(board) {
@@ -116,7 +146,7 @@ function htPublic(room) {
     endReason: room.endReason ?? null,
     series: htSeries(room),
     league: room.league || "all",
-    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
+    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark, tier: p.tier ?? null })),
   };
 }
 
@@ -175,9 +205,8 @@ const QZ_GAP_MS = 900;
 const QZ_FILL_MS = 15_000;
 /** code -> quiz room */
 const qzRooms = new Map();
-/** the random room currently taking players, if any */
-/** open random room per difficulty: players only meet others on the same level */
-const qzOpen = { easy: null, normal: null, hard: null };
+/** open random rooms, "difficulty:tier" -> code: players meet others on the same quiz level and rank */
+const qzOpen = {};
 const qzLevelOf = (d) => (d === "easy" || d === "hard" ? d : "normal");
 
 const QZ_NAMES = ["lucas", "mateo", "jonas", "luca", "liam", "noah", "oliver", "james", "jack", "harry", "ethan", "leo", "hugo", "louis", "jules", "theo", "enzo", "paul", "felix", "max", "finn", "lukas", "niklas", "matteo", "lorenzo", "marco", "giulia", "sofia", "alejandro", "diego", "pablo", "javi", "lucia", "carlos", "joao", "rafa", "tiago", "bruno", "pedro", "gabriel", "thiago", "nico", "santi", "martina", "valentina", "sven", "lars", "erik", "mats", "anders", "piotr", "kuba", "marek", "ivan", "luka", "nikola", "dmitri", "andrei", "yuki", "kenji", "minjun", "jisoo", "wei", "arjun", "rohan", "omar", "youssef", "karim", "amir", "kofi", "kwame", "chidi", "emma", "chloe", "mia", "ana", "nina", "sara", "eva"];
@@ -312,7 +341,7 @@ const PP_HEXES = 31;
 const PP_CLOCK_MS = 120_000;
 /** code -> possession room */
 const ppRooms = new Map();
-/** players waiting for a random opponent: { socket, nick, board } */
+/** players waiting for a random opponent: { socket, nick, board, tier, since, pair } */
 let ppQueue = [];
 
 function ppResult(owners) {
@@ -368,6 +397,17 @@ app.prepare().then(() => {
   });
   // small payload cap: the biggest message is a 20-question quiz (a few KB)
   const io = new Server(server, { cors: { origin: "*" }, maxHttpBufferSize: 64 * 1024 });
+
+  // pair waiting players as their allowed rank gap widens with time
+  const matchQueues = () => {
+    const ht = takePairs(htQueue, (a, b) => a.league === b.league);
+    htQueue = ht.rest;
+    for (const [a, b] of ht.pairs) a.pair(a, b);
+    const pp = takePairs(ppQueue);
+    ppQueue = pp.rest;
+    for (const [a, b] of pp.pairs) a.pair(a, b);
+  };
+  setInterval(matchQueues, 1000).unref();
 
   io.on("connection", (socket) => {
     // signed-in app players send their session token: their online results are rated
@@ -564,24 +604,24 @@ app.prepare().then(() => {
       ppEmit(room);
     });
 
-    socket.on("pp:queue", ({ nick, board }) => {
-      if (!Array.isArray(board) || board.length !== PP_HEXES) return;
-      ppQueue = ppQueue.filter((w) => w.socket.connected && w.socket.id !== socket.id);
-      const waiting = ppQueue.shift();
-      if (!waiting) {
-        ppQueue.push({ socket, nick: cleanNick(nick), board });
-        return;
-      }
+    const ppPair = (waiting, other) => {
       const room = ppNewRoom(ppCode(), waiting.board, [
-        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X" },
-        { id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "O" },
+        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier },
+        { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier },
       ]);
       room.started = true;
       ppRooms.set(room.code, room);
       ppJoinRoom(waiting.socket, room);
-      ppJoinRoom(socket, room);
+      ppJoinRoom(other.socket, room);
       ppStartTurn(room);
       io.to("pp:" + room.code).emit("pp:matched", { code: room.code });
+    };
+
+    socket.on("pp:queue", ({ nick, board, tier }) => {
+      if (!Array.isArray(board) || board.length !== PP_HEXES) return;
+      ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
+      ppQueue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), since: Date.now(), pair: ppPair });
+      matchQueues();
     });
 
     socket.on("pp:unqueue", () => {
@@ -661,24 +701,14 @@ app.prepare().then(() => {
       cb?.({ ok: true, room: htPublic(room) });
     });
 
-    // Random opponent: the first waiting player is paired with the next one.
-    // The waiting player's phone already dealt the grid; the room starts at once.
-    // random opponents are matched within the same league
-    socket.on("ht:queue", ({ nick, grid, league }) => {
-      if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return;
-      const lg = typeof league === "string" ? league.slice(0, 12) : "all";
-      htQueue = htQueue.filter((w) => w.socket.connected && w.socket.id !== socket.id);
-      const at = htQueue.findIndex((w) => w.league === lg);
-      const waiting = at >= 0 ? htQueue.splice(at, 1)[0] : null;
-      if (!waiting) {
-        htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg });
-        return;
-      }
+    // Random opponent: two waiting players of the same league (and, at first, the
+    // same rank) are paired. The older one's phone already dealt the grid; the room starts at once.
+    const htPair = (waiting, other) => {
       const code = htCode();
       const room = {
         code,
         grid: waiting.grid,
-        league: lg,
+        league: waiting.league,
         started: true,
         board: Array(9).fill(null),
         turn: "X",
@@ -689,17 +719,25 @@ app.prepare().then(() => {
         steals: null,
         used: [],
         players: [
-          { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X" },
-          { id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "O" },
+          { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier },
+          { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier },
         ],
       };
       htRooms.set(code, room);
-      for (const s of [waiting.socket, socket]) {
+      for (const s of [waiting.socket, other.socket]) {
         s.data.htCode = code;
         s.join("ht:" + code);
       }
       htStartTurn(room, HT_INTRO_MS);
       io.to("ht:" + code).emit("ht:matched", { code, players: htPublic(room).players });
+    };
+
+    socket.on("ht:queue", ({ nick, grid, league, tier }) => {
+      if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return;
+      const lg = typeof league === "string" ? league.slice(0, 12) : "all";
+      htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
+      htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg, tier: cleanTier(tier), since: Date.now(), pair: htPair });
+      matchQueues();
     });
 
     socket.on("ht:unqueue", () => {
@@ -1005,13 +1043,21 @@ app.prepare().then(() => {
     });
 
     // Random: join the open room, or open one that starts after QZ_FILL_MS
-    socket.on("qz:queue", ({ pid, nick, questions, difficulty }, cb) => {
+    socket.on("qz:queue", ({ pid, nick, questions, difficulty, tier }, cb) => {
       const level = qzLevelOf(difficulty);
+      const myTier = cleanTier(tier);
       if (qzValidPid(pid)) socket.data.qzPid = pid;
       if (!qzValidQuestions(questions)) return cb?.({ ok: false, error: "bad_questions" });
       if (socket.data.qzCode) qzLeave();
-      const open = qzOpen[level] && qzRooms.get(qzOpen[level]);
-      if (open && open.phase === "lobby" && open.players.length < open.settings.maxPlayers) {
+      // the open room of this level whose rank is closest, if its age allows the gap
+      let open = null;
+      for (const [key, code] of Object.entries(qzOpen)) {
+        const room = code && qzRooms.get(code);
+        if (!room || !key.startsWith(level + ":") || room.phase !== "lobby" || room.players.length >= room.settings.maxPlayers) continue;
+        const gap = Math.abs(room.tier - myTier);
+        if (gap <= tierGap(room.fillAt - QZ_FILL_MS) && (!open || gap < Math.abs(open.tier - myTier))) open = room;
+      }
+      if (open) {
         open.players.push({ id: socket.id, uid: socket.data.uid, pid: socket.data.qzPid, nick: cleanNick(nick), score: 0 });
         socket.data.qzCode = open.code;
         socket.join("qz:" + open.code);
@@ -1021,7 +1067,8 @@ app.prepare().then(() => {
         return;
       }
       const room = qzNewRoom(socket, nick, qzSettings({ difficulty: level }), questions, true);
-      qzOpen[level] = room.code;
+      room.tier = myTier;
+      qzOpen[`${level}:${myTier}`] = room.code;
       // a few others "find" the room while it waits
       const joins = 2 + Math.floor(Math.random() * 3);
       for (let i = 0; i < joins; i++) room.botTimers.push(setTimeout(() => qzAddBot(room), 2500 + Math.random() * (QZ_FILL_MS - 4000)));

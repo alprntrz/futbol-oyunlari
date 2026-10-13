@@ -10,6 +10,7 @@ import { useI18n } from "~/lib/i18n";
 import { boardToIds, generateBoard } from "~/lib/possession";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
+import { loadTier } from "~/lib/xp";
 
 /** Random opponent: wait in the server queue, then jump into the matched room. */
 export default function PossessionRandom() {
@@ -25,7 +26,7 @@ export default function PossessionRandom() {
     const onError = () => setError(t("serverUnreachable"));
     const enqueue = () => {
       setError(null);
-      socket.emit("pp:queue", { nick: "", board: boardToIds(generateBoard()) });
+      loadTier().then((tier) => socket.emit("pp:queue", { nick: "", board: boardToIds(generateBoard()), tier }));
     };
     socket.on("pp:matched", onMatched);
     socket.on("connect_error", onError);

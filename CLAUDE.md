@@ -69,6 +69,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   random chests). Both pay XP as source "bonus". Home shows `HomeStatus` (level, play streak `lib/playStreak.ts`, gift that claims the day), `TodayPuzzles`
   (grid / Daily XI / Bingo read from their screens' save keys; the grid's big card folds into a row once done) + `QuestsCard`;
   the 7-day `DailyRewardCard` lives on Profile.
+- Ranks (v1.1): `RANKS` / `rankOf` in `src/lib/levels.ts` name the level bands (Amateur → Legend, bronze/silver/gold
+  steps; `components/Rank.tsx`). The rank index is the matchmaking tier: `ht:queue`, `pp:queue`, `qz:queue` carry `tier`
+  (`loadTier` in lib/xp.ts); server.js `takePairs` / `tierGap` pair the same rank first and widen every `TIER_WIDEN_MS`
+  (a 1 s sweep, `matchQueues`). Quiz random rooms are keyed `difficulty:tier` in `qzOpen`.
 - Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
   The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
   server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live

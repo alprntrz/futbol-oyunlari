@@ -14,6 +14,7 @@ import { C, F } from "~/lib/theme";
 import { loadXp, onXpAward } from "~/lib/xp";
 
 import { Avatar } from "./Avatar";
+import { RankChip } from "./Rank";
 import { Text } from "./Text";
 import { Icon, Tap } from "./ui";
 
@@ -68,9 +69,12 @@ export function HomeStatus() {
       <Tap onPress={() => router.push("/istatistik")} style={styles.me} accessibilityLabel={`${nick}, ${t("levelN").replace("{n}", String(level))}`}>
         <Avatar id={avatar} size={42} />
         <View style={{ flex: 1 }}>
-          <Text style={styles.nick} numberOfLines={1}>
-            {nick}
-          </Text>
+          <View style={styles.nickRow}>
+            <Text style={styles.nick} numberOfLines={1}>
+              {nick}
+            </Text>
+            <RankChip level={level} compact size="sm" />
+          </View>
           <View style={styles.levelRow}>
             <Text style={styles.level}>{t("levelN").replace("{n}", String(level))}</Text>
             <View style={styles.track}>
@@ -98,7 +102,8 @@ export function HomeStatus() {
 const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: 8 },
   me: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10 },
-  nick: { fontFamily: F.display, fontSize: 19, color: C.text },
+  nickRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  nick: { fontFamily: F.display, fontSize: 19, color: C.text, flexShrink: 1 },
   levelRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 1 },
   level: { fontSize: 12, fontWeight: "700", color: C.greenDark },
   track: { flex: 1, maxWidth: 110, height: 7, borderRadius: 4, backgroundColor: "#DDE4DF", overflow: "hidden" },
