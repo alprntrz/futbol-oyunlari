@@ -112,12 +112,12 @@ const styles = StyleSheet.create({
 });
 
 /** Ways to play as a grouped list of rows; reads better than a grid for three or fewer. */
-export function ModeList({ modes }: { modes: Mode[] }) {
+export function ModeList({ modes, onPick }: { modes: Mode[]; onPick?: (m: Mode) => void }) {
   return (
     <View style={styles.list}>
       {modes.map((m, i) => (
         <Animated.View key={m.title} entering={softIn(i, 50)}>
-          <Tap onPress={() => router.push(m.href)} style={[styles.row, i > 0 && styles.rowDivider]} accessibilityLabel={`${m.title}. ${m.desc}`}>
+          <Tap onPress={() => (onPick ? onPick(m) : router.push(m.href))} style={[styles.row, i > 0 && styles.rowDivider]} accessibilityLabel={`${m.title}. ${m.desc}`}>
             <View style={[styles.rowIcon, { backgroundColor: m.image ? "#EEF2EF" : m.soft }]}>
               {m.image ? <Image source={m.image} style={styles.rowArt} /> : <Icon name={m.icon} size={20} color={m.color} fallback={m.fallback} />}
             </View>

@@ -1,15 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router, type Href } from "expo-router";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
+import { Image, Modal, Pressable, StyleSheet, View, type ImageSourcePropType } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
 import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { useQuizDifficulty } from "~/lib/quizLevel";
-import { C, F } from "~/lib/theme";
+import { C, F, T } from "~/lib/theme";
 
+import { ModeList, type Mode } from "./ModeGrid";
 import { Text } from "./Text";
 import { Button, Tap } from "./ui";
 
@@ -17,13 +19,15 @@ type Game = "ht" | "qz" | "pp";
 const KEY = "quick-game";
 
 /**
- * Home's main call to action: one tap into a random opponent. The game picker
+ * Home's main call to action: pick a game, then Play asks how (random opponent,
+ * a friend, same screen, solo), like the game's own screen. The game picker
  * remembers the last choice; the quiz uses the level picked in the quiz hub.
  */
 export function QuickPlay() {
   const { t } = useI18n();
   const [game, setGame] = useState<Game>("ht");
   const [level] = useQuizDifficulty();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     AsyncStorage.getItem(KEY)
@@ -38,12 +42,32 @@ export function QuickPlay() {
   }, [breathe]);
   const breatheStyle = useAnimatedStyle(() => ({ transform: [{ scale: breathe.get() }] }));
 
-  const games: { id: Game; name: string; image: ImageSourcePropType; href: Href }[] = [
-    { id: "ht", name: t("tikiTakaName"), image: BRAND.icon.tiki, href: "/hat-trick/rastgele" },
-    { id: "qz", name: t("qzName"), image: BRAND.icon.quiz, href: { pathname: "/bilgi/rastgele", params: { zorluk: level } } },
-    { id: "pp", name: t("ppName"), image: BRAND.icon.possession, href: "/possession/rastgele" },
+  const games: { id: Game; name: string; image: ImageSourcePropType }[] = [
+    { id: "ht", name: t("tikiTakaName"), image: BRAND.icon.tiki },
+    { id: "qz", name: t("qzName"), image: BRAND.icon.quiz },
+    { id: "pp", name: t("ppName"), image: BRAND.icon.possession },
   ];
   const current = games.find((g) => g.id === game) ?? games[0];
+  // Play asks how: the same ways as the game's own screen
+  const [asking, setAsking] = useState(false);
+  const friend: Mode = { icon: "person.2.fill", fallback: "👥", title: t("htFriend"), desc: t(game === "qz" ? "qzFriendsDesc" : "htFriendDesc"), href: "/", image: BRAND.mode.friend, color: C.greenMid, soft: C.greenSoft };
+  const random: Mode = { icon: "antenna.radiowaves.left.and.right", fallback: "📡", title: t("htRandom"), desc: t(game === "qz" ? "qzRandomDesc" : "htRandomDesc"), href: "/", image: BRAND.mode.random, color: C.blue, soft: C.blueSoft };
+  const same: Mode = { icon: "iphone", fallback: "📱", title: t("htSame"), desc: t(game === "pp" ? "ppSameDesc" : "htSameDesc"), href: "/", image: BRAND.mode.same, color: C.coral, soft: C.coralSoft };
+  const solo: Mode = { icon: "person.fill", fallback: "👤", title: t("htSolo"), desc: t("htSoloDesc"), href: "/", image: BRAND.mode.solo, color: "#B7791F", soft: C.amberSoft };
+  const modes: Mode[] =
+    game === "ht"
+      ? [{ ...random, href: "/hat-trick/rastgele" }, { ...friend, href: "/hat-trick/oda" }, { ...same, href: "/hat-trick/yerel" }, { ...solo, href: "/hat-trick/tek" }]
+      : game === "qz"
+        ? [
+            { ...random, href: { pathname: "/bilgi/rastgele", params: { zorluk: level } } },
+            { ...friend, href: { pathname: "/bilgi/oda", params: { zorluk: level } } },
+          ]
+        : [{ ...random, href: "/possession/rastgele" }, { ...friend, href: "/possession/oda" }, { ...same, href: "/possession/yerel" }];
+  const pick = (m: Mode) => {
+    setAsking(false);
+    // let the sheet slide away before the next screen comes in
+    setTimeout(() => router.push(m.href), 250);
+  };
 
   const choose = (g: Game) => {
     haptic.tap();
@@ -69,8 +93,23 @@ export function QuickPlay() {
         })}
       </View>
       <Animated.View style={[{ marginTop: 14 }, breatheStyle]}>
-        <Button title={`${t("qpPlay")}: ${current.name}`} kind="gold" icon="play.fill" onPress={() => router.push(current.href)} />
+        <Button title={`${t("qpPlay")}: ${current.name}`} kind="gold" icon="play.fill" onPress={() => setAsking(true)} />
       </Animated.View>
+
+      <Modal visible={asking} transparent animationType="slide" onRequestClose={() => setAsking(false)}>
+        <Pressable style={styles.backdrop} onPress={() => setAsking(false)} accessibilityLabel={t("close")} />
+        <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
+          <View style={styles.grabber} />
+          <View style={styles.sheetHead}>
+            <Image source={current.image} style={{ width: 44, height: 44 }} />
+            <View style={{ flex: 1 }}>
+              <Text style={T.title}>{current.name}</Text>
+              <Text style={T.caption}>{t("qpHow")}</Text>
+            </View>
+          </View>
+          <ModeList modes={modes} onPick={pick} />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -82,5 +121,9 @@ const styles = StyleSheet.create({
   games: { flexDirection: "row", gap: 8, marginTop: 14 },
   game: { flex: 1, alignItems: "center", gap: 4, paddingVertical: 10, paddingHorizontal: 4, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.14)", borderWidth: 2, borderColor: "transparent" },
   gameOn: { backgroundColor: "white", borderColor: "#FACC15" },
+  backdrop: { flex: 1, backgroundColor: "rgba(11,18,32,0.35)" },
+  sheet: { backgroundColor: C.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, paddingTop: 8 },
+  grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 14 },
+  sheetHead: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 14, marginHorizontal: 4 },
   gameName: { fontFamily: F.display, fontSize: 15, color: "white" },
 });
