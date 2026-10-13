@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
+
+import { LIVE_ACTIVITIES } from "./features";
 import type { LiveActivity, LiveActivityDismissalPolicy, LiveActivityFactory } from "expo-widgets";
 
 import type { Mark } from "~/lib/hattrick";
@@ -18,7 +20,7 @@ let factory: LiveActivityFactory<MatchActivityProps> | null = null;
 let afterDate: ((d: Date) => LiveActivityDismissalPolicy) | null = null;
 try {
   // expo-widgets is native: requiring it throws in Expo Go
-  if (Platform.OS === "ios") {
+  if (Platform.OS === "ios" && LIVE_ACTIVITIES) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     factory = (require("~/widgets/MatchActivity") as { default: LiveActivityFactory<MatchActivityProps> }).default;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
