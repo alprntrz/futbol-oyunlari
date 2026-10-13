@@ -50,6 +50,8 @@ export const XP = {
   ppWin: 25,
   ppDraw: 15,
   ppLoss: 8,
+  /** Taktik Tahtası, by finishing place 1..8 */
+  ttPlace: [60, 45, 35, 25, 12, 12, 10, 10],
   /** Unlimited modes (practice, extra grids) stop paying after this much a day */
   practiceDailyCap: 300,
 } as const;

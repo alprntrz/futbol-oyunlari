@@ -6,7 +6,7 @@ import { rankOf, RANKS } from "@/lib/levels";
 
 import { syncProfile, useAccount } from "~/lib/account";
 import { AVATARS, loadAvatar, saveAvatar, type AvatarId } from "~/lib/avatar";
-import { BRAND } from "~/lib/brand";
+import { BRAND, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { loadNick, saveNick } from "~/lib/nick";
@@ -30,6 +30,7 @@ const GAMES: { game: XpGame; image: ImageSourcePropType; name: string }[] = [
   { game: "mystery", image: BRAND.icon.mystery, name: "myName" },
   { game: "bingo", image: BRAND.icon.bingo, name: "bingoName" },
   { game: "pp", image: BRAND.icon.possession, name: "ppName" },
+  { game: "tt", image: TAKTIK.hero, name: "ttkName" },
 ];
 
 /** Top of the Profile tab: avatar, nickname, overall level and XP per game. */

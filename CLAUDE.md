@@ -96,6 +96,12 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
   Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via
   `play()` in `mobile/src/lib/sound.ts` (expo-audio; respects the silent switch; toggle in Settings).
+- Taktik Tahtası / Pitch Chess (auto battler, offline vs 7 house managers; docs/design/taktik-tahtasi.md): engine in
+  `src/lib/taktik/` (pure; `rules.ts` numbers, `pool.ts` cards from every player, `traits.ts`, `sim.ts` deterministic match,
+  `engine.ts`, `bot.ts`), per-player main club / position `src/data/taktik.ts` ← `scripts/taktik-build.mjs` (from
+  raw-seasons + `scripts/taktik-scrape-positions.mjs`). Balance: `node --import ./scripts/lib/alias.mjs mobile/scripts/taktik-sim.mts`.
+  App: `mobile/src/lib/taktik.ts` (saved lobby), screens `app/taktik/{index,oyun}.tsx` (the game screen is "use no memo"),
+  `components/taktik/`. XP source "tt" (server-accounts GAMES too).
 - Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.

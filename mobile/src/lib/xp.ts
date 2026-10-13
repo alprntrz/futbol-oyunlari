@@ -5,7 +5,7 @@ import { dayNumber } from "@/lib/daily";
 import { levelOf, rankOf, XP, type LevelInfo } from "@/lib/levels";
 
 /** Which game an award came from (per-game totals on the profile). */
-export type XpGame = "xi" | "ht" | "qz" | "mystery" | "bingo" | "pp";
+export type XpGame = "xi" | "ht" | "qz" | "mystery" | "bingo" | "pp" | "tt";
 /** "bonus" = the daily sign-in bonus (adds to the total, not to a game) */
 export type XpSource = XpGame | "bonus";
 

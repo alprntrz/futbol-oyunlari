@@ -19,6 +19,25 @@ export const REWARD = {
   stars: require("../../assets/brand/odul/bg-stars.png"),
 };
 
+/** Taktik Tahtası art (docs/design/taktik-tahtasi.md §17). */
+export const TAKTIK = {
+  hero: require("../../assets/brand/taktik/hero.png"),
+  scout: require("../../assets/brand/taktik/card-scout.png"),
+  coach: {
+    pass: require("../../assets/brand/taktik/coach-pass-master.png"),
+    bus: require("../../assets/brand/taktik/coach-defensive.png"),
+    press: require("../../assets/brand/taktik/coach-pressing.png"),
+  },
+  item: {
+    boot: require("../../assets/brand/taktik/item-golden-boot.png"),
+    gloves: require("../../assets/brand/taktik/item-gloves.png"),
+    shin: require("../../assets/brand/taktik/item-shin-guard.png"),
+    band: require("../../assets/brand/taktik/item-captain-band.png"),
+    energy: require("../../assets/brand/taktik/item-energy-drink.png"),
+    board: require("../../assets/brand/taktik/item-tactics-board.png"),
+  },
+};
+
 export const BRAND = {
   icon: {
     daily: require("../../assets/brand/icon-daily.png"),

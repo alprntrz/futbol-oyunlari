@@ -10,7 +10,7 @@ import { teamName } from "@/lib/teams";
 import { Jersey } from "~/components/Jersey";
 import { Text } from "~/components/Text";
 import { Icon, Page, Tap } from "~/components/ui";
-import { BRAND } from "~/lib/brand";
+import { BRAND, TAKTIK } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { jerseyStyle } from "~/lib/kits";
 import { loadDayState } from "~/lib/storage";
@@ -90,6 +90,13 @@ export default function Games() {
       title: t("ppName"),
       desc: t("ppShort"),
       href: "/possession",
+      bg: ART_BG,
+    },
+    {
+      image: TAKTIK.hero,
+      title: t("ttkName"),
+      desc: t("ttkShort"),
+      href: "/taktik",
       bg: ART_BG,
     },
   ];

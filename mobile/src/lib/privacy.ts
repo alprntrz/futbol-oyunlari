@@ -6,6 +6,7 @@ import { getSocket } from "./socket";
 import { resetDailyRewards } from "./dailyRewards";
 import { resetPlayStreak } from "./playStreak";
 import { resetQuests } from "./quests";
+import { resetTaktik } from "./taktik";
 import { resetXpCache } from "./xp";
 
 /**
@@ -25,6 +26,7 @@ export async function deleteMyData(): Promise<{ server: boolean }> {
   resetXpCache();
   resetQuests();
   resetPlayStreak();
+  resetTaktik();
   resetDailyRewards();
   return { server };
 }

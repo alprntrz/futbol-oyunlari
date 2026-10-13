@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import Svg, { Circle, ClipPath, Defs, G, Mask, Path, Polygon, Rect } from "react-native-svg";
+import Svg, { Circle, ClipPath, Defs, G, Mask, Path, Polygon, Rect, Text as SvgText } from "react-native-svg";
 
 // Simplified flat flags drawn on a 30×20 canvas (3:2), clipped to rounded
 // corners with a hairline edge. Emblems are reduced to simple shapes so the
@@ -216,7 +216,17 @@ export function Flag({ id, width = 36 }: { id: string; width?: number }) {
             <Rect width={W} height={H} rx={3.2} />
           </ClipPath>
         </Defs>
-        <G clipPath="url(#flag)">{art ?? <Rect width={W} height={H} fill="#DDE3DF" />}</G>
+        <G clipPath="url(#flag)">
+          {art ?? (
+            <>
+              <Rect width={W} height={H} fill="#DDE3DF" />
+              {/* no flag drawn yet: the country's first three letters */}
+              <SvgText x={W / 2} y={H / 2 + 3.4} fontSize={9.5} fontWeight="800" fill="#4A5650" textAnchor="middle">
+                {id.slice(0, 3).toUpperCase()}
+              </SvgText>
+            </>
+          )}
+        </G>
         <Rect x={0.3} y={0.3} width={W - 0.6} height={H - 0.6} rx={3} fill="none" stroke="rgba(0,0,0,0.14)" strokeWidth={0.6} />
       </Svg>
     </View>
