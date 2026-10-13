@@ -6,19 +6,19 @@ import { Image, Pressable, StyleSheet, View, type ImageSourcePropType } from "re
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { G, outline } from "~/components/game";
-import { Icon } from "~/components/ui";
+import { Bang, G, Grad, outline } from "~/components/game";
+import { Text } from "~/components/Text";
 import { OYUN } from "~/lib/brand";
 import { useDailyRewards } from "~/lib/dailyRewards";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { useQuests } from "~/lib/quests";
 
-type TabDef = { name: string; href: "/oyunlar" | "/gunluk" | "/" | "/arkadaslar" | "/istatistik"; label: string; art: ImageSourcePropType; color: string; edge: string };
+type TabDef = { name: string; href: "/oyunlar" | "/gunluk" | "/" | "/arkadaslar" | "/istatistik"; label: string; art: ImageSourcePropType };
 
 /**
- * Game-style tab bar (after Draft Showdown): a dark strip of chunky coloured
- * tiles; the open tab rises, grows and shows its name. Play sits in the middle.
+ * Draft Showdown tab bar: a row of lavender card tabs rising from the bottom,
+ * the open one taller and lighter with its name; icons float on the cards.
  */
 export default function TabsLayout() {
   const { t } = useI18n();
@@ -26,7 +26,7 @@ export default function TabsLayout() {
   const { claimed } = useDailyRewards();
   const quests = useQuests();
   const dailyDue = !claimed || quests.some((q) => q.progress < q.target);
-  // every tab sits on the dark green: light status bar while the tabs are showing
+  // every tab sits on the violet: light status bar while the tabs are showing
   useFocusEffect(
     useCallback(() => {
       setStatusBarStyle("light");
@@ -35,21 +35,23 @@ export default function TabsLayout() {
   );
 
   const tabs: TabDef[] = [
-    { name: "oyunlar", href: "/oyunlar", label: t("tabGames"), art: OYUN.tab.games, color: G.blue, edge: G.blueEdge },
-    { name: "gunluk", href: "/gunluk", label: t("tabDaily"), art: OYUN.tab.daily, color: G.orange, edge: G.orangeEdge },
-    { name: "index", href: "/", label: t("tabPlay"), art: OYUN.tab.play, color: G.lime, edge: G.limeEdge },
-    { name: "arkadaslar", href: "/arkadaslar", label: t("tabFriends"), art: OYUN.tab.friends, color: G.purple, edge: G.purpleEdge },
-    { name: "istatistik", href: "/istatistik", label: t("tabProfile"), art: OYUN.tab.profile, color: G.pink, edge: G.pinkEdge },
+    { name: "oyunlar", href: "/oyunlar", label: t("tabGames"), art: OYUN.tab.games },
+    { name: "gunluk", href: "/gunluk", label: t("tabDaily"), art: OYUN.tab.daily },
+    { name: "index", href: "/", label: t("tabPlay"), art: OYUN.tab.play },
+    { name: "arkadaslar", href: "/arkadaslar", label: t("tabFriends"), art: OYUN.tab.friends },
+    { name: "istatistik", href: "/istatistik", label: t("tabProfile"), art: OYUN.tab.profile },
   ];
 
   return (
     <Tabs>
-      <TabSlot />
+      <View style={{ flex: 1, backgroundColor: G.bg }}>
+        <TabSlot />
+      </View>
       <TabList asChild>
-        <View style={StyleSheet.flatten([styles.bar, { paddingBottom: Math.max(insets.bottom - 6, 8) }])}>
+        <View style={StyleSheet.flatten([styles.bar, { height: 92 + insets.bottom * 0.6 }])}>
           {tabs.map((tab) => (
             <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
-              <TabButton tab={tab} badge={tab.name === "gunluk" && dailyDue} />
+              <TabButton tab={tab} badge={tab.name === "gunluk" && dailyDue} bottom={insets.bottom * 0.6} />
             </TabTrigger>
           ))}
         </View>
@@ -58,12 +60,13 @@ export default function TabsLayout() {
   );
 }
 
-const TabButton = forwardRef<View, TabTriggerSlotProps & { tab: TabDef; badge: boolean }>(function TabButton({ tab, badge, isFocused, onPress, ...rest }, ref) {
-  const lift = useSharedValue(isFocused ? 1 : 0);
+const TabButton = forwardRef<View, TabTriggerSlotProps & { tab: TabDef; badge: boolean; bottom: number }>(function TabButton({ tab, badge, bottom, isFocused, onPress, ...rest }, ref) {
+  const rise = useSharedValue(isFocused ? 1 : 0);
   useEffect(() => {
-    lift.set(withSpring(isFocused ? 1 : 0, { damping: 13, stiffness: 220 }));
-  }, [isFocused, lift]);
-  const tileStyle = useAnimatedStyle(() => ({ transform: [{ translateY: -14 * lift.get() }, { scale: 1 + 0.16 * lift.get() }] }));
+    rise.set(withSpring(isFocused ? 1 : 0, { damping: 14, stiffness: 230 }));
+  }, [isFocused, rise]);
+  const cardStyle = useAnimatedStyle(() => ({ height: 84 + bottom + 18 * rise.get() }));
+  const artStyle = useAnimatedStyle(() => ({ transform: [{ translateY: -6 * rise.get() }, { scale: 1 + 0.12 * rise.get() }] }));
 
   return (
     <Pressable
@@ -76,54 +79,40 @@ const TabButton = forwardRef<View, TabTriggerSlotProps & { tab: TabDef; badge: b
       accessibilityRole="tab"
       accessibilityState={{ selected: !!isFocused }}
       accessibilityLabel={tab.label}
-      style={styles.slot}
+      style={[styles.slot, isFocused && { zIndex: 2, flex: 1.25 }]}
     >
-      <Animated.View style={[styles.tile, { backgroundColor: tab.edge }, !isFocused && styles.tileIdle, tileStyle]}>
-        <View style={[styles.face, { backgroundColor: tab.color }]}>
-          <View style={styles.shine} />
+      <Animated.View style={[styles.card, cardStyle]}>
+        <Grad from={isFocused ? G.lav1 : G.lavIdle1} to={isFocused ? G.lav2 : G.lavIdle2} />
+        <View style={styles.cardTop} />
+        <Animated.View style={[styles.artWrap, artStyle]}>
           <Image source={tab.art} style={styles.art} />
-        </View>
-        {badge && (
-          <View style={styles.badge}>
-            <Icon name="exclamationmark" size={11} color="white" fallback="!" />
-          </View>
+          {badge && <Bang size={24} style={styles.badge} />}
+        </Animated.View>
+        {isFocused && (
+          <Text style={[outline(16, "#FFFFFF", G.ink), styles.label]} numberOfLines={1}>
+            {tab.label.toUpperCase()}
+          </Text>
         )}
       </Animated.View>
-      <View style={styles.labelSlot}>{isFocused && <Animated.Text style={[outline(14), styles.label]}>{tab.label}</Animated.Text>}</View>
     </Pressable>
   );
 });
 
 const styles = StyleSheet.create({
-  bar: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-around",
-    backgroundColor: G.bar,
-    borderTopWidth: 3,
-    borderTopColor: G.barEdge,
-    paddingTop: 10,
-    paddingHorizontal: 6,
-  },
-  slot: { flex: 1, alignItems: "center" },
-  tile: { width: 58, height: 58, borderRadius: 16, paddingBottom: 5, borderWidth: 2.5, borderColor: G.ink },
-  tileIdle: { opacity: 0.88 },
-  face: { flex: 1, borderRadius: 12, alignItems: "center", justifyContent: "center", overflow: "hidden" },
-  art: { width: 44, height: 44 },
-  shine: { position: "absolute", top: 3, left: 6, right: 6, height: "40%", borderRadius: 9, backgroundColor: "rgba(255,255,255,0.25)" },
-  badge: {
-    position: "absolute",
-    top: -6,
-    right: -6,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "#22C55E",
-    borderWidth: 2,
+  bar: { flexDirection: "row", alignItems: "flex-end", backgroundColor: G.bg, paddingHorizontal: 2, overflow: "visible" },
+  slot: { flex: 1, justifyContent: "flex-end", marginHorizontal: -2 },
+  card: {
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    borderWidth: 2.5,
+    borderBottomWidth: 0,
     borderColor: G.ink,
+    overflow: "hidden",
     alignItems: "center",
-    justifyContent: "center",
   },
-  labelSlot: { height: 18, justifyContent: "center", marginTop: -8 },
-  label: { textTransform: "uppercase" },
+  cardTop: { position: "absolute", top: 0, left: 10, right: 10, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.7)" },
+  artWrap: { marginTop: 8 },
+  art: { width: 56, height: 56 },
+  badge: { position: "absolute", top: -4, right: -10 },
+  label: { marginTop: -2 },
 });

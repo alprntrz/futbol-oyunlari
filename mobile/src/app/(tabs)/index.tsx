@@ -6,10 +6,9 @@ import Animated, { Easing, FadeIn, Keyframe, useAnimatedStyle, useSharedValue, w
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { dailyMatch, dayNumber } from "@/lib/daily";
-import { rankOf, RANKS } from "@/lib/levels";
 
 import { Avatar } from "~/components/Avatar";
-import { ChunkyButton, G, GameBg, outline } from "~/components/game";
+import { Bang, Counter, FatBar, G, GameBg, Grad, HexButton, outline, SlantCard } from "~/components/game";
 import { RankChip } from "~/components/Rank";
 import { Text } from "~/components/Text";
 import { loadToday, type Today } from "~/components/TodayPuzzles";
@@ -17,7 +16,7 @@ import { Icon, Tap } from "~/components/ui";
 import { useAccount } from "~/lib/account";
 import { loadAvatar } from "~/lib/avatar";
 import { bingoForDay } from "~/lib/bingo";
-import { BRAND, OYUN } from "~/lib/brand";
+import { BRAND, OYUN, REWARD } from "~/lib/brand";
 import { CALENDAR, claimDaily, useDailyRewards } from "~/lib/dailyRewards";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -25,7 +24,6 @@ import { loadNick } from "~/lib/nick";
 import { usePlayStreak } from "~/lib/playStreak";
 import { useQuests } from "~/lib/quests";
 import { useQuizDifficulty } from "~/lib/quizLevel";
-import { F } from "~/lib/theme";
 import { loadXp, onXpAward } from "~/lib/xp";
 
 type GameId = "ht" | "qz" | "pp";
@@ -114,7 +112,6 @@ export default function Home() {
   const giftStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${wiggle.get()}deg` }] }));
 
   const lv = xp?.level ?? 1;
-  const rank = rankOf(lv);
   const fraction = xp ? xp.into / xp.need : 0;
   const questsDone = quests.filter((q) => q.progress >= q.target).length;
   const slots: { key: string; art: ImageSourcePropType; done: boolean; started: boolean }[] = [
@@ -123,123 +120,150 @@ export default function Home() {
     { key: "bingo", art: BRAND.icon.bingo, done: today?.bingo.state === "done", started: today?.bingo.state === "started" },
   ];
 
+  const totalXp = xp?.xp ?? 0;
+  const xpText = totalXp >= 10000 ? `${(totalXp / 1000).toFixed(1)}K` : String(totalXp);
+
   return (
     <View style={{ flex: 1 }}>
       <GameBg />
-      <View style={[styles.screen, { paddingTop: insets.top + 6 }]}>
-        {/* counters: level, streak, today's gift */}
+      <View style={[styles.screen, { paddingTop: insets.top + 4 }]}>
+        {/* counters, like the currencies row */}
         <View style={styles.counters}>
-          <View style={[styles.counter, { flex: 1 }]} accessibilityLabel={`${t("levelN").replace("{n}", String(lv))}`}>
-            <View style={styles.levelGem}>
-              <View style={styles.levelGemFace} />
-              <Text style={outline(16)}>{lv}</Text>
-            </View>
-            <View style={styles.counterTrack}>
-              <View style={[styles.counterFill, { width: `${Math.max(6, fraction * 100)}%` }]} />
-              <Text style={[outline(12), styles.counterTrackText]}>
-                {xp?.into ?? 0}/{xp?.need ?? 100}
-              </Text>
-            </View>
+          <Counter label={`${totalXp} XP`} value={xpText} icon={<Image source={REWARD.xp} style={styles.counterArt} />} onPress={() => router.push("/istatistik")} />
+          <Counter
+            label={`${t("streak")}: ${streak.count}`}
+            value={String(streak.count)}
+            icon={<Icon name="flame.fill" size={30} color={streak.count ? "#FF8A1F" : "#B9A9F2"} fallback="🔥" />}
+          />
+          <View style={{ flex: 1 }}>
+            <Counter
+              label={claimed ? t("dailyTitle") : `${t("dailyClaim")} +${CALENDAR[todayIndex]} XP`}
+              value={claimed ? "✓" : `+${CALENDAR[todayIndex]}`}
+              tint={claimed ? undefined : "rgba(246,185,21,0.85)"}
+              icon={
+                <Animated.View style={giftStyle}>
+                  <Image source={claimed ? REWARD.chestOpen : REWARD.chest} style={styles.counterArt} />
+                </Animated.View>
+              }
+              onPress={() => {
+                if (claimed) return router.push("/gunluk");
+                haptic.success();
+                claimDaily();
+              }}
+            />
           </View>
-          <View style={styles.counter} accessibilityLabel={`${t("streak")}: ${streak.count}`}>
-            <Icon name="flame.fill" size={18} color={streak.count ? "#FFB020" : "rgba(255,255,255,0.4)"} fallback="🔥" />
-            <Text style={outline(17)}>{streak.count}</Text>
-          </View>
-          <Tap
-            onPress={() => {
-              if (claimed) return router.push("/gunluk");
-              haptic.success();
-              claimDaily();
-            }}
-            accessibilityLabel={claimed ? t("dailyTitle") : `${t("dailyClaim")} +${CALENDAR[todayIndex]} XP`}
-          >
-            <Animated.View style={[styles.counter, !claimed && { backgroundColor: G.gold, borderColor: G.goldEdge }, giftStyle]}>
-              <Icon name={claimed ? "checkmark" : "gift.fill"} size={17} color={claimed ? "rgba(255,255,255,0.6)" : "#3B2A05"} fallback="🎁" />
-              {!claimed && <Text style={[styles.giftText]}>+{CALENDAR[todayIndex]}</Text>}
-            </Animated.View>
+        </View>
+
+        {/* you (slanted lime card) and today's quests (slanted gold card) */}
+        <View style={styles.cards}>
+          <Tap onPress={() => router.push("/istatistik")} style={styles.meTap} accessibilityLabel={nick}>
+            <SlantCard from={G.lime1} to={G.lime2} style={styles.meCard}>
+              <View style={styles.cardRow}>
+                <View style={styles.meAvatar}>
+                  <Avatar id={avatar} size={52} />
+                </View>
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Text style={outline(21)} numberOfLines={1}>
+                    {nick}
+                  </Text>
+                  <View style={styles.pills}>
+                    <View style={styles.pill}>
+                      <Image source={REWARD.levelBadge} style={{ width: 16, height: 18 }} />
+                      <Text style={outline(14)}>{lv}</Text>
+                    </View>
+                    <RankChip level={lv} compact size="sm" />
+                  </View>
+                </View>
+              </View>
+            </SlantCard>
+          </Tap>
+          <Tap onPress={() => router.push("/gunluk")} style={styles.questTap} accessibilityLabel={`${t("questsTitle")} ${questsDone}/${quests.length}`}>
+            <SlantCard from={G.gold1} to={G.gold2} style={styles.questCard}>
+              <View style={{ gap: 5 }}>
+                <Text style={outline(15, G.brown, "rgba(255,255,255,0.5)")} numberOfLines={1}>
+                  {t("questsTitle").toUpperCase()}
+                </Text>
+                <View style={styles.questRow}>
+                  <View style={styles.questLevel}>
+                    <Text style={outline(15)}>{questsDone}</Text>
+                  </View>
+                  <View style={styles.questTrack}>
+                    <View style={[styles.questFill, { width: `${(questsDone / Math.max(1, quests.length)) * 100}%` }]} />
+                    <Text style={[outline(13), { textAlign: "center" }]}>
+                      {questsDone}/{quests.length}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </SlantCard>
+            {questsDone < quests.length && <Bang size={26} style={styles.cardBang} />}
           </Tap>
         </View>
 
-        {/* you, and today's quests */}
-        <View style={styles.cards}>
-          <Tap onPress={() => router.push("/istatistik")} style={[styles.meCard]} accessibilityLabel={nick}>
-            <View style={styles.meAvatar}>
-              <Avatar id={avatar} size={46} />
-            </View>
-            <View style={{ flex: 1, gap: 3 }}>
-              <Text style={outline(20)} numberOfLines={1}>
-                {nick}
+        {/* side buttons (left) and settings (right), over the hero */}
+        <View style={styles.sideRow}>
+          <View style={{ gap: 10 }}>
+            <Tap onPress={() => router.push(current.friend)} style={styles.sideBtn} accessibilityLabel={t("htFriend")}>
+              <Image source={BRAND.mode.friend} style={styles.sideArt} />
+              <Text style={[outline(11), styles.sideLabel]} numberOfLines={1}>
+                {t("htFriend")}
               </Text>
-              <RankChip level={lv} compact size="sm" />
-            </View>
-          </Tap>
-          <Tap onPress={() => router.push("/gunluk")} style={styles.questCard} accessibilityLabel={`${t("questsTitle")} ${questsDone}/${quests.length}`}>
-            <Text style={[outline(13), { color: "#3B2A05", textShadowColor: "rgba(255,255,255,0.4)" }]} numberOfLines={1}>
-              {t("questsTitle")}
-            </Text>
-            <View style={styles.questTrack}>
-              <View style={[styles.questFill, { width: `${(questsDone / Math.max(1, quests.length)) * 100}%` }]} />
-              <Text style={[outline(12), styles.counterTrackText]}>
-                {questsDone}/{quests.length}
-              </Text>
-            </View>
-          </Tap>
+            </Tap>
+            {current.same && (
+              <Tap onPress={() => router.push(current.same!)} style={styles.sideBtn} accessibilityLabel={t("htSame")}>
+                <Image source={BRAND.mode.same} style={styles.sideArt} />
+                <Text style={[outline(11), styles.sideLabel]} numberOfLines={1}>
+                  {t("htSame")}
+                </Text>
+              </Tap>
+            )}
+          </View>
           <Tap onPress={() => router.push("/ayarlar")} style={styles.gear} accessibilityLabel={t("tabSettings")}>
-            <Icon name="gearshape.fill" size={20} color="white" fallback="⚙" />
+            <Icon name="gearshape.fill" size={24} color="#E9E3FF" fallback="⚙" />
           </Tap>
         </View>
 
         {/* the chosen game, big */}
-        <View style={styles.hero}>
-          <View style={styles.glow} />
+        <View style={styles.hero} pointerEvents="none">
           <Animated.View key={current.id} entering={swapIn(dir)} style={floatStyle}>
             <Image source={current.art} style={styles.heroArt} resizeMode="contain" />
           </Animated.View>
         </View>
 
         {/* road to the next rank */}
-        <View style={styles.roadTrack} accessibilityLabel={rank.nextAt ? t("rankNext").replace("{rank}", t(`rank_${RANKS[rank.index + 1].id}` as Parameters<typeof t>[0])).replace("{n}", String(rank.nextAt)) : t("rankTop")}>
-          <View style={[styles.roadFill, { width: `${Math.max(4, (rank.nextAt ? (lv - RANKS[rank.index].from + fraction) / (rank.nextAt - RANKS[rank.index].from) : 1) * 100)}%` }]} />
-          <Text style={[outline(14), styles.roadText]}>
-            {rank.nextAt
-              ? t("rankNext")
-                  .replace("{rank}", t(`rank_${RANKS[rank.index + 1].id}` as Parameters<typeof t>[0]))
-                  .replace("{n}", String(rank.nextAt))
-              : t("rankTop")}
-          </Text>
-        </View>
+        <FatBar
+          fraction={fraction}
+          text={`${xp?.into ?? 0}/${xp?.need ?? 100}`}
+          icon={<Image source={REWARD.trophy} style={{ width: 40, height: 40 }} resizeMode="contain" />}
+        />
 
-        {/* game picker, like the arena switcher */}
+        {/* game picker, the arena switcher */}
         <View style={styles.picker}>
           <Tap onPress={() => step(-1)} style={styles.arrow} accessibilityLabel="◀">
-            <Icon name="arrowtriangle.left.fill" size={16} color="white" fallback="◀" />
+            <Icon name="arrowtriangle.left.fill" size={15} color="#3B2A8F" fallback="◀" />
           </Tap>
-          <Animated.View key={current.id} entering={FadeIn.duration(180)} style={{ flex: 1, alignItems: "center" }}>
-            <Text style={outline(24)} numberOfLines={1} adjustsFontSizeToFit>
-              {current.name}
+          <Animated.View key={current.id} entering={FadeIn.duration(180)} style={styles.pickerName}>
+            <Text style={outline(23)} numberOfLines={1} adjustsFontSizeToFit>
+              {i + 1}. {current.name}
             </Text>
           </Animated.View>
           <Tap onPress={() => step(1)} style={styles.arrow} accessibilityLabel="▶">
-            <Icon name="arrowtriangle.right.fill" size={16} color="white" fallback="▶" />
+            <Icon name="arrowtriangle.right.fill" size={15} color="#3B2A8F" fallback="▶" />
           </Tap>
         </View>
 
-        {/* today's three puzzles */}
-        <Tap onPress={() => router.push("/gunluk")} style={styles.slots} accessibilityLabel={t("homePuzzles")}>
+        {/* today's three puzzles, the chest slots */}
+        <Tap onPress={() => router.push("/gunluk")} style={styles.tray} accessibilityLabel={t("homePuzzles")}>
           {slots.map((s) => (
             <View key={s.key} style={[styles.slot, s.done && styles.slotDone]}>
-              {s.done ? <Icon name="checkmark" size={22} color="white" fallback="✓" /> : <Image source={s.art} style={{ width: 34, height: 34, opacity: s.started ? 1 : 0.85 }} />}
+              {!s.done && <Grad from={G.peach1} to={G.peach2} />}
+              {s.done ? <Icon name="checkmark" size={24} color="white" fallback="✓" /> : <Image source={s.art} style={{ width: 36, height: 36 }} />}
             </View>
           ))}
         </Tap>
 
-        <ChunkyButton title={t("qpPlay").toUpperCase()} size="lg" onPress={() => router.push(current.play)} style={styles.play} />
-
-        <View style={styles.more}>
-          <ChunkyButton title={t("htFriend")} icon="person.2.fill" size="sm" color={G.blue} edge={G.blueEdge} onPress={() => router.push(current.friend)} style={{ flex: 1 }} />
-          {current.same && (
-            <ChunkyButton title={t("htSame")} icon="iphone" size="sm" color={G.teal} edge={G.tealEdge} onPress={() => router.push(current.same!)} style={{ flex: 1 }} />
-          )}
+        <View style={{ marginTop: 10 }}>
+          <HexButton title={t("qpPlay").toUpperCase()} onPress={() => router.push(current.play)} width={260} height={74} />
         </View>
       </View>
     </View>
@@ -247,54 +271,34 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: 14, paddingBottom: 12 },
-  counters: { flexDirection: "row", alignItems: "center", gap: 8 },
-  counter: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    height: 36,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.12)",
-  },
-  giftText: { fontFamily: F.black, fontSize: 17, color: "#3B2A05" },
-  levelGem: { width: 30, height: 30, alignItems: "center", justifyContent: "center" },
-  levelGemFace: { position: "absolute", width: 24, height: 24, borderRadius: 7, backgroundColor: G.purple, borderWidth: 2, borderColor: G.ink, transform: [{ rotate: "45deg" }] },
-  counterTrack: { flex: 1, height: 18, borderRadius: 9, backgroundColor: "rgba(0,0,0,0.35)", overflow: "hidden", justifyContent: "center" },
-  counterFill: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 9, backgroundColor: G.purple },
-  counterTrackText: { textAlign: "center" },
-  cards: { flexDirection: "row", gap: 8, marginTop: 10, alignItems: "stretch" },
-  meCard: { flex: 1.35, flexDirection: "row", alignItems: "center", gap: 10, padding: 8, borderRadius: 16, backgroundColor: "#7CC242", borderWidth: 2.5, borderColor: G.ink, borderBottomWidth: 6 },
-  meAvatar: { width: 50, height: 50, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.9)", alignItems: "center", justifyContent: "center", overflow: "hidden" },
-  questCard: { flex: 1, padding: 8, gap: 6, borderRadius: 16, backgroundColor: G.gold, borderWidth: 2.5, borderColor: G.ink, borderBottomWidth: 6, justifyContent: "center" },
-  questTrack: { height: 18, borderRadius: 9, backgroundColor: "rgba(0,0,0,0.3)", overflow: "hidden", justifyContent: "center" },
-  questFill: { position: "absolute", left: 0, top: 0, bottom: 0, backgroundColor: G.purple },
-  gear: { width: 40, borderRadius: 12, backgroundColor: "rgba(0,0,0,0.3)", alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "rgba(255,255,255,0.12)" },
-  hero: { flex: 1, alignItems: "center", justifyContent: "center", minHeight: 150 },
-  glow: { position: "absolute", width: 230, height: 230, borderRadius: 115, backgroundColor: "rgba(155,225,93,0.18)" },
-  heroArt: { width: 230, height: 230 },
-  roadTrack: { height: 30, borderRadius: 15, backgroundColor: "rgba(0,0,0,0.35)", borderWidth: 2.5, borderColor: G.ink, overflow: "hidden", justifyContent: "center", marginHorizontal: 18 },
-  roadFill: { position: "absolute", left: 0, top: 0, bottom: 0, backgroundColor: G.orange },
-  roadText: { textAlign: "center" },
-  picker: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-    marginHorizontal: 30,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: G.purple,
-    borderWidth: 2.5,
-    borderColor: G.ink,
-    borderBottomWidth: 5,
-  },
-  arrow: { width: 44, height: "100%", alignItems: "center", justifyContent: "center" },
-  slots: { flexDirection: "row", justifyContent: "center", gap: 12, marginTop: 12 },
-  slot: { width: 54, height: 54, borderRadius: 27, backgroundColor: "rgba(0,0,0,0.3)", borderWidth: 2.5, borderColor: "rgba(255,255,255,0.25)", alignItems: "center", justifyContent: "center" },
-  slotDone: { backgroundColor: G.lime, borderColor: G.ink },
-  play: { marginTop: 14, marginHorizontal: 34 },
-  more: { flexDirection: "row", gap: 10, marginTop: 10 },
+  screen: { flex: 1, paddingHorizontal: 10, paddingBottom: 8 },
+  counters: { flexDirection: "row", gap: 6, paddingHorizontal: 4 },
+  counterArt: { width: 38, height: 38, resizeMode: "contain" },
+  cards: { flexDirection: "row", gap: 8, marginTop: 8, marginHorizontal: -14 },
+  meTap: { flex: 1.25 },
+  meCard: { paddingVertical: 9, paddingLeft: 18, paddingRight: 26 },
+  cardRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  meAvatar: { width: 58, height: 58, borderRadius: 12, backgroundColor: "#7EB6FF", borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  pills: { flexDirection: "row", alignItems: "center", gap: 6 },
+  pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#5A45C8", borderRadius: 999, borderWidth: 2, borderColor: G.ink, paddingHorizontal: 8, paddingVertical: 1 },
+  questTap: { flex: 1 },
+  questCard: { paddingVertical: 10, paddingLeft: 30, paddingRight: 22, flex: 1, justifyContent: "center" },
+  questRow: { flexDirection: "row", alignItems: "center" },
+  questLevel: { width: 30, height: 30, borderRadius: 15, backgroundColor: "#3D8BEA", borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", zIndex: 1 },
+  questTrack: { flex: 1, height: 22, marginLeft: -8, borderRadius: 11, backgroundColor: "#3A2A90", borderWidth: 2, borderColor: G.ink, overflow: "hidden", justifyContent: "center" },
+  questFill: { position: "absolute", left: 0, top: 0, bottom: 0, backgroundColor: "#8E63F2" },
+  cardBang: { position: "absolute", top: -10, left: -6 },
+  sideRow: { position: "absolute", left: 12, right: 12, top: 200, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", zIndex: 3 },
+  sideBtn: { alignItems: "center", width: 66 },
+  sideArt: { width: 52, height: 52 },
+  sideLabel: { marginTop: -4, textAlign: "center" },
+  gear: { width: 48, height: 48, borderRadius: 24, backgroundColor: "rgba(43,29,107,0.45)", alignItems: "center", justifyContent: "center" },
+  hero: { flex: 1, alignItems: "center", justifyContent: "flex-end", minHeight: 170, paddingBottom: 4 },
+  heroArt: { width: 250, height: 250 },
+  picker: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 8, marginHorizontal: 30 },
+  arrow: { width: 38, height: 40, borderRadius: 10, backgroundColor: "#A994F7", borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center" },
+  pickerName: { flex: 1, height: 40, borderRadius: 10, backgroundColor: G.plate, borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", paddingHorizontal: 8 },
+  tray: { flexDirection: "row", alignSelf: "center", gap: 10, marginTop: 10, padding: 7, borderRadius: 40, backgroundColor: G.plate, borderWidth: 2.5, borderColor: G.ink },
+  slot: { width: 54, height: 54, borderRadius: 27, borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  slotDone: { backgroundColor: "#4A36A8" },
 });

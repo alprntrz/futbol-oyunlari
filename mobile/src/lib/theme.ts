@@ -41,6 +41,8 @@ export const F = {
   displayItalic: "BarlowCondensed_800ExtraBold_Italic",
   black: "BarlowCondensed_900Black",
   semi: "BarlowCondensed_600SemiBold",
+  /** rounded chunky game face (Draft Showdown look) */
+  game: "LilitaOne_400Regular",
 };
 
 export const R = { card: 22, inner: 12, button: 14, chip: 999 };

@@ -5,6 +5,7 @@ import {
   BarlowCondensed_900Black,
   useFonts,
 } from "@expo-google-fonts/barlow-condensed";
+import { LilitaOne_400Regular } from "@expo-google-fonts/lilita-one";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -30,6 +31,7 @@ export default function RootLayout() {
     BarlowCondensed_800ExtraBold,
     BarlowCondensed_800ExtraBold_Italic,
     BarlowCondensed_900Black,
+    LilitaOne_400Regular,
   });
 
   useEffect(() => {
