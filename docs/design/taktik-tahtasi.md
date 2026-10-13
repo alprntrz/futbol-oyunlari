@@ -32,9 +32,9 @@ ipuçlarından adını bilirsen ucuza alırsın (bkz. 9).
 - **Bitiş:** Canı 0'a düşen elenir. Son kalan 1. olur. İlk 4 "başarılı" sayılır; XP ve rütbe buna göre verilir.
 
 ### Kaybedince giden can
-`can kaybı = 2 + aşama numarası + gol farkı (en fazla 5)`
+`can kaybı = 6 + 3 × (aşama − 1) + gol farkı (en fazla 5)`; penaltılarla kaybetmek 1 gol sayılır.
 
-Örnek: 4. aşamada 3-1 kaybettin → 2 + 4 + 2 = 8 can.
+Örnek: 4. aşamada 3-1 kaybettin → 6 + 9 + 2 = 17 can.
 
 ---
 
@@ -230,11 +230,12 @@ Eşyaların birleşip daha güçlü eşya olması (TFT'deki gibi) ikinci sürüm
 
 Bazı turlarda dükkândaki 5 karttan biri **gizli** gelir:
 - Kartta siluet ve 3 ipucu var: ülke bayrağı, bir eski kulübü ve mevkisi.
-- Adını yazıp bilirsen kart **1 altın ucuza** alınır (en az 1 altın) ve hemen
+- Adını yazıp bilirsen kart **2 altın ucuza** alınır (en az 1 altın) ve hemen
   **parlayarak** açılır; kartın köşesinde küçük bir "gözcü" rozeti kalır.
   Güç bonusu yok: avantaj sadece ekonomide.
 - Bilemezsen normal fiyatına alabilir ya da bırakabilirsin.
-- Bir aşamada en fazla 2 kez çıkar. Hedef: bilen oyuncunun ilk 4 oranı +%3–5.
+- Bir aşamada en fazla 3 kez çıkar. Hedef: bilen oyuncunun ilk 4 oranı +%3–5
+  (simülasyonda şu an +2; 1 altınlık indirim hiç fark yaratmıyordu).
 - İpuçları Gizli Oyuncu oyunundaki altyapıdan gelir.
 
 **Transfer günü** (aşama 3 ve 5'te):
@@ -256,11 +257,11 @@ Aşama 2, 3 ve 4'ün başında 3 karttan biri seçilir. İlk liste:
 | Gegenpress | Rakibin topa sahip olma oranı −%10 |
 | Otobüsü çek | SAV +%25, HÜC −%10 |
 | Uzun top | Forvetler orta sahayı atlar: HÜC +%15, sahip olma −%10 |
-| Altyapı | Hemen 3 tane 1 maliyetli kart, her biri 2 kopyalı |
+| Altyapı | Hemen 3 farklı 2 maliyetli oyuncudan ikişer kart |
 | Kasa dolu | Hemen 15 altın |
 | Yıldız transferi | Hemen rastgele bir 4 maliyetli kart |
 | Kanat oyunu | Forvet bölgesinde en az 2 kişi varsa şut kalitesi +%15 |
-| Seyirci desteği | Kaybettiğin maçlarda yarı can kaybedersin |
+| Seyirci desteği | Kaybettiğin maçlarda 3 can daha az kaybedersin |
 | Kulüp efsanesi | En güçlü kulüp sinerjin bir eşik yukarı sayılır |
 | Milli ara | En güçlü ülke sinerjin bir eşik yukarı sayılır |
 
@@ -357,7 +358,7 @@ Zorluk, botun karar kalitesiyle ayarlanır. Botlara Tic-Tac-Toe'daki gibi gerçe
 
 1. **İsim:** Taktik Tahtası / Pitch Chess.
 2. **Süre:** 12–15 dakika.
-3. **Gözcü raporu:** 1 altın indirim ve "gözcü" rozeti, güç bonusu yok (bkz. 9).
+3. **Gözcü raporu:** 2 altın indirim ve "gözcü" rozeti, güç bonusu yok (bkz. 9).
 4. **Ülke karakterleri:** Tablodaki gibi kalıyor; denge simülasyonla ayarlanacak.
 5. **Havuz:** Lig sınırı yok, her oyuncu çıkabilir; her lobiye rastgele maç havuzu (bkz. 5.4).
 
@@ -367,3 +368,20 @@ Zorluk, botun karar kalitesiyle ayarlanır. Botlara Tic-Tac-Toe'daki gibi gerçe
 `hero` (oyun kartı), `card-scout` (gizli kart), `coach-pass-master`,
 `coach-defensive`, `coach-pressing`, ve 6 eşya: `item-golden-boot`, `item-gloves`,
 `item-shin-guard`, `item-captain-band`, `item-energy-drink`, `item-tactics-board`.
+
+## 18. İlk denge ölçümü (motor v0, 400 bot lobisi)
+
+`node --import ./scripts/lib/alias.mjs mobile/scripts/taktik-sim.mts 400`
+
+| Ölçü | Sonuç | Hedef |
+|---|---|---|
+| Oyun uzunluğu | ort. 24 tur (20–28) ≈ 14,7 dk | 12–15 dk |
+| Gol / takım / maç | 1,75 | 1,3–1,8 |
+| Penaltıya giden maç | %21 | — |
+| Ülke stilleri ilk 4 | %44–54 | %40–60 |
+| Teknik direktörler ilk 4 | %45–55 | %40–60 |
+| Bot kişilikleri ilk 4 | %47–55 | %40–60 |
+| Gözcüyü bilen / bilmeyen | %51 / %49 | +3–5 |
+
+Not: Mevki verisi henüz kazınıyor; o gelene kadar mevkiler bilinen ilk 11'lerden ve
+geri kalanlar için isimden türetilen sabit bir tahminden geliyor. Veri gelince ölçüm yenilenecek.
