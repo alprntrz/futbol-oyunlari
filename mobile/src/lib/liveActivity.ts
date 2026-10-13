@@ -117,6 +117,15 @@ export interface Duel {
 /** Live Activity for an online duel (Tic-Tac-Toe series, house-bot series, Possession). */
 export function useDuelActivity(d: Duel | null) {
   const { t } = useI18n();
+  // the app itself also flips the clock red for its last seconds while it still runs
+  // (the stale-date redraw covers a suspended app, where iOS does it)
+  const urgentAt = d && !d.winner ? d.deadline - URGENT_MS : 0;
+  const [urgentFor, setUrgentFor] = useState(0);
+  useEffect(() => {
+    if (!urgentAt) return;
+    const id = setTimeout(() => setUrgentFor(urgentAt), Math.max(0, urgentAt - Date.now()));
+    return () => clearTimeout(id);
+  }, [urgentAt]);
   const props: MatchActivityProps | null = d && {
     game: d.game,
     icon: d.icon,
@@ -133,6 +142,7 @@ export function useDuelActivity(d: Duel | null) {
     endsAt: d.winner ? 0 : Math.round(d.deadline / 1000) * 1000,
     since: d.winner ? 0 : Math.round(d.since / 1000) * 1000,
     phase: !d.winner ? "turn" : d.matchOver ? "over" : "pause",
+    urgent: !d.winner && urgentFor === urgentAt,
   };
   useMatchActivity(props, d?.path ? `tiktako://${d.path.replace(/^\//, "")}` : undefined);
 }

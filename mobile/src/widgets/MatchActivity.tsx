@@ -25,6 +25,8 @@ export type MatchActivityProps = {
   endsAt: number;
   /** when the countdown (or the search count-up) started */
   since: number;
+  /** the clock's last seconds (also shown when iOS marks the activity stale) */
+  urgent?: boolean;
   /** "search" counts up from `since`; "turn" counts down to `endsAt`; "pause" (between games) and "over" show `score` */
   phase: "search" | "turn" | "pause" | "over";
 };
@@ -42,7 +44,7 @@ const MatchActivity = (p: MatchActivityProps, env: LiveActivityEnvironment) => {
   const DEEP = { X: "#1D4ED8", O: "#BE123C", win: "#15803D", lose: "#BE123C", draw: "#B45309", search: "#15803D", red: "#DC2626", text: "#0E1A14", sub: "#5F6C64" };
   const banner = env.colorScheme === "light" && !env.isLuminanceReduced ? DEEP : LIGHT;
   const island = LIGHT;
-  const urgent = p.phase === "turn" && !!env.isStale;
+  const urgent = p.phase === "turn" && (!!p.urgent || !!env.isStale);
 
   // a timer Text takes all the width it's offered: fixed frames keep it on the right
   const clock = (pal: typeof LIGHT, size: number, width: number) =>
