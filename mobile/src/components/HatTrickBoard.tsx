@@ -79,7 +79,7 @@ export function ClubShirt({ c, size = 30 }: { c: Criterion; size?: number }) {
 export function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
   if (c.kind === "club") return <ClubShirt c={c} size={size} />;
   if (c.kind === "country") return <Flag id={c.id} width={size * 1.35} />;
-  if (c.kind === "mate") return <MateBadge c={c} size={size} />;
+  if (c.kind === "mate" || c.kind === "coach") return <PersonBadge c={c} size={size} />;
   return (
     <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>
       {c.icon}
@@ -87,18 +87,19 @@ export function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }
   );
 }
 
-/** "Played with" star: their initials on a green disc with a small handshake. */
-function MateBadge({ c, size }: { c: Criterion; size: number }) {
+/** "Played with" star (green disc, handshake) or "managed by" coach (navy disc, clipboard): initials. */
+function PersonBadge({ c, size }: { c: Criterion; size: number }) {
+  const coach = c.kind === "coach";
   const words = (c.short ?? c.en).split(/\s+/);
   const initials = (words.length > 1 ? words[0][0] + words[words.length - 1][0] : words[0].slice(0, 2)).toUpperCase();
   const d = size * 1.15;
   return (
-    <View style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: C.greenMid, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: coach ? "#1F3B8C" : C.greenMid, alignItems: "center", justifyContent: "center" }}>
       <Text allowFontScaling={false} style={{ fontFamily: F.black, fontSize: d * 0.42, lineHeight: d * 0.5, color: "white" }}>
         {initials}
       </Text>
       <Text allowFontScaling={false} style={{ position: "absolute", right: -d * 0.12, bottom: -d * 0.1, fontSize: d * 0.38 }}>
-        🤝
+        {coach ? "📋" : "🤝"}
       </Text>
     </View>
   );
@@ -422,7 +423,7 @@ export function HatTrickBoard({
  */
 function CriteriaPair({ row, col, color }: { row: Criterion; col: Criterion; color: string }) {
   const { t, locale } = useI18n();
-  const kind = (c: Criterion) => t(c.kind === "club" ? "critClub" : c.kind === "country" ? "critCountry" : c.kind === "mate" ? "critMate" : "critBadge");
+  const kind = (c: Criterion) => t(c.kind === "club" ? "critClub" : c.kind === "country" ? "critCountry" : c.kind === "mate" ? "critMate" : c.kind === "coach" ? "critCoach" : "critBadge");
   const tile = (c: Criterion) => (
     <View style={styles.critTile}>
       <View style={styles.critBadge}>

@@ -1,10 +1,11 @@
 import { PLAYERS, type GridPlayer } from "@/data/players";
+import { COACHES } from "@/data/coaches";
 import { TEAMMATES } from "@/data/teammates";
 import { normalizeAnswer } from "./wordle";
 
 /** A row/column criterion. `test` decides whether a player satisfies it. */
 export interface Criterion {
-  kind: "club" | "country" | "badge" | "mate";
+  kind: "club" | "country" | "badge" | "mate" | "coach";
   id: string;
   tr: string;
   en: string;
@@ -111,32 +112,43 @@ export const ALL_CRITERIA: Criterion[] = [
 /**
  * "Played with X": club teammates of a star (src/data/teammates.ts). Not in
  * ALL_CRITERIA, so seeded grids (daily) and other games stay as they were;
- * `withMate` swaps one into a dealt grid. Ids are "mate-…".
+ * `withLink` swaps one into a dealt grid. Ids are "mate-…".
  */
 export const MATE_CRITERIA: Criterion[] = TEAMMATES.map((m) => {
   const mates = new Set(m.mates);
   return { kind: "mate" as const, id: `mate-${m.id}`, tr: `${m.name} ile oynadı`, en: `Played with ${m.name}`, short: m.name, test: (p: GridPlayer) => mates.has(p.name) };
 });
 
-const BY_ID = new Map([...ALL_CRITERIA, ...MATE_CRITERIA].map((c) => [c.id, c]));
+/** "Managed by X": players a famous coach had at a criteria club (src/data/coaches.ts). Ids are "coach-…". */
+export const COACH_CRITERIA: Criterion[] = COACHES.map((m) => {
+  const players = new Set(m.players);
+  return { kind: "coach" as const, id: `coach-${m.id}`, tr: `Hocası ${m.name}`, en: `Managed by ${m.name}`, short: m.name, test: (p: GridPlayer) => players.has(p.name) };
+});
+
+/** The "people" criteria (played with / managed by) that `withLink` can deal in. */
+const LINK_CRITERIA = [...MATE_CRITERIA, ...COACH_CRITERIA];
+const isLink = (c: Criterion) => c.kind === "mate" || c.kind === "coach";
+
+const BY_ID = new Map([...ALL_CRITERIA, ...LINK_CRITERIA].map((c) => [c.id, c]));
 /** Any criterion by id, "played with" ones included (online grids travel as ids). */
 export const criterionById = (id: string): Criterion | undefined => BY_ID.get(id);
 
 /**
- * Maybe (`chance`) swap one row or column of a grid for a "played with" star,
- * keeping every square solvable. Returns the grid unchanged when none fits.
+ * Maybe (`chance`) swap one row or column of a grid for a "played with" star or a
+ * "managed by" coach, keeping every square solvable. At most one such line per
+ * grid; returns the grid unchanged when none fits.
  */
-export function withMate(grid: Grid, rand: () => number = Math.random, chance = 0.5): Grid {
-  if (!MATE_CRITERIA.length || rand() >= chance) return grid;
+export function withLink(grid: Grid, rand: () => number = Math.random, chance = 0.5): Grid {
+  if (!LINK_CRITERIA.length || rand() >= chance) return grid;
+  if ([...grid.rows, ...grid.cols].some(isLink)) return grid;
   const lines = shuffle(["r0", "r1", "r2", "c0", "c1", "c2"], rand);
-  for (const mate of shuffle(MATE_CRITERIA, rand).slice(0, 12)) {
+  for (const link of shuffle(LINK_CRITERIA, rand).slice(0, 12)) {
     for (const line of lines) {
       const i = Number(line[1]);
       const cross = line[0] === "r" ? grid.cols : grid.rows;
       const kept = line[0] === "r" ? grid.rows : grid.cols;
-      if (kept.some((c, k) => k !== i && c.kind === "mate")) continue;
-      if (!cross.every((c) => c.kind !== "mate" && cellSolvable(mate, c))) continue;
-      const next = kept.map((c, k) => (k === i ? mate : c));
+      if (!cross.every((c) => cellSolvable(link, c))) continue;
+      const next = kept.map((c, k) => (k === i ? link : c));
       return line[0] === "r" ? { rows: next, cols: grid.cols } : { rows: grid.rows, cols: next };
     }
   }

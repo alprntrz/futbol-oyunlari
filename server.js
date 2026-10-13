@@ -51,9 +51,16 @@ function tierGap(since) {
   const waited = Date.now() - since;
   return waited < TIER_WIDEN_MS ? 0 : waited < 2 * TIER_WIDEN_MS ? 1 : 99;
 }
-/** Does a Tic-Tac-Toe grid use "played with" criteria (ids "mate-…"), which older apps can't draw? */
-const gridHasMate = (grid) => [...(grid?.rows ?? []), ...(grid?.cols ?? [])].some((id) => typeof id === "string" && id.startsWith("mate-"));
-const knowsMates = (s) => !!s?.data.caps?.includes("mate");
+/**
+ * Criteria newer apps added ("mate-…" played with, "coach-…" managed by): the caps
+ * a phone needs to draw a Tic-Tac-Toe grid. Older apps send no caps.
+ */
+const gridNeeds = (grid) =>
+  [...(grid?.rows ?? []), ...(grid?.cols ?? [])].map((id) => (typeof id === "string" ? id.split("-")[0] : "")).filter((k) => k === "mate" || k === "coach");
+const gridHasMate = (grid) => gridNeeds(grid).length > 0;
+const canDraw = (s, grid) => gridNeeds(grid).every((k) => !!s?.data.caps?.includes(k));
+/** knows every criterion kind the app can deal (so the host may use them all) */
+const knowsMates = (s) => ["mate", "coach"].every((k) => !!s?.data.caps?.includes(k));
 /** set once the socket server is up (module-level helpers look sockets up through it) */
 let ioServer = null;
 const htAllKnowMates = (room) => room.players.every((p) => knowsMates(ioServer?.sockets.sockets.get(p.id)));
@@ -414,7 +421,7 @@ app.prepare().then(() => {
   // pair waiting players as their allowed rank gap widens with time
   const matchQueues = () => {
     // the older player's grid is used: the other phone must be able to draw it
-    const ht = takePairs(htQueue, (a, b) => a.league === b.league && (!gridHasMate(a.grid) || knowsMates(b.socket)));
+    const ht = takePairs(htQueue, (a, b) => a.league === b.league && canDraw(b.socket, a.grid));
     htQueue = ht.rest;
     for (const [a, b] of ht.pairs) a.pair(a, b);
     const pp = takePairs(ppQueue);
@@ -442,7 +449,7 @@ app.prepare().then(() => {
       cb?.({ ok: true });
     });
 
-    // app features this phone knows (older apps send none): "mate" = "played with" grid criteria
+    // app features this phone knows (older apps send none): "mate" / "coach" = "played with" / "managed by" grid criteria
     socket.data.caps = Array.isArray(socket.handshake.auth?.caps) ? socket.handshake.auth.caps.filter((c) => typeof c === "string").slice(0, 8) : [];
     let joinedCode = null;
 
@@ -579,7 +586,6 @@ app.prepare().then(() => {
       if (!room) return cb?.({ ok: false, error: "not_found" });
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
-        if (gridHasMate(room.grid) && !knowsMates(socket)) return cb?.({ ok: false, error: "update_app" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
         room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark });
       }
@@ -725,7 +731,7 @@ app.prepare().then(() => {
       if (!room) return cb?.({ ok: false, error: "not_found" });
       if (!room.players.some((p) => p.id === socket.id)) {
         if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
-        if (gridHasMate(room.grid) && !knowsMates(socket)) return cb?.({ ok: false, error: "update_app" });
+        if (!canDraw(socket, room.grid)) return cb?.({ ok: false, error: "update_app" });
         const mark = room.players[0]?.mark === "X" ? "O" : "X";
         room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark });
       }

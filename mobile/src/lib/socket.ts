@@ -7,7 +7,7 @@ import { io, type Socket } from "socket.io-client";
 export const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL ?? "http://localhost:3000";
 
 /** What this app version understands, so the server never sends an older phone a grid it can't draw. */
-const CAPS = ["mate"];
+const CAPS = ["mate", "coach"];
 
 let socket: Socket | null = null;
 let sessionToken: string | null = null;
