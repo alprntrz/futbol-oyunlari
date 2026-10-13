@@ -82,8 +82,8 @@ const TabButton = forwardRef<View, TabTriggerSlotProps & { tab: TabDef; badge: b
       style={[styles.slot, isFocused && { zIndex: 2, flex: 1.25 }]}
     >
       <Animated.View style={[styles.card, cardStyle]}>
-        <Grad from={isFocused ? G.lav1 : G.lavIdle1} to={isFocused ? G.lav2 : G.lavIdle2} />
-        <View style={styles.cardTop} />
+        <Grad from={isFocused ? G.tab1 : G.tabIdle1} to={isFocused ? G.tab2 : G.tabIdle2} />
+        <View style={[styles.cardTop, { backgroundColor: isFocused ? G.tabRim : "rgba(255,255,255,0.35)" }]} />
         <Animated.View style={[styles.artWrap, artStyle]}>
           <Image source={tab.art} style={styles.art} />
           {badge && <Bang size={24} style={styles.badge} />}

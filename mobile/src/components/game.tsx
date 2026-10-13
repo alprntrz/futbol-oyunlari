@@ -13,31 +13,46 @@ import { Text } from "./Text";
  * Draft Showdown look: violet screens with big faint stars, every surface a
  * gradient with a dark outline and a light top edge, rounded chunky type.
  */
-export const G = {
+const VIOLET = {
   bg: "#6A54D4",
   star: "#7762DE",
   ink: "#2B1D6B",
-  inkSoft: "rgba(43,29,107,0.55)",
+  glass: "rgba(43,29,107,0.55)",
   plate: "#4E3BB8",
-  plateTop: "#6550D0",
-  lav1: "#D9CFFF",
-  lav2: "#9B86EE",
-  lavIdle1: "#B6A6F4",
-  lavIdle2: "#7F68DF",
+  arrow: "#A994F7",
+  arrowInk: "#3B2A8F",
+  tab1: "#D9CFFF",
+  tab2: "#9B86EE",
+  tabIdle1: "#B6A6F4",
+  tabIdle2: "#7F68DF",
+  tabRim: "rgba(255,255,255,0.7)",
   text: "#FFFFFF",
-  cream: "#FFF4D6",
   yellowText: "#FFE16A",
-  orange1: "#FFC34A",
-  orange2: "#F7871B",
-  orangeEdge: "#C55410",
-  brown: "#4A2208",
-  lime1: "#D8F25A",
-  lime2: "#8CC63A",
-  gold1: "#FFE36B",
-  gold2: "#F6B915",
+  cta1: "#FFC34A",
+  cta2: "#F7871B",
+  ctaEdge: "#C55410",
+  ctaText: "#4A2208",
+  ctaTextShadow: "rgba(255,255,255,0.55)",
+  bar1: "#FFC34A",
+  bar2: "#F7871B",
+  barFrame: "#8F7AEB",
+  barInner: "#3A2A90",
+  me1: "#D8F25A",
+  me2: "#8CC63A",
+  quest1: "#FFE36B",
+  quest2: "#F6B915",
+  questText: "#4A2208",
+  pill: "#5A45C8",
+  track: "#3A2A90",
+  trackFill: "#8E63F2",
+  dot: "#3D8BEA",
+  avatarBg: "#7EB6FF",
+  slot1: "#F7D9BE",
+  slot2: "#E2A77D",
+  slotDone: "#4A36A8",
   green: "#47C35B",
-  peach1: "#F7D9BE",
-  peach2: "#E2A77D",
+  font: F.game,
+  upper: false,
   // still used by the other tabs' buttons
   blue: "#4C8DF6",
   blueEdge: "#2A5DC2",
@@ -45,18 +60,116 @@ export const G = {
   tealEdge: "#0F8476",
 };
 
+/** Night stadium: navy sky over a floodlit pitch, gold for what matters (FUT-card feel). */
+const STADIUM: typeof VIOLET = {
+  bg: "#0B1F3D",
+  star: "#123056",
+  ink: "#040D1C",
+  glass: "rgba(4,13,28,0.55)",
+  plate: "#14305A",
+  arrow: "#2C5A9C",
+  arrowInk: "#E8F0FF",
+  tab1: "#2E5B97",
+  tab2: "#132C52",
+  tabIdle1: "#1B3A66",
+  tabIdle2: "#0D2142",
+  tabRim: "#F5C94A",
+  text: "#FFFFFF",
+  yellowText: "#FFFFFF",
+  cta1: "#5BE38A",
+  cta2: "#17A34A",
+  ctaEdge: "#0B6B2F",
+  ctaText: "#FFFFFF",
+  ctaTextShadow: "#063D1B",
+  bar1: "#FFE27A",
+  bar2: "#E2A40C",
+  barFrame: "#2B4F86",
+  barInner: "#081A33",
+  me1: "#FBE7A1",
+  me2: "#C9962A",
+  quest1: "#1F4F8C",
+  quest2: "#10305C",
+  questText: "#FFFFFF",
+  pill: "#0E2547",
+  track: "#081A33",
+  trackFill: "#2FC46A",
+  dot: "#F5C94A",
+  avatarBg: "#DCE8F7",
+  slot1: "#3BAA5C",
+  slot2: "#1F7A3D",
+  slotDone: "#0E2547",
+  green: "#2FC46A",
+  font: F.displayItalic,
+  upper: true,
+  blue: "#2C6FD6",
+  blueEdge: "#17448C",
+  teal: "#1FA98F",
+  tealEdge: "#0D6656",
+};
+
+/** Which look the game screens use ("violet" = Draft Showdown copy, "stadium" = our football take). */
+export const LOOK: "violet" | "stadium" = "stadium";
+export const G = LOOK === "stadium" ? STADIUM : VIOLET;
+
 /** Rounded game type, white with a hard violet drop under it. */
 export const outline = (size: number, color = G.text, shadow = G.ink): TextStyle => ({
-  fontFamily: F.game,
-  fontSize: size,
+  fontFamily: G.font,
+  fontSize: LOOK === "stadium" ? size * 1.12 : size,
   color,
   textShadowColor: shadow,
   textShadowOffset: { width: 0, height: Math.max(1.5, size / 13) },
   textShadowRadius: 0,
+  textTransform: G.upper ? "uppercase" : "none",
 });
 
-/** Violet background with big faint stars, like Draft Showdown's menus. */
 export function GameBg() {
+  return LOOK === "stadium" ? <StadiumBg /> : <VioletBg />;
+}
+
+/** Night stadium: navy sky fading into a floodlit pitch, two light beams, faint pitch lines. */
+function StadiumBg() {
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Svg width="100%" height="100%" viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice">
+        <Defs>
+          <LinearGradient id={`sky${id}`} x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#06142B" />
+            <Stop offset="0.45" stopColor="#0B2448" />
+            <Stop offset="0.75" stopColor="#0D3B3A" />
+            <Stop offset="1" stopColor="#0B4A2A" />
+          </LinearGradient>
+          <LinearGradient id={`beam${id}`} x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#CFE6FF" stopOpacity={0.22} />
+            <Stop offset="1" stopColor="#CFE6FF" stopOpacity={0} />
+          </LinearGradient>
+          <Pattern id={`grass${id}`} width={400} height={60} patternUnits="userSpaceOnUse">
+            <Rect width={400} height={30} fill="#FFFFFF" fillOpacity={0.025} />
+          </Pattern>
+        </Defs>
+        <Rect width={400} height={860} fill={`url(#sky${id})`} />
+        {/* floodlight beams from the top corners */}
+        <Path d="M-20,-10 L60,-10 L260,620 L120,640 Z" fill={`url(#beam${id})`} />
+        <Path d="M340,-10 L420,-10 L280,640 L140,620 Z" fill={`url(#beam${id})`} />
+        {/* mowing stripes and lines on the lower half */}
+        <Rect y={430} width={400} height={430} fill={`url(#grass${id})`} />
+        <SvgG stroke="#FFFFFF" strokeOpacity={0.07} strokeWidth={3} fill="none">
+          <Path d="M0,640 L400,640" />
+          <Path d="M200,640 m-70,0 a70,70 0 1,0 140,0 a70,70 0 1,0 -140,0" />
+          <Path d="M120,860 L120,780 L280,780 L280,860" />
+        </SvgG>
+        {/* the lamps */}
+        <SvgG fill="#FFFFFF" fillOpacity={0.55}>
+          <Rect x={4} y={10} width={44} height={10} rx={3} />
+          <Rect x={352} y={10} width={44} height={10} rx={3} />
+        </SvgG>
+      </Svg>
+    </View>
+  );
+}
+
+/** Violet background with big faint stars, like Draft Showdown's menus. */
+function VioletBg() {
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const star = (x: number, y: number, r: number, rot: number) => {
     const pts = Array.from({ length: 10 }, (_, i) => {
@@ -152,12 +265,12 @@ export function HexButton({ title, onPress, width = 300, height = 76 }: { title:
           <Svg width={width} height={height} style={StyleSheet.absoluteFill}>
             <Defs>
               <LinearGradient id={`h${id}`} x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor={G.orange1} />
-                <Stop offset="1" stopColor={G.orange2} />
+                <Stop offset="0" stopColor={G.cta1} />
+                <Stop offset="1" stopColor={G.cta2} />
               </LinearGradient>
             </Defs>
             {/* underside */}
-            <Path d={hex(edge)} fill={G.orangeEdge} stroke={G.ink} strokeWidth={3} strokeLinejoin="round" />
+            <Path d={hex(edge)} fill={G.ctaEdge} stroke={G.ink} strokeWidth={3} strokeLinejoin="round" />
             {/* face */}
             <Path d={hex(pressed ? edge - 2 : 0)} fill={`url(#h${id})`} stroke={G.ink} strokeWidth={3} strokeLinejoin="round" />
             {/* shine */}
@@ -167,7 +280,7 @@ export function HexButton({ title, onPress, width = 300, height = 76 }: { title:
             />
           </Svg>
           <View style={[styles.hexLabel, { height: h, top: pressed ? edge - 2 : 0 }]} pointerEvents="none">
-            <Text style={outline(Math.round(h * 0.52), G.brown, "rgba(255,255,255,0.55)")} allowFontScaling={false}>
+            <Text style={outline(Math.round(h * 0.52), G.ctaText, G.ctaTextShadow)} allowFontScaling={false}>
               {title}
             </Text>
           </View>
@@ -181,9 +294,9 @@ export function HexButton({ title, onPress, width = 300, height = 76 }: { title:
 export function ChunkyButton({
   title,
   onPress,
-  from = G.orange1,
-  to = G.orange2,
-  edge = G.orangeEdge,
+  from = G.cta1,
+  to = G.cta2,
+  edge = G.ctaEdge,
   icon,
   style,
 }: {
@@ -242,7 +355,7 @@ export function FatBar({ fraction, text, icon, height = 34 }: { fraction: number
     <View style={[styles.fatOuter, { height: height + 8, borderRadius: (height + 8) / 2 }]}>
       <View style={[styles.fatInner, { height, borderRadius: height / 2 }]}>
         <View style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${f * 100}%`, borderRadius: height / 2, overflow: "hidden" }}>
-          <Grad from={G.orange1} to={G.orange2} />
+          <Grad from={G.bar1} to={G.bar2} />
           <View style={styles.fillShine} />
         </View>
         <Text style={[outline(height * 0.6, G.yellowText), { textAlign: "center" }]} allowFontScaling={false}>
@@ -275,15 +388,15 @@ const styles = StyleSheet.create({
     height: 32,
     marginRight: 18,
     borderRadius: 16,
-    backgroundColor: "rgba(43,29,107,0.55)",
+    backgroundColor: G.glass,
     alignItems: "flex-end",
     justifyContent: "center",
     paddingLeft: 12,
     paddingRight: 24,
   },
   counterIcon: { position: "absolute", right: 0, top: 0, bottom: 0, width: 40, alignItems: "center", justifyContent: "center" },
-  fatOuter: { backgroundColor: "#8F7AEB", borderWidth: 2.5, borderColor: G.ink, padding: 2, justifyContent: "center" },
-  fatInner: { backgroundColor: "#3A2A90", overflow: "hidden", justifyContent: "center" },
+  fatOuter: { backgroundColor: G.barFrame, borderWidth: 2.5, borderColor: G.ink, padding: 2, justifyContent: "center" },
+  fatInner: { backgroundColor: G.barInner, overflow: "hidden", justifyContent: "center" },
   fillShine: { position: "absolute", top: 3, left: 8, right: 8, height: "30%", borderRadius: 8, backgroundColor: "rgba(255,255,255,0.35)" },
   fatIcon: { position: "absolute", left: -6, alignItems: "center", justifyContent: "center" },
   bang: { position: "absolute", backgroundColor: G.green, borderWidth: 2, borderColor: G.ink, transform: [{ rotate: "45deg" }] },

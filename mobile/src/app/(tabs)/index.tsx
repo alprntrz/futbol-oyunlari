@@ -157,7 +157,7 @@ export default function Home() {
         {/* you (slanted lime card) and today's quests (slanted gold card) */}
         <View style={styles.cards}>
           <Tap onPress={() => router.push("/istatistik")} style={styles.meTap} accessibilityLabel={nick}>
-            <SlantCard from={G.lime1} to={G.lime2} style={styles.meCard}>
+            <SlantCard from={G.me1} to={G.me2} style={styles.meCard}>
               <View style={styles.cardRow}>
                 <View style={styles.meAvatar}>
                   <Avatar id={avatar} size={52} />
@@ -178,9 +178,9 @@ export default function Home() {
             </SlantCard>
           </Tap>
           <Tap onPress={() => router.push("/gunluk")} style={styles.questTap} accessibilityLabel={`${t("questsTitle")} ${questsDone}/${quests.length}`}>
-            <SlantCard from={G.gold1} to={G.gold2} style={styles.questCard}>
+            <SlantCard from={G.quest1} to={G.quest2} style={styles.questCard}>
               <View style={{ gap: 5 }}>
-                <Text style={outline(15, G.brown, "rgba(255,255,255,0.5)")} numberOfLines={1}>
+                <Text style={outline(15, G.questText, G.questText === "#FFFFFF" ? G.ink : "rgba(255,255,255,0.5)")} numberOfLines={1}>
                   {t("questsTitle").toUpperCase()}
                 </Text>
                 <View style={styles.questRow}>
@@ -205,14 +205,14 @@ export default function Home() {
           <View style={{ gap: 10 }}>
             <Tap onPress={() => router.push(current.friend)} style={styles.sideBtn} accessibilityLabel={t("htFriend")}>
               <Image source={BRAND.mode.friend} style={styles.sideArt} />
-              <Text style={[outline(11), styles.sideLabel]} numberOfLines={1}>
+              <Text style={[outline(11), styles.sideLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                 {t("htFriend")}
               </Text>
             </Tap>
             {current.same && (
               <Tap onPress={() => router.push(current.same!)} style={styles.sideBtn} accessibilityLabel={t("htSame")}>
                 <Image source={BRAND.mode.same} style={styles.sideArt} />
-                <Text style={[outline(11), styles.sideLabel]} numberOfLines={1}>
+                <Text style={[outline(11), styles.sideLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                   {t("htSame")}
                 </Text>
               </Tap>
@@ -240,7 +240,7 @@ export default function Home() {
         {/* game picker, the arena switcher */}
         <View style={styles.picker}>
           <Tap onPress={() => step(-1)} style={styles.arrow} accessibilityLabel="◀">
-            <Icon name="arrowtriangle.left.fill" size={15} color="#3B2A8F" fallback="◀" />
+            <Icon name="arrowtriangle.left.fill" size={15} color={G.arrowInk} fallback="◀" />
           </Tap>
           <Animated.View key={current.id} entering={FadeIn.duration(180)} style={styles.pickerName}>
             <Text style={outline(23)} numberOfLines={1} adjustsFontSizeToFit>
@@ -248,7 +248,7 @@ export default function Home() {
             </Text>
           </Animated.View>
           <Tap onPress={() => step(1)} style={styles.arrow} accessibilityLabel="▶">
-            <Icon name="arrowtriangle.right.fill" size={15} color="#3B2A8F" fallback="▶" />
+            <Icon name="arrowtriangle.right.fill" size={15} color={G.arrowInk} fallback="▶" />
           </Tap>
         </View>
 
@@ -256,7 +256,7 @@ export default function Home() {
         <Tap onPress={() => router.push("/gunluk")} style={styles.tray} accessibilityLabel={t("homePuzzles")}>
           {slots.map((s) => (
             <View key={s.key} style={[styles.slot, s.done && styles.slotDone]}>
-              {!s.done && <Grad from={G.peach1} to={G.peach2} />}
+              {!s.done && <Grad from={G.slot1} to={G.slot2} />}
               {s.done ? <Icon name="checkmark" size={24} color="white" fallback="✓" /> : <Image source={s.art} style={{ width: 36, height: 36 }} />}
             </View>
           ))}
@@ -278,27 +278,27 @@ const styles = StyleSheet.create({
   meTap: { flex: 1.25 },
   meCard: { paddingVertical: 9, paddingLeft: 18, paddingRight: 26 },
   cardRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-  meAvatar: { width: 58, height: 58, borderRadius: 12, backgroundColor: "#7EB6FF", borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  meAvatar: { width: 58, height: 58, borderRadius: 12, backgroundColor: G.avatarBg, borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", overflow: "hidden" },
   pills: { flexDirection: "row", alignItems: "center", gap: 6 },
-  pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#5A45C8", borderRadius: 999, borderWidth: 2, borderColor: G.ink, paddingHorizontal: 8, paddingVertical: 1 },
+  pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: G.pill, borderRadius: 999, borderWidth: 2, borderColor: G.ink, paddingHorizontal: 8, paddingVertical: 1 },
   questTap: { flex: 1 },
   questCard: { paddingVertical: 10, paddingLeft: 30, paddingRight: 22, flex: 1, justifyContent: "center" },
   questRow: { flexDirection: "row", alignItems: "center" },
-  questLevel: { width: 30, height: 30, borderRadius: 15, backgroundColor: "#3D8BEA", borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", zIndex: 1 },
-  questTrack: { flex: 1, height: 22, marginLeft: -8, borderRadius: 11, backgroundColor: "#3A2A90", borderWidth: 2, borderColor: G.ink, overflow: "hidden", justifyContent: "center" },
-  questFill: { position: "absolute", left: 0, top: 0, bottom: 0, backgroundColor: "#8E63F2" },
+  questLevel: { width: 30, height: 30, borderRadius: 15, backgroundColor: G.dot, borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", zIndex: 1 },
+  questTrack: { flex: 1, height: 22, marginLeft: -8, borderRadius: 11, backgroundColor: G.track, borderWidth: 2, borderColor: G.ink, overflow: "hidden", justifyContent: "center" },
+  questFill: { position: "absolute", left: 0, top: 0, bottom: 0, backgroundColor: G.trackFill },
   cardBang: { position: "absolute", top: -10, left: -6 },
   sideRow: { position: "absolute", left: 12, right: 12, top: 200, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", zIndex: 3 },
-  sideBtn: { alignItems: "center", width: 66 },
+  sideBtn: { alignItems: "center", width: 76 },
   sideArt: { width: 52, height: 52 },
   sideLabel: { marginTop: -4, textAlign: "center" },
-  gear: { width: 48, height: 48, borderRadius: 24, backgroundColor: "rgba(43,29,107,0.45)", alignItems: "center", justifyContent: "center" },
+  gear: { width: 48, height: 48, borderRadius: 24, backgroundColor: G.glass, alignItems: "center", justifyContent: "center" },
   hero: { flex: 1, alignItems: "center", justifyContent: "flex-end", minHeight: 170, paddingBottom: 4 },
   heroArt: { width: 250, height: 250 },
   picker: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 8, marginHorizontal: 30 },
-  arrow: { width: 38, height: 40, borderRadius: 10, backgroundColor: "#A994F7", borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center" },
+  arrow: { width: 38, height: 40, borderRadius: 10, backgroundColor: G.arrow, borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center" },
   pickerName: { flex: 1, height: 40, borderRadius: 10, backgroundColor: G.plate, borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", paddingHorizontal: 8 },
   tray: { flexDirection: "row", alignSelf: "center", gap: 10, marginTop: 10, padding: 7, borderRadius: 40, backgroundColor: G.plate, borderWidth: 2.5, borderColor: G.ink },
   slot: { width: 54, height: 54, borderRadius: 27, borderWidth: 2.5, borderColor: G.ink, alignItems: "center", justifyContent: "center", overflow: "hidden" },
-  slotDone: { backgroundColor: "#4A36A8" },
+  slotDone: { backgroundColor: G.slotDone },
 });
