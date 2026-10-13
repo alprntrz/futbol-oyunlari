@@ -1,16 +1,15 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { Text } from "~/components/Text";
-import { WaitingAnimation } from "~/components/WaitingAnimation";
-import { Button, Card, Page } from "~/components/ui";
+import { MatchSearch } from "~/components/MatchSearch";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { GAME_ICON, useSearchActivity } from "~/lib/liveActivity";
 import { boardToIds, generateBoard } from "~/lib/possession";
 import { getSocket } from "~/lib/socket";
-import { C, T } from "~/lib/theme";
+import { F } from "~/lib/theme";
 import { loadTier } from "~/lib/xp";
 
 /** Random opponent: wait in the server queue, then jump into the matched room. */
@@ -44,17 +43,14 @@ export default function PossessionRandom() {
   }, []);
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: t("htRandom") }} />
-      <Card style={{ alignItems: "center", paddingVertical: 32, gap: 14 }}>
-        <WaitingAnimation width={260} />
-        <Text style={T.title}>{t("htSearching")}</Text>
-        <Text style={[T.body, { textAlign: "center" }]}>{t("htSearchingDesc")}</Text>
-        {error && <Text style={[T.body, { color: C.red, fontWeight: "600" }]}>{error}</Text>}
-      </Card>
-      <View style={{ marginTop: 16 }}>
-        <Button title={t("cancel")} kind="secondary" onPress={() => router.back()} />
-      </View>
-    </Page>
+    <View style={{ flex: 1 }}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <MatchSearch found={null} onCancel={() => router.back()} />
+      {error && <Text style={styles.error}>{error}</Text>}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  error: { position: "absolute", top: 70, left: 24, right: 24, textAlign: "center", fontFamily: F.display, fontSize: 17, color: "white", backgroundColor: "rgba(0,0,0,0.35)", borderRadius: 12, padding: 10, overflow: "hidden" },
+});

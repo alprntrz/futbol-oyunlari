@@ -1,18 +1,19 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { MatchIntro } from "~/components/MatchIntro";
 import { Text } from "~/components/Text";
-import { RunningPlayer } from "~/components/RunningPlayer";
-import { Button, Card, Page } from "~/components/ui";
+import { MatchSearch } from "~/components/MatchSearch";
+import { Page } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 import { gridToIds, type Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid, useHtLeague } from "~/lib/league";
 import { GAME_ICON, useSearchActivity } from "~/lib/liveActivity";
 import { loadNick, randomNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
-import { C, T } from "~/lib/theme";
+import { F } from "~/lib/theme";
 import { loadTier } from "~/lib/xp";
 
 /** Nobody found by then: play the house bot, which looks and plays like any other opponent. */
@@ -63,7 +64,16 @@ export default function HatTrickRandom() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (matched) {
+  // the slot locks on the opponent for a beat, then the VS countdown
+  const [locked, setLocked] = useState(false);
+  useEffect(() => {
+    if (!matched) return;
+    haptic.success();
+    const id = setTimeout(() => setLocked(true), 1100);
+    return () => clearTimeout(id);
+  }, [matched]);
+
+  if (matched && locked) {
     const me: Mark = matched.kind === "room" ? matched.me : "X";
     return (
       <Page>
@@ -84,17 +94,14 @@ export default function HatTrickRandom() {
   }
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: t("htRandom") }} />
-      <Card style={{ alignItems: "center", paddingVertical: 32, gap: 14 }}>
-        <RunningPlayer />
-        <Text style={T.title}>{t("htSearching")}</Text>
-        <Text style={[T.body, { textAlign: "center" }]}>{t("htSearchingDesc")}</Text>
-        {error && <Text style={[T.body, { color: C.red, fontWeight: "600" }]}>{error}</Text>}
-      </Card>
-      <View style={{ marginTop: 16 }}>
-        <Button title={t("cancel")} kind="secondary" onPress={() => router.back()} />
-      </View>
-    </Page>
+    <View style={{ flex: 1 }}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <MatchSearch found={matched ? { nick: matched.opponent, tier: matched.tier } : null} onCancel={() => router.back()} />
+      {error && <Text style={styles.error}>{error}</Text>}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  error: { position: "absolute", top: 70, left: 24, right: 24, textAlign: "center", fontFamily: F.display, fontSize: 17, color: "white", backgroundColor: "rgba(0,0,0,0.35)", borderRadius: 12, padding: 10, overflow: "hidden" },
+});
