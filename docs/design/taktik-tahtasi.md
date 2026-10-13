@@ -1,6 +1,7 @@
-# Kadro Kur — tasarım belgesi (taslak v0.1)
+# Taktik Tahtası / Pitch Chess — tasarım belgesi (taslak v0.1)
 
-Futbol temalı bir "auto battler" (TFT / Magic Chess türü). Çalışma adı **Kadro Kur**.
+Futbol temalı bir "auto battler" (TFT / Magic Chess türü). Adı Türkçede **Taktik Tahtası**,
+İngilizcede **Pitch Chess**.
 Bu belge oyunun kurallarını, sayılarını ve ilk sürümün kapsamını tanımlar. Sayılar
 başlangıç değerleridir; motor yazıldıktan sonra simülasyonla dengelenecek.
 
@@ -298,13 +299,13 @@ Zorluk, botun karar kalitesiyle ayarlanır. Botlara Tic-Tac-Toe'daki gibi gerçe
 
 ## 14. Teknik yapı
 
-- **Ortak motor:** `src/lib/kadro/`, platformdan bağımsız, React yok:
+- **Ortak motor:** `src/lib/taktik/`, platformdan bağımsız, React yok:
   - `pool.ts`: sezon havuzu
   - `rules.ts`: sayılar ve tablolar
   - `economy.ts`, `shop.ts`
   - `sim.ts`: deterministik maç
   - `bot.ts`
-- **Denge betiği:** `mobile/scripts/kadro-sim.mts`. Binlerce botlu lobi oynatır ve şunları ölçer:
+- **Denge betiği:** `mobile/scripts/taktik-sim.mts`. Binlerce botlu lobi oynatır ve şunları ölçer:
   - Her sinerji tipinin ilk 4 oranı. **Hedef:** 6 farklı kurgu %40–60 arasında.
   - Ortalama oyun süresi (tur sayısı).
   - Altın kartların görülme sıklığı. **Hedef:** 5 maliyetli altın kart her 50 oyunda bir civarı.
@@ -343,7 +344,7 @@ Zorluk, botun karar kalitesiyle ayarlanır. Botlara Tic-Tac-Toe'daki gibi gerçe
 
 ## 16. Açık sorular
 
-1. **İsim:** "Kadro Kur" mu? Alternatifler: "Transfer Savaşı", "Menajer Arenası", "Dream XI".
+1. ~~İsim~~ → **Taktik Tahtası / Pitch Chess** (karar verildi).
 2. **Oyun uzunluğu:** 12–15 dakika uygun mu, yoksa 8–10 dakikalık "hızlı mod" da olsun mu?
 3. **Gözcü raporu:** Bilgi avantajı ne kadar olsun? 1 altın indirim mi, yoksa ücretsiz mi?
 4. **Ülke karakterleri:** Tablodaki "Türkiye = son dakika", "İtalya = catenaccio" gibi kalıplar hoş mu, yoksa daha nötr mü olsun?
