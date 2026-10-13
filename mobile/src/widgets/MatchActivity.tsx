@@ -1,5 +1,5 @@
 import { HStack, Image, Spacer, Text, VStack } from "@expo/ui/swift-ui";
-import { font, foregroundStyle, frame, lineLimit, monospacedDigit, padding } from "@expo/ui/swift-ui/modifiers";
+import { font, foregroundStyle, frame, lineLimit, monospacedDigit, multilineTextAlignment, padding } from "@expo/ui/swift-ui/modifiers";
 import { createLiveActivity, type LiveActivityEnvironment } from "expo-widgets";
 
 /**
@@ -37,17 +37,18 @@ const MatchActivity = (p: MatchActivityProps, env: LiveActivityEnvironment) => {
   "widget";
   const dim = env.isLuminanceReduced;
   const accent = dim ? "#FFFFFF" : p.color;
+  // a timer Text takes all the width it's offered: fixed frames keep it on the right
   const clock =
     p.phase === "turn" && p.endsAt > p.since ? (
-      <Text timerInterval={{ lower: new Date(p.since), upper: new Date(p.endsAt) }} countsDown modifiers={[monospacedDigit(), font({ weight: "heavy", size: 30, design: "rounded" })]} />
+      <Text timerInterval={{ lower: new Date(p.since), upper: new Date(p.endsAt) }} countsDown modifiers={[monospacedDigit(), font({ weight: "heavy", size: 30, design: "rounded" }), multilineTextAlignment("trailing"), frame({ width: 96, alignment: "trailing" })]} />
     ) : p.phase === "search" ? (
-      <Text timerInterval={{ lower: new Date(p.since), upper: new Date(p.since + 3600000) }} countsDown={false} modifiers={[monospacedDigit(), font({ weight: "heavy", size: 30, design: "rounded" })]} />
+      <Text timerInterval={{ lower: new Date(p.since), upper: new Date(p.since + 3600000) }} countsDown={false} modifiers={[monospacedDigit(), font({ weight: "heavy", size: 30, design: "rounded" }), multilineTextAlignment("trailing"), frame({ width: 96, alignment: "trailing" })]} />
     ) : (
       <Text modifiers={[font({ weight: "heavy", size: 26, design: "rounded" })]}>{p.score}</Text>
     );
   const smallClock =
     p.phase === "turn" && p.endsAt > p.since ? (
-      <Text timerInterval={{ lower: new Date(p.since), upper: new Date(p.endsAt) }} countsDown modifiers={[monospacedDigit(), font({ weight: "bold", size: 15 }), foregroundStyle(accent), frame({ maxWidth: 46 })]} />
+      <Text timerInterval={{ lower: new Date(p.since), upper: new Date(p.endsAt) }} countsDown modifiers={[monospacedDigit(), font({ weight: "bold", size: 15 }), foregroundStyle(accent), multilineTextAlignment("trailing"), frame({ width: 46, alignment: "trailing" })]} />
     ) : p.phase === "search" ? (
       <Image systemName="magnifyingglass" color={accent} />
     ) : (
