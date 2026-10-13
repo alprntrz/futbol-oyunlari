@@ -342,19 +342,7 @@ export function HatTrickBoard({
           <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={() => setOpenCell(null)} />
           <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
             <View style={styles.grabber} />
-            {row && col && (
-              <View style={styles.pair}>
-                <View style={styles.chip}>
-                  <CriterionBadge c={row} size={22} />
-                  <Text style={styles.chipText}>{label(row)}</Text>
-                </View>
-                <Icon name="plus" size={14} color={C.text3} fallback="+" />
-                <View style={styles.chip}>
-                  <CriterionBadge c={col} size={22} />
-                  <Text style={styles.chipText}>{label(col)}</Text>
-                </View>
-              </View>
-            )}
+            {row && col && <CriteriaPair row={row} col={col} color={MARK[turn].color} />}
             <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
               {sheetCaption ??
                 `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
@@ -410,15 +398,43 @@ export function HatTrickBoard({
   );
 }
 
+/**
+ * The two things a square asks for, above the keyboard: one tile each (badge, name,
+ * what kind of criterion it is) joined by a round "and" in the mover's colour.
+ */
+function CriteriaPair({ row, col, color }: { row: Criterion; col: Criterion; color: string }) {
+  const { t, locale } = useI18n();
+  const kind = (c: Criterion) => t(c.kind === "club" ? "critClub" : c.kind === "country" ? "critCountry" : "critBadge");
+  const tile = (c: Criterion) => (
+    <View style={styles.critTile}>
+      <View style={styles.critBadge}>
+        <CriterionBadge c={c} size={34} />
+      </View>
+      <Text style={styles.critName} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
+        {locale === "tr" ? c.tr : c.en}
+      </Text>
+      <Text style={styles.critKind}>{kind(c)}</Text>
+    </View>
+  );
+  return (
+    <View style={styles.critRow} accessible accessibilityLabel={`${locale === "tr" ? row.tr : row.en} ${t("critAnd")} ${locale === "tr" ? col.tr : col.en}`}>
+      {tile(row)}
+      {tile(col)}
+      <View style={[styles.critJoin, { backgroundColor: color }]} pointerEvents="none">
+        <Icon name="plus" size={16} color="white" fallback="+" />
+      </View>
+    </View>
+  );
+}
+
 /** After a game: who could have gone in a square. Best-known players first. */
 function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: number | null; placed: HtCell | null; onClose: () => void }) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const all = useMemo(() => (cell === null ? [] : answersFor(grid, cell)), [grid, cell]);
   if (cell === null) return null;
   const row = grid.rows[Math.floor(cell / 3)];
   const col = grid.cols[cell % 3];
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
   // the name actually played here goes first, then the best-known others
   const shown = [...all.filter((p) => p.name === placed?.name), ...all.filter((p) => p.name !== placed?.name)].slice(0, 8);
 
@@ -427,17 +443,7 @@ function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: numbe
       <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={onClose} />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.grabber} />
-        <View style={styles.pair}>
-          <View style={styles.chip}>
-            <CriterionBadge c={row} size={22} />
-            <Text style={styles.chipText}>{label(row)}</Text>
-          </View>
-          <Icon name="plus" size={14} color={C.text3} fallback="+" />
-          <View style={styles.chip}>
-            <CriterionBadge c={col} size={22} />
-            <Text style={styles.chipText}>{label(col)}</Text>
-          </View>
-        </View>
+        <CriteriaPair row={row} col={col} color={C.greenMid} />
         <Text style={[T.caption, { textAlign: "center", marginVertical: 12 }]}>
           {all.length === 0 ? t("htNoAnswers") : `${all.length} ${t("htAnswersCount")}`}
         </Text>
@@ -493,9 +499,25 @@ const styles = StyleSheet.create({
   cellName: { color: C.text, fontSize: 9, fontWeight: "600", textAlign: "center" },
   sheet: { backgroundColor: C.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, paddingTop: 8 },
   grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 14 },
-  pair: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, flexWrap: "wrap" },
-  chip: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.bg, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
-  chipText: { color: C.text, fontWeight: "700", fontSize: 14 },
+  critRow: { flexDirection: "row", gap: 10, alignItems: "stretch" },
+  critTile: { flex: 1, alignItems: "center", gap: 4, backgroundColor: C.bg, borderRadius: 18, paddingVertical: 12, paddingHorizontal: 10 },
+  critBadge: { height: 40, justifyContent: "center" },
+  critName: { fontFamily: F.display, fontSize: 18, lineHeight: 20, color: C.text, textAlign: "center" },
+  critKind: { fontSize: 10, fontWeight: "800", letterSpacing: 1, color: C.text3 },
+  critJoin: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    width: 34,
+    height: 34,
+    marginLeft: -17,
+    marginTop: -17,
+    borderRadius: 17,
+    borderWidth: 3,
+    borderColor: C.card,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   inputWrap: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.bg, borderRadius: R.button, paddingHorizontal: 12 },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
   suggestions: { maxHeight: 230, marginTop: 10, borderRadius: R.button, borderWidth: 1, borderColor: C.border },
