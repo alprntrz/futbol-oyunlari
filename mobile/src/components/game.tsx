@@ -53,6 +53,11 @@ const VIOLET = {
   green: "#47C35B",
   font: F.game,
   upper: false,
+  /** text drawn straight on the background (and its drop), tab labels, status bar */
+  onBg: "#FFFFFF",
+  onBgShadow: "#2B1D6B",
+  tabText: "#FFFFFF",
+  statusBar: "light" as "light" | "dark",
   // still used by the other tabs' buttons
   blue: "#4C8DF6",
   blueEdge: "#2A5DC2",
@@ -101,6 +106,10 @@ const STADIUM: typeof VIOLET = {
   green: "#2FC46A",
   font: F.displayItalic,
   upper: true,
+  onBg: "#FFFFFF",
+  onBgShadow: "#040D1C",
+  tabText: "#FFFFFF",
+  statusBar: "light",
   blue: "#2C6FD6",
   blueEdge: "#17448C",
   teal: "#1FA98F",
@@ -148,6 +157,61 @@ const UCL: typeof VIOLET = {
   green: "#2FC46A",
   font: F.display,
   upper: true,
+  onBg: "#FFFFFF",
+  onBgShadow: "#020B2E",
+  tabText: "#FFFFFF",
+  statusBar: "light",
+  blue: "#2C6FD6",
+  blueEdge: "#17448C",
+  teal: "#1FA98F",
+  tealEdge: "#0D6656",
+};
+
+/** Middle way: our old light look (pale green-grey, white surfaces, pitch green, Barlow) with the new layout and depth. */
+const LIGHT: typeof VIOLET = {
+  bg: "#EEF3EF",
+  star: "#E1EAE3",
+  ink: "#0F3D24",
+  glass: "rgba(15,61,36,0.88)",
+  plate: "#15803D",
+  arrow: "#22A55A",
+  arrowInk: "#FFFFFF",
+  tab1: "#FFFFFF",
+  tab2: "#DDF5E4",
+  tabIdle1: "#FBFDFB",
+  tabIdle2: "#E2E9E4",
+  tabRim: "#16A34A",
+  text: "#FFFFFF",
+  yellowText: "#FFFFFF",
+  cta1: "#3BD872",
+  cta2: "#15803D",
+  ctaEdge: "#0E5B2C",
+  ctaText: "#FFFFFF",
+  ctaTextShadow: "#0B3D1F",
+  bar1: "#FFD64D",
+  bar2: "#F2A50C",
+  barFrame: "#CFE0D4",
+  barInner: "#0F3D24",
+  me1: "#34C46A",
+  me2: "#15803D",
+  quest1: "#FFE27A",
+  quest2: "#F5B70F",
+  questText: "#3B2A05",
+  pill: "#0F5F2E",
+  track: "#0F3D24",
+  trackFill: "#22C55E",
+  dot: "#2563EB",
+  avatarBg: "#DDF5E4",
+  slot1: "#FFFFFF",
+  slot2: "#E3EAE5",
+  slotDone: "#15803D",
+  green: "#16A34A",
+  font: F.display,
+  upper: false,
+  onBg: "#0F3D24",
+  onBgShadow: "transparent",
+  tabText: "#14532D",
+  statusBar: "dark",
   blue: "#2C6FD6",
   blueEdge: "#17448C",
   teal: "#1FA98F",
@@ -155,8 +219,8 @@ const UCL: typeof VIOLET = {
 };
 
 /** Which look the game screens use ("violet" = Draft Showdown copy, "stadium" = our football take). */
-export const LOOK = "ucl" as "violet" | "stadium" | "ucl";
-export const G = LOOK === "stadium" ? STADIUM : LOOK === "ucl" ? UCL : VIOLET;
+export const LOOK = "light" as "violet" | "stadium" | "ucl" | "light";
+export const G = LOOK === "stadium" ? STADIUM : LOOK === "ucl" ? UCL : LOOK === "light" ? LIGHT : VIOLET;
 
 /** Rounded game type, white with a hard violet drop under it. */
 export const outline = (size: number, color = G.text, shadow = G.ink): TextStyle => ({
@@ -170,7 +234,25 @@ export const outline = (size: number, color = G.text, shadow = G.ink): TextStyle
 });
 
 export function GameBg() {
-  return LOOK === "stadium" ? <StadiumBg /> : LOOK === "ucl" ? <UclBg /> : <VioletBg />;
+  return LOOK === "stadium" ? <StadiumBg /> : LOOK === "ucl" ? <UclBg /> : LOOK === "light" ? <LightBg /> : <VioletBg />;
+}
+
+/** Light: the old pale background with a faint pitch drawn on it. */
+function LightBg() {
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Svg width="100%" height="100%" viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice">
+        <Rect width={400} height={860} fill={G.bg} />
+        <SvgG stroke="#15803D" strokeOpacity={0.07} strokeWidth={3} fill="none">
+          <Path d="M20,40 L380,40 L380,820 L20,820 Z" />
+          <Path d="M20,430 L380,430" />
+          <Path d="M200,430 m-75,0 a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0" />
+          <Path d="M110,40 L110,150 L290,150 L290,40" />
+          <Path d="M110,820 L110,710 L290,710 L290,820" />
+        </SvgG>
+      </Svg>
+    </View>
+  );
 }
 
 /** Champions League night: navy glow from the top, a sky of white stars, one soft light arc. */

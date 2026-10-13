@@ -13,7 +13,7 @@ import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { loadStats, type GameStats } from "~/lib/storage";
 import { C, F, T } from "~/lib/theme";
-import { GameBg, outline } from "~/components/game";
+import { G, GameBg, outline } from "~/components/game";
 
 const BUCKETS: { label: string; test: (n: number) => boolean }[] = [
   { label: "11", test: (n) => n === 11 },
@@ -55,7 +55,7 @@ export default function StatsTab() {
 
   return (
     <Page topInset background={<GameBg />}>
-      <Text style={[outline(40), { marginBottom: 6 }]}>{t("tabProfile")}</Text>
+      <Text style={[outline(40, G.onBg, G.onBgShadow), { marginBottom: 6 }]}>{t("tabProfile")}</Text>
 
       <ProfileCard />
 

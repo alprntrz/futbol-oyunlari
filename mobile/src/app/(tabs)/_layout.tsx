@@ -29,7 +29,7 @@ export default function TabsLayout() {
   // every tab sits on the violet: light status bar while the tabs are showing
   useFocusEffect(
     useCallback(() => {
-      setStatusBarStyle("light");
+      setStatusBarStyle(G.statusBar);
       return () => setStatusBarStyle("dark");
     }, [])
   );
@@ -81,15 +81,15 @@ const TabButton = forwardRef<View, TabTriggerSlotProps & { tab: TabDef; badge: b
       accessibilityLabel={tab.label}
       style={[styles.slot, isFocused && { zIndex: 2, flex: 1.25 }]}
     >
-      <Animated.View style={[styles.card, cardStyle]}>
-        <Grad from={isFocused ? G.tab1 : G.tabIdle1} to={isFocused ? G.tab2 : G.tabIdle2} />
+      <Animated.View style={[styles.card, { backgroundColor: isFocused ? G.tab2 : G.tabIdle2 }, cardStyle]}>
+        <Grad from={isFocused ? G.tab1 : G.tabIdle1} to={isFocused ? G.tab2 : G.tabIdle2} style={styles.cardGrad} />
         <View style={[styles.cardTop, { backgroundColor: isFocused ? G.tabRim : "rgba(255,255,255,0.35)" }]} />
         <Animated.View style={[styles.artWrap, artStyle]}>
           <Image source={tab.art} style={styles.art} />
           {badge && <Bang size={24} style={styles.badge} />}
         </Animated.View>
         {isFocused && (
-          <Text style={[outline(16, "#FFFFFF", G.ink), styles.label]} numberOfLines={1}>
+          <Text style={[outline(16, G.tabText, G.tabText === "#FFFFFF" ? G.ink : "transparent"), styles.label]} numberOfLines={1}>
             {tab.label.toUpperCase()}
           </Text>
         )}
@@ -110,6 +110,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
   },
+  // fixed height taller than the tallest card: the svg doesn't follow the animated height
+  cardGrad: { height: 160, bottom: undefined },
   cardTop: { position: "absolute", top: 0, left: 10, right: 10, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.7)" },
   artWrap: { marginTop: 8 },
   art: { width: 56, height: 56 },

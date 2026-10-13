@@ -5,7 +5,7 @@ import { Text } from "~/components/Text";
 import { TodayPuzzles } from "~/components/TodayPuzzles";
 import { Page } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
-import { GameBg, outline } from "~/components/game";
+import { G, GameBg, outline } from "~/components/game";
 
 const enter = (i: number) => FadeIn.duration(180).delay(i * 40);
 
@@ -14,7 +14,7 @@ export default function Daily() {
   const { t } = useI18n();
   return (
     <Page topInset background={<GameBg />}>
-      <Text style={[outline(40), { marginBottom: 6 }]}>{t("tabDaily")}</Text>
+      <Text style={[outline(40, G.onBg, G.onBgShadow), { marginBottom: 6 }]}>{t("tabDaily")}</Text>
       <Animated.View entering={enter(0)}>
         <DailyRewardCard />
       </Animated.View>

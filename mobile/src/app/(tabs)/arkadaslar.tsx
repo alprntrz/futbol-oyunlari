@@ -17,7 +17,7 @@ import { dealGrid, useHtLeague } from "~/lib/league";
 import { loadNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, F, R, T } from "~/lib/theme";
-import { GameBg, outline } from "~/components/game";
+import { G, GameBg, outline } from "~/components/game";
 
 /**
  * Friends: your code to share, add someone by theirs, and invite an online friend
@@ -104,7 +104,7 @@ export default function Friends() {
 
   return (
     <Page topInset background={<GameBg />}>
-      <Text style={[outline(40), { marginBottom: 6 }]}>{t("friends")}</Text>
+      <Text style={[outline(40, G.onBg, G.onBgShadow), { marginBottom: 6 }]}>{t("friends")}</Text>
       {account === undefined ? null : !account ? (
         <>
           <Text style={[T.body, { marginBottom: 12, color: "white" }]}>{t("friendsSignIn")}</Text>

@@ -205,21 +205,21 @@ export default function Home() {
           <View style={{ gap: 10 }}>
             <Tap onPress={() => router.push(current.friend)} style={styles.sideBtn} accessibilityLabel={t("htFriend")}>
               <Image source={BRAND.mode.friend} style={styles.sideArt} />
-              <Text style={[outline(11), styles.sideLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+              <Text style={[outline(11, G.onBg, G.onBgShadow), styles.sideLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                 {t("htFriend")}
               </Text>
             </Tap>
             {current.same && (
               <Tap onPress={() => router.push(current.same!)} style={styles.sideBtn} accessibilityLabel={t("htSame")}>
                 <Image source={BRAND.mode.same} style={styles.sideArt} />
-                <Text style={[outline(11), styles.sideLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                <Text style={[outline(11, G.onBg, G.onBgShadow), styles.sideLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                   {t("htSame")}
                 </Text>
               </Tap>
             )}
           </View>
           <Tap onPress={() => router.push("/ayarlar")} style={styles.gear} accessibilityLabel={t("tabSettings")}>
-            <Icon name="gearshape.fill" size={24} color="#E9E3FF" fallback="⚙" />
+            <Icon name="gearshape.fill" size={24} color="#FFFFFF" fallback="⚙" />
           </Tap>
         </View>
 
