@@ -96,7 +96,7 @@ export default function PossessionLocal() {
         canMove
         winner={winner}
         winnerText={winner === "draw" ? t("ttDraw") : `${winner} ${t("ttWins")}`}
-        status={`${t("ttTurn")}: ${turn}`}
+        status={t("ttTurn")}
         flash={flash}
         celebrate
         onMove={onMove}

@@ -24,6 +24,13 @@ const POP = new Keyframe({
   100: { transform: [{ scale: 1 }] },
 }).duration(260);
 
+// a claimed hex turns over to its new owner's colour (steals turn over again)
+const FLIP = new Keyframe({
+  0: { opacity: 0.4, transform: [{ perspective: 500 }, { rotateY: "90deg" }, { scale: 1.1 }] },
+  60: { opacity: 1, transform: [{ perspective: 500 }, { rotateY: "-12deg" }, { scale: 1.06 }] },
+  100: { opacity: 1, transform: [{ perspective: 500 }, { rotateY: "0deg" }, { scale: 1 }] },
+}).duration(420);
+
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, "0")}`;
 const surname = (name: string) => name.trim().split(/\s+/).slice(-1)[0];
 
@@ -136,7 +143,16 @@ export function PossessionBoard({
           );
         })}
       </View>
-      {!winner && <Text style={[T.body, { textAlign: "center", marginTop: 8, color: MARK[turn].color, fontWeight: "700" }]}>{status}</Text>}
+      {!winner && (
+        <Animated.View key={turn} entering={POP} style={[styles.turn, { backgroundColor: MARK[turn].color }]}>
+          <View style={styles.turnMark}>
+            <Text style={[styles.turnMarkText, { color: MARK[turn].color }]}>{turn}</Text>
+          </View>
+          <Text style={styles.turnText} numberOfLines={1}>
+            {status}
+          </Text>
+        </Animated.View>
+      )}
       <View style={{ height: 20, justifyContent: "center" }}>
         {flash ? (
           <Animated.View key={flash} entering={SOFT_IN}>
@@ -176,14 +192,7 @@ export function PossessionBoard({
                   accessibilityLabel={o ? `${label(c)}, ${o.mark}, ${o.name}` : label(c)}
                   style={[styles.hex, { left: x - size / 2, top: y - size / 2, width: size, height: size }]}
                 >
-                  {o ? (
-                    <Animated.View key={o.name + o.mark} entering={POP} style={styles.hexInner}>
-                      <CriterionBadge c={c} size={16} />
-                      <Text style={[styles.hexOwner, { color: MARK[o.mark].color }]} numberOfLines={1}>
-                        {surname(o.name)}
-                      </Text>
-                    </Animated.View>
-                  ) : (
+                  {o ? null : (
                     <View style={styles.hexInner}>
                       <CriterionBadge c={c} size={18} />
                       <Text style={styles.hexLabel} numberOfLines={2}>
@@ -192,6 +201,30 @@ export function PossessionBoard({
                     </View>
                   )}
                 </Tap>
+              );
+            })}
+            {/* claimed hexes: solid owner colour, flipped in when taken */}
+            {board.map((c, i) => {
+              const o = owners[i];
+              if (!o) return null;
+              const { x, y } = center(i);
+              return (
+                <Animated.View
+                  key={`${i}-${o.mark}-${o.name}`}
+                  entering={FLIP}
+                  pointerEvents="none"
+                  style={{ position: "absolute", left: x - w / 2, top: y - h / 2, width: w, height: h }}
+                >
+                  <Svg width={w} height={h} style={StyleSheet.absoluteFill}>
+                    <Polygon points={hexPoints(w / 2, h / 2)} fill={MARK[o.mark].color} stroke="white" strokeWidth={2} />
+                  </Svg>
+                  <View style={[StyleSheet.absoluteFill, styles.hexInner]}>
+                    <CriterionBadge c={c} size={16} />
+                    <Text style={styles.hexOwner} numberOfLines={1}>
+                      {surname(o.name)}
+                    </Text>
+                  </View>
+                </Animated.View>
               );
             })}
           </>
@@ -239,5 +272,9 @@ const styles = StyleSheet.create({
   hex: { position: "absolute", alignItems: "center", justifyContent: "center" },
   hexInner: { alignItems: "center", justifyContent: "center", gap: 2, paddingHorizontal: 2 },
   hexLabel: { color: C.text2, fontSize: 8, lineHeight: 10, fontWeight: "700", textAlign: "center" },
-  hexOwner: { fontSize: 9, fontWeight: "800", textAlign: "center" },
+  hexOwner: { fontSize: 9, fontWeight: "800", textAlign: "center", color: "white" },
+  turn: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, marginTop: 10, borderRadius: 999, paddingLeft: 6, paddingRight: 16, paddingVertical: 5 },
+  turnMark: { width: 26, height: 26, borderRadius: 13, backgroundColor: "white", alignItems: "center", justifyContent: "center" },
+  turnMarkText: { fontFamily: F.black, fontSize: 16, lineHeight: 18 },
+  turnText: { fontFamily: F.display, fontSize: 17, color: "white" },
 });
