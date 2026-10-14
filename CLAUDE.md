@@ -85,9 +85,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   Each star / coach is "g" (world-class) or "l" (local) in the builders: the all-clubs grid (`dealGrid(... "all")`) only
   deals "g" ones; a league grid deals anyone who was at that league's clubs. Dealt and league grids aim for club × club
   squares (`generateGrid(rand, { clubPairs: true })`, `leagueGrid`); the seeded daily grid keeps the old rule.
-- Live Activities are behind `LIVE_ACTIVITIES` (mobile/src/lib/features.ts, off) and "expo-widgets" is out of app.json
-  plugins: the widget extension needs App Groups (group.com.alprntrz.tiktako) enabled on both App IDs in the Apple portal
-  first (EAS couldn't sync that capability with the API key).
+- Live Activities: `LIVE_ACTIVITIES` (mobile/src/lib/features.ts) + "expo-widgets" plugin. App Groups
+  (group.com.alprntrz.tiktako) is enabled by hand on both App IDs; EAS can't sync that capability, so iOS builds run
+  with `EXPO_NO_CAPABILITY_SYNC=1`.
 - Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
   The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
   server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live
