@@ -385,3 +385,10 @@ Zorluk, botun karar kalitesiyle ayarlanır. Botlara Tic-Tac-Toe'daki gibi gerçe
 
 Not: Mevki verisi henüz kazınıyor; o gelene kadar mevkiler bilinen ilk 11'lerden ve
 geri kalanlar için isimden türetilen sabit bir tahminden geliyor. Veri gelince ölçüm yenilenecek.
+
+### Mevki verisiyle yeniden ölçüm (400 lobi)
+
+Mevkiler artık Transfermarkt kadro sayfalarından (16.553 oyuncunun 15.665'i).
+Oyun ~24 tur (≈ 14,7 dk), gol 1,85, ülke stilleri %48–53, teknik direktörler
+%48–54, bot kişilikleri %48–52. Gözcü raporunun botlar arasındaki etkisi ~0;
+gerçek oyuncuda 2 altınlık indirim ekonomide işe yarıyor ama ilk 4'e etkisi küçük.

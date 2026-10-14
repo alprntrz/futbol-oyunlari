@@ -103,7 +103,7 @@ export function sheet(side: Side): Sheet {
 
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 /** equal teams attack at about 1: attack shares sum smaller than defence shares */
-const Q0 = 1.33;
+const Q0 = 1.25;
 
 export interface Played {
   goals: [number, number];
