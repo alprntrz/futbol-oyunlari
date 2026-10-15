@@ -13,8 +13,8 @@ type Game = { title: string; desc: string; who: string; image: ImageSourcePropTy
 
 /**
  * Games tab, like the Play online picker: every game a big coloured card (art,
- * name, one line, who it's for), grouped into "against someone" and "on your
- * own". A tap opens the game's own screen.
+ * name, who it's for), versus games first. A tap opens the game's own screen,
+ * which asks how to play.
  */
 export default function Games() {
   const { t } = useI18n();
@@ -48,17 +48,13 @@ export default function Games() {
   return (
     <Page topInset>
       <Text style={styles.title}>{t("tabGames")}</Text>
-      <Text style={styles.section}>{t("gamesVersus")}</Text>
-      <View style={styles.list}>{versus.map(card)}</View>
-      <Text style={styles.section}>{t("gamesSolo")}</Text>
-      <View style={styles.list}>{solo.map((g, i) => card(g, i + versus.length))}</View>
+      <View style={[styles.list, { marginTop: 14 }]}>{[...versus, ...solo].map(card)}</View>
     </Page>
   );
 }
 
 const styles = StyleSheet.create({
   title: { fontFamily: F.display, fontSize: 34, lineHeight: 36, color: C.text, marginTop: 2 },
-  section: { fontFamily: F.display, fontSize: 19, color: C.text, marginTop: 12, marginBottom: 8 },
   list: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   cell: { width: "48.5%" },
   card: { alignItems: "center", justifyContent: "center", gap: 2, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 10, height: 124 },
