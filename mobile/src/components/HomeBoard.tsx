@@ -53,8 +53,7 @@ export function HomeBoard() {
     },
   ];
   const done = tiles.filter((x) => x.p.state === "done").length;
-  // the first one not started yet: "Up next", with a soft pulse so the eye knows where to begin
-  const nextKey = tiles.find((x) => x.p.state === "new")?.key;
+  // the eye lands on Play someone: an "Up next" badge and a soft pulse
   const pulse = useSharedValue(1);
   useEffect(() => {
     pulse.set(withRepeat(withSequence(withTiming(1.03, { duration: 800 }), withTiming(1, { duration: 800 })), -1));
@@ -75,22 +74,14 @@ export function HomeBoard() {
         {tiles.map((x, i) => {
           const going = x.p.state === "started";
           const isDone = x.p.state === "done";
-          const isNext = x.key === nextKey;
           const ink = isDone ? "white" : C.text;
           return (
             <Animated.View key={x.key} entering={FadeInDown.delay(i * 50).duration(220)} style={styles.cell}>
-              <Animated.View style={isNext && pulseStyle}>
-              <Tap onPress={() => (haptic.tap(), router.push(x.href))} style={[styles.tile, going && styles.tileGoing, isDone && styles.tileDone, isNext && styles.tileNext]} accessibilityLabel={isNext ? `${t("homeNextUp")}: ${x.title}` : x.title}>
+              <Tap onPress={() => (haptic.tap(), router.push(x.href))} style={[styles.tile, going && styles.tileGoing, isDone && styles.tileDone]} accessibilityLabel={x.title}>
                 <View style={styles.tileTop}>
-                  {isNext ? (
-                    <View style={styles.nextPill}>
-                      <Text style={styles.nextPillText}>{upper(t("homeNextUp"))}</Text>
-                    </View>
-                  ) : (
-                    <Text style={[styles.tag, going && { color: "#713F12" }, isDone && { color: "#BBF7D0" }]}>
-                      {upper(going ? t("boardGoing") : isDone ? t("boardFinished") : t("boardNew"))}
-                    </Text>
-                  )}
+                  <Text style={[styles.tag, going && { color: "#713F12" }, isDone && { color: "#BBF7D0" }]}>
+                    {upper(going ? t("boardGoing") : isDone ? t("boardFinished") : t("boardNew"))}
+                  </Text>
                   <Icon name={isDone ? "checkmark.circle.fill" : "arrow.up.right"} size={15} color={isDone ? "#BBF7D0" : going ? "#713F12" : C.text3} fallback="↗" />
                 </View>
                 <View style={styles.art}>
@@ -106,15 +97,18 @@ export function HomeBoard() {
                   {going && <Icon name="play.circle.fill" size={20} color="#713F12" fallback="▶" />}
                 </View>
               </Tap>
-              </Animated.View>
             </Animated.View>
           );
         })}
       </View>
 
       <Text style={styles.section}>{t("boardVersus")}</Text>
-      <Tap onPress={() => (haptic.press(), router.push("/oyna"))} style={styles.versus} accessibilityLabel={t("playOpponent")}>
-        <View style={{ flex: 1 }}>
+      <Animated.View style={pulseStyle}>
+      <Tap onPress={() => (haptic.press(), router.push("/oyna"))} style={[styles.versus, styles.versusNext]} accessibilityLabel={`${t("homeNextUp")}: ${t("playOpponent")}`}>
+        <View style={{ flex: 1, alignItems: "flex-start" }}>
+          <View style={styles.nextPill}>
+            <Text style={styles.nextPillText}>{upper(t("homeNextUp"))}</Text>
+          </View>
           <Text style={styles.versusTitle}>{t("playOpponent")}</Text>
           <Text style={styles.versusSub}>{t("boardVersusSub")}</Text>
         </View>
@@ -122,6 +116,7 @@ export function HomeBoard() {
           <Icon name="arrow.right" size={20} color="#D9F99D" fallback="→" />
         </View>
       </Tap>
+      </Animated.View>
     </View>
   );
 }
@@ -134,8 +129,8 @@ const styles = StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 12 },
   cell: { width: "48.5%" },
   tile: { backgroundColor: "#FBFAF5", borderRadius: 22, padding: 12, borderWidth: 1, borderColor: "#ECE8DC", minHeight: 196 },
-  tileNext: { borderColor: C.green, borderWidth: 2, shadowColor: C.green, shadowOpacity: 0.35, shadowRadius: 10, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
-  nextPill: { backgroundColor: C.green, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3 },
+  versusNext: { borderWidth: 2, borderColor: "#65A30D", shadowColor: "#65A30D", shadowOpacity: 0.4, shadowRadius: 12, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
+  nextPill: { backgroundColor: "#1A2E05", borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3, marginBottom: 6 },
   nextPillText: { fontSize: 11, fontWeight: "800", letterSpacing: 0.8, color: "white" },
   tileGoing: { backgroundColor: "#FACC15", borderColor: "#EAB308" },
   tileDone: { backgroundColor: "#14532D", borderColor: "#14532D" },
