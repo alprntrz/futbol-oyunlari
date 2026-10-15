@@ -2,11 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect, type Href } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
-import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { dailyMatch, dayNumber } from "@/lib/daily";
-import { rankOf } from "@/lib/levels";
 
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { BRAND, ROZET } from "~/lib/brand";
@@ -16,14 +15,13 @@ import { useI18n } from "~/lib/i18n";
 import { useQuests } from "~/lib/quests";
 import { useQuizDifficulty } from "~/lib/quizLevel";
 import { C, F, T } from "~/lib/theme";
-import { loadXp } from "~/lib/xp";
 
 import { QuestsCard } from "./DailyCards";
 import { Text } from "./Text";
 import { loadToday, type Progress, type Today } from "./TodayPuzzles";
 import { Icon, Tap } from "./ui";
 
-type Daily = { key: string; title: string; image: ImageSourcePropType; href: Href; p: Progress; detail: string; result: string };
+type Daily = { key: string; title: string; kind: string; image: ImageSourcePropType; href: Href; p: Progress; detail: string; result: string };
 type Versus = "ht" | "dz" | "qz" | "pp";
 const VERSUS_KEY = "quick-game";
 
@@ -51,6 +49,7 @@ export function HomeNext() {
     {
       key: "grid",
       title: t("homeTodayGrid"),
+      kind: t("homeKindPuzzle"),
       image: BRAND.icon.tiki,
       href: "/hat-trick/tek",
       p: today?.grid ?? NEW,
@@ -60,6 +59,7 @@ export function HomeNext() {
     {
       key: "xi",
       title: t("daily"),
+      kind: t("homeKindLineup"),
       image: BRAND.icon.daily,
       href: "/eksik-11/gunluk",
       p: today?.xi ?? NEW,
@@ -69,6 +69,7 @@ export function HomeNext() {
     {
       key: "bingo",
       title: t("bingoName"),
+      kind: t("homeKindCard"),
       image: BRAND.icon.bingo,
       href: "/bingo",
       p: today?.bingo ?? NEW,
@@ -78,6 +79,7 @@ export function HomeNext() {
     {
       key: "duel",
       title: t("dzDaily"),
+      kind: t("homeKindDuel"),
       image: ROZET.duel,
       href: duel.ready ? { pathname: "/duello/mac", params: { mode: "daily" } } : "/duello",
       p: duel.daily ? { state: "done", count: duel.daily.mine } : NEW,
@@ -128,7 +130,7 @@ export function HomeNext() {
             <View style={{ flex: 1, gap: 4 }}>
               <View style={styles.eyebrow}>
                 <Icon name={hero.p.state === "started" ? "clock.arrow.circlepath" : "flag.fill"} size={13} color="rgba(255,255,255,0.85)" fallback="•" />
-                <Text style={styles.eyebrowText}>{t(hero.p.state === "started" ? "homeHalfway" : "homeNextUp").toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB")}</Text>
+                <Text style={styles.eyebrowText}>{`${t(hero.p.state === "started" ? "homeHalfway" : "homeNextUp")} · ${hero.kind}`.toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB")}</Text>
               </View>
               <Text style={styles.heroTitle} numberOfLines={1} adjustsFontSizeToFit>
                 {hero.title}
@@ -164,6 +166,7 @@ export function HomeNext() {
                 <Image source={d.image} style={{ width: 30, height: 30 }} resizeMode="contain" />
               </View>
               <View style={{ flex: 1 }}>
+                <Text style={styles.kind}>{d.kind.toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB")}</Text>
                 <Text style={[styles.rowTitle, isDone && { color: C.text2 }]}>{d.title}</Text>
                 <Text style={T.caption}>{isDone ? t("homeDoneToday") : d.p.state === "started" ? d.detail : t("homeNotPlayed")}</Text>
               </View>
@@ -180,20 +183,22 @@ export function HomeNext() {
         })}
       </View>
 
-      <Text style={styles.section}>{t("homePlayOpponent").toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB")}</Text>
-      <VersusRow />
       <QuestsRow />
+      {/* room under the sticky "Find match" bar */}
+      <View style={{ height: 84 }} />
     </View>
   );
 }
 
-/** "Tic-Tac-Toe ⌄ · Find a match": the last game played against someone, one tap into its random queue. */
-function VersusRow() {
+/**
+ * Sticky above the tab bar (the Griddy idea): one big "Find match" in the last
+ * game played against someone; the round button on its left changes the game.
+ */
+export function PlayBar() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const [game, setGame] = useState<Versus>("ht");
   const [picking, setPicking] = useState(false);
-  const [rank, setRank] = useState<string | null>(null);
   const [level] = useQuizDifficulty();
   const duel = useDuel();
 
@@ -201,7 +206,6 @@ function VersusRow() {
     AsyncStorage.getItem(VERSUS_KEY)
       .then((v) => (v === "ht" || v === "dz" || v === "qz" || v === "pp") && setGame(v))
       .catch(() => {});
-    loadXp().then((x) => setRank(rankOf(x.level).id));
   }, []);
 
   const games: { id: Versus; name: string; image: ImageSourcePropType }[] = [
@@ -228,24 +232,33 @@ function VersusRow() {
     AsyncStorage.setItem(VERSUS_KEY, g).catch(() => {});
   };
 
+  // the play button breathes a little so the eye lands on it
+  const breathe = useSharedValue(1);
+  useEffect(() => {
+    breathe.set(withRepeat(withSequence(withTiming(1.025, { duration: 900 }), withTiming(1, { duration: 900 })), -1));
+  }, [breathe]);
+  const breatheStyle = useAnimatedStyle(() => ({ transform: [{ scale: breathe.get() }] }));
+
   return (
     <>
-      <View style={styles.versus}>
-        <Tap onPress={() => (haptic.tap(), setPicking(true))} style={{ flex: 1 }} accessibilityLabel={`${current.name}, ${t("homePickGame")}`}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <Text style={styles.versusName} numberOfLines={1}>
-              {current.name}
-            </Text>
-            <Icon name="chevron.down" size={13} color={C.text2} fallback="⌄" />
+      <View style={[styles.bar, { bottom: insets.bottom + 10 }]} pointerEvents="box-none">
+        <Tap onPress={() => (haptic.tap(), setPicking(true))} style={styles.swap} accessibilityLabel={`${current.name}, ${t("homePickGame")}`}>
+          <Image source={current.image} style={{ width: 30, height: 30 }} resizeMode="contain" />
+          <View style={styles.swapBadge}>
+            <Icon name="chevron.up.chevron.down" size={9} color="white" fallback="⇅" />
           </View>
-          <Text style={T.caption}>
-            {t("homeLastGame")}
-            {rank ? ` · ${t(`rank_${rank}` as Parameters<typeof t>[0])}` : ""}
-          </Text>
         </Tap>
-        <Tap onPress={() => (haptic.press(), router.push(href))} style={styles.find} accessibilityLabel={t("homeFindMatch")}>
-          <Text style={styles.findText}>{t("homeFindMatch")}</Text>
-        </Tap>
+        <Animated.View style={[{ flex: 1 }, breatheStyle]}>
+          <Tap onPress={() => (haptic.press(), router.push(href))} style={styles.findBig} accessibilityLabel={`${t("homeFindMatch")}, ${current.name}`}>
+            <Icon name="play.fill" size={16} color="#3B2A05" fallback="▶" />
+            <View style={{ flexShrink: 1 }}>
+              <Text style={styles.findBigText}>{t("homeFindMatch")}</Text>
+              <Text style={styles.findBigSub} numberOfLines={1}>
+                {current.name}
+              </Text>
+            </View>
+          </Tap>
+        </Animated.View>
       </View>
 
       <Modal visible={picking} transparent animationType="slide" onRequestClose={() => setPicking(false)}>
@@ -333,6 +346,13 @@ const styles = StyleSheet.create({
   versusName: { fontFamily: F.display, fontSize: 24, color: C.text, flexShrink: 1 },
   find: { backgroundColor: C.greenSoft, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12 },
   findText: { fontFamily: F.display, fontSize: 17, color: C.greenDark },
+  kind: { fontSize: 10, fontWeight: "800", letterSpacing: 0.8, color: C.greenMid },
+  bar: { position: "absolute", left: 16, right: 16, flexDirection: "row", alignItems: "center", gap: 10 },
+  swap: { width: 58, height: 58, borderRadius: 29, backgroundColor: C.card, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#FACC15", shadowColor: "#000", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 5 },
+  swapBadge: { position: "absolute", right: -2, bottom: -2, width: 20, height: 20, borderRadius: 10, backgroundColor: C.greenDark, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "white" },
+  findBig: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, height: 58, borderRadius: 18, backgroundColor: "#FACC15", borderBottomWidth: 4, borderBottomColor: "#CA8A04", shadowColor: "#000", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 5 },
+  findBigText: { fontFamily: F.black, fontSize: 22, lineHeight: 23, color: "#3B2A05" },
+  findBigSub: { fontSize: 12, fontWeight: "700", color: "#6B4E0A" },
   quests: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 12, paddingHorizontal: 6, paddingVertical: 8 },
   questsIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
   questsTitle: { fontFamily: F.display, fontSize: 17, color: C.text },

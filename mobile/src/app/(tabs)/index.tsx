@@ -1,10 +1,10 @@
 import { router } from "expo-router";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import { QuestsCard } from "~/components/DailyCards";
 import { HomeFixtures } from "~/components/HomeFixtures";
-import { HomeNext } from "~/components/HomeNext";
+import { HomeNext, PlayBar } from "~/components/HomeNext";
 import { HomePitch } from "~/components/HomePitch";
 import { HomeStatus } from "~/components/HomeStatus";
 import { ModeList, type Mode } from "~/components/ModeGrid";
@@ -59,10 +59,13 @@ export default function Home() {
 
   if (HOME_LAYOUT === "next") {
     return (
-      <Page topInset>
-        <HomeStatus />
-        <HomeNext />
-      </Page>
+      <View style={{ flex: 1 }}>
+        <Page topInset>
+          <HomeStatus />
+          <HomeNext />
+        </Page>
+        <PlayBar />
+      </View>
     );
   }
 
