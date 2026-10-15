@@ -135,15 +135,6 @@ for variant in ["vneck", "crew", "polo", "keeper"]:
     for layer, img in [("body", body), ("sleeves", sleeves), ("shade", shade)]:
         img.crop(square).resize((JERSEY_SIZE, JERSEY_SIZE), Image.LANCZOS).save(OUT / f"jersey-{variant}-{layer}.png", optimize=True)
 
-# ── Tab icons: black template glyphs, 25 pt canvas, equal visual weight
-THICKEN = {"tab-stats-line": 15, "tab-stats-fill": 7}  # the stats set came out thinner
-for name in ["tab-games-fill", "tab-games-line", "tab-stats-fill", "tab-stats-line", "tab-settings-fill", "tab-settings-line"]:
-    im = load(name)
-    a = im.getchannel("A").point(lambda v: 255 if v > 100 else 0)
-    if name in THICKEN:
-        a = a.filter(ImageFilter.MaxFilter(THICKEN[name]))
-    glyph = Image.merge("RGBA", (Image.new("L", im.size, 0),) * 3 + (a,))
-    for scale, suffix in [(1, ""), (2, "@2x"), (3, "@3x")]:
-        fit(glyph, (25 * scale, 25 * scale), margin=0.04).save(OUT / f"{name}{suffix}.png", optimize=True)
+# Tab bar icons: 3D art processed separately (docs/design/sekme-ikon-brief.md → mobile/assets/brand/tab/)
 
 print("wrote", len(list(OUT.glob("*.png"))), "files to", OUT)
