@@ -58,6 +58,8 @@ export const ROZET = {
 } as const;
 
 export const BRAND = {
+  /** the app's ball mark (same art as the splash) */
+  logo: require("../../assets/brand/splash-logo.png"),
   icon: {
     daily: require("../../assets/brand/icon-daily.png"),
     practice: require("../../assets/brand/icon-practice.png"),
