@@ -7,7 +7,7 @@ import { Avatar } from "~/components/Avatar";
 import { softIn } from "~/components/motion";
 import { LevelBadge } from "~/components/QuizLevel";
 import { Text } from "~/components/Text";
-import { Card, Page, Segmented } from "~/components/ui";
+import { Button, Card, Page, Segmented } from "~/components/ui";
 import { fetchLeaderboard, useAccount, type Board, type BoardRow } from "~/lib/account";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
@@ -21,6 +21,8 @@ export function LeaderboardsBody() {
   const [board, setBoard] = useState<Board>("xp");
   const [data, setData] = useState<{ top: BoardRow[]; me: BoardRow | null } | null>(null);
   const [error, setError] = useState(false);
+  // bumped by "Try again"
+  const [attempt, setAttempt] = useState(0);
 
   // a new board starts from the spinner (adjusted during render, not in the effect)
   const [shown, setShown] = useState(board);
@@ -38,7 +40,7 @@ export function LeaderboardsBody() {
     return () => {
       live = false;
     };
-  }, [board]);
+  }, [board, attempt]);
 
   const meOffList = data?.me && !data.top.some((r) => r.me) ? data.me : null;
 
@@ -62,7 +64,13 @@ export function LeaderboardsBody() {
       )}
 
       {error ? (
-        <Text style={[T.body, styles.empty]}>{t("leaderboardError")}</Text>
+        <View style={{ alignItems: "center" }}>
+          <Text style={[T.body, styles.empty]}>{t("leaderboardError")}</Text>
+          <Button title={t("retry")} kind="secondary" icon="arrow.clockwise" onPress={() => {
+              setError(false);
+              setAttempt((n) => n + 1);
+            }} style={{ marginTop: 12, alignSelf: "stretch" }} />
+        </View>
       ) : !data ? (
         <ActivityIndicator style={{ marginTop: 40 }} />
       ) : data.top.length === 0 ? (

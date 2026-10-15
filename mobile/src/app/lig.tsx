@@ -1,6 +1,6 @@
 import { router, Stack, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
 import { Avatar } from "~/components/Avatar";
@@ -43,14 +43,14 @@ export function LeagueBody() {
   const [data, setData] = useState<League | null>(null);
   const [failed, setFailed] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!account) return;
-      fetchLeague()
-        .then((d) => (setData(d), setFailed(false)))
-        .catch(() => setFailed(true));
-    }, [account])
-  );
+  const load = useCallback(() => {
+    if (!account) return;
+    setFailed(false);
+    fetchLeague()
+      .then(setData)
+      .catch(() => setFailed(true));
+  }, [account]);
+  useFocusEffect(load);
 
   // last week's result shows once
   const last = data?.last && !data.last.endsWith(":seen") ? data.last.split(":") : null;
@@ -72,7 +72,14 @@ export function LeagueBody() {
   if (!data) {
     return (
       <>
-        {failed && <Text style={[T.body, { textAlign: "center", marginTop: 40 }]}>{t("serverUnreachable")}</Text>}
+        {failed ? (
+          <>
+            <Text style={[T.body, { textAlign: "center", marginTop: 40 }]}>{t("serverUnreachable")}</Text>
+            <Button title={t("retry")} kind="secondary" icon="arrow.clockwise" onPress={load} style={{ marginTop: 12 }} />
+          </>
+        ) : (
+          <ActivityIndicator style={{ marginTop: 40 }} />
+        )}
       </>
     );
   }

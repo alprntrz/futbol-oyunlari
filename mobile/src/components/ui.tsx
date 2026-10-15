@@ -49,7 +49,8 @@ export function Card({ children, style }: { children: React.ReactNode; style?: S
 /** Scrollable page on the grey background. */
 export function Page({ children, scroll = true, topInset = false }: { children: React.ReactNode; scroll?: boolean; topInset?: boolean }) {
   const insets = useSafeAreaInsets();
-  const pad = { paddingHorizontal: 16, paddingTop: topInset ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
+  // a scrolling page gets the status bar (and the tab bar) inset from iOS itself ("automatic"); only a fixed one adds it by hand
+  const pad = { paddingHorizontal: 16, paddingTop: topInset && !scroll ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
   if (!scroll) return <View style={[{ flex: 1, backgroundColor: C.bg }, pad]}>{children}</View>;
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
@@ -198,7 +199,9 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
             accessibilityState={{ selected: active }}
             style={[styles.segment, active && styles.segmentActive]}
           >
-            <Text style={[styles.segmentText, active && { color: C.text }]}>{o.label}</Text>
+            <Text style={[styles.segmentText, active && { color: C.text }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {o.label}
+            </Text>
           </Pressable>
         );
       })}
@@ -233,8 +236,8 @@ const styles = StyleSheet.create({
   rowImage: { width: 44, height: 44, marginHorizontal: -2 },
   rowText: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 14, paddingRight: 14 },
   rowDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
-  segmented: { flexDirection: "row", backgroundColor: "#E8EBF0", borderRadius: 12, padding: 3 },
-  segment: { flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: "center" },
+  segmented: { flexDirection: "row", backgroundColor: C.key, borderRadius: 12, padding: 3 },
+  segment: { flex: 1, paddingVertical: 9, paddingHorizontal: 4, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   segmentActive: { backgroundColor: C.card, ...shadow, shadowOpacity: 0.1 },
   segmentText: { fontSize: 14, fontWeight: "700", color: C.text2 },
   chip: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: R.chip, paddingHorizontal: 10, paddingVertical: 4, alignSelf: "flex-start" },

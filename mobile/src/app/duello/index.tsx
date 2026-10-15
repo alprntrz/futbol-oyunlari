@@ -1,15 +1,14 @@
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView } from "react-native";
 
 import { cardById } from "@/lib/duel";
 
 import { DuelCardView } from "~/components/duel/DuelCardView";
 import { GameHub, HubSetting } from "~/components/GameHub";
-import { Text } from "~/components/Text";
+import { DuelSteps } from "~/components/HowTo";
 import { ROZET } from "~/lib/brand";
 import { useDuel } from "~/lib/duel";
 import { useI18n } from "~/lib/i18n";
-import { C, F, T } from "~/lib/theme";
 
 /**
  * Card Duel: without a hand the one button drafts it; with one it finds an
@@ -47,19 +46,7 @@ export default function DuelHome() {
           : []
       }
       settings={ready ? <HubSetting label={t("dzHand")} value={t("dzRedraft")} onPress={() => router.push("/duello/draft")} /> : undefined}
-      rules={
-        <View style={{ gap: 10 }}>
-          {(["dzRule1", "dzRule2", "dzRule3", "dzRule4"] as const).map((k, i) => (
-            <View key={k} style={styles.rule}>
-              <View style={styles.ruleNum}>
-                <Text style={styles.ruleNumText}>{i + 1}</Text>
-              </View>
-              <Text style={[T.body, { flex: 1 }]}>{t(k)}</Text>
-            </View>
-          ))}
-          <Text style={T.caption}>{t("dzDataNote")}</Text>
-        </View>
-      }
+      rules={<DuelSteps />}
     >
       {ready && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 14 }}>
@@ -71,9 +58,3 @@ export default function DuelHome() {
     </GameHub>
   );
 }
-
-const styles = StyleSheet.create({
-  rule: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
-  ruleNum: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
-  ruleNumText: { fontFamily: F.display, fontSize: 14, color: C.greenDark },
-});

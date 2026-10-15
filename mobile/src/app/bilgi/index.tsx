@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { View } from "react-native";
 
 import { ChoiceSheet, GameHub, HubSetting } from "~/components/GameHub";
-import { Rule } from "~/components/HowTo";
+import { QuizSteps } from "~/components/HowTo";
 import { LevelCard, type QuizProfile } from "~/components/QuizLevel";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
@@ -51,13 +51,7 @@ export default function QuizHome() {
           <HubSetting label={t("qzStandingsTitle")} value="" onPress={() => router.push("/bilgi/siralama")} />
         </>
       }
-      rules={
-        <View style={{ gap: 14 }}>
-          <Rule image={BRAND.how.questions} desc={t("qzRule1")} />
-          <Rule image={BRAND.how.speed} desc={t("qzRule2")} />
-          <Rule image={BRAND.how.players} desc={t("qzRule3")} />
-        </View>
-      }
+      rules={<QuizSteps />}
     >
       <View style={{ marginTop: 14 }}>
         <LevelCard profile={profile} />

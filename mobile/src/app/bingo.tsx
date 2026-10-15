@@ -9,6 +9,7 @@ import { XP } from "@/lib/levels";
 import type { Criterion } from "@/lib/tiki";
 
 import { GameHub } from "~/components/GameHub";
+import { BingoSteps } from "~/components/HowTo";
 import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
@@ -126,18 +127,7 @@ export default function Bingo() {
         tagline={t("bingoShort")}
         primary={{ label: t("bingoStart"), icon: "play.fill", fallback: "▶", onPress: () => setRun(freshRun()) }}
         secondary={[{ label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice }]}
-        rules={
-          <View style={{ gap: 12 }}>
-            <View style={styles.ruleRow}>
-              <Icon name="xmark.circle.fill" size={18} color={C.red} fallback="✕" />
-              <Text style={[T.body, { flex: 1 }]}>{t("bingoRule1")}</Text>
-            </View>
-            <View style={styles.ruleRow}>
-              <Icon name="sparkles" size={18} color={C.amber} fallback="✨" />
-              <Text style={[T.body, { flex: 1 }]}>{t("bingoRule2")}</Text>
-            </View>
-          </View>
-        }
+        rules={<BingoSteps />}
       />
     );
   }
@@ -302,7 +292,6 @@ export default function Bingo() {
 }
 
 const styles = StyleSheet.create({
-  ruleRow: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
   strip: { flexDirection: "row", padding: 12 },
   stat: { flex: 1, alignItems: "center" },
   statValue: { fontFamily: F.display, fontSize: 24, lineHeight: 28, color: C.text, fontVariant: ["tabular-nums"] },

@@ -3,11 +3,11 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Linking, View } from "react-native";
 
-import { InfoSheet, MissingXISteps, TikiSteps } from "~/components/HowTo";
+import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, TaktikSteps, TikiSteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { deleteAccount, signOut, useAccount } from "~/lib/account";
-import { BRAND } from "~/lib/brand";
+import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
 import { PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
@@ -17,7 +17,19 @@ import { C, T } from "~/lib/theme";
 
 export default function SettingsTab() {
   const { t, locale, setLocale } = useI18n();
-  const [sheet, setSheet] = useState<"xi" | "tiki" | null>(null);
+  const [sheet, setSheet] = useState<string | null>(null);
+  // every game's rules, in the Games tab's order and with its art
+  const games = [
+    { key: "tiki", title: t("tikiTakaName"), image: BRAND.icon.tiki, steps: <TikiSteps /> },
+    { key: "duel", title: t("dzName"), image: ROZET.duel, steps: <DuelSteps /> },
+    { key: "quiz", title: t("qzName"), image: BRAND.icon.quiz, steps: <QuizSteps /> },
+    { key: "pp", title: t("ppName"), image: BRAND.icon.possession, steps: <PossessionSteps /> },
+    { key: "taktik", title: t("ttkName"), image: TAKTIK.hero, steps: <TaktikSteps /> },
+    { key: "mystery", title: t("myName"), image: BRAND.icon.mystery, steps: <MysterySteps /> },
+    { key: "xi", title: t("missingXI"), image: BRAND.icon.practice, steps: <MissingXISteps /> },
+    { key: "bingo", title: t("bingoName"), image: BRAND.icon.bingo, steps: <BingoSteps /> },
+  ];
+  const open = games.find((g) => g.key === sheet);
   const account = useAccount();
   const confirmSignOut = () =>
     Alert.alert(t("signOutAsk"), t("signOutDesc"), [
@@ -76,8 +88,9 @@ export default function SettingsTab() {
 
       <SectionLabel>{t("howToPlay")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
-        <Row image={BRAND.icon.team} title={t("missingXI")} onPress={() => setSheet("xi")} />
-        <Row image={BRAND.icon.tiki} title={t("tikiTakaName")} onPress={() => setSheet("tiki")} last={!ONBOARDING} />
+        {games.map((g, i) => (
+          <Row key={g.key} image={g.image} title={g.title} onPress={() => setSheet(g.key)} last={!ONBOARDING && i === games.length - 1} />
+        ))}
         {ONBOARDING && <Row icon="sparkles" iconFallback="✨" color={C.greenMid} soft={C.greenSoft} title={t("obReplay")} onPress={() => router.push("/onboarding")} last />}
       </Card>
 
@@ -114,11 +127,8 @@ export default function SettingsTab() {
         </View>
       </Card>
 
-      <InfoSheet visible={sheet === "xi"} onClose={() => setSheet(null)} title={t("missingXI")}>
-        <MissingXISteps />
-      </InfoSheet>
-      <InfoSheet visible={sheet === "tiki"} onClose={() => setSheet(null)} title={t("tikiTakaName")}>
-        <TikiSteps />
+      <InfoSheet visible={!!open} onClose={() => setSheet(null)} title={open?.title ?? ""}>
+        {open?.steps}
       </InfoSheet>
     </Page>
   );

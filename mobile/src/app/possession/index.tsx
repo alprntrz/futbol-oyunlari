@@ -1,8 +1,7 @@
 import { router } from "expo-router";
-import { View } from "react-native";
 
 import { GameHub } from "~/components/GameHub";
-import { Rule } from "~/components/HowTo";
+import { PossessionSteps } from "~/components/HowTo";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 
@@ -20,12 +19,7 @@ export default function PossessionHome() {
         { label: t("htFriend"), icon: "person.2.fill", fallback: "👥", onPress: () => router.push("/possession/oda") },
         { label: t("htSame"), icon: "iphone", fallback: "📱", onPress: () => router.push("/possession/yerel") },
       ]}
-      rules={
-        <View style={{ gap: 14 }}>
-          <Rule image={BRAND.how.clock} desc={t("ppRule1")} />
-          <Rule image={BRAND.how.hexes} desc={t("ppRule2")} />
-        </View>
-      }
+      rules={<PossessionSteps />}
     />
   );
 }
