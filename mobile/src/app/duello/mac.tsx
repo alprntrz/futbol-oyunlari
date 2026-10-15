@@ -13,6 +13,7 @@ import { DuelCardView } from "~/components/duel/DuelCardView";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
 import { surname } from "~/components/taktik/Card";
 import { Text } from "~/components/Text";
+import { TourOverlay, useTour } from "~/components/Tour";
 import { Button, Icon, Tap } from "~/components/ui";
 import { saveDaily, useDuel } from "~/lib/duel";
 import { useRecordMatch } from "~/lib/history";
@@ -102,6 +103,12 @@ function Board({
   const { width } = useWindowDimensions();
   const [now, setNow] = useState(() => Date.now());
   const emotes = useEmotes("dz", online);
+  // first match: the question, the cards in hand, the score
+  const tour = useTour("duel-match-v1", [
+    { target: "question", title: t("dzTour5T"), body: t("dzTour5") },
+    { target: "hand", title: t("dzTour6T"), body: t("dzTour6") },
+    { target: "score", title: t("dzTour7T"), body: t("dzTour7") },
+  ]);
   // the result card for this game (xpKey changes every game) once the last reveal has been seen
   const [endShownFor, setEndShownFor] = useState<string | null>(null);
   const showEnd = m.over && endShownFor === xpKey;
@@ -195,7 +202,7 @@ function Board({
         <Text style={styles.round}>{t("dzRound").replace("{n}", String(Math.min(ROUNDS, m.round + (revealing ? 0 : 1)))).replace("{max}", String(ROUNDS))}</Text>
         <EmoteButton e={emotes} />
       </View>
-      <View style={styles.scoreRow}>
+      <View ref={tour.ref("score")} collapsable={false} style={styles.scoreRow}>
         <Text style={styles.nick} numberOfLines={1}>
           {t("you")}
         </Text>
@@ -216,7 +223,7 @@ function Board({
 
       {/* question */}
       {shownQuestion && (
-        <Animated.View key={`${m.round}-${revealing}`} entering={FadeIn.duration(200)} style={[styles.question, shownQuestion.lower && styles.questionLow]}>
+        <Animated.View ref={tour.ref("question") as never} collapsable={false} key={`${m.round}-${revealing}`} entering={FadeIn.duration(200)} style={[styles.question, shownQuestion.lower && styles.questionLow]}>
           <Text style={[styles.questionText, shownQuestion.lower && { color: "white" }]}>{t(questionKey(shownQuestion))}</Text>
           {shownQuestion.lower && <Text style={styles.lowerTag}>{t("dzLowerWins")}</Text>}
           {!!m.deadline && (
@@ -242,7 +249,7 @@ function Board({
       <Text style={styles.hint}>{m.peerLeft ? t("dzPeerLeft") : m.deadline ? (m.myPick === null ? t("dzPick") : !m.theyPicked ? t("dzWaiting") : "") : ""}</Text>
 
       {/* my hand */}
-      <View style={styles.hand}>
+      <View ref={tour.ref("hand")} collapsable={false} style={styles.hand}>
         {hand.map((id) => (
           <DuelCardView
             key={id}
@@ -256,6 +263,7 @@ function Board({
       </View>
 
       <EmoteLayer e={emotes} top={insets.top + 44} />
+      {!showEnd && <TourOverlay tour={tour} />}
 
       {showEnd && (
         <View style={[StyleSheet.absoluteFill, styles.backdrop]}>

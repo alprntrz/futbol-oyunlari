@@ -1,22 +1,14 @@
 import type { SymbolViewProps } from "expo-symbols";
-import { router, useFocusEffect, type Href } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { router, type Href } from "expo-router";
 import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
-import { dailyMatch } from "@/lib/daily";
-import { teamName } from "@/lib/teams";
 
-import { Jersey } from "~/components/Jersey";
 import { Text } from "~/components/Text";
 import { Icon, Page, Tap } from "~/components/ui";
 import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
-import { jerseyStyle } from "~/lib/kits";
-import { loadDayState } from "~/lib/storage";
-import { C, F, R, shadow, T } from "~/lib/theme";
-
-type DailyStatus = { kind: "new" } | { kind: "playing"; solved: number } | { kind: "done"; solved: number };
+import { C, F, R, T } from "~/lib/theme";
 
 /** one quiet tile behind every game's art, so the art carries the colour */
 const ART_BG = "#EEF2EF";
@@ -27,27 +19,9 @@ type Game = { title: string; desc: string; href: Href; bg: string } & (
 
 const enter = (i: number) => FadeIn.duration(180).delay(i * 25);
 
-/** Games tab: today's Missing XI on top, every other game one tap below. */
+/** Games tab: every game one tap away (today's puzzles live on Home). */
 export default function Games() {
-  const { t, locale } = useI18n();
-  const { match, day } = useMemo(() => dailyMatch(), []);
-  const [status, setStatus] = useState<DailyStatus>({ kind: "new" });
-
-  // Refresh the daily card whenever the tab comes back into view
-  useFocusEffect(
-    useCallback(() => {
-      loadDayState(day).then((s) => {
-        if (!s || s.matchId !== match.id) return setStatus({ kind: "new" });
-        const solved = s.slots.filter((x) => x.solved).length;
-        const done = s.gaveUp || s.slots.every((x) => x.solved || x.failed);
-        setStatus(done ? { kind: "done", solved } : { kind: "playing", solved });
-      });
-    }, [day, match.id])
-  );
-
-  const cta = status.kind === "new" ? t("play") : status.kind === "playing" ? t("continueGame") : t("seeResult");
-  const statusText = status.kind === "new" ? t("notStarted") : `${status.kind === "playing" ? t("inProgress") : t("completed")} ${status.solved}/11`;
-
+  const { t } = useI18n();
   const games: Game[] = [
     {
       image: BRAND.icon.tiki,
@@ -112,59 +86,6 @@ export default function Games() {
     <Page topInset>
       <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("tabGames")}</Text>
 
-      {/* Daily XI: a slice of pitch with today's fixture on it */}
-      <Animated.View entering={enter(0)}>
-        <Tap
-          onPress={() => router.push("/eksik-11/gunluk")}
-          style={styles.hero}
-          accessibilityLabel={`${t("daily")}. ${teamName(match.team, locale)} ${match.score} ${teamName(match.opponent, locale)}. ${statusText}`}
-          accessibilityHint={cta}
-        >
-          <View style={StyleSheet.absoluteFill}>
-            {Array.from({ length: 6 }, (_, i) => (
-              <View
-                key={i}
-                style={{
-                  flex: 1,
-                  backgroundColor: i % 2 ? "#13803B" : "#0F7A37",
-                }}
-              />
-            ))}
-          </View>
-          <View pointerEvents="none" style={styles.chalkCircle} />
-          <View pointerEvents="none" style={styles.chalkLine} />
-
-          <View style={styles.heroHead}>
-            <Text style={styles.heroTitle}>{t("daily")}</Text>
-            <Text style={styles.heroStatus}>{statusText}</Text>
-          </View>
-
-          <View style={styles.fixture}>
-            <Jersey
-              body={match.kit.body}
-              sleeves={match.kit.sleeves}
-              numberColor={match.kit.number}
-              number={11}
-              variant={jerseyStyle(match)}
-              size={46}
-              hideNumber
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.fixtureTeams} numberOfLines={2}>
-                {teamName(match.team, locale)} <Text style={{ color: "#BFE6CB" }}>{match.score}</Text> {teamName(match.opponent, locale)}
-              </Text>
-              <Text style={styles.fixtureMeta} numberOfLines={2}>
-                {match.competition[locale]}, {match.season}
-              </Text>
-            </View>
-            <View style={styles.go}>
-              <Icon name="chevron.right" size={14} color={C.greenDark} fallback="›" />
-            </View>
-          </View>
-
-        </Tap>
-      </Animated.View>
-
       <View style={styles.list}>
         {games.map((g, i) => (
           <Animated.View key={g.title} entering={enter(i + 1)}>
@@ -194,75 +115,6 @@ export default function Games() {
 }
 
 const styles = StyleSheet.create({
-  hero: {
-    marginTop: 8,
-    borderRadius: 24,
-    overflow: "hidden",
-    padding: 16,
-    ...shadow,
-    shadowOpacity: 0.18,
-  },
-  chalkCircle: {
-    position: "absolute",
-    right: -60,
-    top: -40,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.22)",
-  },
-  chalkLine: {
-    position: "absolute",
-    right: 40,
-    top: 0,
-    bottom: 0,
-    width: 2,
-    backgroundColor: "rgba(255,255,255,0.16)",
-  },
-  heroHead: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  heroStatus: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "white",
-    backgroundColor: "#0C622C",
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    overflow: "hidden",
-  },
-  heroTitle: {
-    fontFamily: F.black,
-    fontSize: 30,
-    lineHeight: 32,
-    color: "white",
-  },
-  fixture: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 10,
-    backgroundColor: "#0C622C",
-    borderRadius: 16,
-    padding: 10,
-  },
-  fixtureTeams: {
-    fontFamily: F.display,
-    fontSize: 21,
-    lineHeight: 23,
-    color: "white",
-  },
-  fixtureMeta: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#E3F2E8",
-    marginTop: 2,
-  },
-  go: { width: 30, height: 30, borderRadius: 15, backgroundColor: "white", alignItems: "center", justifyContent: "center" },
 
   list: {
     marginTop: 16,

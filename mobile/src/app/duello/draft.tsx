@@ -8,6 +8,7 @@ import { DuelCardView } from "~/components/duel/DuelCardView";
 import { Flag } from "~/components/Flag";
 import { STAR_FRAME } from "~/components/taktik/Card";
 import { Text } from "~/components/Text";
+import { TourOverlay, useTour } from "~/components/Tour";
 import { Button, Icon, Page, Tap } from "~/components/ui";
 import { saveHand, useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
@@ -22,6 +23,13 @@ export default function DuelDraft() {
   const [query, setQuery] = useState("");
   const [note, setNote] = useState<string | null>(null);
   const [left, setLeft] = useState(DRAFT_SECONDS);
+  // first draft: what the theme, the budget, the slots and the list are for
+  const tour = useTour("duel-draft-v1", [
+    { target: "theme", title: t("dzTour1T"), body: t("dzTour1") },
+    { target: "budget", title: t("dzTour2T"), body: t("dzTour2").replace("{max}", String(BUDGET)) },
+    { target: "hand", title: t("dzTour3T"), body: t("dzTour3") },
+    { target: "list", title: t("dzTour4T"), body: t("dzTour4") },
+  ]);
   const [shuffle, setShuffle] = useState(0);
   const { width } = useWindowDimensions();
   const slotW = (width - 32 - 6 * (HAND_SIZE - 1)) / HAND_SIZE;
@@ -76,9 +84,10 @@ export default function DuelDraft() {
   const mm = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
 
   return (
+    <View style={{ flex: 1 }}>
     <Page>
       <Stack.Screen options={{ title: t("dzDraft") }} />
-      <View style={styles.head}>
+      <View ref={tour.ref("theme")} collapsable={false} style={styles.head}>
         <View style={{ flex: 1 }}>
           <Text style={T.caption}>{t("dzTheme")}</Text>
           <Text style={styles.theme}>{t(`dzTheme_${theme.id}`)}</Text>
@@ -89,6 +98,7 @@ export default function DuelDraft() {
       </View>
 
       {/* budget */}
+      <View ref={tour.ref("budget")} collapsable={false}>
       <View style={styles.budgetRow}>
         <Text style={styles.budgetText}>{t("dzBudget").replace("{n}", String(cost)).replace("{max}", String(BUDGET))}</Text>
         <Text style={T.caption}>
@@ -98,9 +108,10 @@ export default function DuelDraft() {
       <View style={styles.track}>
         <View style={[styles.fill, { width: `${Math.min(100, (cost / BUDGET) * 100)}%` }, cost === BUDGET && { backgroundColor: "#E3A008" }]} />
       </View>
+      </View>
 
       {/* hand: tap a card to take it out */}
-      <View style={styles.hand}>
+      <View ref={tour.ref("hand")} collapsable={false} style={styles.hand}>
         {Array.from({ length: HAND_SIZE }, (_, i) => {
           const id = picked[i];
           return id !== undefined ? (
@@ -129,7 +140,7 @@ export default function DuelDraft() {
             style={styles.input}
           />
           {left === 0 && <Text style={[T.caption, { color: C.red, marginTop: 6 }]}>{t("dzTimeUp")}</Text>}
-          <View style={{ marginTop: 8, gap: 6 }}>
+          <View ref={tour.ref("list")} collapsable={false} style={{ marginTop: 8, gap: 6 }}>
             {query.trim().length === 1 ? (
               <Text style={T.caption}>{t("dzSearchHint")}</Text>
             ) : query.trim().length >= 2 && results.length === 0 ? (
@@ -166,6 +177,8 @@ export default function DuelDraft() {
         </>
       )}
     </Page>
+    <TourOverlay tour={tour} />
+    </View>
   );
 }
 

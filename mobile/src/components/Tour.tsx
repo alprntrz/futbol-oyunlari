@@ -97,9 +97,13 @@ export function TourOverlay({ tour }: { tour: Tour }) {
   const { t } = useI18n();
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  // targets are measured in window coordinates; this overlay may start lower (under a header)
+  const root = useRef<View>(null);
+  const [origin, setOrigin] = useState({ x: 0, y: 0 });
+  const measure = () => root.current?.measureInWindow((x, y) => setOrigin({ x, y }));
   if (tour.step === null) return null;
   const s = tour.steps[tour.step];
-  const r = tour.rect;
+  const r = tour.rect ? { ...tour.rect, x: tour.rect.x - origin.x, y: tour.rect.y - origin.y } : null;
   const last = tour.step + 1 >= tour.steps.length;
   const hole = r ? { x: Math.max(0, r.x - PAD), y: Math.max(0, r.y - PAD), w: Math.min(width, r.w + PAD * 2), h: r.h + PAD * 2 } : null;
   // the note goes below the hole if there's room, else above it
@@ -109,7 +113,7 @@ export function TourOverlay({ tour }: { tour: Tour }) {
   const dim = "rgba(6,20,12,0.72)";
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+    <View ref={root} onLayout={measure} style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {hole ? (
         <>
           <View style={[styles.dim, { backgroundColor: dim, left: 0, right: 0, top: 0, height: hole.y }]} />
