@@ -16,6 +16,11 @@ import { Text } from "./Text";
  * the app's dark one, so it's only rendered while focused (screens behind stay mounted).
  */
 export function NightStatusBar() {
+  return <FocusStatusBar style={NIGHT.light ? "dark" : "light"} />;
+}
+
+/** A status bar style for this screen only while it's in front (dark game screens use "light"). */
+export function FocusStatusBar({ style }: { style: "light" | "dark" }) {
   const [focused, setFocused] = useState(false);
   useFocusEffect(
     useCallback(() => {
@@ -23,7 +28,7 @@ export function NightStatusBar() {
       return () => setFocused(false);
     }, [])
   );
-  return focused ? <StatusBar style={NIGHT.light ? "dark" : "light"} /> : null;
+  return focused ? <StatusBar style={style} /> : null;
 }
 
 /**

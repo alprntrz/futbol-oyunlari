@@ -23,7 +23,7 @@ export default function PossessionRandom() {
     const socket = getSocket();
     const onMatched = ({ code }: { code: string }) => {
       haptic.success();
-      router.replace({ pathname: "/possession/oda/[code]", params: { code } });
+      router.replace({ pathname: "/possession/oda/[code]", params: { code, random: "1" } });
     };
     const onError = () => setError(t("serverUnreachable"));
     const enqueue = () => {

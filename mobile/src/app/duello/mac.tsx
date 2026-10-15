@@ -1,5 +1,4 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
@@ -9,6 +8,7 @@ import { dayNumber } from "@/lib/daily";
 import { cardById, dailyRand, houseHand, PICK_SECONDS, questionKey, ROUNDS, statText, type Question } from "@/lib/duel";
 import { XP } from "@/lib/levels";
 
+import { FocusStatusBar } from "~/components/StadiumHeader";
 import { DuelCardView } from "~/components/duel/DuelCardView";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
 import { surname } from "~/components/taktik/Card";
@@ -198,7 +198,7 @@ function Board({
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 8 }]}>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar style="light" />
+      <FocusStatusBar style="light" />
 
       {/* top: back, round, score */}
       <View style={styles.topRow}>

@@ -18,9 +18,6 @@ import { useI18n } from "~/lib/i18n";
 import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
 import { dealGrid } from "~/lib/league";
 
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const fakeCode = () => Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
-
 /**
  * Random-queue fallback when nobody else is searching. Mirrors the online room
  * screen (title, labels, messages, rematch) so the game feels the same either way.
@@ -30,7 +27,6 @@ export default function HatTrickHouse() {
   const emotes = useEmotes("ht", false);
   const params = useLocalSearchParams<{ nick?: string; league?: string }>();
   const nick = params.nick || t("opponent");
-  const [code] = useState(fakeCode);
 
   const [me, setMe] = useState<Mark>("X");
   const rival = other(me);
@@ -212,7 +208,7 @@ export default function HatTrickHouse() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+      <Stack.Screen options={{ title: t("tikiTakaName"), headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
       <HatTrickBoard
         steals={null}
         usedNames={usedNames}

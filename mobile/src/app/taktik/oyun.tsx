@@ -1,5 +1,4 @@
 import { router, Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
@@ -13,6 +12,7 @@ import { sheet } from "@/lib/taktik/sim";
 import { STYLES, type TraitState } from "@/lib/taktik/traits";
 import type { Manager, ShopCard } from "@/lib/taktik/types";
 
+import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { COST_COLOR, ItemIcon, PosTag, UnitCard, clubCriterion } from "~/components/taktik/Card";
@@ -207,7 +207,7 @@ export default function TaktikGame() {
   return (
     <View style={{ flex: 1, backgroundColor: C.greenDark }}>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar style="light" />
+      <FocusStatusBar style="light" />
       <View style={[styles.top, { paddingTop: insets.top + 4 }]}>
         <View style={styles.topRow}>
           <Tap onPress={() => router.back()} style={styles.back} accessibilityLabel="‹">

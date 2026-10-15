@@ -257,7 +257,8 @@ export default function HatTrickRoom() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+      {/* a friend room shows its code (to share); a random match the game's name */}
+      <Stack.Screen options={{ title: params.random ? t("tikiTakaName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
       {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
       <HatTrickBoard
         steals={room.steals}

@@ -42,7 +42,7 @@ interface PpRoom {
 export default function PossessionRoom() {
   const { t } = useI18n();
   const emotes = useEmotes("pp", true);
-  const params = useLocalSearchParams<{ code: string }>();
+  const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
   useLivePush("pp", code || null);
   const [room, setRoom] = useState<PpRoom | null>(null);
@@ -178,7 +178,8 @@ export default function PossessionRoom() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+      {/* a friend room shows its code (to share); a random match the game's name */}
+      <Stack.Screen options={{ title: params.random ? t("ppName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
       {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
       <PossessionBoard
         board={board}

@@ -1,11 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
 import { DemoBoard } from "~/components/HowTo";
 import { Jersey } from "~/components/Jersey";
@@ -68,7 +68,7 @@ export default function Onboarding() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 }]}>
       <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} />
-      <StatusBar style="light" />
+      <FocusStatusBar style="light" />
 
       {/* Top bar: language pill toggle (Linear's pricing tabs) + skip */}
       <View style={styles.topBar}>
