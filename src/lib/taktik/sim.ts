@@ -152,6 +152,8 @@ export function playMatch(a: Side, b: Side, rand: () => number): Played {
 
   const attack = (k: 0 | 1, slice: number, boost = 1) => {
     const o = (1 - k) as 0 | 1;
+    // nobody on the pitch to shoot
+    if (!s[k].shooters.length) return false;
     const late = slice >= LATE_FROM;
     let myAtk = late ? s[k].lateAtk : s[k].atk;
     const theirDef = late ? s[o].lateDef : s[o].def;

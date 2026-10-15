@@ -4,6 +4,7 @@ import { reloadAppAsync } from "expo";
 import { loadPlayerId } from "./nick";
 import { getSocket } from "./socket";
 import { resetDailyRewards } from "./dailyRewards";
+import { resetPhoto } from "./photo";
 import { resetPlayStreak } from "./playStreak";
 import { resetQuests } from "./quests";
 import { resetTaktik } from "./taktik";
@@ -22,6 +23,7 @@ export async function deleteMyData(): Promise<{ server: boolean }> {
       .timeout(5000)
       .emit("qz:forget", { pid }, (err: Error | null, res?: { ok: boolean }) => resolve(!err && !!res?.ok));
   });
+  await resetPhoto();
   await AsyncStorage.clear().catch(() => {});
   resetXpCache();
   resetQuests();

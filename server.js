@@ -7,7 +7,7 @@ const next = require("next");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
-const { handleAccountApi, recordResult, userIdFromToken, setPresence, friendIdByCode, inviteCard } = require("./server-accounts");
+const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard } = require("./server-accounts");
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -124,7 +124,7 @@ const HT_TARGET = 3;
 /** comeback bonus: whoever lost the last game of the series gets this much extra on each turn */
 const HT_COMEBACK_MS = 10_000;
 // matched random games open with a short VS screen before X's clock starts
-const HT_INTRO_MS = 3500;
+const HT_INTRO_MS = 2500;
 const HT_LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
   [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -226,8 +226,8 @@ function htCode() {
 // runs the clock and the scoring. Random rooms fill up with house players
 // (nicknames, human-ish timing) when not enough people are searching.
 const QZ_MAX = 5;
-const QZ_INTRO_MS = 3000;
-const QZ_REVEAL_MS = 4000;
+const QZ_INTRO_MS = 2000;
+const QZ_REVEAL_MS = 3000;
 /** the phones animate the old options out and the new ones in before the clock runs */
 const QZ_GAP_MS = 900;
 /** an open random room starts this long after it was opened */
@@ -430,6 +430,10 @@ app.prepare().then(() => {
   // a signed-in user is "online" for friends while any of their sockets is open
   const socketsOf = (uid) => [...io.sockets.sockets.values()].filter((s) => uid && s.data.uid === uid);
   setPresence((uid) => socketsOf(uid).length > 0);
+  // someone added you by your code: your open app says so
+  setFriendAdded((uid, from) => {
+    for (const s of socketsOf(uid)) s.emit("fr:added", { from });
+  });
 
   // pair waiting players as their allowed rank gap widens with time
   const matchQueues = () => {

@@ -59,6 +59,14 @@
         }
       ],
       "expo-apple-authentication",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Tiktako lets you pick a profile photo. It stays on your phone and is never uploaded.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
       "./plugins/withoutApsEnvironment",
       "expo-widgets"
     ],

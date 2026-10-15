@@ -18,7 +18,7 @@ export interface Side {
   tier?: number | null;
 }
 
-const COUNT = 3;
+const COUNT = 2;
 
 /** "Match found": both players facing off and a 3-2-1 before the board opens. */
 export function MatchIntro({ me, opponent, onDone }: { me: Side; opponent: Side; onDone: () => void }) {

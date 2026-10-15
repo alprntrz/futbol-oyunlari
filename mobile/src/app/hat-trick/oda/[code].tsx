@@ -5,14 +5,13 @@ import { Share, StyleSheet, View } from "react-native";
 
 
 import { GameActions } from "~/components/GameActions";
-import { SeriesBreak, useSeriesBreak } from "~/components/SeriesBreak";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
-import { gridFromIds, gridToIds, NEXT_GAME_MS, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
+import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid } from "~/lib/league";
 import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
@@ -127,8 +126,6 @@ export default function HatTrickRoom() {
   const turnMs = room?.turnMs ?? TURN_SECONDS * 1000;
   const timeLeft = Math.min(turnMs / 1000, Math.max(0, Math.ceil((deadline - now) / 1000)));
   const opponent = room?.players.find((p) => p.id !== myId);
-  // between games: the red/blue break screen with hearts and the next game number
-  const seriesBreak = useSeriesBreak(room?.winner ?? null, (room?.series?.over ?? false) || peerLeft);
 
   // Lock Screen / Dynamic Island: whose turn, the clock, the series score
   useDuelActivity(
@@ -290,16 +287,6 @@ export default function HatTrickRoom() {
           )
         }
       />
-      {seriesBreak.show && me && (
-        <SeriesBreak
-          me={t("you")}
-          opponent={opponent?.nick || t("opponent")}
-          hearts={{ me: SERIES_TARGET - series[me.mark === "X" ? "O" : "X"], opp: SERIES_TARGET - series[me.mark] }}
-          loser={room.winner === "draw" || !room.winner ? null : room.winner === me.mark ? "opp" : "me"}
-          game={seriesBreak.nextGame}
-          comeback={room.comeback ? (room.comeback === me.mark ? "me" : "opp") : null}
-        />
-      )}
       <SeriesEnd
         over={series.over}
         won={iWon}

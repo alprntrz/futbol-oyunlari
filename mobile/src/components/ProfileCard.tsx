@@ -6,6 +6,7 @@ import { rankOf, RANKS } from "@/lib/levels";
 
 import { syncProfile, useAccount } from "~/lib/account";
 import { AVATARS, loadAvatar, saveAvatar, type AvatarId } from "~/lib/avatar";
+import { pickPhoto, savePhoto, useMyPhoto } from "~/lib/photo";
 import { BRAND, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -42,6 +43,7 @@ export function ProfileCard() {
   const [trophies, setTrophies] = useState(0);
   const [editing, setEditing] = useState(false);
   const account = useAccount();
+  const myPhoto = useMyPhoto();
 
   const refresh = useCallback(() => {
     loadNick().then(setNick);
@@ -64,7 +66,7 @@ export function ProfileCard() {
       <Card style={styles.card}>
         <View style={styles.top}>
           <Tap onPress={() => setEditing(true)} accessibilityLabel={t("editProfile")}>
-            <Avatar id={avatar} nick={nick} size={72} />
+            <Avatar id={avatar} nick={nick} size={72} me />
           </Tap>
           <View style={{ flex: 1 }}>
             <Text style={T.title} numberOfLines={1}>
@@ -142,11 +144,13 @@ export function ProfileCard() {
         visible={editing}
         nick={nick}
         avatar={avatar}
+        photo={myPhoto}
         onClose={() => setEditing(false)}
-        onSave={async (n, a) => {
+        onSave={async (n, a, photo) => {
           const savedNick = await saveNick(n);
           setNick(savedNick);
           setAvatar(await saveAvatar(a));
+          if (photo !== myPhoto) await savePhoto(photo).catch(() => {});
           setEditing(false);
           syncProfile(savedNick, a);
         }}
@@ -160,18 +164,27 @@ function EditProfile({
   visible,
   nick,
   avatar,
+  photo,
   onClose,
   onSave,
 }: {
   visible: boolean;
   nick: string;
   avatar: AvatarId | null;
+  photo: string | null;
   onClose: () => void;
-  onSave: (nick: string, avatar: AvatarId) => void;
+  onSave: (nick: string, avatar: AvatarId, photo: string | null) => void;
 }) {
   const { t } = useI18n();
   const [draftNick, setDraftNick] = useState(nick);
   const [draftAvatar, setDraftAvatar] = useState<AvatarId>(avatar ?? AVATARS[0].id);
+  const [draftPhoto, setDraftPhoto] = useState(photo);
+
+  const choosePhoto = async () => {
+    haptic.tap();
+    const uri = await pickPhoto().catch(() => null);
+    if (uri) setDraftPhoto(uri);
+  };
 
   // start from the saved values each time the sheet opens
   const [prevVisible, setPrevVisible] = useState(visible);
@@ -180,6 +193,7 @@ function EditProfile({
     if (visible) {
       setDraftNick(nick);
       setDraftAvatar(avatar ?? AVATARS[0].id);
+      setDraftPhoto(photo);
     }
   }
 
@@ -194,7 +208,19 @@ function EditProfile({
         </View>
 
         <View style={{ alignItems: "center", marginVertical: 12 }}>
-          <Avatar id={draftAvatar} nick={draftNick || "?"} size={96} />
+          <Avatar id={draftAvatar} nick={draftNick || "?"} size={96} photo={draftPhoto} />
+          <View style={styles.photoRow}>
+            <Tap onPress={choosePhoto} style={styles.photoBtn} accessibilityRole="button" accessibilityLabel={t("photoPick")}>
+              <Icon name="photo" size={15} color={C.greenDark} fallback="🖼" />
+              <Text style={styles.photoText}>{t(draftPhoto ? "photoChange" : "photoPick")}</Text>
+            </Tap>
+            {draftPhoto && (
+              <Tap onPress={() => (haptic.tap(), setDraftPhoto(null))} style={[styles.photoBtn, { backgroundColor: "#EEF2EF" }]} accessibilityRole="button" accessibilityLabel={t("photoRemove")}>
+                <Text style={[styles.photoText, { color: C.text2 }]}>{t("photoRemove")}</Text>
+              </Tap>
+            )}
+          </View>
+          <Text style={[T.caption, { textAlign: "center", marginTop: 6 }]}>{t("photoNote")}</Text>
         </View>
 
         <SectionLabel>{t("nickname")}</SectionLabel>
@@ -214,17 +240,17 @@ function EditProfile({
           {AVATARS.map((a) => (
             <Tap
               key={a.id}
-              onPress={() => (haptic.tap(), setDraftAvatar(a.id))}
+              onPress={() => (haptic.tap(), setDraftAvatar(a.id), setDraftPhoto(null))}
               accessibilityRole="button"
-              accessibilityState={{ selected: a.id === draftAvatar }}
+              accessibilityState={{ selected: !draftPhoto && a.id === draftAvatar }}
               style={styles.gridCell}
             >
-              <Avatar id={a.id} size={68} ring={a.id === draftAvatar ? C.greenMid : undefined} />
+              <Avatar id={a.id} size={68} ring={!draftPhoto && a.id === draftAvatar ? C.greenMid : undefined} />
             </Tap>
           ))}
         </View>
 
-        <Button title={t("save")} icon="checkmark" onPress={() => onSave(draftNick, draftAvatar)} style={{ marginTop: 24 }} />
+        <Button title={t("save")} icon="checkmark" onPress={() => onSave(draftNick, draftAvatar, draftPhoto)} style={{ marginTop: 24 }} />
       </ScrollView>
     </Modal>
   );
@@ -251,4 +277,7 @@ const styles = StyleSheet.create({
   input: { backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, paddingVertical: 13, fontSize: 17, color: C.text },
   grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 12 },
   gridCell: { width: "25%", alignItems: "center" },
+  photoRow: { flexDirection: "row", gap: 8, marginTop: 12 },
+  photoBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8 },
+  photoText: { fontWeight: "700", fontSize: 14, color: C.greenDark },
 });

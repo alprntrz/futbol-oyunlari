@@ -67,7 +67,7 @@ export function HomeStatus() {
   return (
     <View style={styles.row}>
       <Tap onPress={() => router.push("/istatistik")} style={styles.me} accessibilityLabel={`${nick}, ${t("levelN").replace("{n}", String(level))}`}>
-        <Avatar id={avatar} size={42} />
+        <Avatar id={avatar} size={42} me />
         <View style={{ flex: 1 }}>
           <View style={styles.nickRow}>
             <Text style={styles.nick} numberOfLines={1}>

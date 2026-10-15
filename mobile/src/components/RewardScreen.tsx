@@ -6,7 +6,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
-  withRepeat,
   withSequence,
   withSpring,
   withTiming,
@@ -46,8 +45,8 @@ const tileIn = (i: number) =>
     .duration(380);
 
 /**
- * End-of-game reward moment (awards that carry stats): the title slams in over
- * turning light rays, the stat tiles pop in one by one, then "Claim XP" counts the
+ * End-of-game reward moment (awards that carry stats): the trophy and title slam
+ * in, the stat tiles pop in one by one, then "Claim XP" counts the
  * XP up and fills the level bar (a level-up gets its own beat). Mounted once in the
  * root layout; waits while a Victory ceremony is open.
  */
@@ -74,17 +73,13 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
   const rankName = useRankName();
   const stats = award.stats ?? [];
 
-  // rays turn slowly the whole time
-  const spin = useSharedValue(0);
   useEffect(() => {
-    spin.set(withRepeat(withTiming(1, { duration: 9000, easing: Easing.linear }), -1));
     haptic.success();
     play("victory");
     const ids = stats.map((_, i) => setTimeout(() => play("pop"), 650 + i * 160));
     return () => ids.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const rays = useAnimatedStyle(() => ({ transform: [{ rotate: `${spin.get() * 360}deg` }] }));
 
   // claim: the number counts up, the bar fills (to the end and over on a level-up)
   const xpShown = useCountUp(claimed ? award.gained : 0, 900);
@@ -121,11 +116,6 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
         <View style={{ flex: 1 }} />
 
         <View style={styles.hero}>
-          <Animated.View style={[styles.rays, rays]}>
-            {Array.from({ length: 12 }, (_, i) => (
-              <View key={i} style={[styles.ray, { transform: [{ rotate: `${i * 30}deg` }] }]} />
-            ))}
-          </Animated.View>
           <Animated.Image entering={SLAM} source={REWARD.trophy} style={styles.trophy} resizeMode="contain" />
         </View>
 
@@ -185,8 +175,6 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.greenDark, alignItems: "center", paddingHorizontal: 20 },
   hero: { width: 240, height: 220, alignItems: "center", justifyContent: "center", marginTop: 20 },
-  rays: { position: "absolute", width: 420, height: 420, alignItems: "center", justifyContent: "center" },
-  ray: { position: "absolute", width: 36, height: 420, backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 18 },
   trophy: { width: 190, height: 190 },
   title: { fontFamily: F.black, fontSize: 40, color: "white", textAlign: "center", marginTop: 8 },
   tiles: { flexDirection: "row", gap: 10, marginTop: 24, alignSelf: "stretch", justifyContent: "center" },

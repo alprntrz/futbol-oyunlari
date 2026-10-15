@@ -147,6 +147,9 @@ const MAX_FRIENDS = 100;
 /** server.js tells us who has a socket open */
 let isOnline = () => false;
 const setPresence = (fn) => (isOnline = fn);
+/** server.js tells the added player's open app ("X added you") */
+let onFriendAdded = () => {};
+const setFriendAdded = (fn) => (onFriendAdded = fn);
 
 function friendCodeOf(user) {
   if (user.friend_code) return user.friend_code;
@@ -408,7 +411,8 @@ async function handleAccountApi(req, res, cleanNick) {
       if (count >= MAX_FRIENDS) return send(res, 400, { error: "limit" }), true;
       const now = Date.now();
       db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(user.id, other.id, now);
-      db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(other.id, user.id, now);
+      const added = db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(other.id, user.id, now).changes > 0;
+      if (added) onFriendAdded(other.id, inviteCard(user.id));
       return send(res, 200, friendList(user)), true;
     }
 
@@ -441,4 +445,4 @@ async function handleAccountApi(req, res, cleanNick) {
   }
 }
 
-module.exports = { handleAccountApi, recordResult, userIdFromToken, setPresence, friendIdByCode, inviteCard };
+module.exports = { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard };

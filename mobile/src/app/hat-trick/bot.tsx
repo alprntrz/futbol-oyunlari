@@ -5,7 +5,6 @@ import { View } from "react-native";
 import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
-import { SeriesBreak, useSeriesBreak } from "~/components/SeriesBreak";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { Button, Page } from "~/components/ui";
@@ -47,7 +46,6 @@ export default function HatTrickHouse() {
   // comeback bonus, as online: whoever lost the last game gets longer turns
   const [comeback, setComeback] = useState<"me" | "rival" | null>(null);
   const turnSecondsOf = (m: Mark, meNow = me, cb = comeback) => TURN_SECONDS + ((cb === "me" ? meNow : cb === "rival" ? other(meNow) : null) === m ? COMEBACK_SECONDS : 0);
-  const seriesBreak = useSeriesBreak(winner, seriesOver);
 
   const nameOf = (m: Mark) => (m === me ? t("you") : nick);
 
@@ -135,7 +133,7 @@ export default function HatTrickHouse() {
         setDrawSent(false);
         setFlash(t("htDrawDeclined"));
       },
-      2500 + Math.random() * 4000
+      1200 + Math.random() * 1800
     );
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -239,16 +237,6 @@ export default function HatTrickHouse() {
           )
         }
       />
-      {seriesBreak.show && (
-        <SeriesBreak
-          me={t("you")}
-          opponent={nick}
-          hearts={{ me: SERIES_TARGET - wins.theirs, opp: SERIES_TARGET - wins.mine }}
-          loser={winner === "draw" || !winner ? null : winner === me ? "opp" : "me"}
-          game={seriesBreak.nextGame}
-          comeback={comeback === "me" ? "me" : comeback === "rival" ? "opp" : null}
-        />
-      )}
       <SeriesEnd over={seriesOver} won={wins.mine >= SERIES_TARGET} mine={wins.mine} theirs={wins.theirs} onRematch={rematch} />
     </Page>
   );

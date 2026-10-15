@@ -60,6 +60,8 @@ export function useTaktik(): { lobby: Lobby | null; version: number } {
 
 /** Start a new game with this manager style; the house managers get human-looking names. */
 export async function startTaktik(coach: CoachId) {
+  // the saved game must have loaded first, or it would land on top of the new one
+  await loadTaktik();
   const name = await loadNick();
   const seed = Math.floor(Math.random() * 2 ** 31);
   const bots = PERSONALITIES.map((personality) => ({ name: randomNick(), personality }));

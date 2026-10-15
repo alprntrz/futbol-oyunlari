@@ -69,7 +69,7 @@ export default function HatTrickRandom() {
   useEffect(() => {
     if (!matched) return;
     haptic.success();
-    const id = setTimeout(() => setLocked(true), 1100);
+    const id = setTimeout(() => setLocked(true), 600);
     return () => clearTimeout(id);
   }, [matched]);
 

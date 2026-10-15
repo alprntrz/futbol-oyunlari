@@ -52,9 +52,9 @@ export default function TaktikGame() {
 
   const me: Manager | undefined = lobby?.managers[0];
   const out = !!me && (me.place !== null || !!lobby?.over);
+  // a plain "+XP" toast: the reward screen is a second modal on top of the end card and froze the screen
   useXpAward(out && !match && !!me?.place, `ttk-${lobby?.seed}`, "tt", me?.place ? XP.ttPlace[me.place - 1] : 0, {
-    title: me?.place === 1 ? t("ttkWinner") : t("ttkOver"),
-    stats: me?.place ? [{ label: "#", value: String(me.place), tone: me.place <= 4 ? "green" : "amber" }] : undefined,
+    label: me?.place === 1 ? t("ttkWinner") : t("ttkPlace").replace("{n}", String(me?.place ?? "")),
   });
 
   if (!lobby || !me) {
@@ -448,8 +448,8 @@ export default function TaktikGame() {
       {match && <MatchView lobby={lobby} meId={me.id} onClose={() => setMatch(false)} />}
 
       {/* out of the game */}
-      <Modal visible={out && !match} transparent animationType="fade">
-        <View style={[styles.backdrop, { justifyContent: "center", padding: 24 }]}>
+      {out && !match && (
+        <View style={[StyleSheet.absoluteFill, styles.backdrop, { justifyContent: "center", padding: 24 }]}>
           <Animated.View entering={ZoomIn.duration(260)} style={styles.offer}>
             <Image source={TAKTIK.hero} style={{ width: 120, height: 120, alignSelf: "center" }} />
             <Text style={[T.title, { textAlign: "center" }]}>{me.place === 1 ? t("ttkWinner") : t("ttkOver")}</Text>
@@ -458,12 +458,13 @@ export default function TaktikGame() {
               title={t("ttkNewGame")}
               onPress={() => {
                 quitTaktik();
-                router.back();
+                if (router.canGoBack()) router.back();
+                else router.replace("/taktik");
               }}
             />
           </Animated.View>
         </View>
-      </Modal>
+      )}
     </View>
   );
 }

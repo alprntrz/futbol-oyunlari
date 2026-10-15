@@ -75,7 +75,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   (a 1 s sweep, `matchQueues`). Quiz random rooms are keyed `difficulty:tier` in `qzOpen`.
 - Friends (v1.1, signed-in): `friends` table + `users.friend_code` in server-accounts.js (`/api/account/friends`
   GET/POST {code}/DELETE /:code; added both ways, max 100). Presence = any socket with that `uid`; `fr:invite`
-  {to: friend code, game: "ht", room} → `fr:invited` on the friend's sockets (3 s rate limit). App: `app/arkadaslar.tsx`,
+  {to: friend code, game: "ht", room} → `fr:invited` on the friend's sockets (3 s rate limit); adding someone sends them `fr:added` (`setFriendAdded`). App: `app/arkadaslar.tsx`,
   `components/InviteBanner.tsx` (root layout; keeps a socket open while signed in). Friends see nick, avatar, level, online only.
 - Caps: the app sends `caps` in the socket handshake (lib/socket.ts `CAPS`); "mate" / "coach" = can draw "played with" /
   "managed by" criteria (`MATE_CRITERIA`, `COACH_CRITERIA`, `withLink` in tiki.ts; data `src/data/teammates.ts`,
@@ -97,7 +97,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   (local, AsyncStorage `xp-v1`); amounts in `XP` and the curve in `levelOf`, both in `src/lib/levels.ts`.
   Each award has a unique key so a game never pays twice; unlimited modes pass `practice` (daily cap).
   The "+XP" toast (`XpToast`, root layout) waits while a `Victory` modal is open. The Stats tab is now
-  Profile (`app/(tabs)/istatistik.tsx` + `ProfileCard`): nickname, preset 3D avatar (`lib/avatar.ts`, art in `mobile/assets/brand/avatar/`, 256 px, trimmed and bottom-aligned; ids are stored on accounts, keep them stable), level.
+  Profile (`app/(tabs)/istatistik.tsx` + `ProfileCard`): nickname, preset 3D avatar (`lib/avatar.ts`, art in `mobile/assets/brand/avatar/`, 256 px, trimmed and bottom-aligned; ids are stored on accounts, keep them stable) or an optional profile photo (`lib/photo.ts`, `<Avatar me />`; stays on the phone, never uploaded — the privacy page promises it), level.
 - Reward moments: `Victory.tsx` (ceremony) with art from `docs/design/oyun-hissi-brief.md`
   → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
   Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via

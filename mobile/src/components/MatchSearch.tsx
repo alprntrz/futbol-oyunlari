@@ -64,10 +64,10 @@ export function MatchSearch({ found, onCancel }: { found: { nick: string; tier?:
     return () => clearInterval(id);
   }, [found]);
 
-  const card = (name: string, color: string, avatar: string | null, tier: number | null | undefined) => (
+  const card = (name: string, color: string, avatar: string | null, tier: number | null | undefined, mine = false) => (
     <View style={[styles.card, { backgroundColor: color }]}>
       <View style={styles.avatar}>
-        <Avatar id={avatar} size={46} />
+        <Avatar id={avatar} size={46} me={mine} />
       </View>
       <View style={{ flexShrink: 1, gap: 4 }}>
         <Text style={styles.cardName} numberOfLines={1}>
@@ -100,7 +100,7 @@ export function MatchSearch({ found, onCancel }: { found: { nick: string; tier?:
       </Animated.View>
 
       <View style={[styles.slot, { top: height * 0.58 }]}>
-        <View style={{ transform: [{ skewX: "-8deg" }] }}>{card(me.nick || t("you"), "#2A55C9", me.avatar, me.tier)}</View>
+        <View style={{ transform: [{ skewX: "-8deg" }] }}>{card(me.nick || t("you"), "#2A55C9", me.avatar, me.tier, true)}</View>
       </View>
 
       <View style={[styles.bottom, { bottom: insets.bottom + 24 }]}>

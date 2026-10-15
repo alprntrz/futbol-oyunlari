@@ -15,19 +15,18 @@ import { Avatar } from "./Avatar";
 import { Text } from "./Text";
 import { Tap } from "./ui";
 
-interface Invite {
-  from: { nick: string; avatar: string; code: string } | null;
-  game: "ht";
-  room: string;
-}
+type From = { nick: string; avatar: string; code: string } | null;
+/** a room invite, or "X added you as a friend" (`fr:added`) */
+type Invite = { kind: "invite"; from: From; game: "ht"; room: string } | { kind: "added"; from: From };
 
 /** Banners hide on their own after this. */
 const SHOW_MS = 20_000;
 
 /**
  * A friend's invite (server.js `fr:invite`) drops in from the top while the app
- * is open: Join opens their room. Signed-in players keep a socket open so friends
- * see them online and can reach them. Mounted once in the root layout.
+ * is open: Join opens their room. Being added as a friend (`fr:added`) shows
+ * the same way. Signed-in players keep a socket open so friends see them
+ * online and can reach them. Mounted once in the root layout.
  */
 export function InviteBanner() {
   const { t } = useI18n();
@@ -39,30 +38,37 @@ export function InviteBanner() {
   useEffect(() => {
     if (!account) return;
     const socket = getSocket(); // connecting is what makes us "online" for friends
-    const onInvite = (i: Invite) => {
+    const show = (i: Invite) => {
       haptic.success();
       play("pop");
       setInvite(i);
     };
+    const onInvite = (i: { from: From; game: "ht"; room: string }) => show({ kind: "invite", ...i });
+    const onAdded = ({ from }: { from: From }) => show({ kind: "added", from });
     socket.on("fr:invited", onInvite);
+    socket.on("fr:added", onAdded);
     return () => {
       socket.off("fr:invited", onInvite);
+      socket.off("fr:added", onAdded);
     };
   }, [account]);
 
   useEffect(() => {
     if (!invite) return;
-    const id = setTimeout(() => setInvite(null), SHOW_MS);
+    const id = setTimeout(() => setInvite(null), invite.kind === "added" ? 6000 : SHOW_MS);
     return () => clearTimeout(id);
   }, [invite]);
 
   // already in that room (or the invite is for a signed-out phone): nothing to show
-  if (!invite || !account || pathname.includes(invite.room)) return null;
+  if (!invite || !account) return null;
+  if (invite.kind === "invite" && pathname.includes(invite.room)) return null;
+  const nick = invite.from?.nick || t("opponent");
 
   const join = () => {
     haptic.tap();
     setInvite(null);
-    router.push({ pathname: "/hat-trick/oda/[code]", params: { code: invite.room } });
+    if (invite.kind === "invite") router.push({ pathname: "/hat-trick/oda/[code]", params: { code: invite.room } });
+    else router.push("/arkadaslar");
   };
 
   return (
@@ -71,17 +77,17 @@ export function InviteBanner() {
         <Avatar id={invite.from?.avatar ?? null} size={42} />
         <View style={{ flex: 1 }}>
           <Text style={styles.title} numberOfLines={1}>
-            {t("inviteTitle").replace("{nick}", invite.from?.nick || t("opponent"))}
+            {t(invite.kind === "invite" ? "inviteTitle" : "friendAddedTitle").replace("{nick}", nick)}
           </Text>
           <Text style={T.caption} numberOfLines={1}>
-            {t("inviteBody").replace("{code}", invite.room)}
+            {invite.kind === "invite" ? t("inviteBody").replace("{code}", invite.room) : t("friendAddedBody")}
           </Text>
         </View>
         <Tap onPress={() => setInvite(null)} style={styles.later} accessibilityLabel={t("inviteLater")}>
           <Text style={styles.laterText}>{t("inviteLater")}</Text>
         </Tap>
-        <Tap onPress={join} style={styles.join} accessibilityLabel={t("inviteJoin")}>
-          <Text style={styles.joinText}>{t("inviteJoin")}</Text>
+        <Tap onPress={join} style={styles.join} accessibilityLabel={t(invite.kind === "invite" ? "inviteJoin" : "friendAddedSee")}>
+          <Text style={styles.joinText}>{t(invite.kind === "invite" ? "inviteJoin" : "friendAddedSee")}</Text>
         </Tap>
       </View>
     </Animated.View>
