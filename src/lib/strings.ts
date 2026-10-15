@@ -1231,7 +1231,7 @@ export const dict = {
     homeKindLineup: "Line-up guess",
     homeKindCard: "Bingo card",
     homeKindDuel: "Card duel",
-    playOpponent: "Play someone",
+    playOpponent: "Play online",
     playPickTitle: "What shall we play?",
     playFind: "Find opponent",
     playMakeHand: "Draft your hand first",
