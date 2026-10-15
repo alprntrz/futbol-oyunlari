@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Image, Modal, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, {
+  FadeIn,
   Easing,
   Keyframe,
   useAnimatedStyle,
@@ -99,6 +100,12 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
       setTimeout(() => play("coin"), 450);
     }
   };
+  // no Claim button: once the stat tiles have landed the XP pays itself out (count-up, bar, confetti)
+  useEffect(() => {
+    const id = setTimeout(claim, 900 + stats.length * 160);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const barStyle = useAnimatedStyle(() => ({ width: `${Math.max(3, bar.get() * 100)}%` }));
   const badgeStyle = useAnimatedStyle(() => ({ transform: [{ scale: badge.get() }] }));
 
@@ -157,11 +164,10 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
 
         <View style={{ flex: 1 }} />
         <View style={{ alignSelf: "stretch" }}>
-          {claimed ? (
-            <Button title={t("vcContinue")} onPress={onDone} />
-          ) : (
-            <Animated.View entering={tileIn(stats.length)}>
-              <Button title={t("rwClaim")} kind="gold" icon="star.fill" onPress={claim} />
+          {/* one button: shows up as the XP lands */}
+          {claimed && (
+            <Animated.View entering={FadeIn.delay(700).duration(250)}>
+              <Button title={t("vcContinue")} onPress={onDone} />
             </Animated.View>
           )}
         </View>
