@@ -361,8 +361,13 @@ function settleLeague(user) {
   let tier = past.tier;
   let move = "stay";
   // a group too small to race doesn't move anyone down; moving up needs someone to beat
-  if (n >= 2 && place <= Math.min(LEAGUE_UP, Math.ceil(n / 3)) && tier < LEAGUES.length - 1) (tier++, (move = "up"));
-  else if (n >= LEAGUE_UP + LEAGUE_DOWN && place > n - LEAGUE_DOWN && tier > 0) (tier--, (move = "down"));
+  if (n >= 2 && place <= Math.min(LEAGUE_UP, Math.ceil(n / 3)) && tier < LEAGUES.length - 1) {
+    tier++;
+    move = "up";
+  } else if (n >= LEAGUE_UP + LEAGUE_DOWN && place > n - LEAGUE_DOWN && tier > 0) {
+    tier--;
+    move = "down";
+  }
   user.league_tier = tier;
   user.league_last = `${move}:${tier}:${place}:${past.week}`;
   db.prepare("UPDATE users SET league_tier = ?, league_last = ? WHERE id = ?").run(tier, user.league_last, user.id);
