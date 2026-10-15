@@ -68,7 +68,8 @@ PLAYERS.forEach((p, i) => {
   const e = id ? wd[id] : null;
   const b = e?.birth && e.birth > "1900" ? days(e.birth) : 0;
   born += b > 0 && b < 36 ** 3 ? b.toString(36).padStart(3, "0") : "000";
-  if (b > 0 && e.death && e.death > e.birth) died[i] = days(e.death);
+  const d = e?.death && e.death > e.birth ? days(e.death) : NaN;
+  if (b > 0 && Number.isFinite(d)) died[i] = d;
   if (!e || i >= DUEL_POOL) return;
   if (seenQ.has(e.q)) return;
   const n = numbers(e);
