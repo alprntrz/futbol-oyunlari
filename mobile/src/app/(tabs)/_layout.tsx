@@ -12,13 +12,13 @@ export default function TabsLayout() {
   const { t } = useI18n();
   return (
     <NativeTabs tintColor={C.greenMid}>
-      <NativeTabs.Trigger name="oyunlar">
-        <NativeTabs.Trigger.Label>{t("tabGames")}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon src={BRAND.tab.games} renderingMode="original" />
-      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="lig">
         <NativeTabs.Trigger.Label>{t("tabLeague")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={BRAND.tab.league} renderingMode="original" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="oyunlar">
+        <NativeTabs.Trigger.Label>{t("tabGames")}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon src={BRAND.tab.games} renderingMode="original" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{t("tabPlay")}</NativeTabs.Trigger.Label>
