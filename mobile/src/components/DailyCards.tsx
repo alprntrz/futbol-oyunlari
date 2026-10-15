@@ -9,7 +9,6 @@ import { useI18n } from "~/lib/i18n";
 import { ALL_DONE_BONUS, useQuests } from "~/lib/quests";
 import { C, F, T } from "~/lib/theme";
 
-import { SmoothBar } from "./motion";
 import { Text } from "./Text";
 import { Card, Icon, Tap } from "./ui";
 
@@ -85,7 +84,11 @@ export function hoursLeft() {
   return Math.max(1, Math.ceil((midnight.getTime() - now.getTime()) / 3600000));
 }
 
-/** Today's three quests with their bars; a finished one turns green with a tick. */
+/**
+ * Today's three quests, Duolingo style: the task, a thick bar with the count
+ * inside it, and a chest on the right that opens when it's done. Finishing all
+ * three opens the big chest (ALL_DONE_BONUS).
+ */
 export function QuestsCard() {
   const { t } = useI18n();
   const quests = useQuests();
@@ -99,38 +102,40 @@ export function QuestsCard() {
   return (
     <Card style={styles.card}>
       <View style={styles.headRow}>
-        <Text style={T.headline}>{t("questsTitle")}</Text>
-        <Text style={T.caption}>{t("questsResets").replace("{h}", String(hours))}</Text>
+        <Text style={styles.qTitle}>{t("questsTitle")}</Text>
+        <View style={styles.clock}>
+          <Icon name="clock" size={13} color={C.text2} fallback="⏱" />
+          <Text style={styles.clockText}>{t("lgHours").replace("{n}", String(hours))}</Text>
+        </View>
       </View>
       {quests.map((q) => {
         const done = q.progress >= q.target;
+        const frac = Math.min(1, q.progress / q.target);
         return (
           <View key={q.id} style={styles.quest}>
-            <View style={[styles.questIcon, done && { backgroundColor: C.green }]}>
-              {done ? <Icon name="checkmark" size={14} color="white" fallback="✓" /> : <Icon name="target" size={15} color={C.greenDark} fallback="◎" />}
+            <View style={{ flex: 1, gap: 7 }}>
+              <Text style={[styles.questText, done && { color: C.text2 }]} numberOfLines={2}>
+                {t(q.text as Parameters<typeof t>[0]).replace("{n}", String(q.target))}
+              </Text>
+              <View style={styles.bar}>
+                <View style={[styles.barFill, { width: `${Math.max(frac * 100, frac > 0 ? 8 : 0)}%` }, done && { backgroundColor: C.green }]} />
+                <Text style={styles.barText}>
+                  {Math.min(q.progress, q.target)} / {q.target}
+                </Text>
+              </View>
             </View>
-            <View style={{ flex: 1, gap: 5 }}>
-              <View style={styles.questTop}>
-                <Text style={[styles.questText, done && { color: C.text3, textDecorationLine: "line-through" }]} numberOfLines={1}>
-                  {t(q.text as Parameters<typeof t>[0]).replace("{n}", String(q.target))}
-                </Text>
-                <Text style={styles.questReward}>+{q.reward}</Text>
-              </View>
-              <View style={styles.questBarRow}>
-                <View style={{ flex: 1 }}>
-                  <SmoothBar fraction={q.progress / q.target} color={done ? C.green : C.amber} height={8} />
-                </View>
-                <Text style={styles.questCount}>
-                  {q.progress}/{q.target}
-                </Text>
-              </View>
+            <View style={styles.chestCol}>
+              <Image source={done ? REWARD.chestOpen : REWARD.chest} style={[styles.chest, !done && { opacity: 0.95 }]} />
+              <Text style={[styles.questReward, done && { color: C.greenDark }]}>{done ? "✓" : `+${q.reward}`}</Text>
             </View>
           </View>
         );
       })}
-      <Text style={[T.caption, { marginTop: 10, textAlign: "center" }, allDone && { color: C.greenDark, fontWeight: "700" }]}>
-        {allDone ? t("questAllDone") : t("questsAllBonus").replace("{n}", String(ALL_DONE_BONUS))}
-      </Text>
+      {/* all three: the big chest */}
+      <View style={[styles.bonus, allDone && { backgroundColor: C.greenSoft }]}>
+        <Image source={allDone ? REWARD.chestOpen : REWARD.chest} style={styles.bonusChest} />
+        <Text style={[styles.bonusText, allDone && { color: C.greenDark }]}>{allDone ? t("questAllDone") : t("questsAllBonus").replace("{n}", String(ALL_DONE_BONUS))}</Text>
+      </View>
     </Card>
   );
 }
@@ -147,11 +152,22 @@ const styles = StyleSheet.create({
   dayBig: { backgroundColor: "#FEF3C7" },
   dayXp: { fontFamily: F.display, fontSize: 14, color: C.text2 },
   dayLabel: { fontSize: 11, fontWeight: "600", color: C.text3 },
-  quest: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 12 },
+  quest: { flexDirection: "row", alignItems: "center", gap: 14, marginTop: 16 },
+  qTitle: { fontFamily: F.display, fontSize: 22, color: C.text },
+  clock: { flexDirection: "row", alignItems: "center", gap: 5 },
+  clockText: { fontWeight: "700", fontSize: 13, color: C.text2 },
+  bar: { height: 20, borderRadius: 10, backgroundColor: "#E3E8E4", overflow: "hidden", justifyContent: "center" },
+  barFill: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 10, backgroundColor: "#FACC15" },
+  barText: { textAlign: "center", fontFamily: F.display, fontSize: 13, color: C.text },
+  chestCol: { alignItems: "center", width: 56 },
+  chest: { width: 52, height: 52, resizeMode: "contain" },
+  bonus: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 16, backgroundColor: "#FEF3C7", borderRadius: 14, padding: 10 },
+  bonusChest: { width: 40, height: 40, resizeMode: "contain" },
+  bonusText: { flex: 1, fontFamily: F.display, fontSize: 15, color: "#92400E" },
   questIcon: { width: 30, height: 30, borderRadius: 15, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
   questTop: { flexDirection: "row", justifyContent: "space-between", gap: 8 },
-  questText: { flex: 1, fontSize: 15, fontWeight: "600", color: C.text },
-  questReward: { fontFamily: F.display, fontSize: 14, color: C.amber },
+  questText: { fontFamily: F.display, fontSize: 18, color: C.text },
+  questReward: { fontFamily: F.display, fontSize: 13, color: "#B45309", marginTop: -2 },
   questBarRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   questCount: { fontFamily: F.display, fontSize: 13, color: C.text2, minWidth: 34, textAlign: "right" },
 });
