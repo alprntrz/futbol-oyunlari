@@ -8,6 +8,7 @@ import { dayNumber } from "@/lib/daily";
 import { DailyRewardCard } from "~/components/DailyCards";
 import { ProfileCard } from "~/components/ProfileCard";
 import { RecentMatches } from "~/components/RecentMatches";
+import { Badges } from "~/components/Badges";
 import { Text } from "~/components/Text";
 import { useCountUp } from "~/components/motion";
 import { Card, Icon, Page, SectionLabel } from "~/components/ui";
@@ -60,6 +61,7 @@ export default function StatsTab() {
 
       <ProfileCard />
       <DailyRewardCard />
+      <Badges />
       <RecentMatches />
 
       <SectionLabel>{t("dailyXiStats")}</SectionLabel>

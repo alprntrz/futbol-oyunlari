@@ -1,16 +1,37 @@
 import { Image, StyleSheet, View } from "react-native";
 
 import { avatarById } from "~/lib/avatar";
+import { useMyFrame, type FrameId } from "~/lib/cosmetics";
 import { useMyPhoto } from "~/lib/photo";
+
+import { FrameRing } from "./FrameRing";
 
 /**
  * Round avatar: the preset character on its tinted circle. `me`: this phone's
  * own avatar, shown as the profile photo when the player picked one
- * (`photo`: a draft photo to preview instead).
+ * (`photo`: a draft photo to preview instead) inside the frame its rank opened
+ * (`frame` draws a given one instead, e.g. in the picker).
  */
-export function Avatar({ me, photo, ...props }: AvatarProps & { me?: boolean; photo?: string | null }) {
-  if (photo) return <PhotoAvatar uri={photo} size={props.size} ring={props.ring} />;
-  return me ? <MyAvatar {...props} /> : <PresetAvatar {...props} />;
+export function Avatar({ me, photo, frame, ...props }: AvatarProps & { me?: boolean; photo?: string | null; frame?: FrameId }) {
+  const inner = photo ? <PhotoAvatar uri={photo} size={props.size} ring={props.ring} /> : me ? <MyAvatar {...props} /> : <PresetAvatar {...props} />;
+  if (me && !frame) return <MyFramed size={props.size ?? 56}>{inner}</MyFramed>;
+  if (!frame) return inner;
+  return (
+    <View>
+      {inner}
+      <FrameRing id={frame} size={props.size ?? 56} />
+    </View>
+  );
+}
+
+function MyFramed({ size, children }: { size: number; children: React.ReactNode }) {
+  const frame = useMyFrame();
+  return (
+    <View>
+      {children}
+      <FrameRing id={frame} size={size} />
+    </View>
+  );
 }
 
 interface AvatarProps {

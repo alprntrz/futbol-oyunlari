@@ -116,6 +116,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Quick emotes (`components/Emotes.tsx`): a fixed emoji set, no free text, relayed by server.js `em:send` → `em:recv` to the other
   player of the ht / pp / dz room (1.5 s rate limit); the house player answers sometimes. Recent matches on Profile
   (`lib/history.ts`, local only, last 30; `useRecordMatch` in the Tic-Tac-Toe, Possession and Card Duel screens).
+- Cosmetics (`lib/cosmetics.ts`, local only, earned never bought): avatar frames per rank (`FRAMES`, drawn by `FrameRing`
+  with react-native-svg; `<Avatar me />` wears the chosen / best one, picker in Edit profile) and 12 badges (`loadBadges`,
+  `components/Badges.tsx`; progress from XP, play streak, trophies and `history.ts` totals). Badge art brief:
+  `docs/design/rozet-brief.md` → `python3 scripts/badge-assets.py <dir>` → `mobile/assets/brand/rozet/`.
 - Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.

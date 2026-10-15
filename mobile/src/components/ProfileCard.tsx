@@ -6,6 +6,7 @@ import { rankOf, RANKS } from "@/lib/levels";
 
 import { syncProfile, useAccount } from "~/lib/account";
 import { AVATARS, loadAvatar, saveAvatar, type AvatarId } from "~/lib/avatar";
+import { FRAMES, frameFor, frameUnlocked, saveFrame, useChosenFrame, type FrameId } from "~/lib/cosmetics";
 import { pickPhoto, savePhoto, useMyPhoto } from "~/lib/photo";
 import { BRAND, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
@@ -45,6 +46,7 @@ export function ProfileCard() {
   const [editing, setEditing] = useState(false);
   const account = useAccount();
   const myPhoto = useMyPhoto();
+  const chosenFrame = useChosenFrame();
 
   const refresh = useCallback(() => {
     loadNick().then(setNick);
@@ -146,8 +148,11 @@ export function ProfileCard() {
         nick={nick}
         avatar={avatar}
         photo={myPhoto}
+        level={level}
+        frame={chosenFrame}
         onClose={() => setEditing(false)}
-        onSave={async (n, a, photo) => {
+        onSave={async (n, a, photo, frame) => {
+          saveFrame(frame);
           const savedNick = await saveNick(n);
           setNick(savedNick);
           setAvatar(await saveAvatar(a));
@@ -166,6 +171,8 @@ function EditProfile({
   nick,
   avatar,
   photo,
+  level,
+  frame,
   onClose,
   onSave,
 }: {
@@ -173,13 +180,16 @@ function EditProfile({
   nick: string;
   avatar: AvatarId | null;
   photo: string | null;
+  level: number;
+  frame: FrameId | null;
   onClose: () => void;
-  onSave: (nick: string, avatar: AvatarId, photo: string | null) => void;
+  onSave: (nick: string, avatar: AvatarId, photo: string | null, frame: FrameId | null) => void;
 }) {
   const { t } = useI18n();
   const [draftNick, setDraftNick] = useState(nick);
   const [draftAvatar, setDraftAvatar] = useState<AvatarId>(avatar ?? AVATARS[0].id);
   const [draftPhoto, setDraftPhoto] = useState(photo);
+  const [draftFrame, setDraftFrame] = useState<FrameId | null>(frame);
 
   const choosePhoto = async () => {
     haptic.tap();
@@ -195,6 +205,7 @@ function EditProfile({
       setDraftNick(nick);
       setDraftAvatar(avatar ?? AVATARS[0].id);
       setDraftPhoto(photo);
+      setDraftFrame(frame);
     }
   }
 
@@ -209,7 +220,7 @@ function EditProfile({
         </View>
 
         <View style={{ alignItems: "center", marginVertical: 12 }}>
-          <Avatar id={draftAvatar} nick={draftNick || "?"} size={96} photo={draftPhoto} />
+          <Avatar id={draftAvatar} nick={draftNick || "?"} size={96} photo={draftPhoto} frame={frameFor(level, draftFrame)} />
           <View style={styles.photoRow}>
             <Tap onPress={choosePhoto} style={styles.photoBtn} accessibilityRole="button" accessibilityLabel={t("photoPick")}>
               <Icon name="photo" size={15} color={C.greenDark} fallback="🖼" />
@@ -251,7 +262,38 @@ function EditProfile({
           ))}
         </View>
 
-        <Button title={t("save")} icon="checkmark" onPress={() => onSave(draftNick, draftAvatar, draftPhoto)} style={{ marginTop: 24 }} />
+        <SectionLabel>{t("frameLabel")}</SectionLabel>
+        <View style={styles.grid}>
+          {FRAMES.map((f) => {
+            const open = frameUnlocked(f.id, level);
+            const on = frameFor(level, draftFrame) === f.id;
+            return (
+              <Tap
+                key={f.id}
+                disabled={!open}
+                onPress={() => (haptic.tap(), setDraftFrame(f.id))}
+                accessibilityRole="button"
+                accessibilityState={{ selected: on, disabled: !open }}
+                accessibilityLabel={t(`frame_${f.id}`)}
+                style={[styles.gridCell, { gap: 4 }]}
+              >
+                <View style={!open && { opacity: 0.55 }}>
+                  <Avatar id={draftAvatar} size={60} photo={draftPhoto} frame={f.id} ring={on ? C.greenMid : undefined} />
+                </View>
+                {!open && (
+                  <View style={styles.lock}>
+                    <Icon name="lock.fill" size={14} color={C.text2} fallback="🔒" />
+                  </View>
+                )}
+                <Text style={[T.caption, { textAlign: "center" }, on && { color: C.greenDark, fontWeight: "800" }]} numberOfLines={1}>
+                  {open ? t(`frame_${f.id}`) : t(`rank_${RANKS[f.rank].id}`)}
+                </Text>
+              </Tap>
+            );
+          })}
+        </View>
+
+        <Button title={t("save")} icon="checkmark" onPress={() => onSave(draftNick, draftAvatar, draftPhoto, draftFrame)} style={{ marginTop: 24 }} />
       </ScrollView>
     </Modal>
   );
@@ -278,6 +320,7 @@ const styles = StyleSheet.create({
   input: { backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, paddingVertical: 13, fontSize: 17, color: C.text },
   grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 12 },
   gridCell: { width: "25%", alignItems: "center" },
+  lock: { position: "absolute", top: 20, alignSelf: "center" },
   photoRow: { flexDirection: "row", gap: 8, marginTop: 12 },
   photoBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8 },
   photoText: { fontWeight: "700", fontSize: 14, color: C.greenDark },
