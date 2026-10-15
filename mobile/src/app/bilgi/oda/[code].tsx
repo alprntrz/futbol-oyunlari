@@ -9,6 +9,7 @@ import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg"
 import { quizQuestions, type QuizCategory, type QuizDifficulty } from "@/lib/quiz";
 import { XP } from "@/lib/levels";
 
+import { Avatar as PlayerAvatar } from "~/components/Avatar";
 import { ComboBurst, ComboChip } from "~/components/Combo";
 import { GrassPattern } from "~/components/GrassPattern";
 import { Victory } from "~/components/Victory";
@@ -63,7 +64,9 @@ function avatarColor(name: string) {
   return `hsl(${h % 360}, 50%, 45%)`;
 }
 
-function Avatar({ name, size = 30, ring = "white" }: { name: string; size?: number; ring?: string }) {
+/** A player in the room: your own avatar (photo / preset) for you, a coloured initial for the others. */
+function Avatar({ name, size = 30, ring = "white", me }: { name: string; size?: number; ring?: string; me?: boolean }) {
+  if (me) return <PlayerAvatar id={null} me size={size} ring={ring} />;
   return (
     <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, backgroundColor: avatarColor(name), borderColor: ring }]}>
       <Text allowFontScaling={false} style={[styles.avatarText, { fontSize: size * 0.42 }]}>
@@ -236,7 +239,8 @@ export default function QuizRoom() {
   const standings = room ? [...room.players].sort((a, b) => b.score - a.score) : [];
   const maxScore = (room?.total ?? 10) * 10;
   const runners: Runner[] | undefined =
-    room && room.phase !== "done"
+    // the race along the stand starts with the questions (in the lobby everyone would sit on the edge)
+    room && (room.phase === "question" || room.phase === "reveal")
       ? room.players.map((p) => ({
           id: p.id,
           name: p.nick || "?",
@@ -296,7 +300,7 @@ export default function QuizRoom() {
             const p = room.players[i];
             return p ? (
               <Animated.View key={p.id} entering={ZoomIn.duration(220)} style={styles.seat}>
-                <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} />
+                <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} me={p.id === myId} />
                 <Text style={styles.seatName} numberOfLines={1}>
                   {nameOf(p)}
                 </Text>
@@ -332,7 +336,7 @@ export default function QuizRoom() {
         <View style={[styles.seats, { marginTop: 18 }]}>
           {room.players.map((p, i) => (
             <Animated.View key={p.id} entering={ZoomIn.delay(150 + i * 90).duration(220)} style={styles.seat}>
-              <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} />
+              <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} me={p.id === myId} />
               <Text style={styles.seatName} numberOfLines={1}>
                 {nameOf(p)}
               </Text>
@@ -356,7 +360,7 @@ export default function QuizRoom() {
                 <View key={p.id} style={[styles.podiumSpot, { marginTop: k === 1 ? 0 : 26 }]}>
                   <Text style={styles.podiumRank}>{k === 1 ? 1 : k === 0 ? 2 : 3}.</Text>
                   {/* gold ring for you: the accent green would vanish on the green podium */}
-                  <Avatar name={p.nick || "?"} size={k === 1 ? 64 : 52} ring={p.id === myId ? "#FACC15" : "white"} />
+                  <Avatar name={p.nick || "?"} size={k === 1 ? 64 : 52} ring={p.id === myId ? "#FACC15" : "white"} me={p.id === myId} />
                   <Text style={styles.podiumName} numberOfLines={1}>
                     {nameOf(p)}
                   </Text>
@@ -466,7 +470,7 @@ export default function QuizRoom() {
                 </Tap>
                 {mine === i && me && (
                   <Animated.View entering={ZoomIn.duration(180)} style={styles.myPick}>
-                    <Avatar name={me.nick || "?"} size={30} ring={NIGHT.accent} />
+                    <Avatar name={me.nick || "?"} size={30} ring={NIGHT.accent} me />
                   </Animated.View>
                 )}
                 <View style={styles.theirPicks}>

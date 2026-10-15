@@ -8,6 +8,7 @@ import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect,
 
 import { C, F } from "~/lib/theme";
 
+import { Avatar } from "./Avatar";
 import { Text } from "./Text";
 
 /**
@@ -280,7 +281,7 @@ const DOT = 30;
 /** Keep the faces clear of the screen edges. */
 const along = (p: number) => {
   "worklet";
-  return 0.05 + p * 0.88;
+  return 0.1 + p * 0.84;
 };
 
 function RunnerDot({ runner, scale, offX, offY, stack, covered }: { runner: Runner; scale: number; offX: number; offY: number; stack: number; covered: boolean }) {
@@ -297,11 +298,16 @@ function RunnerDot({ runner, scale, offX, offY, stack, covered }: { runner: Runn
 
   return (
     <Animated.View style={[styles.runner, style, runner.me && { zIndex: 5 }]}>
-      <View style={[styles.dot, { backgroundColor: runner.color }, runner.me && styles.dotMe]}>
-        <Text allowFontScaling={false} style={styles.dotText}>
-          {(runner.name.trim()[0] ?? "?").toUpperCase()}
-        </Text>
-      </View>
+      {runner.me ? (
+        // you race as your own avatar (photo / preset)
+        <Avatar id={null} me size={DOT} ring={NIGHT.accent} />
+      ) : (
+        <View style={[styles.dot, { backgroundColor: runner.color }]}>
+          <Text allowFontScaling={false} style={styles.dotText}>
+            {(runner.name.trim()[0] ?? "?").toUpperCase()}
+          </Text>
+        </View>
+      )}
       {runner.label && !covered ? (
         <Text allowFontScaling={false} style={styles.label}>
           {runner.label}
@@ -315,7 +321,6 @@ const styles = StyleSheet.create({
   wrap: { position: "absolute", top: 0, left: 0, right: 0, overflow: "hidden" },
   runner: { position: "absolute", left: 0, top: 0, width: DOT, alignItems: "center" },
   dot: { width: DOT, height: DOT, borderRadius: DOT / 2, borderWidth: 2, borderColor: "white", alignItems: "center", justifyContent: "center" },
-  dotMe: { borderColor: NIGHT.accent, borderWidth: 3 },
   dotText: { color: "white", fontWeight: "800", fontSize: 13 },
   label: { marginTop: 1, fontFamily: F.display, fontSize: 13, color: NIGHT.label, textShadowColor: NIGHT.light ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.6)", textShadowRadius: 3 },
 });
