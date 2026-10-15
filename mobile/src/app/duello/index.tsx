@@ -1,83 +1,77 @@
-import { router, Stack } from "expo-router";
+import { router } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { cardById } from "@/lib/duel";
 
 import { DuelCardView } from "~/components/duel/DuelCardView";
+import { GameHub, HubSetting } from "~/components/GameHub";
 import { Text } from "~/components/Text";
-import { Button, Card, Icon, Page, SectionLabel } from "~/components/ui";
+import { ROZET } from "~/lib/brand";
 import { useDuel } from "~/lib/duel";
-import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
 
-/** Card Duel home: today's theme, my hand, and the ways to play. */
+/**
+ * Card Duel: without a hand the one button drafts it; with one it finds an
+ * opponent. Today's duel and practice below; the hand is a row you can change.
+ */
 export default function DuelHome() {
   const { t } = useI18n();
   const { hand, theme, ready, daily } = useDuel();
-  const go = (href: Parameters<typeof router.push>[0]) => {
-    haptic.tap();
-    router.push(href);
-  };
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: t("dzName") }} />
-      <Text style={T.title}>{t("dzName")}</Text>
-      <Text style={[T.body, { marginTop: 6 }]}>{t("dzIntro")}</Text>
-
-      <Card style={styles.theme}>
-        <Icon name="flag.checkered" size={20} color={C.greenDark} fallback="🏁" />
-        <View style={{ flex: 1 }}>
-          <Text style={T.caption}>{t("dzTheme")}</Text>
-          <Text style={styles.themeText}>{t(`dzTheme_${theme.id}`)}</Text>
+    <GameHub
+      title={t("dzName")}
+      image={ROZET.duel}
+      bg="#FFE4E6"
+      tagline={t("dzShort")}
+      status={`${t("dzTheme")}: ${t(`dzTheme_${theme.id}`)}`}
+      primary={
+        ready
+          ? { label: t("playFind"), icon: "play.fill", fallback: "▶", onPress: () => router.push("/duello/rastgele") }
+          : { label: t("dzDraft"), icon: "square.stack.fill", fallback: "▤", onPress: () => router.push("/duello/draft") }
+      }
+      secondary={
+        ready
+          ? [
+              {
+                label: daily ? `${daily.mine}–${daily.theirs}` : t("dzDaily"),
+                hint: daily ? t("dzDaily") : undefined,
+                icon: "calendar",
+                fallback: "📅",
+                onPress: () => !daily && router.push({ pathname: "/duello/mac", params: { mode: "daily" } }),
+              },
+              { label: t("dzPractice"), icon: "figure.run", fallback: "🏃", onPress: () => router.push({ pathname: "/duello/mac", params: { mode: "practice" } }) },
+            ]
+          : []
+      }
+      settings={ready ? <HubSetting label={t("dzHand")} value={t("dzRedraft")} onPress={() => router.push("/duello/draft")} /> : undefined}
+      rules={
+        <View style={{ gap: 10 }}>
+          {(["dzRule1", "dzRule2", "dzRule3", "dzRule4"] as const).map((k, i) => (
+            <View key={k} style={styles.rule}>
+              <View style={styles.ruleNum}>
+                <Text style={styles.ruleNumText}>{i + 1}</Text>
+              </View>
+              <Text style={[T.body, { flex: 1 }]}>{t(k)}</Text>
+            </View>
+          ))}
+          <Text style={T.caption}>{t("dzDataNote")}</Text>
         </View>
-      </Card>
-
-      <SectionLabel>{t("dzHand")}</SectionLabel>
-      {ready ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 6 }}>
+      }
+    >
+      {ready && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 14 }}>
           {hand.map((id) => (
-            <DuelCardView key={id} card={cardById(id) ?? null} width={78} />
+            <DuelCardView key={id} card={cardById(id) ?? null} width={70} />
           ))}
         </ScrollView>
-      ) : (
-        <Text style={T.body}>{t("dzNoHand")}</Text>
       )}
-      <Button title={t(ready ? "dzRedraft" : "dzDraft")} icon="square.stack.fill" kind={ready ? "secondary" : "primary"} onPress={() => go("/duello/draft")} style={{ marginTop: 10 }} />
-
-      {ready && (
-        <View style={{ gap: 10, marginTop: 18 }}>
-          <Button title={t("dzPlayRandom")} icon="person.2.fill" onPress={() => go("/duello/rastgele")} />
-          <Button
-            title={daily ? t("dzDailyDone").replace("{a}", String(daily.mine)).replace("{b}", String(daily.theirs)) : t("dzDaily")}
-            icon="calendar"
-            kind="gold"
-            disabled={!!daily}
-            onPress={() => go({ pathname: "/duello/mac", params: { mode: "daily" } })}
-          />
-          <Button title={t("dzPractice")} icon="figure.run" kind="secondary" onPress={() => go({ pathname: "/duello/mac", params: { mode: "practice" } })} />
-        </View>
-      )}
-
-      <Card style={{ marginTop: 22, gap: 10 }}>
-        {(["dzRule1", "dzRule2", "dzRule3", "dzRule4"] as const).map((k, i) => (
-          <View key={k} style={styles.rule}>
-            <View style={styles.ruleNum}>
-              <Text style={styles.ruleNumText}>{i + 1}</Text>
-            </View>
-            <Text style={[T.body, { flex: 1 }]}>{t(k)}</Text>
-          </View>
-        ))}
-      </Card>
-      <Text style={[T.caption, { marginTop: 10 }]}>{t("dzDataNote")}</Text>
-    </Page>
+    </GameHub>
   );
 }
 
 const styles = StyleSheet.create({
-  theme: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 16 },
-  themeText: { fontFamily: F.display, fontSize: 20, color: C.text },
   rule: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
   ruleNum: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
   ruleNumText: { fontFamily: F.display, fontSize: 14, color: C.greenDark },

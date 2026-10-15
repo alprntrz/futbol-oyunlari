@@ -1,8 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, type Href } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import { Image, ScrollView, StyleSheet, useWindowDimensions, View, type ImageSourcePropType } from "react-native";
-import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
+import { Image, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "~/components/Text";
@@ -18,21 +17,18 @@ const KEY = "quick-game";
 type Id = "ht" | "dz" | "qz" | "pp";
 
 /**
- * Home's Play: one game per full page, swipe left/right, one big button at the
- * bottom that finds an opponent in the game on screen. Opens on the last game
- * played. Nothing else to decide.
+ * Home's "Play someone": every versus game on one screen as a big card. Tap a
+ * card and the opponent search starts in that game. Nothing hidden, nothing
+ * else to decide (Card Duel without a hand goes to drafting it first).
  */
 export default function PlayPicker() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
   const [level] = useQuizDifficulty();
   const duel = useDuel();
-  const scroller = useRef<ScrollView>(null);
-  const [page, setPage] = useState(0);
 
-  const games: { id: Id; name: string; desc: string; who: string; image: ImageSourcePropType; bg: string; href: Href }[] = [
-    { id: "ht", name: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, bg: "#DBEAFE", href: "/hat-trick/rastgele" },
+  const games: { id: Id; name: string; desc: string; who: string; image: ImageSourcePropType; bg: string; ink: string; href: Href; note?: string }[] = [
+    { id: "ht", name: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, bg: "#DBEAFE", ink: "#1E3A8A", href: "/hat-trick/rastgele" },
     {
       id: "dz",
       name: t("dzName"),
@@ -40,96 +36,51 @@ export default function PlayPicker() {
       who: t("play1v1"),
       image: ROZET.duel,
       bg: "#FFE4E6",
+      ink: "#9F1239",
       href: duel.ready ? "/duello/rastgele" : "/duello/draft",
+      note: duel.ready ? undefined : t("playMakeHand"),
     },
-    { id: "qz", name: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, bg: "#EDE9FE", href: { pathname: "/bilgi/rastgele", params: { zorluk: level } } },
-    { id: "pp", name: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, bg: "#DCFCE7", href: "/possession/rastgele" },
+    { id: "qz", name: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, bg: "#EDE9FE", ink: "#5B21B6", href: { pathname: "/bilgi/rastgele", params: { zorluk: level } } },
+    { id: "pp", name: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, bg: "#DCFCE7", ink: "#14532D", href: "/possession/rastgele" },
   ];
 
-  // open on the last game played
-  useEffect(() => {
-    AsyncStorage.getItem(KEY)
-      .then((v) => {
-        const i = games.findIndex((g) => g.id === v);
-        if (i > 0) {
-          setPage(i);
-          setTimeout(() => scroller.current?.scrollTo({ x: i * width, animated: false }), 0);
-        }
-      })
-      .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const current = games[page];
-  const needsHand = current.id === "dz" && !duel.ready;
-  const go = (i: number) => {
-    haptic.tap();
-    scroller.current?.scrollTo({ x: i * width, animated: true });
-  };
-  const play = () => {
+  const pick = (g: (typeof games)[number]) => {
     haptic.press();
-    AsyncStorage.setItem(KEY, current.id).catch(() => {});
-    router.replace(current.href);
+    AsyncStorage.setItem(KEY, g.id).catch(() => {});
+    router.replace(g.href);
   };
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 12 }]}>
+    <View style={[styles.screen, { paddingTop: insets.top + 8 }]}>
       <View style={styles.top}>
         <Text style={styles.title}>{t("playPickTitle")}</Text>
         <Tap onPress={() => router.back()} style={styles.close} accessibilityLabel={t("close")}>
           <Icon name="xmark" size={18} color={C.text} fallback="✕" />
         </Tap>
       </View>
+      <Text style={styles.sub}>{t("playTapToStart")}</Text>
 
-      <ScrollView
-        ref={scroller}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(e) => {
-          const i = Math.round(e.nativeEvent.contentOffset.x / width);
-          if (i !== page) haptic.tap();
-          setPage(i);
-        }}
-        style={{ flex: 1 }}
-      >
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16, gap: 12 }}>
         {games.map((g, i) => (
-          <View key={g.id} style={[styles.page, { width }]}>
-            <View style={[styles.art, { backgroundColor: g.bg }]}>
-              {i === page ? (
-                <Animated.Image key={`a${page}`} entering={ZoomIn.springify().damping(12)} source={g.image} style={styles.artImage} />
-              ) : (
-                <Image source={g.image} style={styles.artImage} />
-              )}
-            </View>
-            <Text style={styles.name}>{g.name}</Text>
-            <Text style={styles.desc}>{g.desc}</Text>
-            <View style={styles.who}>
-              <Icon name="person.2.fill" size={14} color={C.greenDark} fallback="👥" />
-              <Text style={styles.whoText}>{g.who}</Text>
-            </View>
-          </View>
+          <Animated.View key={g.id} entering={FadeInDown.delay(i * 60).duration(220)}>
+            <Tap onPress={() => pick(g)} style={[styles.card, { backgroundColor: g.bg }]} accessibilityLabel={`${g.name}. ${g.desc}`}>
+              <Image source={g.image} style={styles.art} />
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={[styles.name, { color: g.ink }]} numberOfLines={1} adjustsFontSizeToFit>
+                  {g.name}
+                </Text>
+                <Text style={styles.desc} numberOfLines={2}>
+                  {g.desc}
+                </Text>
+                <Text style={[styles.who, { color: g.ink }]}>{g.note ?? g.who}</Text>
+              </View>
+              <View style={[styles.go, { backgroundColor: g.ink }]}>
+                <Icon name="play.fill" size={16} color="white" fallback="▶" />
+              </View>
+            </Tap>
+          </Animated.View>
         ))}
       </ScrollView>
-
-      {/* where you are: tap a dot to jump */}
-      <View style={styles.dots}>
-        {games.map((g, i) => (
-          <Tap key={g.id} onPress={() => go(i)} accessibilityLabel={g.name} style={{ padding: 6 }}>
-            <View style={[styles.dot, i === page && styles.dotOn]} />
-          </Tap>
-        ))}
-      </View>
-      <Text style={styles.swipe}>{t("playSwipe")}</Text>
-
-      <Animated.View key={current.id} entering={FadeIn.duration(150)} style={{ paddingHorizontal: 20 }}>
-        <Tap onPress={play} style={styles.button} accessibilityLabel={needsHand ? t("playMakeHand") : `${t("playFind")}: ${current.name}`}>
-          <Icon name={needsHand ? "square.stack.fill" : "play.fill"} size={18} color="#3B2A05" fallback="▶" />
-          <Text style={styles.buttonText} numberOfLines={1} adjustsFontSizeToFit>
-            {needsHand ? t("playMakeHand") : t("playFind")}
-          </Text>
-        </Tap>
-      </Animated.View>
     </View>
   );
 }
@@ -137,19 +88,13 @@ export default function PlayPicker() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.bg },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20 },
-  title: { fontFamily: F.display, fontSize: 28, color: C.text },
+  title: { fontFamily: F.display, fontSize: 30, color: C.text },
+  sub: { fontSize: 15, color: C.text2, paddingHorizontal: 20, marginTop: 2 },
   close: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#E3E8E4", alignItems: "center", justifyContent: "center" },
-  page: { alignItems: "center", justifyContent: "center", paddingHorizontal: 28, gap: 10 },
-  art: { width: 240, height: 240, borderRadius: 60, alignItems: "center", justifyContent: "center", marginBottom: 12 },
-  artImage: { width: 180, height: 180, resizeMode: "contain" },
-  name: { fontFamily: F.black, fontSize: 40, lineHeight: 42, color: C.text, textAlign: "center" },
-  desc: { fontSize: 18, lineHeight: 24, color: C.text2, textAlign: "center", maxWidth: 320 },
-  who: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6, marginTop: 4 },
-  whoText: { fontWeight: "700", fontSize: 14, color: C.greenDark },
-  dots: { flexDirection: "row", justifyContent: "center", gap: 4 },
-  dot: { width: 9, height: 9, borderRadius: 5, backgroundColor: "#CBD5C8" },
-  dotOn: { width: 26, backgroundColor: C.green },
-  swipe: { textAlign: "center", fontSize: 13, color: C.text3, marginTop: 2, marginBottom: 12 },
-  button: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, height: 64, borderRadius: 20, backgroundColor: "#FACC15", borderBottomWidth: 5, borderBottomColor: "#CA8A04" },
-  buttonText: { fontFamily: F.black, fontSize: 26, color: "#3B2A05" },
+  card: { flexDirection: "row", alignItems: "center", gap: 14, borderRadius: 24, padding: 16, minHeight: 128 },
+  art: { width: 84, height: 84, resizeMode: "contain" },
+  name: { fontFamily: F.black, fontSize: 28, lineHeight: 30 },
+  desc: { fontSize: 15, lineHeight: 20, color: C.text2 },
+  who: { fontSize: 13, fontWeight: "800" },
+  go: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
 });

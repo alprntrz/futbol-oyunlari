@@ -8,11 +8,13 @@ import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
 import type { Criterion } from "@/lib/tiki";
 
+import { GameHub } from "~/components/GameHub";
 import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
+import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
@@ -117,28 +119,26 @@ export default function Bingo() {
 
   if (!run) {
     return (
-      <Page>
-        <Stack.Screen options={{ title: t("bingoName") }} />
-        <Text style={T.title}>{t("bingoName")}</Text>
-        <Text style={[T.body, { marginTop: 6 }]}>{t("bingoIntro")}</Text>
-        <Card style={{ marginTop: 16, gap: 12 }}>
-          <View style={styles.ruleRow}>
-            <Icon name="xmark.circle.fill" size={18} color={C.red} fallback="✕" />
-            <Text style={[T.body, { flex: 1 }]}>{t("bingoRule1")}</Text>
+      <GameHub
+        title={t("bingoName")}
+        image={BRAND.icon.bingo}
+        bg="#DCFCE7"
+        tagline={t("bingoShort")}
+        primary={{ label: t("bingoStart"), icon: "play.fill", fallback: "▶", onPress: () => setRun(freshRun()) }}
+        secondary={[{ label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice }]}
+        rules={
+          <View style={{ gap: 12 }}>
+            <View style={styles.ruleRow}>
+              <Icon name="xmark.circle.fill" size={18} color={C.red} fallback="✕" />
+              <Text style={[T.body, { flex: 1 }]}>{t("bingoRule1")}</Text>
+            </View>
+            <View style={styles.ruleRow}>
+              <Icon name="sparkles" size={18} color={C.amber} fallback="✨" />
+              <Text style={[T.body, { flex: 1 }]}>{t("bingoRule2")}</Text>
+            </View>
           </View>
-          <View style={styles.ruleRow}>
-            <Icon name="sparkles" size={18} color={C.amber} fallback="✨" />
-            <Text style={[T.body, { flex: 1 }]}>{t("bingoRule2")}</Text>
-          </View>
-        </Card>
-        <Button
-          title={t("bingoStart")}
-          icon="play.fill"
-          onPress={() => setRun(freshRun())}
-          style={{ marginTop: 24 }}
-        />
-        <Button title={t("bingoPractice")} icon="shuffle" kind="secondary" onPress={openPractice} style={{ marginTop: 10 }} />
-      </Page>
+        }
+      />
     );
   }
 

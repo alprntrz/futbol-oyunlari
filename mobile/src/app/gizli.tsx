@@ -11,7 +11,7 @@ import { searchPlayers, type Criterion } from "@/lib/tiki";
 import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
-import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/components/ui";
+import { Button, Card, Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { compare, findPlayer, MAX_GUESSES, mysteryForDay, randomMystery, START_CLUES, type Clue, type Puzzle } from "~/lib/mystery";
@@ -112,17 +112,6 @@ export default function MysteryPlayer() {
   return (
     <Page>
       <Stack.Screen options={{ title: t("myName") }} />
-      <Segmented
-        value={mode}
-        onChange={(m) => {
-          setMode(m);
-          setInput("");
-        }}
-        options={[
-          { value: "daily", label: t("myDaily") },
-          { value: "free", label: t("myFree") },
-        ]}
-      />
 
       <View style={styles.head}>
         <Text style={T.title}>{mode === "daily" ? t("myDailyTitle") : t("myFree")}</Text>
@@ -177,7 +166,10 @@ export default function MysteryPlayer() {
             )}
             <View style={{ flexDirection: "row", gap: 10, alignSelf: "stretch", marginTop: 6 }}>
               {mode === "daily" ? (
-                <Button title={t("share")} icon="square.and.arrow.up" onPress={share} style={{ flex: 1 }} />
+                <>
+                  <Button title={t("myAnother")} icon="arrow.clockwise" onPress={() => (setMode("free"), nextFree())} style={{ flex: 1 }} />
+                  <Button title={t("share")} icon="square.and.arrow.up" kind="secondary" onPress={share} style={{ flex: 1 }} />
+                </>
               ) : (
                 <Button title={t("myNext")} icon="arrow.clockwise" onPress={nextFree} style={{ flex: 1 }} />
               )}
