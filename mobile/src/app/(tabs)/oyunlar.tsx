@@ -1,155 +1,75 @@
-import type { SymbolViewProps } from "expo-symbols";
 import { router, type Href } from "expo-router";
 import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
-
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Text } from "~/components/Text";
 import { Icon, Page, Tap } from "~/components/ui";
 import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
+import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F, T } from "~/lib/theme";
 
-/** one quiet tile behind every game's art, so the art carries the colour */
-const ART_BG = "#EEF2EF";
+type Game = { title: string; desc: string; who: string; image: ImageSourcePropType; bg: string; ink: string; href: Href };
 
-type Game = { title: string; desc: string; href: Href; bg: string } & (
-  { image: ImageSourcePropType } | { icon: SymbolViewProps["name"]; fallback: string; color: string }
-);
-
-const enter = (i: number) => FadeIn.duration(180).delay(i * 25);
-
-/** Games tab: every game one tap away (today's puzzles live on Home). */
+/**
+ * Games tab, like the Play online picker: every game a big coloured card (art,
+ * name, one line, who it's for), grouped into "against someone" and "on your
+ * own". A tap opens the game's own screen.
+ */
 export default function Games() {
   const { t } = useI18n();
-  const games: Game[] = [
-    {
-      image: BRAND.icon.tiki,
-      title: t("tikiTakaName"),
-      desc: t("htShort"),
-      href: "/hat-trick",
-      bg: ART_BG,
-    },
-    {
-      image: BRAND.icon.quiz,
-      title: t("qzName"),
-      desc: t("qzShort"),
-      href: "/bilgi",
-      bg: ART_BG,
-    },
-    // Kombine (match-3, /kombine) is shelved for a later version: code and routes stay, no entry here
-    {
-      image: BRAND.icon.mystery,
-      title: t("myName"),
-      desc: t("myShort"),
-      href: "/gizli",
-      bg: ART_BG,
-    },
-    {
-      image: BRAND.icon.practice,
-      title: t("missingXI"),
-      desc: t("xiShort"),
-      href: "/eksik-11",
-      bg: ART_BG,
-    },
-    {
-      image: BRAND.icon.bingo,
-      title: t("bingoName"),
-      desc: t("bingoShort"),
-      href: "/bingo",
-      bg: ART_BG,
-    },
-    {
-      image: BRAND.icon.possession,
-      title: t("ppName"),
-      desc: t("ppShort"),
-      href: "/possession",
-      bg: ART_BG,
-    },
-    {
-      image: TAKTIK.hero,
-      title: t("ttkName"),
-      desc: t("ttkShort"),
-      href: "/taktik",
-      bg: ART_BG,
-    },
-    {
-      image: ROZET.duel,
-      title: t("dzName"),
-      desc: t("dzShort"),
-      href: "/duello",
-      bg: ART_BG,
-    },
+  const versus: Game[] = [
+    { title: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, bg: "#DBEAFE", ink: "#1E3A8A", href: "/hat-trick" },
+    { title: t("dzName"), desc: t("dzShort"), who: t("play1v1"), image: ROZET.duel, bg: "#FFE4E6", ink: "#9F1239", href: "/duello" },
+    { title: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, bg: "#EDE9FE", ink: "#5B21B6", href: "/bilgi" },
+    { title: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, bg: "#DCFCE7", ink: "#14532D", href: "/possession" },
   ];
+  // Kombine (match-3, /kombine) is shelved for a later version: code and routes stay, no entry here
+  const solo: Game[] = [
+    { title: t("ttkName"), desc: t("ttkShort"), who: t("playSolo"), image: TAKTIK.hero, bg: "#D1FAE5", ink: "#065F46", href: "/taktik" },
+    { title: t("myName"), desc: t("myShort"), who: t("playSolo"), image: BRAND.icon.mystery, bg: "#FEF3C7", ink: "#92400E", href: "/gizli" },
+    { title: t("missingXI"), desc: t("xiShort"), who: t("playSolo"), image: BRAND.icon.practice, bg: "#E0F2FE", ink: "#075985", href: "/eksik-11" },
+    { title: t("bingoName"), desc: t("bingoShort"), who: t("playSolo"), image: BRAND.icon.bingo, bg: "#ECFCCB", ink: "#3F6212", href: "/bingo" },
+  ];
+
+  const card = (g: Game, i: number) => (
+    <Animated.View key={g.title} entering={FadeInDown.delay(i * 40).duration(220)}>
+      <Tap onPress={() => (haptic.tap(), router.push(g.href))} style={[styles.card, { backgroundColor: g.bg }]} accessibilityLabel={`${g.title}. ${g.desc}`}>
+        <Image source={g.image} style={styles.art} />
+        <View style={{ flex: 1, gap: 3 }}>
+          <Text style={[styles.name, { color: g.ink }]} numberOfLines={1} adjustsFontSizeToFit>
+            {g.title}
+          </Text>
+          <Text style={styles.desc} numberOfLines={2}>
+            {g.desc}
+          </Text>
+          <Text style={[styles.who, { color: g.ink }]}>{g.who}</Text>
+        </View>
+        <View style={[styles.go, { backgroundColor: g.ink }]}>
+          <Icon name="chevron.right" size={15} color="white" fallback="›" />
+        </View>
+      </Tap>
+    </Animated.View>
+  );
 
   return (
     <Page topInset>
       <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("tabGames")}</Text>
-
-      <View style={styles.list}>
-        {games.map((g, i) => (
-          <Animated.View key={g.title} entering={enter(i + 1)}>
-            <Tap onPress={() => router.push(g.href)} style={[styles.row, i > 0 && styles.rowDivider]} accessibilityLabel={`${g.title}. ${g.desc}`}>
-              <View style={[styles.rowIcon, { backgroundColor: g.bg }]}>
-                {"image" in g ? (
-                  <Image source={g.image} style={styles.rowImage} accessible={false} />
-                ) : (
-                  <Icon name={g.icon} size={26} color={g.color} fallback={g.fallback} />
-                )}
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.rowTitle} numberOfLines={1}>
-                  {g.title}
-                </Text>
-                <Text style={styles.rowDesc} numberOfLines={1}>
-                  {g.desc}
-                </Text>
-              </View>
-              <Icon name="chevron.right" size={14} color={C.text3} fallback="›" />
-            </Tap>
-          </Animated.View>
-        ))}
-      </View>
+      <Text style={styles.section}>{t("gamesVersus")}</Text>
+      <View style={styles.list}>{versus.map(card)}</View>
+      <Text style={styles.section}>{t("gamesSolo")}</Text>
+      <View style={styles.list}>{solo.map((g, i) => card(g, i + versus.length))}</View>
     </Page>
   );
 }
 
 const styles = StyleSheet.create({
-
-  list: {
-    marginTop: 16,
-    backgroundColor: C.card,
-    borderRadius: R.card,
-    borderWidth: 1,
-    borderColor: C.border,
-    overflow: "hidden",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    minHeight: 54,
-  },
-  rowDivider: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: C.border,
-  },
-  rowIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  rowImage: { width: 44, height: 44 },
-  rowTitle: {
-    fontFamily: F.display,
-    fontSize: 21,
-    lineHeight: 23,
-    color: C.text,
-  },
-  rowDesc: { fontSize: 14, lineHeight: 18, color: C.text2, marginTop: 1 },
+  section: { fontFamily: F.display, fontSize: 22, color: C.text, marginTop: 18, marginBottom: 10 },
+  list: { gap: 12 },
+  card: { flexDirection: "row", alignItems: "center", gap: 14, borderRadius: 24, padding: 16, minHeight: 116 },
+  art: { width: 76, height: 76, resizeMode: "contain" },
+  name: { fontFamily: F.black, fontSize: 26, lineHeight: 28 },
+  desc: { fontSize: 15, lineHeight: 20, color: C.text2 },
+  who: { fontSize: 13, fontWeight: "800" },
+  go: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center" },
 });
