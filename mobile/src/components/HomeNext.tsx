@@ -1,7 +1,6 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect, type Href } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, Modal, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
+import { Image, Modal, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -13,7 +12,6 @@ import { useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { useQuests } from "~/lib/quests";
-import { useQuizDifficulty } from "~/lib/quizLevel";
 import { C, F, T } from "~/lib/theme";
 
 import { QuestsCard } from "./DailyCards";
@@ -22,8 +20,6 @@ import { loadToday, type Progress, type Today } from "./TodayPuzzles";
 import { Icon, Tap } from "./ui";
 
 type Daily = { key: string; title: string; kind: string; image: ImageSourcePropType; href: Href; p: Progress; detail: string; result: string };
-type Versus = "ht" | "dz" | "qz" | "pp";
-const VERSUS_KEY = "quick-game";
 
 /**
  * Home, design "Sıradaki maç" (the outside designer's draft 1): today's four dailies
@@ -191,91 +187,25 @@ export function HomeNext() {
 }
 
 /**
- * Sticky above the tab bar (the Griddy idea): one big "Find match" in the last
- * game played against someone; the round button on its left changes the game.
+ * Sticky above the tab bar (the Griddy idea): one big Play. It opens a full-screen
+ * page per game (app/oyna.tsx) with its own Find match button.
  */
 export function PlayBar() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
-  const [game, setGame] = useState<Versus>("ht");
-  const [picking, setPicking] = useState(false);
-  const [level] = useQuizDifficulty();
-  const duel = useDuel();
-
-  useEffect(() => {
-    AsyncStorage.getItem(VERSUS_KEY)
-      .then((v) => (v === "ht" || v === "dz" || v === "qz" || v === "pp") && setGame(v))
-      .catch(() => {});
-  }, []);
-
-  const games: { id: Versus; name: string; image: ImageSourcePropType }[] = [
-    { id: "ht", name: t("tikiTakaName"), image: BRAND.icon.tiki },
-    { id: "dz", name: t("dzName"), image: ROZET.duel },
-    { id: "qz", name: t("qzName"), image: BRAND.icon.quiz },
-    { id: "pp", name: t("ppName"), image: BRAND.icon.possession },
-  ];
-  const current = games.find((g) => g.id === game) ?? games[0];
-  const href: Href =
-    game === "ht"
-      ? "/hat-trick/rastgele"
-      : game === "dz"
-        ? duel.ready
-          ? "/duello/rastgele"
-          : "/duello"
-        : game === "qz"
-          ? { pathname: "/bilgi/rastgele", params: { zorluk: level } }
-          : "/possession/rastgele";
-  const choose = (g: Versus) => {
-    haptic.tap();
-    setGame(g);
-    setPicking(false);
-    AsyncStorage.setItem(VERSUS_KEY, g).catch(() => {});
-  };
-
   // the play button breathes a little so the eye lands on it
   const breathe = useSharedValue(1);
   useEffect(() => {
     breathe.set(withRepeat(withSequence(withTiming(1.025, { duration: 900 }), withTiming(1, { duration: 900 })), -1));
   }, [breathe]);
   const breatheStyle = useAnimatedStyle(() => ({ transform: [{ scale: breathe.get() }] }));
-
   return (
-    <>
-      <View style={[styles.bar, { bottom: insets.bottom + 10 }]} pointerEvents="box-none">
-        <Tap onPress={() => (haptic.tap(), setPicking(true))} style={styles.swap} accessibilityLabel={`${current.name}, ${t("homePickGame")}`}>
-          <Image source={current.image} style={{ width: 30, height: 30 }} resizeMode="contain" />
-          <View style={styles.swapBadge}>
-            <Icon name="chevron.up.chevron.down" size={9} color="white" fallback="⇅" />
-          </View>
-        </Tap>
-        <Animated.View style={[{ flex: 1 }, breatheStyle]}>
-          <Tap onPress={() => (haptic.press(), router.push(href))} style={styles.findBig} accessibilityLabel={`${t("homeFindMatch")}, ${current.name}`}>
-            <Icon name="play.fill" size={16} color="#3B2A05" fallback="▶" />
-            <View style={{ flexShrink: 1 }}>
-              <Text style={styles.findBigText}>{t("homeFindMatch")}</Text>
-              <Text style={styles.findBigSub} numberOfLines={1}>
-                {current.name}
-              </Text>
-            </View>
-          </Tap>
-        </Animated.View>
-      </View>
-
-      <Modal visible={picking} transparent animationType="slide" onRequestClose={() => setPicking(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setPicking(false)} accessibilityLabel={t("close")} />
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
-          <View style={styles.grabber} />
-          <Text style={[T.title, { marginBottom: 8 }]}>{t("homeWhichGame")}</Text>
-          {games.map((g, i) => (
-            <Tap key={g.id} onPress={() => choose(g.id)} style={[styles.pickRow, i > 0 && styles.divider]} accessibilityLabel={g.name}>
-              <Image source={g.image} style={{ width: 32, height: 32 }} />
-              <Text style={[styles.rowTitle, { flex: 1 }]}>{g.name}</Text>
-              {g.id === game ? <Icon name="checkmark.circle.fill" size={20} color={C.greenMid} fallback="✓" /> : <Icon name="chevron.right" size={13} color={C.text3} fallback="›" />}
-            </Tap>
-          ))}
-        </View>
-      </Modal>
-    </>
+    <Animated.View style={[styles.bar, { bottom: insets.bottom + 10 }, breatheStyle]}>
+      <Tap onPress={() => (haptic.press(), router.push("/oyna"))} style={styles.findBig} accessibilityLabel={t("playOpponent")}>
+        <Icon name="play.fill" size={20} color="#3B2A05" fallback="▶" />
+        <Text style={styles.findBigText}>{t("playOpponent")}</Text>
+      </Tap>
+    </Animated.View>
   );
 }
 
@@ -347,19 +277,12 @@ const styles = StyleSheet.create({
   find: { backgroundColor: C.greenSoft, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12 },
   findText: { fontFamily: F.display, fontSize: 17, color: C.greenDark },
   kind: { fontSize: 10, fontWeight: "800", letterSpacing: 0.8, color: C.greenMid },
-  bar: { position: "absolute", left: 16, right: 16, flexDirection: "row", alignItems: "center", gap: 10 },
-  swap: { width: 58, height: 58, borderRadius: 29, backgroundColor: C.card, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#FACC15", shadowColor: "#000", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 5 },
-  swapBadge: { position: "absolute", right: -2, bottom: -2, width: 20, height: 20, borderRadius: 10, backgroundColor: C.greenDark, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "white" },
+  bar: { position: "absolute", left: 16, right: 16 },
   findBig: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, height: 58, borderRadius: 18, backgroundColor: "#FACC15", borderBottomWidth: 4, borderBottomColor: "#CA8A04", shadowColor: "#000", shadowOpacity: 0.15, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 5 },
-  findBigText: { fontFamily: F.black, fontSize: 22, lineHeight: 23, color: "#3B2A05" },
-  findBigSub: { fontSize: 12, fontWeight: "700", color: "#6B4E0A" },
+  findBigText: { fontFamily: F.black, fontSize: 26, color: "#3B2A05" },
   quests: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 12, paddingHorizontal: 6, paddingVertical: 8 },
   questsIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
   questsTitle: { fontFamily: F.display, fontSize: 17, color: C.text },
   questsCount: { fontFamily: F.display, fontSize: 16, color: C.text2 },
-  backdrop: { flex: 1, backgroundColor: "rgba(11,18,32,0.35)" },
-  sheet: { backgroundColor: C.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, paddingTop: 8 },
-  grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 14 },
-  pickRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 12, paddingHorizontal: 4 },
   close: { width: 36, height: 36, borderRadius: 18, backgroundColor: "#EEF2EF", alignItems: "center", justifyContent: "center" },
 });
