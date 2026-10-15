@@ -26,7 +26,7 @@ export default function PlayPicker() {
   const insets = useSafeAreaInsets();
   const [level] = useQuizDifficulty();
   const duel = useDuel();
-  // ?with=friend: the same cards open a room to share with a friend (Card Duel has no friend rooms yet)
+  // ?with=friend: the same cards open a room to share with a friend
   const friend = useLocalSearchParams<{ with?: string }>().with === "friend";
 
   const games: { id: Id; name: string; desc: string; who: string; image: ImageSourcePropType; bg: string; ink: string; href: Href; note?: string }[] = [
@@ -48,10 +48,11 @@ export default function PlayPicker() {
 
   const friendHref: Partial<Record<Id, Href>> = {
     ht: "/hat-trick/oda",
+    dz: duel.ready ? "/duello/oda" : "/duello/draft",
     qz: { pathname: "/bilgi/oda", params: { zorluk: level } },
     pp: "/possession/oda",
   };
-  const shown = friend ? games.filter((g) => friendHref[g.id]).map((g) => ({ ...g, href: friendHref[g.id]!, note: undefined, who: g.id === "qz" ? t("playUpTo5") : t("play1v1") })) : games;
+  const shown = friend ? games.filter((g) => friendHref[g.id]).map((g) => ({ ...g, href: friendHref[g.id]!, who: g.id === "qz" ? t("playUpTo5") : t("play1v1"), note: g.id === "dz" && !duel.ready ? t("playMakeHand") : undefined })) : games;
   const pick = (g: (typeof games)[number]) => {
     haptic.press();
     if (!friend) AsyncStorage.setItem(KEY, g.id).catch(() => {});

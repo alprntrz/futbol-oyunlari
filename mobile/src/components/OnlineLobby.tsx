@@ -22,11 +22,14 @@ export function OnlineLobby({
   createPayload,
   roomHref,
   createOptions,
+  joinPayload,
 }: {
-  /** socket event prefix: "ht" (Hat-trick), "pp" (Possession Play) or "qz" (Quiz) */
-  game: "ht" | "pp" | "qz";
+  /** socket event prefix: "ht" (Hat-trick), "pp" (Possession Play), "qz" (Quiz) or "dz" (Card Duel) */
+  game: "ht" | "pp" | "qz" | "dz";
   title: string;
   createPayload: () => object;
+  /** extra fields a join needs (Card Duel: the joiner's hand) */
+  joinPayload?: () => object;
   roomHref: (code: string) => Href;
   /** game options shown above the Create button */
   createOptions?: React.ReactNode;
@@ -70,7 +73,7 @@ export function OnlineLobby({
 
   const join = () => {
     if (code.trim().length < 5) return;
-    call<{ ok: boolean; error?: string; room?: { code: string } }>(`${game}:join`, { code: code.trim().toUpperCase(), nick, pid }, (res) => {
+    call<{ ok: boolean; error?: string; room?: { code: string } }>(`${game}:join`, { code: code.trim().toUpperCase(), nick, pid, ...joinPayload?.() }, (res) => {
       if (res.ok && res.room) goToRoom(res.room.code);
       else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
     });

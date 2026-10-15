@@ -41,6 +41,7 @@ export default function DuelHome() {
                 fallback: "📅",
                 onPress: () => !daily && router.push({ pathname: "/duello/mac", params: { mode: "daily" } }),
               },
+              { label: t("htFriend"), icon: "person.2.fill", fallback: "👥", onPress: () => router.push("/duello/oda") },
               { label: t("dzPractice"), icon: "figure.run", fallback: "🏃", onPress: () => router.push({ pathname: "/duello/mac", params: { mode: "practice" } }) },
             ]
           : []
