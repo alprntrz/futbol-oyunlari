@@ -16,6 +16,7 @@ import { Text } from "~/components/Text";
 import { Button, Icon, Tap } from "~/components/ui";
 import { saveDaily, useDuel } from "~/lib/duel";
 import { useRecordMatch } from "~/lib/history";
+import { GAME_ICON, useLivePush, useMatchActivity } from "~/lib/liveActivity";
 import { REVEAL_MS, useLocalDuel, useOnlineDuel, type DuelMatch, type RoundResult } from "~/lib/duelMatch";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -71,6 +72,7 @@ function Local({ mode, hand, nick, themeId }: { mode: Mode; hand: number[]; nick
 
 function Online({ code, hand }: { code: string; hand: number[] }) {
   const m = useOnlineDuel(code);
+  useLivePush("dz", code);
   return <Board m={m} hand={hand} opponent={m.opponent} xpKey={`dz-room-${code}-${m.game}`} online onAgain={m.peerLeft ? undefined : m.again} />;
 }
 
@@ -145,6 +147,33 @@ function Board({
     title: t("dzWon"),
     stats: practice || outcome !== "win" ? undefined : [{ label: t("dzName"), value: `${mine}–${theirs}`, tone: "green" }],
   });
+
+  // Lock Screen / Dynamic Island: round, score, the pick clock (iOS draws it)
+  const roundNo = Math.min(ROUNDS, m.round + (m.deadline ? 1 : 0));
+  useMatchActivity(
+    m.round === 0 && !m.deadline
+      ? null
+      : {
+          game: t("dzName"),
+          icon: GAME_ICON.dz,
+          headline: m.over
+            ? t(outcome === "win" ? "liveWon" : outcome === "draw" ? "liveDraw" : "liveLost")
+            : m.deadline
+              ? m.myPick === null
+                ? t("dzPick")
+                : t("dzWaiting")
+              : last
+                ? t(last.winner === "me" ? "dzWinRound" : last.winner === "them" ? "dzLoseRound" : "dzDrawRound")
+                : t("dzPick"),
+          tone: m.over ? (outcome === "lose" ? "lose" : outcome) : m.deadline ? (m.myPick === null ? "X" : "O") : last?.winner === "me" ? "win" : last?.winner === "them" ? "lose" : "draw",
+          line: `${t("dzRound").replace("{n}", String(Math.max(1, roundNo))).replace("{max}", String(ROUNDS))} · ${t("you")} – ${opponent ?? "…"}`,
+          score: `${mine} – ${theirs}`,
+          mark: "",
+          endsAt: m.deadline ? Math.round(m.deadline / 1000) * 1000 : 0,
+          since: m.deadline ? Math.round((m.deadline - PICK_SECONDS * 1000) / 1000) * 1000 : 0,
+          phase: m.over ? "over" : m.deadline ? "turn" : "pause",
+        }
+  );
 
   const revealing = !!last && !m.deadline && (m.over ? !showEnd : true) && m.results.length > 0;
   const shownQuestion: Question | null = revealing ? last.question : m.question;

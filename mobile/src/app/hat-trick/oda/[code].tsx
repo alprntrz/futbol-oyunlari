@@ -16,7 +16,7 @@ import { useRecordMatch } from "~/lib/history";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid } from "~/lib/league";
-import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
+import { GAME_ICON, useDuelActivity, useLivePush } from "~/lib/liveActivity";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, F, T } from "~/lib/theme";
@@ -59,6 +59,7 @@ export default function HatTrickRoom() {
   // `random` is set when the room came from the random queue: offer a new match after the game
   const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
+  useLivePush("ht", code || null);
   const [room, setRoom] = useState<HtRoom | null>(null);
   const [deadline, setDeadline] = useState(0);
   const [now, setNow] = useState(() => Date.now());

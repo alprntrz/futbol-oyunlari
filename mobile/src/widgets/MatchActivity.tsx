@@ -1,5 +1,5 @@
 import { HStack, Image, Spacer, Text, VStack } from "@expo/ui/swift-ui";
-import { font, foregroundStyle, frame, lineLimit, monospacedDigit, multilineTextAlignment, padding } from "@expo/ui/swift-ui/modifiers";
+import { background, font, foregroundStyle, frame, lineLimit, monospacedDigit, multilineTextAlignment, padding } from "@expo/ui/swift-ui/modifiers";
 import { createLiveActivity, type LiveActivityEnvironment } from "expo-widgets";
 
 /**
@@ -39,10 +39,11 @@ export type MatchActivityProps = {
  */
 const MatchActivity = (p: MatchActivityProps, env: LiveActivityEnvironment) => {
   "widget";
-  // light tints read on the black island and a dark Lock Screen; deeper ones on a light Lock Screen
+  // The Lock Screen banner paints its own dark green, so light tints read on it whatever the
+  // wallpaper or appearance (iOS's default banner background let dark text vanish); the island is black.
   const LIGHT = { X: "#9CCBFF", O: "#FFA3B5", win: "#7BE8A8", lose: "#FFA3B5", draw: "#FCD775", search: "#7BE8A8", red: "#FF6B6B", text: "#FFFFFF", sub: "#B9C2BD" };
-  const DEEP = { X: "#1D4ED8", O: "#BE123C", win: "#15803D", lose: "#BE123C", draw: "#B45309", search: "#15803D", red: "#DC2626", text: "#0E1A14", sub: "#5F6C64" };
-  const banner = env.colorScheme === "light" && !env.isLuminanceReduced ? DEEP : LIGHT;
+  const BANNER_BG = env.isLuminanceReduced ? "#000000" : "#0E3B22";
+  const banner = LIGHT;
   const island = LIGHT;
   const urgent = p.phase === "turn" && (!!p.urgent || !!env.isStale);
 
@@ -80,7 +81,7 @@ const MatchActivity = (p: MatchActivityProps, env: LiveActivityEnvironment) => {
 
   return {
     banner: (
-      <HStack modifiers={[padding({ all: 16 })]}>
+      <HStack modifiers={[padding({ all: 16 }), frame({ maxWidth: 10000, maxHeight: 10000 }), background(BANNER_BG)]}>
         <VStack alignment="leading" spacing={3}>
           <HStack spacing={5}>
             <Image systemName={p.icon as never} color={banner.sub} size={13} />

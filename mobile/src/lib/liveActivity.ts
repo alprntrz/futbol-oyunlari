@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Platform } from "react-native";
 
-import { LIVE_ACTIVITIES } from "./features";
+import { LIVE_ACTIVITIES, LIVE_PUSH } from "./features";
 import type { LiveActivity, LiveActivityDismissalPolicy, LiveActivityFactory } from "expo-widgets";
 
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { getSocket } from "~/lib/socket";
 import type { MatchActivityProps } from "~/widgets/MatchActivity";
 
 export type { MatchActivityProps };
@@ -36,6 +37,14 @@ const URGENT_MS = 10_000;
 const LINGER_MS = 2 * 60 * 1000;
 
 let current: LiveActivity<MatchActivityProps> | null = null;
+/** APNs token of the running activity (server-live.js updates it while the app is away) */
+let pushToken: string | null = null;
+const tokenListeners = new Set<() => void>();
+const setPushToken = (t: string | null) => {
+  if (t === pushToken) return;
+  pushToken = t;
+  tokenListeners.forEach((fn) => fn());
+};
 let shown = "";
 /** the screen that last showed it: only that screen's exit ends it (screens hand over on navigation) */
 let owner: symbol | null = null;
@@ -56,7 +65,18 @@ export function showMatchActivity(props: MatchActivityProps, deepLink?: string, 
   const stale = props.phase === "turn" && props.endsAt > 0 ? new Date(props.endsAt - URGENT_MS) : undefined;
   try {
     if (current) current.update(props, stale).catch(() => {});
-    else current = factory.start(props, deepLink, stale);
+    else {
+      const started = factory.start(props, deepLink, stale);
+      current = started;
+      // the token comes a moment after the start (and may change): only with push updates on
+      if (LIVE_PUSH) {
+        started.addPushTokenListener((e) => current === started && setPushToken(e.pushToken));
+        started
+          .getPushToken()
+          .then((t) => current === started && t && setPushToken(t))
+          .catch(() => {});
+      }
+    }
   } catch {
     // Live Activities off, or too many running: the game goes on without it
     current = null;
@@ -73,6 +93,7 @@ export function endMatchActivity(final?: MatchActivityProps, by: symbol | null =
   current = null;
   shown = "";
   owner = null;
+  setPushToken(null);
   if (!a) return;
   const policy = final && afterDate ? afterDate(new Date(Date.now() + LINGER_MS)) : "immediate";
   a.end(policy, final).catch(() => {});
@@ -95,7 +116,7 @@ export function useMatchActivity(props: MatchActivityProps | null, deepLink?: st
 }
 
 /** SF Symbols per game, shown in the compact Dynamic Island */
-export const GAME_ICON = { ht: "square.grid.3x3.fill", pp: "hexagon.fill" } as const;
+export const GAME_ICON = { ht: "square.grid.3x3.fill", pp: "hexagon.fill", dz: "rectangle.stack.fill" } as const;
 
 /** A two-player online game as the Live Activity sees it. */
 export interface Duel {
@@ -158,4 +179,53 @@ export function useSearchActivity(game: string, icon: string, searching: boolean
       ? { game, icon, headline: t("liveSearching"), tone: "search", line: t("liveSearchingLine"), score: "", mark: "", endsAt: 0, since, phase: "search" }
       : null
   );
+}
+
+/**
+ * Online match: hand the running activity's push token and this phone's strings
+ * to server.js, which updates the activity over APNs while the app is in the
+ * background and alerts when the turn comes back. The token only lives with the
+ * match on the server (memory), `la:clear` drops it.
+ */
+export function useLivePush(game: "ht" | "pp" | "dz", code: string | null) {
+  const { t } = useI18n();
+  const token = useSyncExternalStore(
+    (fn) => {
+      tokenListeners.add(fn);
+      return () => {
+        tokenListeners.delete(fn);
+      };
+    },
+    () => pushToken
+  );
+  const name = { ht: t("tikiTakaName"), pp: t("ppName"), dz: t("dzName") }[game];
+  const s = {
+    game: name,
+    icon: GAME_ICON[game],
+    you: t("you"),
+    yourTurn: t("liveYourTurn"),
+    theirTurn: t("liveTheirTurn"),
+    won: t("liveWon"),
+    lost: t("liveLost"),
+    draw: t("liveDraw"),
+    pick: t("dzPick"),
+    waiting: t("dzWaiting"),
+    winRound: t("dzWinRound"),
+    loseRound: t("dzLoseRound"),
+    drawRound: t("dzDrawRound"),
+    round: t("dzRound"),
+  };
+  const key = JSON.stringify(s);
+  useEffect(() => {
+    if (!token || !code) return;
+    const socket = getSocket();
+    const send = () => socket.emit("la:token", { game, token, s: JSON.parse(key) });
+    send();
+    // a reconnect makes a new socket on the server: send it again
+    socket.on("connect", send);
+    return () => {
+      socket.off("connect", send);
+      socket.emit("la:clear");
+    };
+  }, [token, code, game, key]);
 }

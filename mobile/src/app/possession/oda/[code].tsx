@@ -12,7 +12,7 @@ import { haptic } from "~/lib/haptics";
 import { useRecordMatch } from "~/lib/history";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
-import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
+import { GAME_ICON, useDuelActivity, useLivePush } from "~/lib/liveActivity";
 import { boardFromIds, boardToIds, claimsFor, generateBoard, type PpCell } from "~/lib/possession";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
@@ -44,6 +44,7 @@ export default function PossessionRoom() {
   const emotes = useEmotes("pp", true);
   const params = useLocalSearchParams<{ code: string }>();
   const code = (params.code ?? "").toUpperCase();
+  useLivePush("pp", code || null);
   const [room, setRoom] = useState<PpRoom | null>(null);
   const [receivedAt, setReceivedAt] = useState(() => Date.now());
   const [now, setNow] = useState(() => Date.now());

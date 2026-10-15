@@ -1,3 +1,4 @@
+import { AppState } from "react-native";
 import { io, type Socket } from "socket.io-client";
 
 /**
@@ -15,7 +16,12 @@ let sessionToken: string | null = null;
 /** Singleton socket shared by the lobby and room screens. */
 export function getSocket(): Socket {
   // signed in: the session token rides along so the server can rate online results
-  if (!socket) socket = io(SOCKET_URL, { transports: ["websocket"], auth: (cb) => cb(sessionToken ? { token: sessionToken, caps: CAPS } : { caps: CAPS }) });
+  if (!socket) {
+    const s = io(SOCKET_URL, { transports: ["websocket"], auth: (cb) => cb(sessionToken ? { token: sessionToken, caps: CAPS } : { caps: CAPS }) });
+    socket = s;
+    // the server updates the Live Activity over APNs only while the app is away (server.js app:state)
+    AppState.addEventListener("change", (state) => s.emit("app:state", { active: state === "active" }));
+  }
   return socket;
 }
 

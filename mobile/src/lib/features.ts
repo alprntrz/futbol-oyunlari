@@ -8,3 +8,12 @@ export const ONBOARDING = false;
  * with EXPO_NO_CAPABILITY_SYNC=1, EAS can't sync it) and "expo-widgets" in app.json plugins.
  */
 export const LIVE_ACTIVITIES = true;
+
+/**
+ * Live Activity updates over APNs while the app is in the background (server-live.js).
+ * Must match app.json: "expo-widgets" with enablePushNotifications and
+ * ./plugins/withApsProduction (aps-environment = production). Needs the Push
+ * Notifications capability on com.alprntrz.tiktako (Apple portal) and an APNs key
+ * on the server (APNS_KEY, APNS_KEY_ID; APPLE_TEAM_ID).
+ */
+export const LIVE_PUSH = true;

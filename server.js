@@ -7,6 +7,7 @@ const next = require("next");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
+const { pushLive } = require("./server-live");
 const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
 
 const dev = process.env.NODE_ENV !== "production";
@@ -496,6 +497,116 @@ function dzPublic(room) {
   };
 }
 
+// ── Live Activity over APNs (server-live.js) ──
+// A phone in a match sends `la:token` { game, token, s } (s = its strings, in its language) and
+// `app:state` { active }. While its app is in the background, every change to the match updates
+// its Live Activity from here; when the turn comes to it, the update carries an alert.
+const LIVE_STALE_MS = 10_000;
+function liveSend(game, room, build) {
+  for (const p of room.players) {
+    const sock = ioServer?.sockets.sockets.get(p.id);
+    const la = sock?.data.la;
+    if (!la || la.game !== game || la.code !== room.code || sock.data.active !== false) continue;
+    const opp = room.players.find((x) => x !== p);
+    const out = build(p, opp, la.s);
+    if (!out) continue;
+    const key = JSON.stringify(out.props);
+    // alert only when the turn comes over while away (null = just went to the background, state unknown)
+    const alert = out.yourTurn && la.wasMyTurn === false ? { title: la.s.game, body: la.s.yourTurn } : null;
+    la.wasMyTurn = out.yourTurn;
+    if (key === la.last) continue;
+    la.last = key;
+    pushLive(la.token, out.props, { alert, staleAt: out.props.endsAt ? out.props.endsAt - LIVE_STALE_MS : 0 });
+  }
+}
+const str = (v, max = 60) => (typeof v === "string" ? v.slice(0, max) : "");
+/** the strings a phone sends with its token, cleaned */
+function liveStrings(s) {
+  const keys = ["game", "icon", "you", "yourTurn", "theirTurn", "won", "lost", "draw", "pick", "waiting", "winRound", "loseRound", "drawRound", "round"];
+  const out = {};
+  for (const k of keys) out[k] = str(s?.[k]);
+  return out;
+}
+const sec = (ms) => Math.round(ms / 1000) * 1000;
+
+/** Tic-Tac-Toe and Possession: whose turn, the mover's clock, the score */
+function liveTurnProps(p, opp, s, { turn, winner, matchOver, score, endsAt, since }) {
+  const nick = opp?.nick || "…";
+  const props = {
+    game: s.game,
+    icon: s.icon,
+    headline: winner ? (winner === "draw" ? s.draw : winner === p.mark ? s.won : s.lost) : turn === p.mark ? s.yourTurn : s.theirTurn.replace("{nick}", nick),
+    tone: winner ? (winner === "draw" ? "draw" : winner === p.mark ? "win" : "lose") : turn,
+    line: `${s.you} – ${nick}`,
+    score,
+    mark: p.mark,
+    endsAt: winner ? 0 : sec(endsAt),
+    since: winner ? 0 : sec(since),
+    phase: !winner ? "turn" : matchOver ? "over" : "pause",
+  };
+  return { props, yourTurn: !winner && turn === p.mark };
+}
+
+function liveHt(room) {
+  if (!room.started) return;
+  const series = htSeries(room);
+  liveSend("ht", room, (p, opp, s) =>
+    liveTurnProps(p, opp, s, {
+      turn: room.turn,
+      winner: room.winner,
+      matchOver: series.over,
+      score: `X ${series.X} – ${series.O} O`,
+      endsAt: room.deadline ?? 0,
+      since: (room.deadline ?? 0) - htTurnMs(room),
+    })
+  );
+}
+
+function livePp(room) {
+  if (!room.started) return;
+  const held = (m) => room.owners.filter((o) => o?.mark === m).length;
+  liveSend("pp", room, (p, opp, s) =>
+    liveTurnProps(p, opp, s, {
+      turn: room.turn,
+      winner: room.winner,
+      matchOver: true,
+      score: `X ${held("X")} – ${held("O")} O`,
+      endsAt: room.turnStart ? room.turnStart + room.clocks[room.turn] : 0,
+      since: room.turnStart ?? 0,
+    })
+  );
+}
+
+function liveDz(room) {
+  if (!room.started) return;
+  const { score } = dzPublic(room);
+  const last = room.results[room.results.length - 1];
+  liveSend("dz", room, (p, opp, s) => {
+    const me = p.side;
+    const mine = score[me];
+    const theirs = score[1 - me];
+    const picked = room.picks[me] !== null;
+    const open = !!room.deadline && !room.over;
+    const res = last ? (last.winner === "draw" ? "draw" : last.winner === me ? "win" : "lose") : "draw";
+    const props = {
+      game: s.game,
+      icon: s.icon,
+      headline: room.over
+        ? mine === theirs ? s.draw : mine > theirs ? s.won : s.lost
+        : open ? (picked ? s.waiting : s.pick) : res === "win" ? s.winRound : res === "lose" ? s.loseRound : s.drawRound,
+      tone: room.over ? (mine === theirs ? "draw" : mine > theirs ? "win" : "lose") : open ? (picked ? "O" : "X") : res,
+      line: `${s.round.replace("{n}", String(Math.min(DZ_HAND, room.round + (open ? 1 : 0)) || 1)).replace("{max}", String(DZ_HAND))} · ${s.you} – ${opp?.nick || "…"}`,
+      score: `${mine} – ${theirs}`,
+      mark: "",
+      endsAt: open ? sec(room.deadline) : 0,
+      since: open ? sec(room.deadline - DZ_PICK_MS) : 0,
+      phase: room.over ? "over" : open ? "turn" : "pause",
+    };
+    // a new round to pick in counts as "your turn"
+    return { props, yourTurn: open && !picked };
+  });
+}
+
 app.prepare().then(() => {
   const server = createServer(async (req, res) => {
     // /api/account/*: sign-in and the account's XP (server-accounts.js); the rest is the Next site
@@ -649,7 +760,10 @@ app.prepare().then(() => {
     });
 
     // ── Possession Play ──
-    const ppEmit = (room) => io.to("pp:" + room.code).emit("pp:update", ppPublic(room));
+    const ppEmit = (room) => {
+      io.to("pp:" + room.code).emit("pp:update", ppPublic(room));
+      livePp(room);
+    };
 
     // Start the current player's clock; when it runs out they lose
     const ppStartTurn = (room) => {
@@ -783,6 +897,32 @@ app.prepare().then(() => {
       }
     });
 
+    // ── Live Activity: the token of this phone's activity for the match it's in, and whether the app is open
+    socket.on("la:token", ({ game, token, s }) => {
+      if (!["ht", "pp", "dz"].includes(game) || typeof token !== "string" || token.length > 200) return;
+      const code = game === "ht" ? socket.data.htCode : game === "pp" ? socket.data.ppCode : socket.data.dzCode;
+      if (!code) return;
+      socket.data.la = { game, code, token, s: liveStrings(s), last: null, wasMyTurn: false };
+    });
+    socket.on("la:clear", () => {
+      socket.data.la = null;
+    });
+    socket.on("app:state", ({ active }) => {
+      socket.data.active = active !== false;
+      // each background spell starts fresh: push the current state, alert only on later turns
+      const la = socket.data.la;
+      if (la) {
+        la.last = null;
+        la.wasMyTurn = null;
+        // going away: push the current state now, so a turn that comes later is seen as new
+        if (!socket.data.active) {
+          if (la.game === "ht" && htRooms.has(la.code)) liveHt(htRooms.get(la.code));
+          if (la.game === "pp" && ppRooms.has(la.code)) livePp(ppRooms.get(la.code));
+          if (la.game === "dz" && dzRooms.has(la.code)) liveDz(dzRooms.get(la.code));
+        }
+      }
+    });
+
     // ── Quick emotes: a fixed set (no free text), to the other player in the game you're in ──
     const EMOTES = new Set(["clap", "wow", "laugh", "fire", "gg", "think", "cry", "cool"]);
     socket.on("em:send", ({ game, emote }) => {
@@ -794,7 +934,10 @@ app.prepare().then(() => {
     });
 
     // ── Card Duel ──
-    const dzEmit = (room) => io.to("dz:" + room.code).emit("dz:update", dzPublic(room));
+    const dzEmit = (room) => {
+      io.to("dz:" + room.code).emit("dz:update", dzPublic(room));
+      liveDz(room);
+    };
 
     const dzJoinRoom = (s, room) => {
       s.data.dzCode = room.code;
@@ -956,7 +1099,10 @@ app.prepare().then(() => {
 
     // ── Hat-trick ──
 
-    const htEmit = (room) => io.to("ht:" + room.code).emit("ht:update", htPublic(room));
+    const htEmit = (room) => {
+      io.to("ht:" + room.code).emit("ht:update", htPublic(room));
+      liveHt(room);
+    };
 
     // `graceMs` adds time before the first turn's clock (the "match found" intro)
     const htStartTurn = (room, graceMs = 0) => {

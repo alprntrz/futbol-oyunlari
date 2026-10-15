@@ -67,8 +67,13 @@
           "microphonePermission": false
         }
       ],
-      "./plugins/withoutApsEnvironment",
-      "expo-widgets"
+      "./plugins/withApsProduction",
+      [
+        "expo-widgets",
+        {
+          "enablePushNotifications": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

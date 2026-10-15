@@ -37,6 +37,7 @@
 <li><strong>Rastgele oyuncu kimliği:</strong> uygulamanın ilk açılışta ürettiği, seni kişisel olarak tanımlamayan bir kod. Yalnızca Bilgi Yarışı seviye ve puanlarını saklamak için kullanılır ve diğer oyunculara asla gösterilmez.</li>
 <li><strong>Oyun verisi:</strong> maç içindeki hamleler, cevaplar ve puanlar.</li>
 </ul>
+<p><strong>Canlı Etkinlik (kilit ekranı / Dynamic Island):</strong> online maçtayken uygulama arka plandaysa sıra sana geçtiğinde kilit ekranındaki maç kartının güncellenmesi için telefonun, o maça özel bir Apple bildirim anahtarı (push token) gönderir. Bu anahtar sadece maç sürerken sunucunun belleğinde durur, hiçbir yere yazılmaz ve maç bitince silinir; Apple'ın bildirim servisine yalnızca maçın skoru, sıra ve süre gider.</p>
 <p>Maç verileri maç bitince bellekten silinir. Sunucuda kalıcı olarak saklananlar: Bilgi Yarışı kaydı (rastgele kimlik, takma ad, XP, puan, maç ve galibiyet sayısı) ve giriş yaptıysan yukarıda yazan hesap bilgileri.</p>
 <p>Bağlantı sırasında IP adresin teknik olarak sunucuya ulaşır ancak kaydedilmez. Tüm bağlantılar şifrelidir (HTTPS).</p>
 
@@ -78,6 +79,7 @@
 <li><strong>Random player ID:</strong> a code the app creates on first launch that does not identify you. It is used only to keep your Football Quiz level and points and is never shown to other players.</li>
 <li><strong>Game data:</strong> moves, answers and scores during a match.</li>
 </ul>
+<p><strong>Live Activity (Lock Screen / Dynamic Island):</strong> during an online match, so the match card on your Lock Screen can update and tell you when it's your turn while the app is in the background, your phone sends an Apple push token made for that one match. It stays in the server's memory only while the match lasts, is never written anywhere and is dropped when the match ends; only the score, whose turn it is and the clock go to Apple's push service.</p>
 <p>Match data is dropped from memory when the match ends. Stored permanently: your Football Quiz record (the random ID, nickname, XP, points, games and wins) and, if you signed in, the account details listed above.</p>
 <p>Your IP address reaches the server during a connection but is not stored. All connections are encrypted (HTTPS).</p>
 
