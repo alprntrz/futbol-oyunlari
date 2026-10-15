@@ -1,7 +1,7 @@
 import { router, useFocusEffect, type Href } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
 import { dailyMatch, dayNumber } from "@/lib/daily";
 
@@ -53,6 +53,13 @@ export function HomeBoard() {
     },
   ];
   const done = tiles.filter((x) => x.p.state === "done").length;
+  // the first one not started yet: "Up next", with a soft pulse so the eye knows where to begin
+  const nextKey = tiles.find((x) => x.p.state === "new")?.key;
+  const pulse = useSharedValue(1);
+  useEffect(() => {
+    pulse.set(withRepeat(withSequence(withTiming(1.03, { duration: 800 }), withTiming(1, { duration: 800 })), -1));
+  }, [pulse]);
+  const pulseStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.get() }] }));
   const upper = (s: string) => s.toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB");
 
   return (
@@ -68,14 +75,22 @@ export function HomeBoard() {
         {tiles.map((x, i) => {
           const going = x.p.state === "started";
           const isDone = x.p.state === "done";
+          const isNext = x.key === nextKey;
           const ink = isDone ? "white" : C.text;
           return (
             <Animated.View key={x.key} entering={FadeInDown.delay(i * 50).duration(220)} style={styles.cell}>
-              <Tap onPress={() => (haptic.tap(), router.push(x.href))} style={[styles.tile, going && styles.tileGoing, isDone && styles.tileDone]} accessibilityLabel={x.title}>
+              <Animated.View style={isNext && pulseStyle}>
+              <Tap onPress={() => (haptic.tap(), router.push(x.href))} style={[styles.tile, going && styles.tileGoing, isDone && styles.tileDone, isNext && styles.tileNext]} accessibilityLabel={isNext ? `${t("homeNextUp")}: ${x.title}` : x.title}>
                 <View style={styles.tileTop}>
-                  <Text style={[styles.tag, going && { color: "#713F12" }, isDone && { color: "#BBF7D0" }]}>
-                    {upper(going ? t("boardGoing") : isDone ? t("boardFinished") : t("boardNew"))}
-                  </Text>
+                  {isNext ? (
+                    <View style={styles.nextPill}>
+                      <Text style={styles.nextPillText}>{upper(t("homeNextUp"))}</Text>
+                    </View>
+                  ) : (
+                    <Text style={[styles.tag, going && { color: "#713F12" }, isDone && { color: "#BBF7D0" }]}>
+                      {upper(going ? t("boardGoing") : isDone ? t("boardFinished") : t("boardNew"))}
+                    </Text>
+                  )}
                   <Icon name={isDone ? "checkmark.circle.fill" : "arrow.up.right"} size={15} color={isDone ? "#BBF7D0" : going ? "#713F12" : C.text3} fallback="↗" />
                 </View>
                 <View style={styles.art}>
@@ -91,6 +106,7 @@ export function HomeBoard() {
                   {going && <Icon name="play.circle.fill" size={20} color="#713F12" fallback="▶" />}
                 </View>
               </Tap>
+              </Animated.View>
             </Animated.View>
           );
         })}
@@ -118,6 +134,9 @@ const styles = StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 12 },
   cell: { width: "48.5%" },
   tile: { backgroundColor: "#FBFAF5", borderRadius: 22, padding: 12, borderWidth: 1, borderColor: "#ECE8DC", minHeight: 196 },
+  tileNext: { borderColor: C.green, borderWidth: 2, shadowColor: C.green, shadowOpacity: 0.35, shadowRadius: 10, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
+  nextPill: { backgroundColor: C.green, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3 },
+  nextPillText: { fontSize: 11, fontWeight: "800", letterSpacing: 0.8, color: "white" },
   tileGoing: { backgroundColor: "#FACC15", borderColor: "#EAB308" },
   tileDone: { backgroundColor: "#14532D", borderColor: "#14532D" },
   tileTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
