@@ -42,6 +42,35 @@ export interface BoardRow {
 }
 
 /** Public leaderboard (top 50 + this player's row when signed in). */
+/** This week's league group (server-accounts.js leagueView); signed-in only. */
+export interface LeagueRow {
+  rank: number;
+  nick: string;
+  avatar: string;
+  frame?: string;
+  xp: number;
+  me: boolean;
+}
+export interface League {
+  league: string;
+  tier: number;
+  leagues: string[];
+  /** when the week ends (ms) */
+  ends: number;
+  up: number;
+  down: number;
+  /** last week's outcome, "up:2:4:2026-10-05" (move:tier:place:week), ":seen" once shown */
+  last: string | null;
+  joined: boolean;
+  rows: LeagueRow[];
+}
+export function fetchLeague() {
+  return api<League>("/league");
+}
+export function markLeagueSeen() {
+  return api<{ ok: boolean }>("/league/seen", { method: "POST" }).catch(() => null);
+}
+
 export function fetchLeaderboard(board: Board) {
   return api<{ top: BoardRow[]; me: BoardRow | null; total: number }>(`/leaderboard?board=${board}`);
 }

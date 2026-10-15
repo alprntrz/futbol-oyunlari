@@ -314,6 +314,88 @@ function leaderboard(board, me) {
   return { top, me: mine, total: rows.length };
 }
 
+// ── Weekly leagues (Duolingo-style): each week signed-in players who earn XP are put
+// in a group of up to LEAGUE_SIZE in their league; at the week's end the top
+// LEAGUE_UP move up a league and the bottom LEAGUE_DOWN move down. Weeks start on
+// Monday 00:00 UTC. Only nick, avatar, frame and the week's XP are shown.
+const LEAGUES = ["bronze", "silver", "gold", "sapphire", "ruby", "emerald", "diamond"];
+const LEAGUE_SIZE = 30;
+const LEAGUE_UP = 7;
+const LEAGUE_DOWN = 5;
+db.exec(`
+  CREATE TABLE IF NOT EXISTS league_members (
+    week TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    tier INTEGER NOT NULL,
+    grp INTEGER NOT NULL,
+    xp INTEGER NOT NULL DEFAULT 0,
+    joined INTEGER NOT NULL,
+    PRIMARY KEY (week, user_id)
+  );
+  CREATE INDEX IF NOT EXISTS league_group ON league_members (week, tier, grp);
+`);
+for (const [col, def] of [["league_tier", "INTEGER NOT NULL DEFAULT 0"], ["league_last", "TEXT NOT NULL DEFAULT ''"]]) {
+  if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === col)) db.exec(`ALTER TABLE users ADD COLUMN ${col} ${def}`);
+}
+
+/** Monday of the week (UTC) as YYYY-MM-DD, and when it ends (ms) */
+function weekOf(now = Date.now()) {
+  const d = new Date(now);
+  const day = (d.getUTCDay() + 6) % 7;
+  const start = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - day);
+  return { week: new Date(start).toISOString().slice(0, 10), ends: start + 7 * 86400000 };
+}
+
+/**
+ * Settle any finished week the user took part in: move them up or down a
+ * league by their place in their group. Stored as `league_last` ("up:2:4" =
+ * moved up to tier 2, finished 4th) for the screen to show once.
+ */
+function settleLeague(user) {
+  const { week } = weekOf();
+  const past = db.prepare("SELECT week, tier, grp FROM league_members WHERE user_id = ? AND week < ? ORDER BY week DESC LIMIT 1").get(user.id, week);
+  if (!past || (user.league_last && user.league_last.split(":")[3] === past.week)) return;
+  const group = db.prepare("SELECT user_id, xp, joined FROM league_members WHERE week = ? AND tier = ? AND grp = ? ORDER BY xp DESC, joined ASC").all(past.week, past.tier, past.grp);
+  const place = group.findIndex((m) => m.user_id === user.id) + 1;
+  const n = group.length;
+  let tier = past.tier;
+  let move = "stay";
+  // a group too small to race doesn't move anyone down; moving up needs someone to beat
+  if (n >= 2 && place <= Math.min(LEAGUE_UP, Math.ceil(n / 3)) && tier < LEAGUES.length - 1) (tier++, (move = "up"));
+  else if (n >= LEAGUE_UP + LEAGUE_DOWN && place > n - LEAGUE_DOWN && tier > 0) (tier--, (move = "down"));
+  user.league_tier = tier;
+  user.league_last = `${move}:${tier}:${place}:${past.week}`;
+  db.prepare("UPDATE users SET league_tier = ?, league_last = ? WHERE id = ?").run(tier, user.league_last, user.id);
+}
+
+/** Add XP to this week's league race, joining a group on the first XP of the week. */
+function leagueAdd(user, gained) {
+  settleLeague(user);
+  const { week } = weekOf();
+  const mine = db.prepare("SELECT tier, grp FROM league_members WHERE week = ? AND user_id = ?").get(week, user.id);
+  if (mine) return db.prepare("UPDATE league_members SET xp = xp + ? WHERE week = ? AND user_id = ?").run(gained, week, user.id);
+  const tier = user.league_tier ?? 0;
+  const open = db
+    .prepare("SELECT grp, COUNT(*) AS n FROM league_members WHERE week = ? AND tier = ? GROUP BY grp HAVING n < ? ORDER BY grp LIMIT 1")
+    .get(week, tier, LEAGUE_SIZE);
+  const grp = open ? open.grp : (db.prepare("SELECT MAX(grp) AS g FROM league_members WHERE week = ? AND tier = ?").get(week, tier).g ?? -1) + 1;
+  db.prepare("INSERT INTO league_members (week, user_id, tier, grp, xp, joined) VALUES (?, ?, ?, ?, ?, ?)").run(week, user.id, tier, grp, gained, Date.now());
+}
+
+/** This week's group for the screen: rows, my place, the zones and when the week ends. */
+function leagueView(user) {
+  settleLeague(user);
+  const { week, ends } = weekOf();
+  const base = { league: LEAGUES[user.league_tier ?? 0], tier: user.league_tier ?? 0, leagues: LEAGUES, ends, up: LEAGUE_UP, down: LEAGUE_DOWN, last: user.league_last || null };
+  const mine = db.prepare("SELECT tier, grp FROM league_members WHERE week = ? AND user_id = ?").get(week, user.id);
+  if (!mine) return { ...base, joined: false, rows: [] };
+  const rows = db
+    .prepare("SELECT m.user_id, m.xp, u.nick, u.avatar, u.frame, u.xp AS total FROM league_members m JOIN users u ON u.id = m.user_id WHERE m.week = ? AND m.tier = ? AND m.grp = ? ORDER BY m.xp DESC, m.joined ASC")
+    .all(week, mine.tier, mine.grp)
+    .map((r, i) => ({ rank: i + 1, nick: r.nick || "?", avatar: r.avatar, frame: frameOf({ frame: r.frame, xp: r.total }), xp: r.xp, me: r.user_id === user.id }));
+  return { ...base, tier: mine.tier, league: LEAGUES[mine.tier], joined: true, rows };
+}
+
 function addXp(user, key, game, amount, cap = MAX_AWARD) {
   if (!GAMES.has(game)) return false;
   const gained = Math.max(0, Math.min(cap, Math.round(Number(amount) || 0)));
@@ -326,6 +408,7 @@ function addXp(user, key, game, amount, cap = MAX_AWARD) {
   user.xp += gained;
   user.by_game = JSON.stringify(byGame);
   db.prepare("UPDATE users SET xp = ?, by_game = ? WHERE id = ?").run(user.xp, user.by_game, user.id);
+  leagueAdd(user, gained);
   return true;
 }
 
@@ -387,6 +470,19 @@ async function handleAccountApi(req, res, cleanNick) {
     }
 
     // Leaderboards are public (nicknames, avatars, levels, ratings only)
+    if (url === "/api/account/league" && req.method === "GET") {
+      const user = userFromRequest(req);
+      if (!user) return send(res, 401, { error: "auth" }), true;
+      return send(res, 200, leagueView(user)), true;
+    }
+
+    if (url === "/api/account/league/seen" && req.method === "POST") {
+      const user = userFromRequest(req);
+      if (!user) return send(res, 401, { error: "auth" }), true;
+      if (user.league_last && !user.league_last.endsWith(":seen")) db.prepare("UPDATE users SET league_last = ? WHERE id = ?").run(user.league_last + ":seen", user.id);
+      return send(res, 200, { ok: true }), true;
+    }
+
     if (url === "/api/account/leaderboard" && req.method === "GET") {
       const board = new URL(req.url, "http://x").searchParams.get("board") || "xp";
       const out = leaderboard(board, userFromRequest(req)?.id ?? null);
@@ -463,6 +559,7 @@ async function handleAccountApi(req, res, cleanNick) {
       if (user.apple_refresh) await appleForm("revoke", { token: user.apple_refresh, token_type_hint: "refresh_token" }).catch(() => null);
       db.prepare("DELETE FROM awards WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM friends WHERE user_id = ? OR friend_id = ?").run(user.id, user.id);
+      db.prepare("DELETE FROM league_members WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM ratings WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM sessions WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM users WHERE id = ?").run(user.id);

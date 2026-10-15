@@ -6,6 +6,8 @@ import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, wit
 import { dailyMatch, dayNumber } from "@/lib/daily";
 
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
+import { LEAGUE_COLOR } from "~/app/lig";
+import { fetchLeague, useAccount, type League } from "~/lib/account";
 import { BRAND, ROZET } from "~/lib/brand";
 import { useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
@@ -123,11 +125,43 @@ export function HomeBoard() {
         </View>
       </Tap>
       </Animated.View>
+      <LeagueRow />
     </View>
   );
 }
 
+/** This week's league in one row: shield, league, my place, days left. */
+function LeagueRow() {
+  const { t } = useI18n();
+  const account = useAccount();
+  const [lg, setLg] = useState<League | null>(null);
+  const [days, setDays] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      if (account)
+        fetchLeague()
+          .then((d) => (setLg(d), setDays(Math.max(1, Math.ceil((d.ends - Date.now()) / 86400000)))))
+          .catch(() => {});
+    }, [account])
+  );
+  const name = lg ? t(`lg_${lg.league}` as Parameters<typeof t>[0]) : t("lgTitle");
+  const me = lg?.rows.find((r) => r.me);
+  const sub = !account ? t("lgSignInShort") : me ? t("lgCardSub").replace("{place}", String(me.rank)).replace("{n}", String(days)) : t("lgCardJoin");
+  return (
+    <Tap onPress={() => (haptic.tap(), router.push("/lig"))} style={styles.league} accessibilityLabel={`${name}. ${sub}`}>
+      <Icon name="shield.fill" size={30} color={LEAGUE_COLOR[lg?.league ?? "bronze"]} fallback="🛡" />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.leagueName}>{name}</Text>
+        <Text style={T.caption}>{sub}</Text>
+      </View>
+      <Icon name="chevron.right" size={14} color={C.text3} fallback="›" />
+    </Tap>
+  );
+}
+
 const styles = StyleSheet.create({
+  league: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: C.card, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 12, marginTop: 12 },
+  leagueName: { fontFamily: F.display, fontSize: 19, color: C.text },
   brand: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 14 },
   brandLogo: { height: 30, width: 30 * 4.47, resizeMode: "contain" },
   head: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },

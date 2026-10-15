@@ -91,6 +91,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `la:token` {game, token, strings} from online ht / pp / dz screens (`useLivePush`) and `app:state`; the turn coming back carries an alert. App Groups
   (group.com.alprntrz.tiktako) is enabled by hand on both App IDs; EAS can't sync that capability, so iOS builds run
   with `EXPO_NO_CAPABILITY_SYNC=1`.
+- Weekly league (Duolingo-style): server-accounts.js `league_members` (week, user, tier, group of ≤30) filled by `addXp`
+  (`leagueAdd`), settled lazily per user on the next request (`settleLeague`: top min(7, ⅓ of the group) up, bottom 5 down
+  in groups of 12+; result in `users.league_last` shown once). GET `/api/account/league`, POST `/league/seen`. Leagues bronze →
+  diamond (`LEAGUES`). Screen `mobile/src/app/lig.tsx`, row on Home (`HomeBoard`). Signed-in only; no house players.
 - Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
   The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
   server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live
