@@ -1,6 +1,6 @@
 import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
 import { alive, bench, buy, buyXp, chooseAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, roundKind, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
-import { REROLL_COST, SCOUT_DISCOUNT, SLOTS, XP_COST, type Pos } from "@/lib/taktik/rules";
+import { INCOME, INTEREST_STEP, REROLL_COST, SCOUT_DISCOUNT, SLOTS, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
 import { STYLES, type TraitState } from "@/lib/taktik/traits";
 import type { Manager, ShopCard } from "@/lib/taktik/types";
@@ -18,6 +18,7 @@ import { ClubShirt } from "~/components/HatTrickBoard";
 import { COST_COLOR, ItemIcon, PosTag, UnitCard, clubCriterion } from "~/components/taktik/Card";
 import { MatchView } from "~/components/taktik/MatchView";
 import { Text } from "~/components/Text";
+import { TourOverlay, useTour } from "~/components/Tour";
 import { Button, Icon, Tap } from "~/components/ui";
 import { TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
@@ -49,6 +50,20 @@ export default function TaktikGame() {
   const [guess, setGuess] = useState("");
   const [scoutMsg, setScoutMsg] = useState<string | null>(null);
   const [info, setInfo] = useState<TraitState | null>(null);
+  const scroller = useRef<ScrollView>(null);
+  // first game: a walkthrough that lights up each part of the screen in turn
+  const tour = useTour("taktik-v1", [
+    { target: "shop", title: t("ttkTour1T"), body: t("ttkTour1") },
+    { target: "gold", title: t("ttkTour2T"), body: t("ttkTour2").replace("{income}", String(INCOME)).replace("{step}", String(INTEREST_STEP)) },
+    { target: "pitch", title: t("ttkTour3T"), body: t("ttkTour3") },
+    { target: "traits", title: t("ttkTour4T"), body: t("ttkTour4") },
+    { target: "bench", title: t("ttkTour5T"), body: t("ttkTour5"), before: () => scroller.current?.scrollToEnd({ animated: true }) },
+    { target: "reroll", title: t("ttkTour6T"), body: t("ttkTour6").replace("{g}", String(REROLL_COST)) },
+    { target: "xp", title: t("ttkTour7T"), body: t("ttkTour7").replace("{g}", String(XP_COST)) },
+    { target: "hp", title: t("ttkTour8T"), body: t("ttkTour8"), before: () => scroller.current?.scrollTo({ y: 0, animated: true }) },
+    { target: "table", title: t("ttkTour9T"), body: t("ttkTour9") },
+    { target: "kick", title: t("ttkTour10T"), body: t("ttkTour10") },
+  ]);
 
   const me: Manager | undefined = lobby?.managers[0];
   const out = !!me && (me.place !== null || !!lobby?.over);
@@ -202,16 +217,20 @@ export default function TaktikGame() {
             {t("ttkStage").replace("{s}", String(lobby.stage)).replace("{r}", String(lobby.round + 1))}
             {roundKind(lobby) === "pve" ? ` · ${t("ttkFriendly")}` : ""}
           </Text>
-          <View style={styles.stat}>
+          <View ref={tour.ref("hp")} collapsable={false} style={styles.stat}>
             <Icon name="heart.fill" size={14} color="#FF5A6E" fallback="♥" />
             <Text style={styles.statText}>{Math.max(0, me.hp)}</Text>
           </View>
-          <View style={styles.stat}>
+          <View ref={tour.ref("gold")} collapsable={false} style={styles.stat}>
             <Text style={{ fontSize: 13 }}>🪙</Text>
             <Text style={styles.statText}>{me.gold}</Text>
           </View>
+          <Tap onPress={tour.start} style={styles.back} accessibilityLabel={t("ttkHowTo")}>
+            <Icon name="questionmark" size={16} color="white" fallback="?" />
+          </Tap>
         </View>
         {/* everyone's health */}
+        <View ref={tour.ref("table")} collapsable={false}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.table}>
           {standings.map((m) => (
             <View key={m.id} style={[styles.mgr, m.id === me.id && styles.mgrMe, m.place !== null && { opacity: 0.35 }]}>
@@ -224,10 +243,12 @@ export default function TaktikGame() {
             </View>
           ))}
         </ScrollView>
+        </View>
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 12 }} keyboardShouldPersistTaps="handled">
+      <ScrollView ref={scroller} style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 12 }} keyboardShouldPersistTaps="handled">
         {/* the pitch */}
+        <View ref={tour.ref("pitch")} collapsable={false}>
         <Pressable onPress={() => setSel(null)} style={[styles.pitch, { marginHorizontal: 12 }]}>
           <View style={styles.pitchLine} />
           <View style={styles.circle} />
@@ -256,8 +277,10 @@ export default function TaktikGame() {
             <Text style={styles.capText}>{t("ttkOnPitch").replace("{n}", String(onPitch.length)).replace("{m}", String(cap))}</Text>
           </View>
         </Pressable>
+        </View>
 
         {/* synergies */}
+        <View ref={tour.ref("traits")} collapsable={false}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.traits}>
           {traits.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
           {traits.map((x) => (
@@ -269,6 +292,7 @@ export default function TaktikGame() {
             </Tap>
           ))}
         </ScrollView>
+        </View>
 
         {/* items */}
         {me.items.length > 0 && (
@@ -284,6 +308,7 @@ export default function TaktikGame() {
         )}
 
         {/* bench */}
+        <View ref={tour.ref("bench")} collapsable={false}>
         <Pressable onPress={tapBench} style={styles.benchWrap}>
           <Text style={styles.label}>
             {t("ttkBench")} {bench(me).length}/8
@@ -297,7 +322,7 @@ export default function TaktikGame() {
             ))}
           </ScrollView>
         </Pressable>
-
+        </View>
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 6 }]}>
@@ -317,7 +342,7 @@ export default function TaktikGame() {
             <Text style={styles.sellText}>{t("ttkSell").replace("{g}", String(sellValue(selectedUnit)))}</Text>
           </Tap>
         ) : (
-          <View style={styles.shop}>
+          <View ref={tour.ref("shop")} collapsable={false} style={styles.shop}>
             {me.shop.map((card, i) => {
               if (!card) return <View key={i} style={{ width: shopW }} />;
               const p = lobby.players[card.pid];
@@ -355,12 +380,15 @@ export default function TaktikGame() {
         )}
 
         <View style={styles.actions}>
+          <View ref={tour.ref("reroll")} collapsable={false} style={{ flex: 1 }}>
           <Tap onPress={() => (act((l) => reroll(l, me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.small} accessibilityLabel={t("ttkReroll")}>
             <Icon name="arrow.clockwise" size={16} color="white" fallback="↻" />
             <Text style={styles.smallText}>
               {t("ttkReroll")} · {REROLL_COST}
             </Text>
           </Tap>
+          </View>
+          <View ref={tour.ref("xp")} collapsable={false} style={{ flex: 1 }}>
           <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.small} accessibilityLabel={t("ttkBuyXp")}>
             <Text style={styles.smallText}>
               {t("ttkLevel").replace("{n}", String(me.level))} {xpNeed ? `${me.xp}/${xpNeed}` : ""}
@@ -369,10 +397,13 @@ export default function TaktikGame() {
               {t("ttkBuyXp")} · {XP_COST}
             </Text>
           </Tap>
+          </View>
+          <View ref={tour.ref("kick")} collapsable={false} style={{ flex: 1 }}>
           <Tap onPress={startMatch} style={[styles.small, styles.kick]} accessibilityLabel={t("ttkPlayMatch")}>
             <Icon name="play.fill" size={16} color="#3B2A05" fallback="▶" />
             <Text style={[styles.smallText, { color: "#3B2A05" }]}>{t("ttkPlayMatch")}</Text>
           </Tap>
+          </View>
         </View>
       </View>
 
@@ -465,6 +496,8 @@ export default function TaktikGame() {
           </Animated.View>
         </View>
       )}
+
+      {!out && !match && <TourOverlay tour={tour} />}
     </View>
   );
 }
