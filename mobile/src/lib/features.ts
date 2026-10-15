@@ -18,5 +18,9 @@ export const LIVE_ACTIVITIES = true;
  */
 export const LIVE_PUSH = true;
 
-/** Home as a pitch with every game as a player token (draft C, components/HomePitch.tsx); false = the list home. */
-export const HOME_PITCH = true;
+/**
+ * Home layout: "list" (status, quick play, today's puzzles, quests, versus modes),
+ * "fixtures" (draft B, components/HomeFixtures.tsx: today's dailies as a match-day list)
+ * or "pitch" (draft C, components/HomePitch.tsx, not liked: kept for reference).
+ */
+export const HOME_LAYOUT: "list" | "fixtures" | "pitch" = "fixtures";

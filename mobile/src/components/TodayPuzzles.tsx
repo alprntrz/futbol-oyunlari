@@ -18,8 +18,8 @@ import { Text } from "./Text";
 import { Card, Icon, Tap } from "./ui";
 
 /** Where a daily puzzle stands: not opened, under way (with a count) or finished. */
-type Progress = { state: "new" | "started" | "done"; count: number };
-interface Today {
+export type Progress = { state: "new" | "started" | "done"; count: number };
+export interface Today {
   grid: Progress & { filled: boolean[] };
   xi: Progress;
   bingo: Progress;
@@ -38,7 +38,7 @@ async function readJSON<T>(key: string): Promise<T | null> {
 }
 
 /** Reads the three daily saves the game screens write (same keys and rules as those screens). */
-async function loadToday(day: number, xiMatchId: string, bingoLength: number): Promise<Today> {
+export async function loadToday(day: number, xiMatchId: string, bingoLength: number): Promise<Today> {
   const [box, xi, bingo] = await Promise.all([
     readJSON<{ cells: string[][]; finished: boolean }>(`hattrick-box-${day}`),
     loadDayState(day),
