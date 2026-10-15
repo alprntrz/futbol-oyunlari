@@ -151,6 +151,15 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 
 ## Conventions that are easy to break
 
+- server.js wraps every socket handler (`socket.on` in the connection handler): payload `{}` when missing, ack only if a
+  function, a thrown error is logged, 60+ events in 5 s drops the socket. Validate anything a phone sends that reaches the
+  other phone (`htGridOk`, `ppBoardOk`, `nameOf`, whole-number cells, touching hexes via `PP_NEIGHBOURS`). Accounts cap game
+  XP at `DAILY_XP_CAP` per UTC day; guest XP imports once per account.
+- App UI: each game's colour pair is `GAME` in `mobile/src/lib/theme.ts` (Games tab, hubs, Play online picker); rules live
+  in `components/HowTo.tsx` (`*Steps`, also listed in Settings); a dark screen sets the light status bar with
+  `FocusStatusBar` (never a bare `<StatusBar>`); don't repeat the header title as a big title on the page; a walkthrough
+  (`useTour`) must not run over a live clock (freeze it, or `autoStart = false` online).
+
 - `Match.lineup` is ordered by `FORMATIONS[formation]` slots in
   `src/lib/formations.ts`, GK first; a back four is `[GK, RB, RCB, LCB, LB]` —
   right to left, the team's right is the viewer's right.
