@@ -90,12 +90,12 @@ export function EmoteLayer({ e, top }: { e: EmoteState; top: number }) {
         </View>
       )}
       {e.mine && (
-        <Animated.View key={e.mine.id} entering={ZoomIn.springify().damping(12)} exiting={FadeOut.duration(200)} style={[styles.bubble, { top: top + 58, left: 20 }]} pointerEvents="none">
+        <Animated.View key={e.mine.id} entering={ZoomIn.duration(180)} exiting={FadeOut.duration(200)} style={[styles.bubble, { top: top + 58, left: 20 }]} pointerEvents="none">
           <Text style={styles.bubbleEmoji}>{EMOTES[e.mine.emote]}</Text>
         </Animated.View>
       )}
       {e.theirs && (
-        <Animated.View key={e.theirs.id} entering={ZoomIn.springify().damping(12)} exiting={FadeOut.duration(200)} style={[styles.bubble, { top: top + 58, right: 20 }]} pointerEvents="none">
+        <Animated.View key={e.theirs.id} entering={ZoomIn.duration(180)} exiting={FadeOut.duration(200)} style={[styles.bubble, { top: top + 58, right: 20 }]} pointerEvents="none">
           <Text style={styles.bubbleEmoji}>{EMOTES[e.theirs.emote]}</Text>
         </Animated.View>
       )}

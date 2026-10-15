@@ -34,7 +34,7 @@ const freshRun = (): BingoRun => ({ placed: Array(CARD_SIZE).fill(null), index: 
 
 const POP = new Keyframe({
   0: { opacity: 0, transform: [{ scale: 0.6 }] },
-  55: { opacity: 1, transform: [{ scale: 1.12 }] },
+  55: { opacity: 1, transform: [{ scale: 1.04 }] },
   100: { opacity: 1, transform: [{ scale: 1 }] },
 }).duration(260);
 

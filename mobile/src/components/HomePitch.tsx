@@ -61,7 +61,7 @@ export function HomePitch() {
         <View style={[styles.box, { bottom: -2, left: w * 0.22, width: w * 0.56, height: h * 0.13 }]} />
 
         {tokens.map((tk, i) => (
-          <Animated.View key={tk.key} entering={ZoomIn.delay(60 + i * 45).springify().damping(13)} style={[styles.slot, { left: tk.x * w - size / 2 - 8, top: tk.y * h }]}>
+          <Animated.View key={tk.key} entering={ZoomIn.delay(60 + i * 45).duration(200)} style={[styles.slot, { left: tk.x * w - size / 2 - 8, top: tk.y * h }]}>
             <Tap onPress={() => go(tk.href)} accessibilityLabel={tk.title} style={{ alignItems: "center" }}>
               <View style={[styles.token, { width: size, height: size, borderRadius: size / 2 }]}>
                 <Image source={tk.image} style={{ width: size * 0.74, height: size * 0.74 }} resizeMode="contain" />

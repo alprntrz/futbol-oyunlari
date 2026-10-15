@@ -8,7 +8,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSequence,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -125,10 +124,10 @@ function Pill({ award }: { award: Shown }) {
         )
       );
       flash.set(withDelay(LANDED, withSequence(withTiming(1, { duration: 120 }), withTiming(0, { duration: 500 }))));
-      badge.set(withDelay(LANDED, withSequence(withTiming(1.45, { duration: 160 }), withSpring(1, { damping: 6, stiffness: 220 }))));
+      badge.set(withDelay(LANDED, withSequence(withTiming(1.15, { duration: 160 }), withTiming(1, { duration: 180 }))));
     } else {
       bar.set(withDelay(FLY_FROM + FLY_MS, withTiming(frac(award.after), { duration: LANDED - FLY_FROM - FLY_MS + 150, easing: ease })));
-      badge.set(withDelay(LANDED, withSequence(withTiming(1.12, { duration: 120 }), withSpring(1, { damping: 8 }))));
+      badge.set(withDelay(LANDED, withSequence(withTiming(1.12, { duration: 120 }), withTiming(1, { duration: 180 }))));
     }
     return () => {
       clearInterval(count);
@@ -189,7 +188,7 @@ function Gem({ i, from, to }: { i: number; from: { x: number; y: number }; to: {
   useEffect(() => {
     const start = FLY_FROM + i * GEM_GAP;
     o.set(withDelay(i * 30, withSequence(withTiming(1, { duration: 120 }), withDelay(start + FLY_MS - 150, withTiming(0, { duration: 120 })))));
-    s.set(withDelay(i * 30, withSequence(withSpring(1.2, { damping: 7 }), withDelay(start - 200, withTiming(0.55, { duration: FLY_MS })))));
+    s.set(withDelay(i * 30, withSequence(withTiming(1, { duration: 160 }), withDelay(start - 200, withTiming(0.55, { duration: FLY_MS })))));
     x.set(
       withSequence(
         withTiming(from.x + spread.x, { duration: 220, easing: Easing.out(Easing.quad) }),

@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
 import { useAccount } from "~/lib/account";
 import { loadAvatar } from "~/lib/avatar";
@@ -49,7 +49,7 @@ export function HomeStatus() {
     wiggle.set(
       claimed
         ? 0
-        : withRepeat(withSequence(withTiming(-8, { duration: 90 }), withTiming(8, { duration: 90 }), withTiming(-5, { duration: 80 }), withTiming(0, { duration: 80 }), withTiming(0, { duration: 1400 })), -1)
+        : withRepeat(withSequence(withTiming(-5, { duration: 400 }), withTiming(5, { duration: 600 }), withTiming(0, { duration: 400 }), withTiming(0, { duration: 1400 })), -1)
     );
   }, [claimed, wiggle]);
   const giftStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${wiggle.get()}deg` }, { scale: pop.get() }] }));
@@ -57,7 +57,7 @@ export function HomeStatus() {
   const claim = () => {
     if (claimed) return;
     haptic.success();
-    pop.set(withSequence(withTiming(1.35, { duration: 120 }), withSpring(1, { damping: 7, stiffness: 240 })));
+    pop.set(withSequence(withTiming(1.12, { duration: 120 }), withTiming(1, { duration: 180 })));
     claimDaily();
   };
 

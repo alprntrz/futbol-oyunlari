@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
 import { REWARD } from "~/lib/brand";
 import { CALENDAR, claimDaily, useDailyRewards } from "~/lib/dailyRewards";
@@ -21,13 +21,13 @@ export function DailyRewardCard() {
   const pop = useSharedValue(1);
 
   useEffect(() => {
-    pulse.set(claimed ? 1 : withRepeat(withSequence(withTiming(1.08, { duration: 650 }), withTiming(1, { duration: 650 })), -1));
+    pulse.set(claimed ? 1 : withRepeat(withSequence(withTiming(1.04, { duration: 1000 }), withTiming(1, { duration: 1000 })), -1));
   }, [claimed, pulse]);
   const todayStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.get() * pop.get() }] }));
 
   const claim = () => {
     haptic.success();
-    pop.set(withSequence(withTiming(1.35, { duration: 120 }), withSpring(1, { damping: 7, stiffness: 240 })));
+    pop.set(withSequence(withTiming(1.12, { duration: 120 }), withTiming(1, { duration: 180 })));
     claimDaily();
   };
 

@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSequence,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 
@@ -55,7 +54,7 @@ export function ComboChip({ combo }: { combo: number }) {
   const scale = useSharedValue(1);
   useEffect(() => {
     if (combo < 2) return;
-    scale.set(withSequence(withTiming(1.25, { duration: 110 }), withSpring(1, { damping: 9, stiffness: 260 })));
+    scale.set(withSequence(withTiming(1.1, { duration: 110 }), withTiming(1, { duration: 180 })));
   }, [combo, scale]);
   const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }], opacity: combo >= 2 ? 1 : 0 }));
   return (
@@ -92,7 +91,7 @@ export function ComboBurst({ combo, hold = false }: { combo: number; hold?: bool
     streak.set(0);
     streak.set(withTiming(1, { duration: 520, easing: Easing.out(Easing.cubic) }));
     text.set(0);
-    text.set(withSequence(withSpring(1, { damping: 8, stiffness: 220 }), withDelay(520, withTiming(2, { duration: 260 }))));
+    text.set(withSequence(withTiming(1, { duration: 180 }), withDelay(520, withTiming(2, { duration: 260 }))));
     const id = setTimeout(() => setShown(null), 1150);
     return () => clearTimeout(id);
   }, [combo, hold, streak, text]);

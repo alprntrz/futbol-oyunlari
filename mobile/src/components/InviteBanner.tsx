@@ -72,7 +72,7 @@ export function InviteBanner() {
   };
 
   return (
-    <Animated.View entering={SlideInUp.springify().damping(16)} exiting={SlideOutUp.duration(200)} style={[styles.wrap, { top: insets.top + 6 }]} pointerEvents="box-none">
+    <Animated.View entering={SlideInUp.duration(250)} exiting={SlideOutUp.duration(200)} style={[styles.wrap, { top: insets.top + 6 }]} pointerEvents="box-none">
       <View style={styles.card} accessibilityLiveRegion="polite">
         <Avatar id={invite.from?.avatar ?? null} size={42} frame={invite.from?.frame} />
         <View style={{ flex: 1 }}>

@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSequence,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -93,7 +92,7 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
     const end = award.after.into / award.after.need;
     if (levelled) {
       bar.set(withSequence(withTiming(1, { duration: 650, easing: Easing.out(Easing.cubic) }), withTiming(0, { duration: 0 }), withTiming(end, { duration: 450 })));
-      badge.set(withDelay(650, withSequence(withSpring(1.45, { damping: 6, stiffness: 240 }), withSpring(1, { damping: 10 }))));
+      badge.set(withDelay(650, withSequence(withTiming(1.15, { duration: 200 }), withTiming(1, { duration: 180 }))));
       setTimeout(() => (haptic.success(), play("levelup")), 650);
     } else {
       bar.set(withTiming(end, { duration: 900, easing: Easing.out(Easing.cubic) }));

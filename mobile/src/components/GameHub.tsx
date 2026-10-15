@@ -1,9 +1,9 @@
 import type { SymbolViewProps } from "expo-symbols";
 import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -57,11 +57,6 @@ export function GameHub({
 }) {
   const { t } = useI18n();
   const [help, setHelp] = useState(false);
-  const breathe = useSharedValue(1);
-  useEffect(() => {
-    breathe.set(withRepeat(withSequence(withTiming(1.025, { duration: 900 }), withTiming(1, { duration: 900 })), -1));
-  }, [breathe]);
-  const breatheStyle = useAnimatedStyle(() => ({ transform: [{ scale: breathe.get() }] }));
 
   return (
     <Page>
@@ -78,21 +73,21 @@ export function GameHub({
         }}
       />
       <View style={styles.hero}>
-        <Animated.View entering={ZoomIn.springify().damping(13)} style={[styles.art, { backgroundColor: bg }]}>
+        <Animated.View entering={FadeIn.duration(250)} style={[styles.art, { backgroundColor: bg }]}>
           <Image source={image} style={styles.artImage} />
         </Animated.View>
         <Text style={styles.tagline}>{tagline}</Text>
       </View>
 
       {status && <Text style={styles.status}>{status}</Text>}
-      <Animated.View style={[{ marginTop: status ? 8 : 18 }, breatheStyle]}>
+      <View style={{ marginTop: status ? 8 : 18 }}>
         <Tap onPress={() => (haptic.press(), primary.onPress())} style={styles.primary} accessibilityLabel={primary.label}>
           <Icon name={primary.icon} size={20} color="#3B2A05" fallback={primary.fallback} />
           <Text style={styles.primaryText} numberOfLines={1} adjustsFontSizeToFit>
             {primary.label}
           </Text>
         </Tap>
-      </Animated.View>
+      </View>
 
       {secondary.length > 0 && (
         <View style={styles.secondary}>

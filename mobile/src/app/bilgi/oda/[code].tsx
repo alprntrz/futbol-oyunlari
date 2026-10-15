@@ -348,7 +348,7 @@ export default function QuizRoom() {
     const podium = [standings[1], standings[0], standings[2]];
     body = (
       <View style={{ flex: 1 }}>
-        <Animated.View entering={SlideInDown.springify().damping(17).mass(0.9)} style={styles.podiumCard}>
+        <Animated.View entering={SlideInDown.duration(280)} style={styles.podiumCard}>
           <Text style={styles.podiumTitle}>{placeText}</Text>
           <View style={styles.podium}>
             {podium.map((p, k) =>
