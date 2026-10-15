@@ -1,7 +1,8 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
+import { ROZET } from "~/lib/brand";
 import { loadBadges, type Badge } from "~/lib/cosmetics";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -35,8 +36,13 @@ export function Badges() {
         <View style={styles.grid}>
           {list.map((b) => (
             <Tap key={b.id} onPress={() => (haptic.tap(), setOpen(open?.id === b.id ? null : b))} style={styles.cell} accessibilityLabel={`${t(`badge_${b.id}`)}, ${b.progress}/${b.target}`}>
-              <View style={[styles.medal, { backgroundColor: b.done ? b.color : "#E3E8E4" }, open?.id === b.id && styles.medalOn]}>
-                <Icon name={b.icon as never} size={24} color={b.done ? "white" : "#A3ADA6"} fallback="★" />
+              <View style={[styles.medal, open?.id === b.id && styles.medalOn]}>
+                <Image source={ROZET.badge[b.id]} style={[styles.art, !b.done && { opacity: 0.28 }]} />
+                {!b.done && (
+                  <View style={styles.lock}>
+                    <Icon name="lock.fill" size={13} color="white" fallback="🔒" />
+                  </View>
+                )}
               </View>
               <Text style={[styles.name, !b.done && { color: C.text3 }]} numberOfLines={1}>
                 {t(`badge_${b.id}`)}
@@ -67,7 +73,9 @@ const styles = StyleSheet.create({
   head: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
   grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 14 },
   cell: { width: "25%", alignItems: "center", gap: 5 },
-  medal: { width: 52, height: 52, borderRadius: 26, alignItems: "center", justifyContent: "center" },
+  medal: { width: 60, height: 60, alignItems: "center", justifyContent: "center" },
+  art: { width: 60, height: 60, resizeMode: "contain" },
+  lock: { position: "absolute", width: 24, height: 24, borderRadius: 12, backgroundColor: "rgba(31,41,35,0.7)", alignItems: "center", justifyContent: "center" },
   medalOn: { transform: [{ scale: 1.1 }] },
   name: { fontFamily: F.display, fontSize: 13, color: C.text, textAlign: "center", paddingHorizontal: 2 },
   track: { width: 44, height: 4, borderRadius: 2, backgroundColor: "#E3E8E4", overflow: "hidden" },

@@ -8,7 +8,7 @@ import { syncProfile, useAccount } from "~/lib/account";
 import { AVATARS, loadAvatar, saveAvatar, type AvatarId } from "~/lib/avatar";
 import { FRAMES, frameFor, frameUnlocked, saveFrame, useChosenFrame, type FrameId } from "~/lib/cosmetics";
 import { pickPhoto, savePhoto, useMyPhoto } from "~/lib/photo";
-import { BRAND, TAKTIK } from "~/lib/brand";
+import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { loadNick, saveNick } from "~/lib/nick";
@@ -33,7 +33,7 @@ const GAMES: { game: XpGame; image: ImageSourcePropType; name: string }[] = [
   { game: "bingo", image: BRAND.icon.bingo, name: "bingoName" },
   { game: "pp", image: BRAND.icon.possession, name: "ppName" },
   { game: "tt", image: TAKTIK.hero, name: "ttkName" },
-  { game: "dz", image: BRAND.icon.team, name: "dzName" },
+  { game: "dz", image: ROZET.duel, name: "dzName" },
 ];
 
 /** Top of the Profile tab: avatar, nickname, overall level and XP per game. */

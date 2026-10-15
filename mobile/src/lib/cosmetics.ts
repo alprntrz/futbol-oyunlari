@@ -111,7 +111,7 @@ export type BadgeId =
 
 export interface Badge {
   id: BadgeId;
-  /** SF Symbol until the 3D art arrives, and its colour */
+  /** SF Symbol (fallback) and the colour of its progress bar; the art is ROZET.badge in brand.ts */
   icon: string;
   color: string;
   progress: number;

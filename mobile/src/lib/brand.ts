@@ -38,6 +38,25 @@ export const TAKTIK = {
   },
 };
 
+/** Badge medallions (docs/design/rozet-brief.md → scripts/badge-assets.py) and the Card Duel icon */
+export const ROZET = {
+  badge: {
+    firstGame: require("../../assets/brand/rozet/badge-firstGame.png"),
+    allGames: require("../../assets/brand/rozet/badge-allGames.png"),
+    streak7: require("../../assets/brand/rozet/badge-streak7.png"),
+    streak30: require("../../assets/brand/rozet/badge-streak30.png"),
+    level10: require("../../assets/brand/rozet/badge-level10.png"),
+    level20: require("../../assets/brand/rozet/badge-level20.png"),
+    level40: require("../../assets/brand/rozet/badge-level40.png"),
+    wins10: require("../../assets/brand/rozet/badge-wins10.png"),
+    wins50: require("../../assets/brand/rozet/badge-wins50.png"),
+    trophies5: require("../../assets/brand/rozet/badge-trophies5.png"),
+    perfectDuel: require("../../assets/brand/rozet/badge-perfectDuel.png"),
+    dailyDuel7: require("../../assets/brand/rozet/badge-dailyDuel7.png"),
+  },
+  duel: require("../../assets/brand/rozet/icon-duel.png"),
+} as const;
+
 export const BRAND = {
   icon: {
     daily: require("../../assets/brand/icon-daily.png"),

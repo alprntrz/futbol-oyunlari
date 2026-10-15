@@ -10,7 +10,7 @@ import { teamName } from "@/lib/teams";
 import { Jersey } from "~/components/Jersey";
 import { Text } from "~/components/Text";
 import { Icon, Page, Tap } from "~/components/ui";
-import { BRAND, TAKTIK } from "~/lib/brand";
+import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { jerseyStyle } from "~/lib/kits";
 import { loadDayState } from "~/lib/storage";
@@ -100,7 +100,7 @@ export default function Games() {
       bg: ART_BG,
     },
     {
-      image: BRAND.icon.team,
+      image: ROZET.duel,
       title: t("dzName"),
       desc: t("dzShort"),
       href: "/duello",
