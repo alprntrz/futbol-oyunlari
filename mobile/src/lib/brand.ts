@@ -58,6 +58,9 @@ export const ROZET = {
 } as const;
 
 export const BRAND = {
+  /** typographic logo (docs/design/logo-brief.md); white one for dark grounds */
+  wordmark: require("../../assets/brand/logo-wordmark.png"),
+  wordmarkWhite: require("../../assets/brand/logo-wordmark-white.png"),
   icon: {
     daily: require("../../assets/brand/icon-daily.png"),
     practice: require("../../assets/brand/icon-practice.png"),

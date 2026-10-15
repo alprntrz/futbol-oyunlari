@@ -18,13 +18,11 @@ import { Icon, Tap } from "./ui";
 
 type Tile = { key: string; title: string; image: ImageSourcePropType; href: Href; p: Progress; newLine: string; progress: string; result: string };
 
-/** "tiktako." wordmark, top of Home; a typeset stand-in until the logo art (docs/design/logo-brief.md) arrives. */
+/** The tiktako. logo, top of Home (as in the designer's draft). */
 export function Wordmark() {
   return (
-    <View style={styles.brand} accessibilityRole="header" accessibilityLabel="Tiktako">
-      <Text style={styles.brandText}>
-        tiktako<Text style={{ color: C.green }}>.</Text>
-      </Text>
+    <View style={styles.brand}>
+      <Image source={BRAND.wordmark} style={styles.brandLogo} accessibilityRole="header" accessibilityLabel="Tiktako" />
     </View>
   );
 }
@@ -131,7 +129,7 @@ export function HomeBoard() {
 
 const styles = StyleSheet.create({
   brand: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 14 },
-  brandText: { fontFamily: F.black, fontSize: 34, lineHeight: 38, color: C.text, letterSpacing: -0.5 },
+  brandLogo: { height: 30, width: 30 * 4.47, resizeMode: "contain" },
   head: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },
   title: { fontFamily: F.display, fontSize: 30, color: C.text },
   count: { fontSize: 14, color: C.text2 },
