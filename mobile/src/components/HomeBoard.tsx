@@ -16,7 +16,7 @@ import { Text } from "./Text";
 import { loadToday, type Progress, type Today } from "./TodayPuzzles";
 import { Icon, Tap } from "./ui";
 
-type Tile = { key: string; title: string; image: ImageSourcePropType; href: Href; p: Progress; newLine: string; progress: string; result: string };
+type Tile = { key: string; title: string; accent: string; image: ImageSourcePropType; href: Href; p: Progress; newLine: string; progress: string; result: string };
 
 /** The tiktako. logo, top of Home (as in the designer's draft). */
 export function Wordmark() {
@@ -47,11 +47,12 @@ export function HomeBoard() {
 
   const NEW: Progress = { state: "new", count: 0 };
   const tiles: Tile[] = [
-    { key: "grid", title: t("homeTodayGrid"), image: BRAND.icon.tiki, href: "/hat-trick/tek", p: today?.grid ?? NEW, newLine: t("boardGridNew"), progress: `${today?.grid.count ?? 0}/9`, result: `${today?.grid.count ?? 0}/9` },
-    { key: "xi", title: t("daily"), image: BRAND.icon.daily, href: "/eksik-11/gunluk", p: today?.xi ?? NEW, newLine: t("boardXiNew"), progress: `${today?.xi.count ?? 0}/11`, result: `${today?.xi.count ?? 0}/11` },
-    { key: "bingo", title: t("bingoName"), image: BRAND.icon.bingo, href: "/bingo", p: today?.bingo ?? NEW, newLine: t("boardBingoNew"), progress: `${today?.bingo.count ?? 0}/${CARD_SIZE}`, result: `${today?.bingo.count ?? 0}/${CARD_SIZE}` },
+    { key: "grid", accent: "#3B82F6", title: t("homeTodayGrid"), image: BRAND.icon.tiki, href: "/hat-trick/tek", p: today?.grid ?? NEW, newLine: t("boardGridNew"), progress: `${today?.grid.count ?? 0}/9`, result: `${today?.grid.count ?? 0}/9` },
+    { key: "xi", accent: "#F43F5E", title: t("daily"), image: BRAND.icon.daily, href: "/eksik-11/gunluk", p: today?.xi ?? NEW, newLine: t("boardXiNew"), progress: `${today?.xi.count ?? 0}/11`, result: `${today?.xi.count ?? 0}/11` },
+    { key: "bingo", accent: "#22C55E", title: t("bingoName"), image: BRAND.icon.bingo, href: "/bingo", p: today?.bingo ?? NEW, newLine: t("boardBingoNew"), progress: `${today?.bingo.count ?? 0}/${CARD_SIZE}`, result: `${today?.bingo.count ?? 0}/${CARD_SIZE}` },
     {
       key: "duel",
+      accent: "#F59E0B",
       title: t("dzDaily"),
       image: ROZET.duel,
       href: duel.ready ? { pathname: "/duello/mac", params: { mode: "daily" } } : "/duello",
@@ -105,6 +106,8 @@ export function HomeBoard() {
                   </Text>
                   {going && <Icon name="play.circle.fill" size={20} color="#713F12" fallback="▶" />}
                 </View>
+                {/* a small coloured notch in the corner, so each tile stands out from the page */}
+                <View style={[styles.notch, { backgroundColor: x.accent }]} pointerEvents="none" />
               </Tap>
             </Animated.View>
           );
@@ -146,7 +149,8 @@ const styles = StyleSheet.create({
   countNum: { fontFamily: F.display, fontSize: 18, color: C.text },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 12 },
   cell: { width: "48.5%" },
-  tile: { backgroundColor: "#FBFAF5", borderRadius: 22, padding: 12, borderWidth: 1, borderColor: "#ECE8DC", minHeight: 196 },
+  tile: { backgroundColor: "#FBFAF5", borderRadius: 22, padding: 12, borderWidth: 1, borderColor: "#ECE8DC", minHeight: 196, overflow: "hidden" },
+  notch: { position: "absolute", right: -26, bottom: -26, width: 52, height: 52, transform: [{ rotate: "45deg" }] },
   versusNext: { borderWidth: 2, borderColor: "#65A30D", shadowColor: "#65A30D", shadowOpacity: 0.4, shadowRadius: 12, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
   tileGoing: { backgroundColor: "#FACC15", borderColor: "#EAB308" },
   tileDone: { backgroundColor: "#14532D", borderColor: "#14532D" },
