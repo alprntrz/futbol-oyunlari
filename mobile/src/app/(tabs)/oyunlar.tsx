@@ -3,11 +3,11 @@ import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native"
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Text } from "~/components/Text";
-import { Icon, Page, Tap } from "~/components/ui";
+import { Page, Tap } from "~/components/ui";
 import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F, T } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 type Game = { title: string; desc: string; who: string; image: ImageSourcePropType; bg: string; ink: string; href: Href };
 
@@ -32,29 +32,22 @@ export default function Games() {
     { title: t("bingoName"), desc: t("bingoShort"), who: t("playSolo"), image: BRAND.icon.bingo, bg: "#ECFCCB", ink: "#3F6212", href: "/bingo" },
   ];
 
+  // every game on one screen: a 2-column grid of compact tiles (art, name, who it's for)
   const card = (g: Game, i: number) => (
-    <Animated.View key={g.title} entering={FadeInDown.delay(i * 40).duration(220)}>
+    <Animated.View key={g.title} entering={FadeInDown.delay(i * 30).duration(200)} style={styles.cell}>
       <Tap onPress={() => (haptic.tap(), router.push(g.href))} style={[styles.card, { backgroundColor: g.bg }]} accessibilityLabel={`${g.title}. ${g.desc}`}>
         <Image source={g.image} style={styles.art} />
-        <View style={{ flex: 1, gap: 3 }}>
-          <Text style={[styles.name, { color: g.ink }]} numberOfLines={1} adjustsFontSizeToFit>
-            {g.title}
-          </Text>
-          <Text style={styles.desc} numberOfLines={2}>
-            {g.desc}
-          </Text>
-          <Text style={[styles.who, { color: g.ink }]}>{g.who}</Text>
-        </View>
-        <View style={[styles.go, { backgroundColor: g.ink }]}>
-          <Icon name="chevron.right" size={15} color="white" fallback="›" />
-        </View>
+        <Text style={[styles.name, { color: g.ink }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+          {g.title}
+        </Text>
+        <Text style={[styles.who, { color: g.ink }]}>{g.who}</Text>
       </Tap>
     </Animated.View>
   );
 
   return (
     <Page topInset>
-      <Text style={[T.largeTitle, { marginTop: 4 }]}>{t("tabGames")}</Text>
+      <Text style={styles.title}>{t("tabGames")}</Text>
       <Text style={styles.section}>{t("gamesVersus")}</Text>
       <View style={styles.list}>{versus.map(card)}</View>
       <Text style={styles.section}>{t("gamesSolo")}</Text>
@@ -64,12 +57,12 @@ export default function Games() {
 }
 
 const styles = StyleSheet.create({
-  section: { fontFamily: F.display, fontSize: 22, color: C.text, marginTop: 18, marginBottom: 10 },
-  list: { gap: 12 },
-  card: { flexDirection: "row", alignItems: "center", gap: 14, borderRadius: 24, padding: 16, minHeight: 116 },
-  art: { width: 76, height: 76, resizeMode: "contain" },
-  name: { fontFamily: F.black, fontSize: 26, lineHeight: 28 },
-  desc: { fontSize: 15, lineHeight: 20, color: C.text2 },
-  who: { fontSize: 13, fontWeight: "800" },
-  go: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center" },
+  title: { fontFamily: F.display, fontSize: 34, lineHeight: 36, color: C.text, marginTop: 2 },
+  section: { fontFamily: F.display, fontSize: 19, color: C.text, marginTop: 12, marginBottom: 8 },
+  list: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  cell: { width: "48.5%" },
+  card: { alignItems: "center", justifyContent: "center", gap: 2, borderRadius: 22, paddingHorizontal: 10, paddingVertical: 12, height: 146 },
+  art: { width: 64, height: 64, resizeMode: "contain", marginBottom: 4 },
+  name: { fontFamily: F.black, fontSize: 21, lineHeight: 23, textAlign: "center" },
+  who: { fontSize: 12, fontWeight: "800" },
 });
