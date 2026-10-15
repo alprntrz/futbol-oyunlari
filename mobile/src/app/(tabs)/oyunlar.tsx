@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
   section: { fontFamily: F.display, fontSize: 19, color: C.text, marginTop: 12, marginBottom: 8 },
   list: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   cell: { width: "48.5%" },
-  card: { alignItems: "center", justifyContent: "center", gap: 2, borderRadius: 22, paddingHorizontal: 10, paddingVertical: 12, height: 146 },
-  art: { width: 64, height: 64, resizeMode: "contain", marginBottom: 4 },
-  name: { fontFamily: F.black, fontSize: 21, lineHeight: 23, textAlign: "center" },
+  card: { alignItems: "center", justifyContent: "center", gap: 2, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 10, height: 124 },
+  art: { width: 52, height: 52, resizeMode: "contain", marginBottom: 4 },
+  name: { fontFamily: F.black, fontSize: 19, lineHeight: 21, textAlign: "center" },
   who: { fontSize: 12, fontWeight: "800" },
 });
