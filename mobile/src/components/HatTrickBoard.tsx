@@ -3,6 +3,8 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import Animated, { Keyframe } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import type { GridPlayer } from "@/data/players";
+import { playerInfo } from "@/lib/playerInfo";
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
 import { haptic } from "~/lib/haptics";
@@ -406,12 +408,8 @@ export function HatTrickBoard({
                       onPress={() => submit(p.name)}
                       style={[styles.suggestion, i > 0 && styles.suggestionDivider, used.has(p.name) && { opacity: 0.4 }]}
                     >
-                      <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
-                        <Text allowFontScaling={false} style={styles.avatarText}>
-                          {initials(p.name)}
-                        </Text>
-                      </View>
-                      <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                      <PlayerToken p={p} />
+                      <PlayerLine p={p} />
                       {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
                     </Tap>
                   ))
@@ -426,6 +424,42 @@ export function HatTrickBoard({
         </KeyboardAvoidingView>
       </Modal>
       <Confetti fire={confetti} />
+    </View>
+  );
+}
+
+/** shirt colour per position group: keeper amber, defence blue, midfield green, attack coral */
+const POS_COLOR = { G: "#F59E0B", D: "#2563EB", M: "#16A34A", F: "#F43F5E" } as const;
+
+/**
+ * A search result's badge: a little shirt in the colour of the player's
+ * position with their initials on it. No flag or club: those would give the
+ * square away.
+ */
+function PlayerToken({ p }: { p: GridPlayer }) {
+  const { pos } = playerInfo(p);
+  const color = pos ? POS_COLOR[pos] : avatarColor(p.name);
+  return (
+    <View style={styles.token}>
+      <Icon name="tshirt.fill" size={34} color={color} fallback="👕" />
+      <Text allowFontScaling={false} style={styles.tokenText}>
+        {initials(p.name)}
+      </Text>
+    </View>
+  );
+}
+
+/** The name, and under it "Midfielder · 34" (or "1960–2020" for a player who has died). */
+function PlayerLine({ p }: { p: GridPlayer }) {
+  const { t } = useI18n();
+  const { pos, age, life } = playerInfo(p);
+  const bits = [pos ? t(`posName_${pos}`) : null, age ? t("ageYears").replace("{n}", String(age)) : life ? `${life[0]}–${life[1]}` : null].filter(Boolean);
+  return (
+    <View style={{ flex: 1 }}>
+      <Text style={[T.headline, { fontSize: 15 }]} numberOfLines={1}>
+        {p.name}
+      </Text>
+      {bits.length > 0 && <Text style={styles.playerSub}>{bits.join(" · ")}</Text>}
     </View>
   );
 }
@@ -485,12 +519,8 @@ function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: numbe
               const mine = placed?.name === p.name;
               return (
                 <View key={p.name} style={[styles.suggestion, i > 0 && styles.suggestionDivider]}>
-                  <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
-                    <Text allowFontScaling={false} style={styles.avatarText}>
-                      {initials(p.name)}
-                    </Text>
-                  </View>
-                  <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                  <PlayerToken p={p} />
+                  <PlayerLine p={p} />
                   {mine && placed && (
                     <Text style={[styles.placedTag, { color: MARK[placed.mark].color, backgroundColor: MARK[placed.mark].soft }]}>{placed.mark}</Text>
                   )}
@@ -558,5 +588,8 @@ const styles = StyleSheet.create({
   suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
   suggestionDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   avatar: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
+  token: { width: 36, height: 36, alignItems: "center", justifyContent: "center" },
+  tokenText: { position: "absolute", top: 12, color: "white", fontWeight: "900", fontSize: 11 },
+  playerSub: { fontSize: 13, color: C.text2, marginTop: 1 },
   avatarText: { color: "white", fontWeight: "800", fontSize: 12 },
 });

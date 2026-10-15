@@ -17,3 +17,6 @@ export const LIVE_ACTIVITIES = true;
  * on the server (APNS_KEY, APNS_KEY_ID; APPLE_TEAM_ID).
  */
 export const LIVE_PUSH = true;
+
+/** Home as a pitch with every game as a player token (draft C, components/HomePitch.tsx); false = the list home. */
+export const HOME_PITCH = true;

@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import { QuestsCard } from "~/components/DailyCards";
+import { HomePitch } from "~/components/HomePitch";
 import { HomeStatus } from "~/components/HomeStatus";
 import { ModeList, type Mode } from "~/components/ModeGrid";
 import { QuickPlay } from "~/components/QuickPlay";
@@ -10,6 +11,7 @@ import { Text } from "~/components/Text";
 import { TodayPuzzles } from "~/components/TodayPuzzles";
 import { Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
+import { HOME_PITCH } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
 
@@ -52,6 +54,18 @@ export default function Home() {
       soft: C.coralSoft,
     },
   ];
+
+  if (HOME_PITCH) {
+    return (
+      <Page topInset>
+        <HomeStatus />
+        <HomePitch />
+        <Animated.View entering={enter(2)}>
+          <QuestsCard />
+        </Animated.View>
+      </Page>
+    );
+  }
 
   return (
     <Page topInset>
