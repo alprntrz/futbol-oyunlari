@@ -53,7 +53,7 @@ export function HomeBoard() {
     },
   ];
   const done = tiles.filter((x) => x.p.state === "done").length;
-  // the eye lands on Play someone: an "Up next" badge and a soft pulse
+  // the eye lands on Play someone: a green outline and a soft pulse
   const pulse = useSharedValue(1);
   useEffect(() => {
     pulse.set(withRepeat(withSequence(withTiming(1.03, { duration: 800 }), withTiming(1, { duration: 800 })), -1));
@@ -104,11 +104,8 @@ export function HomeBoard() {
 
       <Text style={styles.section}>{t("boardVersus")}</Text>
       <Animated.View style={pulseStyle}>
-      <Tap onPress={() => (haptic.press(), router.push("/oyna"))} style={[styles.versus, styles.versusNext]} accessibilityLabel={`${t("homeNextUp")}: ${t("playOpponent")}`}>
+      <Tap onPress={() => (haptic.press(), router.push("/oyna"))} style={[styles.versus, styles.versusNext]} accessibilityLabel={t("playOpponent")}>
         <View style={{ flex: 1, alignItems: "flex-start" }}>
-          <View style={styles.nextPill}>
-            <Text style={styles.nextPillText}>{upper(t("homeNextUp"))}</Text>
-          </View>
           <Text style={styles.versusTitle}>{t("playOpponent")}</Text>
           <Text style={styles.versusSub}>{t("boardVersusSub")}</Text>
         </View>
@@ -130,8 +127,6 @@ const styles = StyleSheet.create({
   cell: { width: "48.5%" },
   tile: { backgroundColor: "#FBFAF5", borderRadius: 22, padding: 12, borderWidth: 1, borderColor: "#ECE8DC", minHeight: 196 },
   versusNext: { borderWidth: 2, borderColor: "#65A30D", shadowColor: "#65A30D", shadowOpacity: 0.4, shadowRadius: 12, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
-  nextPill: { backgroundColor: "#1A2E05", borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3, marginBottom: 6 },
-  nextPillText: { fontSize: 11, fontWeight: "800", letterSpacing: 0.8, color: "white" },
   tileGoing: { backgroundColor: "#FACC15", borderColor: "#EAB308" },
   tileDone: { backgroundColor: "#14532D", borderColor: "#14532D" },
   tileTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
