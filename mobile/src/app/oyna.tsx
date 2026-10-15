@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router, type Href } from "expo-router";
+import { router, useLocalSearchParams, type Href } from "expo-router";
 import { Image, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,6 +26,8 @@ export default function PlayPicker() {
   const insets = useSafeAreaInsets();
   const [level] = useQuizDifficulty();
   const duel = useDuel();
+  // ?with=friend: the same cards open a room to share with a friend (Card Duel has no friend rooms yet)
+  const friend = useLocalSearchParams<{ with?: string }>().with === "friend";
 
   const games: { id: Id; name: string; desc: string; who: string; image: ImageSourcePropType; bg: string; ink: string; href: Href; note?: string }[] = [
     { id: "ht", name: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, bg: "#DBEAFE", ink: "#1E3A8A", href: "/hat-trick/rastgele" },
@@ -44,24 +46,30 @@ export default function PlayPicker() {
     { id: "pp", name: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, bg: "#DCFCE7", ink: "#14532D", href: "/possession/rastgele" },
   ];
 
+  const friendHref: Partial<Record<Id, Href>> = {
+    ht: "/hat-trick/oda",
+    qz: { pathname: "/bilgi/oda", params: { zorluk: level } },
+    pp: "/possession/oda",
+  };
+  const shown = friend ? games.filter((g) => friendHref[g.id]).map((g) => ({ ...g, href: friendHref[g.id]!, note: undefined, who: g.id === "qz" ? t("playUpTo5") : t("play1v1") })) : games;
   const pick = (g: (typeof games)[number]) => {
     haptic.press();
-    AsyncStorage.setItem(KEY, g.id).catch(() => {});
+    if (!friend) AsyncStorage.setItem(KEY, g.id).catch(() => {});
     router.replace(g.href);
   };
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 8 }]}>
       <View style={styles.top}>
-        <Text style={styles.title}>{t("playPickTitle")}</Text>
+        <Text style={styles.title}>{t(friend ? "playFriendTitle" : "playPickTitle")}</Text>
         <Tap onPress={() => router.back()} style={styles.close} accessibilityLabel={t("close")}>
           <Icon name="xmark" size={18} color={C.text} fallback="✕" />
         </Tap>
       </View>
-      <Text style={styles.sub}>{t("playTapToStart")}</Text>
+      <Text style={styles.sub}>{t(friend ? "playFriendSub" : "playTapToStart")}</Text>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16, gap: 12 }}>
-        {games.map((g, i) => (
+        {shown.map((g, i) => (
           <Animated.View key={g.id} entering={FadeInDown.delay(i * 60).duration(220)}>
             <Tap onPress={() => pick(g)} style={[styles.card, { backgroundColor: g.bg }]} accessibilityLabel={`${g.name}. ${g.desc}`}>
               <Image source={g.image} style={styles.art} />

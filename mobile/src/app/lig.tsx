@@ -1,6 +1,6 @@
 import { router, Stack, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
 import { Avatar } from "~/components/Avatar";
@@ -37,7 +37,7 @@ function useLeft(ends: number) {
  * Weekly league: this week's group of up to 30 by XP earned this week. The top
  * of the group moves up a league on Monday, the bottom moves down.
  */
-export default function LeagueScreen() {
+export function LeagueBody() {
   const { t } = useI18n();
   const account = useAccount();
   const [data, setData] = useState<League | null>(null);
@@ -61,21 +61,19 @@ export default function LeagueScreen() {
 
   if (account === null) {
     return (
-      <Page>
-        <Stack.Screen options={{ title: t("lgTitle") }} />
+      <>
         <Shields current={0} leagues={Object.keys(LEAGUE_COLOR)} />
         <Text style={[T.body, { textAlign: "center", marginTop: 16 }]}>{t("lgSignIn")}</Text>
         <Button title={t("lgSignInBtn")} icon="person.crop.circle" onPress={() => router.push("/istatistik")} style={{ marginTop: 16 }} />
-      </Page>
+      </>
     );
   }
 
   if (!data) {
     return (
-      <Page>
-        <Stack.Screen options={{ title: t("lgTitle") }} />
+      <>
         {failed && <Text style={[T.body, { textAlign: "center", marginTop: 40 }]}>{t("serverUnreachable")}</Text>}
-      </Page>
+      </>
     );
   }
 
@@ -85,9 +83,7 @@ export default function LeagueScreen() {
   const color = LEAGUE_COLOR[data.league] ?? C.green;
 
   return (
-    <View style={{ flex: 1, backgroundColor: C.bg }}>
-      <Stack.Screen options={{ title: t(`lg_${data.league}` as Parameters<typeof t>[0]) }} />
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+    <View>
         <Shields current={data.tier} leagues={data.leagues} />
         <View style={styles.headRow}>
           <Text style={[styles.leagueName, { color }]}>{t(`lg_${data.league}` as Parameters<typeof t>[0])}</Text>
@@ -134,8 +130,17 @@ export default function LeagueScreen() {
             })}
           </View>
         )}
-      </ScrollView>
     </View>
+  );
+}
+
+export default function LeagueScreen() {
+  const { t } = useI18n();
+  return (
+    <Page>
+      <Stack.Screen options={{ title: t("lgTitle") }} />
+      <LeagueBody />
+    </Page>
   );
 }
 

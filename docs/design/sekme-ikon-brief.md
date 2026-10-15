@@ -1,6 +1,6 @@
 # Alt menü ikonları: brief
 
-Alt menüdeki dört sekme (Ana sayfa, Oyunlar, Profil, Ayarlar) şu an tek renkli
+Alt menüdeki beş sekme (Ana sayfa, Oyunlar, Lig, Profil, Ayarlar) şu an tek renkli
 sistem ikonları. Duolingo'daki gibi menünün de markanın parçası olması için
 küçük, renkli, kendi ikonlarımızı istiyoruz. Bu brief ChatGPT görsel üretimi içindir.
 
@@ -12,7 +12,7 @@ altındaki bir vurguyla göstereceğiz; ikonun kendisi her zaman renkli kalır.
 
 > Small mobile app tab bar icon, soft 3D, chunky rounded shapes, matte
 > toy-like surfaces, warm top-left light, very simple silhouette that reads at
-> 28 pt. Same style for all four icons. No text, no letters, no numbers, no
+> 28 pt. Same style for all five icons. No text, no letters, no numbers, no
 > logos. Transparent background PNG, 512×512, the object centred with ~12%
 > margin. Palette: pitch green #16A34A, gold #FACC15, cream #FFF6DC, dark
 > green #0E5E2C.
@@ -23,6 +23,7 @@ altındaki bir vurguyla göstereceğiz; ikonun kendisi her zaman renkli kalır.
 |---|---|---|
 | `tab-home.png` | Ana sayfa | A tiny stadium seen from the front: green pitch, cream stand, a small gold flag on top. |
 | `tab-games.png` | Oyunlar | A white football resting on a small green game controller. |
+| `tab-league.png` | Lig | A small gold trophy cup with a green ribbon. |
 | `tab-profile.png` | Profil | A cream football shirt with a gold collar, no number. |
 | `tab-settings.png` | Ayarlar | A gold whistle on a short green lanyard. |
 

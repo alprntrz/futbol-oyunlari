@@ -15,7 +15,7 @@ import { C, F, T } from "~/lib/theme";
 const MEDAL = ["#FACC15", "#CBD5E1", "#D97706"];
 
 /** Overall (XP) and per-game skill ratings across all signed-in players. */
-export default function Leaderboards() {
+export function LeaderboardsBody() {
   const { t } = useI18n();
   const account = useAccount();
   const [board, setBoard] = useState<Board>("xp");
@@ -43,8 +43,7 @@ export default function Leaderboards() {
   const meOffList = data?.me && !data.top.some((r) => r.me) ? data.me : null;
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: t("leaderboards") }} />
+    <>
       <Segmented
         value={board}
         onChange={setBoard}
@@ -86,6 +85,16 @@ export default function Leaderboards() {
           </Card>
         </>
       )}
+    </>
+  );
+}
+
+export default function Leaderboards() {
+  const { t } = useI18n();
+  return (
+    <Page>
+      <Stack.Screen options={{ title: t("leaderboards") }} />
+      <LeaderboardsBody />
     </Page>
   );
 }
