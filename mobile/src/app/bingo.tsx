@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Share, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
@@ -28,6 +28,8 @@ interface BingoRun {
   wildcardUsed: boolean;
 }
 
+const freshRun = (): BingoRun => ({ placed: Array(CARD_SIZE).fill(null), index: 0, wildcardUsed: false });
+
 const POP = new Keyframe({
   0: { opacity: 0, transform: [{ scale: 0.6 }] },
   55: { opacity: 1, transform: [{ scale: 1.12 }] },
@@ -40,25 +42,35 @@ const initials = (name: string) => {
   return ((t[0]?.[0] ?? "") + (t.length > 1 ? t[t.length - 1][0] : "")).toUpperCase();
 };
 
-/** Football Bingo: one shared card and footballer order per day. */
+/** a practice card's seed: far from any day number, so it never repeats the daily card */
+const practiceSeed = () => 1_000_000 + Math.floor(Math.random() * 1_000_000_000);
+
+/**
+ * Football Bingo: one shared card and footballer order per day. `?practice=1`:
+ * unlimited random cards (not saved, XP under the daily practice cap).
+ */
 export default function Bingo() {
   const { t, locale } = useI18n();
+  const practice = useLocalSearchParams<{ practice?: string }>().practice === "1";
   const day = dayNumber();
-  const { card, stream } = useMemo(() => bingoForDay(day), [day]);
-  const [run, setRun] = useState<BingoRun | null | undefined>(undefined);
+  const [seed, setSeed] = useState(() => (practice ? practiceSeed() : day));
+  const { card, stream } = useMemo(() => bingoForDay(seed), [seed]);
+  // a practice card starts at once; the daily one loads its saved run first
+  const [run, setRun] = useState<BingoRun | null | undefined>(() => (practice ? freshRun() : undefined));
   const [wildcardOn, setWildcardOn] = useState(false);
   const [flash, setFlash] = useState<{ text: string; ok: boolean } | null>(null);
   const [wrongSquare, setWrongSquare] = useState<number | null>(null);
 
   useEffect(() => {
+    if (practice) return;
     AsyncStorage.getItem(key(day))
       .then((raw) => setRun(raw ? (JSON.parse(raw) as BingoRun) : null))
       .catch(() => setRun(null));
-  }, [day]);
+  }, [day, practice]);
 
   useEffect(() => {
-    if (run) AsyncStorage.setItem(key(day), JSON.stringify(run)).catch(() => {});
-  }, [run, day]);
+    if (run && !practice) AsyncStorage.setItem(key(day), JSON.stringify(run)).catch(() => {});
+  }, [run, day, practice]);
 
   useEffect(() => {
     if (!flash) return;
@@ -72,19 +84,32 @@ export default function Bingo() {
     return () => clearTimeout(id);
   }, [wrongSquare]);
 
-  // one card a day: pays once, more for a full card
+  // one card a day: pays once, more for a full card; practice cards pay a plain toast under the daily cap
   const bingoFull = !!run && run.placed.filter(Boolean).length === CARD_SIZE;
   const bingoOver = !!run && (bingoFull || run.index >= stream.length);
-  useXpAward(bingoOver, `bingo-${day}`, "bingo", bingoFull ? XP.bingoComplete : XP.bingoPlayed, {
+  useXpAward(bingoOver, practice ? `bingo-p-${seed}` : `bingo-${day}`, "bingo", bingoFull ? XP.bingoComplete : XP.bingoPlayed, {
+    practice,
     title: bingoFull ? t("rwBingo") : t("rwDone"),
-    stats: run
+    stats: run && !practice
       ? [
           { label: t("rwSquares"), value: `${run.placed.filter(Boolean).length}/${CARD_SIZE}`, tone: "green" },
           { label: t("rwPlayers"), value: String(Math.min(run.index, stream.length)), tone: "amber" },
         ]
       : [],
   });
-  useQuestOnce(bingoOver, `bingo-${day}`, [["bingo_play", 1]]);
+  useQuestOnce(bingoOver, practice ? `bingo-p-${seed}` : `bingo-${day}`, [["bingo_play", 1]]);
+
+  const newPracticeCard = () => {
+    haptic.tap();
+    setWildcardOn(false);
+    setFlash(null);
+    setSeed(practiceSeed());
+    setRun(freshRun());
+  };
+  const openPractice = () => {
+    haptic.tap();
+    router.push("/bingo?practice=1");
+  };
 
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
 
@@ -109,9 +134,10 @@ export default function Bingo() {
         <Button
           title={t("bingoStart")}
           icon="play.fill"
-          onPress={() => setRun({ placed: Array(CARD_SIZE).fill(null), index: 0, wildcardUsed: false })}
+          onPress={() => setRun(freshRun())}
           style={{ marginTop: 24 }}
         />
+        <Button title={t("bingoPractice")} icon="shuffle" kind="secondary" onPress={openPractice} style={{ marginTop: 10 }} />
       </Page>
     );
   }
@@ -160,7 +186,7 @@ export default function Bingo() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: t("bingoName") }} />
+      <Stack.Screen options={{ title: practice ? t("bingoPracticeTitle") : t("bingoName") }} />
 
       <Card style={styles.strip}>
         <View style={styles.stat}>
@@ -214,8 +240,15 @@ export default function Bingo() {
           <Text style={T.body}>
             {filled}/{CARD_SIZE}, {used} {t("bingoScore")}
           </Text>
-          <Button title={t("share")} icon="square.and.arrow.up" onPress={share} style={{ alignSelf: "stretch", marginTop: 10 }} />
-          <Text style={[T.caption, { marginTop: 8 }]}>{t("bingoTomorrow")}</Text>
+          {practice ? (
+            <Button title={t("bingoNewCard")} icon="arrow.clockwise" onPress={newPracticeCard} style={{ alignSelf: "stretch", marginTop: 10 }} />
+          ) : (
+            <>
+              <Button title={t("share")} icon="square.and.arrow.up" onPress={share} style={{ alignSelf: "stretch", marginTop: 10 }} />
+              <Button title={t("bingoPractice")} icon="shuffle" kind="secondary" onPress={openPractice} style={{ alignSelf: "stretch", marginTop: 8 }} />
+              <Text style={[T.caption, { marginTop: 8 }]}>{t("bingoTomorrow")}</Text>
+            </>
+          )}
         </Card>
       )}
 

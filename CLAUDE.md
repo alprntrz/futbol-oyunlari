@@ -114,7 +114,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   The match screen opts out of React Compiler memoization because the engine mutates `game`.
   Possession Play uses `pp:*` (same pattern, two chess clocks;
   the mover's phone computes claimed hexes). Football Bingo is offline (daily
-  seeded card, `mobile/src/lib/bingo.ts`). The Missing 11 race (`room:*`, `race:*`) is still served for
+  seeded card, `mobile/src/lib/bingo.ts`; `/bingo?practice=1` deals unsaved random cards, XP under the practice cap). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
