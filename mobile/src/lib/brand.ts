@@ -110,10 +110,13 @@ export const BRAND = {
     finish: require("../../assets/brand/illus-finish.png"),
     howto: require("../../assets/brand/illus-howto.png"),
   },
+  /** tab bar: 3D icons (docs/design/sekme-ikon-brief.md), colour when selected, grey otherwise */
   tab: {
-    games: { default: require("../../assets/brand/tab-games-line.png"), selected: require("../../assets/brand/tab-games-fill.png") },
-    stats: { default: require("../../assets/brand/tab-stats-line.png"), selected: require("../../assets/brand/tab-stats-fill.png") },
-    settings: { default: require("../../assets/brand/tab-settings-line.png"), selected: require("../../assets/brand/tab-settings-fill.png") },
+    home: { default: require("../../assets/brand/tab/home-off.png"), selected: require("../../assets/brand/tab/home-on.png") },
+    games: { default: require("../../assets/brand/tab/games-off.png"), selected: require("../../assets/brand/tab/games-on.png") },
+    league: { default: require("../../assets/brand/tab/league-off.png"), selected: require("../../assets/brand/tab/league-on.png") },
+    profile: { default: require("../../assets/brand/tab/profile-off.png"), selected: require("../../assets/brand/tab/profile-on.png") },
+    settings: { default: require("../../assets/brand/tab/settings-off.png"), selected: require("../../assets/brand/tab/settings-on.png") },
   },
   jersey: {
     vneck: {
