@@ -68,27 +68,27 @@ export function HomeBoard() {
         {tiles.map((x, i) => {
           const going = x.p.state === "started";
           const isDone = x.p.state === "done";
-          const ink = going ? "white" : C.text;
+          const ink = isDone ? "white" : C.text;
           return (
             <Animated.View key={x.key} entering={FadeInDown.delay(i * 50).duration(220)} style={styles.cell}>
               <Tap onPress={() => (haptic.tap(), router.push(x.href))} style={[styles.tile, going && styles.tileGoing, isDone && styles.tileDone]} accessibilityLabel={x.title}>
                 <View style={styles.tileTop}>
-                  <Text style={[styles.tag, going && { color: "#BBF7D0" }, isDone && { color: C.text3 }]}>
+                  <Text style={[styles.tag, going && { color: "#713F12" }, isDone && { color: "#BBF7D0" }]}>
                     {upper(going ? t("boardGoing") : isDone ? t("boardFinished") : t("boardNew"))}
                   </Text>
-                  <Icon name={isDone ? "checkmark.circle" : "arrow.up.right"} size={15} color={going ? "white" : C.text3} fallback="↗" />
+                  <Icon name={isDone ? "checkmark.circle.fill" : "arrow.up.right"} size={15} color={isDone ? "#BBF7D0" : going ? "#713F12" : C.text3} fallback="↗" />
                 </View>
                 <View style={styles.art}>
-                  <Image source={x.image} style={[styles.artImage, isDone && { opacity: 0.55 }]} />
+                  <Image source={x.image} style={styles.artImage} />
                 </View>
-                <Text style={[styles.tileTitle, { color: ink }, isDone && { color: C.text2 }]} numberOfLines={1} adjustsFontSizeToFit>
+                <Text style={[styles.tileTitle, { color: ink }]} numberOfLines={1} adjustsFontSizeToFit>
                   {x.title}
                 </Text>
                 <View style={styles.tileFoot}>
-                  <Text style={[styles.tileSub, going && { color: "rgba(255,255,255,0.8)" }]} numberOfLines={1}>
+                  <Text style={[styles.tileSub, going && { color: "#713F12" }, isDone && { color: "rgba(255,255,255,0.85)" }]} numberOfLines={1}>
                     {going ? `${t("continueGame")} · ${x.progress}` : isDone ? `${x.result} · ${t("boardSeeResult")}` : x.newLine}
                   </Text>
-                  {going && <Icon name="play.circle" size={18} color="white" fallback="▶" />}
+                  {going && <Icon name="play.circle.fill" size={20} color="#713F12" fallback="▶" />}
                 </View>
               </Tap>
             </Animated.View>
@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 12 },
   cell: { width: "48.5%" },
   tile: { backgroundColor: "#FBFAF5", borderRadius: 22, padding: 12, borderWidth: 1, borderColor: "#ECE8DC", minHeight: 196 },
-  tileGoing: { backgroundColor: "#1B2A1F", borderColor: "#1B2A1F" },
-  tileDone: { backgroundColor: "#EEEDE7", borderColor: "#E3E1D8" },
+  tileGoing: { backgroundColor: "#FACC15", borderColor: "#EAB308" },
+  tileDone: { backgroundColor: "#14532D", borderColor: "#14532D" },
   tileTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   tag: { fontSize: 11, fontWeight: "800", letterSpacing: 0.8, color: C.greenDark },
   art: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 8 },
