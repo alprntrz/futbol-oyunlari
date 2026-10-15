@@ -36,7 +36,7 @@ export default function DailyScreen() {
     <Page>
       <Stack.Screen options={{ title: t("daily"), headerRight: () => <HelpButton game="xi" /> }} />
       {saved === undefined ? null : !difficulty ? (
-        <GameIntro title={t("daily")} subtitle={t("dailyHeroDesc")} onStart={setDifficulty} />
+        <GameIntro subtitle={t("dailyHeroDesc")} onStart={setDifficulty} />
       ) : (
         <DailyGame match={match} day={day} difficulty={difficulty} saved={saved} />
       )}

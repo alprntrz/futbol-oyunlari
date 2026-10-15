@@ -11,7 +11,7 @@ import { Text } from "~/components/Text";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { useHtLeague } from "~/lib/league";
-import { T } from "~/lib/theme";
+import { GAME, T } from "~/lib/theme";
 
 /** Tic-Tac-Toe: one big Find opponent; friend / same phone / solo below; the league is a setting. */
 export default function HatTrickHome() {
@@ -24,7 +24,7 @@ export default function HatTrickHome() {
     <GameHub
       title={t("tikiTakaName")}
       image={BRAND.icon.tiki}
-      bg="#DBEAFE"
+      bg={GAME.ht.bg}
       tagline={t("tikiTakaTagline")}
       primary={{ label: t("playFind"), icon: "play.fill", fallback: "▶", onPress: () => router.push("/hat-trick/rastgele") }}
       secondary={[

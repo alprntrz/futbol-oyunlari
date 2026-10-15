@@ -18,7 +18,7 @@ import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F, R, shadow, T } from "~/lib/theme";
+import { C, F, GAME, R, shadow, T } from "~/lib/theme";
 import { useQuestOnce } from "~/lib/quests";
 import { useXpAward } from "~/lib/xp";
 
@@ -123,7 +123,7 @@ export default function Bingo() {
       <GameHub
         title={t("bingoName")}
         image={BRAND.icon.bingo}
-        bg="#DCFCE7"
+        bg={GAME.bingo.bg}
         tagline={t("bingoShort")}
         primary={{ label: t("bingoStart"), icon: "play.fill", fallback: "▶", onPress: () => setRun(freshRun()) }}
         secondary={[{ label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice }]}

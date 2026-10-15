@@ -10,6 +10,7 @@ import { TaktikSteps } from "~/components/HowTo";
 import { TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { GAME } from "~/lib/theme";
 import { startTaktik, useTaktik } from "~/lib/taktik";
 
 /** Pitch Chess: one big Start (or Continue); the manager style is a setting with a default; rules behind "?". */
@@ -30,7 +31,7 @@ export default function TaktikHome() {
     <GameHub
       title={t("ttkName")}
       image={TAKTIK.hero}
-      bg="#DCFCE7"
+      bg={GAME.tt.bg}
       tagline={t("ttkShort")}
       primary={
         ongoing

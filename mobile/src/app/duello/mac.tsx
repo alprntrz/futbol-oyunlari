@@ -108,7 +108,13 @@ function Board({
     { target: "question", title: t("dzTour5T"), body: t("dzTour5") },
     { target: "hand", title: t("dzTour6T"), body: t("dzTour6") },
     { target: "score", title: t("dzTour7T"), body: t("dzTour7") },
-  ]);
+  ], !online);
+  // the walkthrough freezes the pick clock (house matches; online ones don't show it)
+  const touring = tour.step !== null;
+  useEffect(() => {
+    m.hold?.(touring);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [touring]);
   // the result card for this game (xpKey changes every game) once the last reveal has been seen
   const [endShownFor, setEndShownFor] = useState<string | null>(null);
   const showEnd = m.over && endShownFor === xpKey;
@@ -184,7 +190,7 @@ function Board({
 
   const revealing = !!last && !m.deadline && (m.over ? !showEnd : true) && m.results.length > 0;
   const shownQuestion: Question | null = revealing ? last.question : m.question;
-  const secondsLeft = m.deadline ? Math.max(0, Math.ceil((m.deadline - now) / 1000)) : 0;
+  const secondsLeft = m.heldMs != null ? Math.ceil(m.heldMs / 1000) : m.deadline ? Math.max(0, Math.ceil((m.deadline - now) / 1000)) : 0;
   const used = new Set(m.results.map((r) => r.mine));
   const cardW = Math.min(84, (width - 32 - 3 * 8) / 4);
   const bigW = Math.min(130, width * 0.3);

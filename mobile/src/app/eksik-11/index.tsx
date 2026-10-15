@@ -8,6 +8,7 @@ import { MissingXISteps } from "~/components/HowTo";
 import { LeagueBadge } from "~/components/LeaguePicker";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
+import { GAME } from "~/lib/theme";
 
 /** Missing 11: one big Play (a random match from the chosen matches), today's match and pick-a-team below. */
 export default function MissingXIHome() {
@@ -20,7 +21,7 @@ export default function MissingXIHome() {
     <GameHub
       title={t("missingXI")}
       image={BRAND.icon.practice}
-      bg="#DCFCE7"
+      bg={GAME.xi.bg}
       tagline={t("xiTagline")}
       primary={{ label: t("play"), icon: "play.fill", fallback: "▶", onPress: () => router.push({ pathname: "/eksik-11/pratik", params: { kategori: cat } }) }}
       secondary={[

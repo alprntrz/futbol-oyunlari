@@ -11,7 +11,7 @@ import { useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { useQuizDifficulty } from "~/lib/quizLevel";
-import { C, F } from "~/lib/theme";
+import { C, F, GAME } from "~/lib/theme";
 
 const KEY = "quick-game";
 type Id = "ht" | "dz" | "qz" | "pp";
@@ -30,20 +30,19 @@ export default function PlayPicker() {
   const friend = useLocalSearchParams<{ with?: string }>().with === "friend";
 
   const games: { id: Id; name: string; desc: string; who: string; image: ImageSourcePropType; bg: string; ink: string; href: Href; note?: string }[] = [
-    { id: "ht", name: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, bg: "#DBEAFE", ink: "#1E3A8A", href: "/hat-trick/rastgele" },
+    { id: "ht", name: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, ...GAME.ht, href: "/hat-trick/rastgele" },
     {
       id: "dz",
       name: t("dzName"),
       desc: t("dzShort"),
       who: t("play1v1"),
       image: ROZET.duel,
-      bg: "#FFE4E6",
-      ink: "#9F1239",
+      ...GAME.dz,
       href: duel.ready ? "/duello/rastgele" : "/duello/draft",
       note: duel.ready ? undefined : t("playMakeHand"),
     },
-    { id: "qz", name: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, bg: "#EDE9FE", ink: "#5B21B6", href: { pathname: "/bilgi/rastgele", params: { zorluk: level } } },
-    { id: "pp", name: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, bg: "#DCFCE7", ink: "#14532D", href: "/possession/rastgele" },
+    { id: "qz", name: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, ...GAME.qz, href: { pathname: "/bilgi/rastgele", params: { zorluk: level } } },
+    { id: "pp", name: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, ...GAME.pp, href: "/possession/rastgele" },
   ];
 
   const friendHref: Partial<Record<Id, Href>> = {

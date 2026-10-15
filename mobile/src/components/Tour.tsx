@@ -27,13 +27,14 @@ type Rect = { x: number; y: number; w: number; h: number };
  * stays lit, with a short note and Next / Skip. Shown once per `id` (saved),
  * `start()` replays it (a "?" button).
  */
-export function useTour(id: string, steps: TourStep[]) {
+export function useTour(id: string, steps: TourStep[], autoStart = true) {
   const refs = useRef(new Map<string, View | null>());
   const [step, setStep] = useState<number | null>(null);
   const [rect, setRect] = useState<Rect | null>(null);
 
-  // first visit: start once the screen has laid out
+  // first visit: start once the screen has laid out (not where a clock can't wait, e.g. online)
   useEffect(() => {
+    if (!autoStart) return;
     let alive = true;
     AsyncStorage.getItem(`tour-${id}`)
       .then((seen) => {
@@ -43,7 +44,7 @@ export function useTour(id: string, steps: TourStep[]) {
     return () => {
       alive = false;
     };
-  }, [id]);
+  }, [id, autoStart]);
 
   useEffect(() => {
     if (step === null) return;

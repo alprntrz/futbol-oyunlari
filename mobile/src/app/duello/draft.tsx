@@ -34,10 +34,13 @@ export default function DuelDraft() {
   const { width } = useWindowDimensions();
   const slotW = (width - 32 - 6 * (HAND_SIZE - 1)) / HAND_SIZE;
 
+  // the clock waits while the first-time walkthrough is up
+  const touring = tour.step !== null;
   useEffect(() => {
+    if (touring) return;
     const id = setInterval(() => setLeft((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [touring]);
   useEffect(() => {
     if (!note) return;
     const id = setTimeout(() => setNote(null), 1600);

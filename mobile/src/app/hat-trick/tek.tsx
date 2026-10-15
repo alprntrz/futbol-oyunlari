@@ -154,8 +154,8 @@ export default function HatTrickSolo() {
     return (
       <Page>
         <Stack.Screen options={{ title: t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
-        <Text style={T.title}>{t("htSolo")}</Text>
-        <Text style={[T.body, { marginTop: 6 }]}>{t("bbIntro")}</Text>
+        {/* the header already names the mode */}
+        <Text style={T.body}>{t("bbIntro")}</Text>
         <View style={styles.tipRow}>
           <Icon name="lightbulb.fill" size={16} color={C.amber} fallback="💡" />
           <Text style={[T.body, { flex: 1, fontSize: 14 }]}>{t("bbTip")}</Text>

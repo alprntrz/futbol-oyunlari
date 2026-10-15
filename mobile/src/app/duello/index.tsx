@@ -9,6 +9,7 @@ import { DuelSteps } from "~/components/HowTo";
 import { ROZET } from "~/lib/brand";
 import { useDuel } from "~/lib/duel";
 import { useI18n } from "~/lib/i18n";
+import { GAME } from "~/lib/theme";
 
 /**
  * Card Duel: without a hand the one button drafts it; with one it finds an
@@ -22,7 +23,7 @@ export default function DuelHome() {
     <GameHub
       title={t("dzName")}
       image={ROZET.duel}
-      bg="#FFE4E6"
+      bg={GAME.dz.bg}
       tagline={t("dzShort")}
       status={`${t("dzTheme")}: ${t(`dzTheme_${theme.id}`)}`}
       primary={

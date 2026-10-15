@@ -7,6 +7,7 @@ import { QuizSteps } from "~/components/HowTo";
 import { LevelCard, type QuizProfile } from "~/components/QuizLevel";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
+import { GAME } from "~/lib/theme";
 import { loadPlayerId } from "~/lib/nick";
 import { useQuizDifficulty } from "~/lib/quizLevel";
 import { getSocket } from "~/lib/socket";
@@ -41,7 +42,7 @@ export default function QuizHome() {
     <GameHub
       title={t("qzName")}
       image={BRAND.icon.quiz}
-      bg="#EDE9FE"
+      bg={GAME.qz.bg}
       tagline={t("qzTagline")}
       primary={{ label: t("playFind"), icon: "play.fill", fallback: "▶", onPress: () => router.push({ pathname: "/bilgi/rastgele", params: { zorluk: level } }) }}
       secondary={[{ label: t("htFriend"), icon: "person.2.fill", fallback: "👥", onPress: () => router.push({ pathname: "/bilgi/oda", params: { zorluk: level } }) }]}

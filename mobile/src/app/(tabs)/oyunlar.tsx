@@ -7,7 +7,7 @@ import { Page, Tap } from "~/components/ui";
 import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F } from "~/lib/theme";
+import { C, F, GAME } from "~/lib/theme";
 
 type Game = { title: string; desc: string; who: string; image: ImageSourcePropType; bg: string; ink: string; href: Href };
 
@@ -19,17 +19,17 @@ type Game = { title: string; desc: string; who: string; image: ImageSourcePropTy
 export default function Games() {
   const { t } = useI18n();
   const versus: Game[] = [
-    { title: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, bg: "#DBEAFE", ink: "#1E3A8A", href: "/hat-trick" },
-    { title: t("dzName"), desc: t("dzShort"), who: t("play1v1"), image: ROZET.duel, bg: "#FFE4E6", ink: "#9F1239", href: "/duello" },
-    { title: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, bg: "#EDE9FE", ink: "#5B21B6", href: "/bilgi" },
-    { title: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, bg: "#DCFCE7", ink: "#14532D", href: "/possession" },
+    { title: t("tikiTakaName"), desc: t("htShort"), who: t("play1v1"), image: BRAND.icon.tiki, ...GAME.ht, href: "/hat-trick" },
+    { title: t("dzName"), desc: t("dzShort"), who: t("play1v1"), image: ROZET.duel, ...GAME.dz, href: "/duello" },
+    { title: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, ...GAME.qz, href: "/bilgi" },
+    { title: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, ...GAME.pp, href: "/possession" },
   ];
   // Kombine (match-3, /kombine) is shelved for a later version: code and routes stay, no entry here
   const solo: Game[] = [
-    { title: t("ttkName"), desc: t("ttkShort"), who: t("playSolo"), image: TAKTIK.hero, bg: "#D1FAE5", ink: "#065F46", href: "/taktik" },
-    { title: t("myName"), desc: t("myShort"), who: t("playSolo"), image: BRAND.icon.mystery, bg: "#FEF3C7", ink: "#92400E", href: "/gizli" },
-    { title: t("missingXI"), desc: t("xiShort"), who: t("playSolo"), image: BRAND.icon.practice, bg: "#E0F2FE", ink: "#075985", href: "/eksik-11" },
-    { title: t("bingoName"), desc: t("bingoShort"), who: t("playSolo"), image: BRAND.icon.bingo, bg: "#ECFCCB", ink: "#3F6212", href: "/bingo" },
+    { title: t("ttkName"), desc: t("ttkShort"), who: t("playSolo"), image: TAKTIK.hero, ...GAME.tt, href: "/taktik" },
+    { title: t("myName"), desc: t("myShort"), who: t("playSolo"), image: BRAND.icon.mystery, ...GAME.my, href: "/gizli" },
+    { title: t("missingXI"), desc: t("xiShort"), who: t("playSolo"), image: BRAND.icon.practice, ...GAME.xi, href: "/eksik-11" },
+    { title: t("bingoName"), desc: t("bingoShort"), who: t("playSolo"), image: BRAND.icon.bingo, ...GAME.bingo, href: "/bingo" },
   ];
 
   // every game on one screen: a 2-column grid of compact tiles (art, name, who it's for)

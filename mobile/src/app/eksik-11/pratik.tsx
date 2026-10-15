@@ -44,7 +44,6 @@ export default function PracticeScreen() {
         <Text style={[T.body, { textAlign: "center", marginTop: 40 }]}>{t("noMatches")}</Text>
       ) : !game ? (
         <GameIntro
-          title={title}
           subtitle={teamLabel || category ? `${pool.length} ${t("matchesWord")}` : t("practiceAllDesc")}
           onStart={start}
         />

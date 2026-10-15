@@ -43,6 +43,18 @@ export const F = {
   semi: "BarlowCondensed_600SemiBold",
 };
 
+/** Each game's own colour pair (soft background, dark ink): Games tab, game hubs, the Play online picker. */
+export const GAME = {
+  ht: { bg: "#DBEAFE", ink: "#1E3A8A" },
+  dz: { bg: "#FFE4E6", ink: "#9F1239" },
+  qz: { bg: "#EDE9FE", ink: "#5B21B6" },
+  pp: { bg: "#DCFCE7", ink: "#14532D" },
+  tt: { bg: "#D1FAE5", ink: "#065F46" },
+  my: { bg: "#FEF3C7", ink: "#92400E" },
+  xi: { bg: "#E0F2FE", ink: "#075985" },
+  bingo: { bg: "#ECFCCB", ink: "#3F6212" },
+} as const;
+
 export const R = { card: 22, inner: 12, button: 14, chip: 999 };
 
 /** Soft card shadow tinted with the green-grey of the background. */

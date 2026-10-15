@@ -24,6 +24,10 @@ export interface DuelMatch {
   pick: (card: number) => void;
   /** another match with the same hands (online: rematch) */
   again: () => void;
+  /** on this phone only: freeze / resume the pick clock (a walkthrough is up) */
+  hold?: (on: boolean) => void;
+  /** ms left on a frozen clock, else null */
+  heldMs?: number | null;
 }
 
 const scoreOf = (results: RoundResult[]): [number, number] => [results.filter((r) => r.winner === "me").length, results.filter((r) => r.winner === "them").length];
@@ -35,30 +39,30 @@ const scoreOf = (results: RoundResult[]): [number, number] => [results.filter((r
  */
 export function useLocalDuel(myHand: number[], houseHand: number[], seed: number | null): DuelMatch {
   const [s, setS] = useState<LocalState>(() => fresh(dealQuestions(seed !== null ? dailyRand(seed) : Math.random)));
-  const { questions, results, deadline, myPick, theirPick } = s;
+  const { questions, results, deadline, myPick, theirPick, held } = s;
   const round = results.length;
   const over = round >= ROUNDS;
   const rand = useRef(seed !== null ? dailyRand(seed + 1) : Math.random);
 
   // the house player thinks, then picks
   useEffect(() => {
-    if (over || !deadline || theirPick !== null) return;
+    if (over || !deadline || theirPick !== null || held !== null) return;
     const used = results.map((r) => r.theirs);
     const unused = houseHand.filter((id) => !used.includes(id));
     const card = housePick(questions[round], unused, questions.slice(round + 1), rand.current);
     const id = setTimeout(() => setS((p) => settle({ ...p, theirPick: card })), 2000 + Math.random() * 7000);
     return () => clearTimeout(id);
-  }, [over, deadline, theirPick, round, questions, results, houseHand]);
+  }, [over, deadline, theirPick, held, round, questions, results, houseHand]);
 
   // my clock: a random unused card when it runs out
   useEffect(() => {
-    if (over || !deadline || myPick !== null) return;
+    if (over || !deadline || myPick !== null || held !== null) return;
     const used = results.map((r) => r.mine);
     const unused = myHand.filter((c) => !used.includes(c));
     const card = unused[Math.floor(Math.random() * unused.length)];
     const id = setTimeout(() => setS((p) => settle({ ...p, myPick: card })), Math.max(0, deadline - Date.now()));
     return () => clearTimeout(id);
-  }, [over, deadline, myPick, results, myHand]);
+  }, [over, deadline, myPick, held, results, myHand]);
 
   // after the reveal, the next question
   useEffect(() => {
@@ -82,6 +86,12 @@ export function useLocalDuel(myHand: number[], houseHand: number[], seed: number
       setS((p) => settle({ ...p, myPick: card }));
     },
     again: () => setS(fresh(dealQuestions(Math.random))),
+    hold: (on) =>
+      setS((p) => {
+        if (on) return p.deadline && p.held === null ? { ...p, held: Math.max(0, p.deadline - Date.now()) } : p;
+        return p.held !== null ? { ...p, held: null, deadline: p.deadline ? Date.now() + p.held : 0 } : p;
+      }),
+    heldMs: held,
   };
 }
 
@@ -91,9 +101,11 @@ interface LocalState {
   deadline: number;
   myPick: number | null;
   theirPick: number | null;
+  /** ms left while the clock is frozen */
+  held: number | null;
 }
 
-const fresh = (questions: Question[]): LocalState => ({ questions, results: [], deadline: Date.now() + PICK_SECONDS * 1000, myPick: null, theirPick: null });
+const fresh = (questions: Question[]): LocalState => ({ questions, results: [], deadline: Date.now() + PICK_SECONDS * 1000, myPick: null, theirPick: null, held: null });
 
 /** both cards in: judge the round and close the pick (the reveal starts) */
 function settle(p: LocalState): LocalState {
