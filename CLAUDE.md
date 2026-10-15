@@ -108,6 +108,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   raw-seasons + `scripts/taktik-scrape-positions.mjs`). Balance: `node --import ./scripts/lib/alias.mjs mobile/scripts/taktik-sim.mts`.
   App: `mobile/src/lib/taktik.ts` (saved lobby), screens `app/taktik/{index,oyun}.tsx` (the game screen is "use no memo"),
   `components/taktik/`. XP source "tt" (server-accounts GAMES too).
+- Kart Düellosu / Card Duel (docs/design/kart-duellosu.md): draft 7 cards (budget 15, gold 3 / silver 2 / bronze 1 by fame) under
+  the day's theme, then 7 stat rounds (higher wins; "lower wins" questions in red). Rules `src/lib/duel.ts` (pure); numbers
+  `src/data/duel.ts` + `server-data/duel-cards.json` ← `scripts/duel-fetch-wikidata.mjs` (Wikidata, CC0, matched by Transfermarkt id
+  P2446) → `scripts/duel-build.mjs` (never hand-edit). Online `dz:*` in server.js (server deals questions, hides picks, 20 s clock,
+  judges, Elo board "dz"); house player / daily / practice run on the phone (`mobile/src/lib/duelMatch.ts`). Screens `app/duello/`.
 - Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.

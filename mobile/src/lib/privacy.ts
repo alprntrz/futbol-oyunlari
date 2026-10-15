@@ -4,6 +4,7 @@ import { reloadAppAsync } from "expo";
 import { loadPlayerId } from "./nick";
 import { getSocket } from "./socket";
 import { resetDailyRewards } from "./dailyRewards";
+import { resetDuel } from "./duel";
 import { resetPhoto } from "./photo";
 import { resetPlayStreak } from "./playStreak";
 import { resetQuests } from "./quests";
@@ -29,6 +30,7 @@ export async function deleteMyData(): Promise<{ server: boolean }> {
   resetQuests();
   resetPlayStreak();
   resetTaktik();
+  resetDuel();
   resetDailyRewards();
   return { server };
 }

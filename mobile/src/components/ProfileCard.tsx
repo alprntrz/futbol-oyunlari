@@ -32,6 +32,7 @@ const GAMES: { game: XpGame; image: ImageSourcePropType; name: string }[] = [
   { game: "bingo", image: BRAND.icon.bingo, name: "bingoName" },
   { game: "pp", image: BRAND.icon.possession, name: "ppName" },
   { game: "tt", image: TAKTIK.hero, name: "ttkName" },
+  { game: "dz", image: BRAND.icon.team, name: "dzName" },
 ];
 
 /** Top of the Profile tab: avatar, nickname, overall level and XP per game. */

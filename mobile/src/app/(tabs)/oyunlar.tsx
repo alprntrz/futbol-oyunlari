@@ -99,6 +99,13 @@ export default function Games() {
       href: "/taktik",
       bg: ART_BG,
     },
+    {
+      image: BRAND.icon.team,
+      title: t("dzName"),
+      desc: t("dzShort"),
+      href: "/duello",
+      bg: ART_BG,
+    },
   ];
 
   return (

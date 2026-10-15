@@ -53,6 +53,7 @@ export default function Leaderboards() {
           { value: "ht", label: t("boardHt") },
           { value: "qz", label: t("boardQz") },
           { value: "pp", label: t("boardPp") },
+          { value: "dz", label: t("boardDz") },
         ]}
       />
       <Text style={[T.caption, { marginTop: 10 }]}>{board === "xp" ? t("boardXpNote") : t("boardRatingNote")}</Text>
