@@ -32,6 +32,9 @@ const AVATARS = new Set([
   ...Array.from({ length: 12 }, (_, i) => `c${i + 1}`),
 ]);
 const MAX_AWARD = 200; // one game never pays more than this (quiz max is ~140)
+// game XP an account can bank in one UTC day: far above a long day of play, but a
+// tampered phone can't push itself to the top of the boards and the league
+const DAILY_XP_CAP = 3000;
 
 fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 const db = new DatabaseSync(DB_FILE);
@@ -173,6 +176,8 @@ function userFromRequest(req) {
 // A friend sees your nickname, avatar, level and whether you're online. Nothing else.
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const MAX_FRIENDS = 100;
+/** user id -> times of recent "add friend" tries (in memory only) */
+const addTries = new Map();
 /** server.js tells us who has a socket open */
 let isOnline = () => false;
 const setPresence = (fn) => (isOnline = fn);
@@ -334,7 +339,7 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS league_group ON league_members (week, tier, grp);
 `);
-for (const [col, def] of [["league_tier", "INTEGER NOT NULL DEFAULT 0"], ["league_last", "TEXT NOT NULL DEFAULT ''"]]) {
+for (const [col, def] of [["league_tier", "INTEGER NOT NULL DEFAULT 0"], ["league_last", "TEXT NOT NULL DEFAULT ''"], ["xp_day", "TEXT NOT NULL DEFAULT ''"], ["xp_today", "INTEGER NOT NULL DEFAULT 0"]]) {
   if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === col)) db.exec(`ALTER TABLE users ADD COLUMN ${col} ${def}`);
 }
 
@@ -401,19 +406,27 @@ function leagueView(user) {
   return { ...base, tier: mine.tier, league: LEAGUES[mine.tier], joined: true, rows };
 }
 
-function addXp(user, key, game, amount, cap = MAX_AWARD) {
-  if (!GAMES.has(game)) return false;
-  const gained = Math.max(0, Math.min(cap, Math.round(Number(amount) || 0)));
+/** `imported`: guest XP moving into the account (outside the daily cap, kept out of the week's league) */
+function addXp(user, key, game, amount, cap = MAX_AWARD, imported = false) {
+  if (!GAMES.has(game) || typeof key !== "string" || !key) return false;
+  const day = today();
+  if (user.xp_day !== day) {
+    user.xp_day = day;
+    user.xp_today = 0;
+  }
+  const room = imported ? cap : Math.max(0, DAILY_XP_CAP - (user.xp_today ?? 0));
+  const gained = Math.max(0, Math.min(cap, room, Math.round(Number(amount) || 0)));
   if (!gained) return false;
-  const k = String(key).slice(0, 120);
+  const k = key.slice(0, 120);
   const fresh = db.prepare("INSERT OR IGNORE INTO awards (user_id, key) VALUES (?, ?)").run(user.id, k).changes > 0;
   if (!fresh) return false;
   const byGame = JSON.parse(user.by_game || "{}");
   byGame[game] = (byGame[game] || 0) + gained;
   user.xp += gained;
   user.by_game = JSON.stringify(byGame);
-  db.prepare("UPDATE users SET xp = ?, by_game = ? WHERE id = ?").run(user.xp, user.by_game, user.id);
-  leagueAdd(user, gained);
+  if (!imported) user.xp_today += gained;
+  db.prepare("UPDATE users SET xp = ?, by_game = ?, xp_day = ?, xp_today = ? WHERE id = ?").run(user.xp, user.by_game, user.xp_day, user.xp_today, user.id);
+  if (!imported) leagueAdd(user, gained);
   return true;
 }
 
@@ -464,10 +477,12 @@ async function handleAccountApi(req, res, cleanNick) {
         const tok = await appleForm("token", { grant_type: "authorization_code", code: b.authorizationCode }).catch(() => null);
         if (tok?.refresh_token) db.prepare("UPDATE users SET apple_refresh = ? WHERE id = ?").run(tok.refresh_token, user.id);
       }
-      // the XP this phone earned as a guest moves into the account, once
+      // the XP a phone earned as a guest moves into the account, once per account
+      // (else signing in again with made-up install ids would mint XP)
       const guest = b.guest && typeof b.guest === "object" ? b.guest : null;
-      if (guest && typeof b.installId === "string") {
-        for (const [game, amount] of Object.entries(guest.byGame || {})) addXp(user, `import-${b.installId}-${game}`, game, amount, 50000);
+      const imported = db.prepare("SELECT 1 FROM awards WHERE user_id = ? AND key LIKE 'import-%' LIMIT 1").get(user.id);
+      if (guest && typeof b.installId === "string" && !imported && guest.byGame && typeof guest.byGame === "object") {
+        for (const [game, amount] of Object.entries(guest.byGame).slice(0, 12)) addXp(user, `import-${b.installId.slice(0, 40)}-${game}`, game, amount, 50000, true);
       }
       const token = crypto.randomBytes(32).toString("base64url");
       db.prepare("INSERT INTO sessions (hash, user_id, created) VALUES (?, ?, ?)").run(sha(token), user.id, Date.now());
@@ -533,6 +548,11 @@ async function handleAccountApi(req, res, cleanNick) {
     if (url === "/api/account/friends" && req.method === "GET") return send(res, 200, friendList(user)), true;
 
     if (url === "/api/account/friends" && req.method === "POST") {
+      // codes can't be guessed by trying many: 20 tries per account per 10 minutes
+      const now = Date.now();
+      const tries = (addTries.get(user.id) ?? []).filter((t) => now - t < 600_000);
+      if (tries.length >= 20) return send(res, 429, { error: "slow" }), true;
+      addTries.set(user.id, [...tries, now]);
       const b = await readJson(req);
       const code = String(b.code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
       const other = code && db.prepare("SELECT id FROM users WHERE friend_code = ?").get(code);
@@ -540,7 +560,6 @@ async function handleAccountApi(req, res, cleanNick) {
       if (other.id === user.id) return send(res, 400, { error: "self" }), true;
       const count = db.prepare("SELECT COUNT(*) AS n FROM friends WHERE user_id = ?").get(user.id).n;
       if (count >= MAX_FRIENDS) return send(res, 400, { error: "limit" }), true;
-      const now = Date.now();
       db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(user.id, other.id, now);
       const added = db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(other.id, user.id, now).changes > 0;
       if (added) onFriendAdded(other.id, inviteCard(user.id));
@@ -555,7 +574,7 @@ async function handleAccountApi(req, res, cleanNick) {
 
     if (url === "/api/account/signout" && req.method === "POST") {
       const m = /^Bearer (\S+)$/.exec(req.headers.authorization || "");
-      db.prepare("DELETE FROM sessions WHERE hash = ?").run(sha(m[1]));
+      if (m) db.prepare("DELETE FROM sessions WHERE hash = ?").run(sha(m[1]));
       return send(res, 200, { ok: true }), true;
     }
 

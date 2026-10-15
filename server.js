@@ -26,7 +26,8 @@ const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
  */
 const NICK_BLOCK = ["amk", "aq", "orospu", "orosbu", "pic", "piç", "sik", "sikis", "sikik", "yarak", "yarrak", "got", "göt", "ibne", "kahpe", "pezevenk", "amcik", "amcık", "siktir", "fuck", "shit", "bitch", "cunt", "dick", "pussy", "nigger", "nigga", "fag", "whore", "slut", "rape", "nazi", "hitler"];
 function cleanNick(nick) {
-  const raw = String(nick || "").replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 20);
+  // control, zero-width and text-direction characters (a name could otherwise hide or flip text)
+  const raw = String(nick || "").replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/g, "").trim().slice(0, 20);
   const folded = raw
     .toLowerCase()
     .normalize("NFD")
@@ -419,6 +420,24 @@ function ppCode() {
   return ppRooms.has(code) ? ppCode() : code;
 }
 
+/** Possession hexes that touch (same rule as NEIGHBOURS in mobile/src/lib/possession.ts) */
+const PP_ROWS = [4, 5, 4, 5, 4, 5, 4];
+const PP_NEIGHBOURS = (() => {
+  const pos = PP_ROWS.flatMap((len, r) => Array.from({ length: len }, (_, c) => [r, c]));
+  const at = (r, c) => (r < 0 || r >= PP_ROWS.length || c < 0 || c >= PP_ROWS[r] ? -1 : PP_ROWS.slice(0, r).reduce((a, b) => a + b, 0) + c);
+  return pos.map(([r, c]) => {
+    const adj = PP_ROWS[r] === 5 ? [c - 1, c] : [c, c + 1];
+    return [at(r, c - 1), at(r, c + 1), ...adj.map((cc) => at(r - 1, cc)), ...adj.map((cc) => at(r + 1, cc))].filter((i) => i >= 0);
+  });
+})();
+
+// Grids and boards come from a phone and go to the other phone: short criterion ids only
+const critId = (x) => typeof x === "string" && x.length > 0 && x.length <= 48;
+const htGridOk = (g) => !!g && Array.isArray(g.rows) && Array.isArray(g.cols) && g.rows.length === 3 && g.cols.length === 3 && [...g.rows, ...g.cols].every(critId);
+const ppBoardOk = (b) => Array.isArray(b) && b.length === PP_HEXES && b.every(critId);
+/** a footballer's name as sent by a phone */
+const nameOf = (v) => (typeof v === "string" ? v.trim().slice(0, 60) : "");
+
 // ── Card Duel (Kart Düellosu; rules in src/lib/duel.ts, docs/design/kart-duellosu.md) ──
 // Each phone sends its 7-card hand (card ids). The server deals the questions, keeps
 // both picks hidden until both are in (or the clock runs out), judges the round from
@@ -639,7 +658,56 @@ app.prepare().then(() => {
   };
   setInterval(matchQueues, 1000).unref();
 
+  // Rooms nobody is connected to any more are cleared once a minute, timers included
+  const alive = (id) => io.sockets.sockets.has(id);
+  setInterval(() => {
+    for (const map of [rooms, htRooms, ppRooms, dzRooms]) {
+      for (const [code, room] of map) {
+        if (room.players.some((p) => alive(p.id))) continue;
+        clearTimeout(room.timer);
+        map.delete(code);
+      }
+    }
+    for (const [code, room] of qzRooms) {
+      if (room.players.some((p) => !p.bot && alive(p.id))) continue;
+      clearTimeout(room.timer);
+      room.botTimers.forEach(clearTimeout);
+      qzRooms.delete(code);
+      for (const d of Object.keys(qzOpen)) if (qzOpen[d] === code) qzOpen[d] = null;
+    }
+  }, 60_000).unref();
+
+  /** A room this socket opened and is still alone in: dropped when it opens another */
+  const dropLoneRoom = (map, code, socket) => {
+    const room = map.get(code);
+    if (!room || room.players.length !== 1 || room.players[0].id !== socket.id) return;
+    clearTimeout(room.timer);
+    map.delete(code);
+  };
+
   io.on("connection", (socket) => {
+    // Every handler is guarded: a missing or odd payload is answered with nothing, never
+    // a thrown error, and a socket that floods events (over 60 in 5 s) is dropped.
+    const on = socket.on.bind(socket);
+    let burst = 0;
+    let burstFrom = Date.now();
+    socket.on = (event, fn) =>
+      on(event, (...args) => {
+        try {
+          if (event === "disconnect") return fn(...args);
+          if (Date.now() - burstFrom > 5000) {
+            burst = 0;
+            burstFrom = Date.now();
+          }
+          if (++burst > 60) return socket.disconnect(true);
+          // (payload, ack): a payload that isn't an object reads as {}, an ack only if it's a function
+          const payload = args[0] !== null && typeof args[0] === "object" ? args[0] : {};
+          const ack = typeof args[args.length - 1] === "function" ? args[args.length - 1] : undefined;
+          fn(payload, ack);
+        } catch (e) {
+          console.error(`socket ${event}:`, e?.message);
+        }
+      });
     // signed-in app players send their session token: their online results are rated
     socket.data.uid = userIdFromToken(socket.handshake.auth?.token);
     // Invite a friend into a room you opened: the friend's open app shows a banner
@@ -663,16 +731,17 @@ app.prepare().then(() => {
     let joinedCode = null;
 
     socket.on("room:create", ({ nick, difficulty, matchId }, cb) => {
+      dropLoneRoom(rooms, joinedCode, socket);
       const code = makeCode();
       const room = {
         code,
         difficulty: difficulty === "hard" ? "hard" : "normal",
-        matchId,
+        matchId: typeof matchId === "string" || Number.isInteger(matchId) ? String(matchId).slice(0, 40) : null,
         started: false,
         players: [
           {
             id: socket.id,
-            nick: String(nick || "Oyuncu 1").slice(0, 20),
+            nick: cleanNick(nick) || "Oyuncu 1",
             solved: 0,
             failed: 0,
             totalGuesses: 0,
@@ -685,23 +754,23 @@ app.prepare().then(() => {
       rooms.set(code, room);
       joinedCode = code;
       socket.join(code);
-      cb({ ok: true, room: publicRoom(room) });
+      cb?.({ ok: true, room: publicRoom(room) });
     });
 
     socket.on("room:join", ({ code, nick }, cb) => {
       const room = rooms.get(String(code || "").toUpperCase());
-      if (!room) return cb({ ok: false, error: "not_found" });
+      if (!room) return cb?.({ ok: false, error: "not_found" });
       const existing = room.players.find((p) => p.id === socket.id);
       if (existing) {
         // Re-join after navigation: same socket, keep state as-is
         joinedCode = room.code;
         socket.join(room.code);
-        return cb({ ok: true, room: publicRoom(room) });
+        return cb?.({ ok: true, room: publicRoom(room) });
       }
-      if (room.players.length >= 2) return cb({ ok: false, error: "full" });
+      if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
       room.players.push({
         id: socket.id,
-        nick: String(nick || "Oyuncu 2").slice(0, 20),
+        nick: cleanNick(nick) || "Oyuncu 2",
         solved: 0,
         failed: 0,
         totalGuesses: 0,
@@ -712,7 +781,7 @@ app.prepare().then(() => {
       joinedCode = room.code;
       socket.join(room.code);
       io.to(room.code).emit("room:update", publicRoom(room));
-      cb({ ok: true, room: publicRoom(room) });
+      cb?.({ ok: true, room: publicRoom(room) });
     });
 
     socket.on("room:start", () => {
@@ -786,7 +855,8 @@ app.prepare().then(() => {
     };
 
     socket.on("pp:create", ({ nick, board }, cb) => {
-      if (!Array.isArray(board) || board.length !== PP_HEXES) return cb?.({ ok: false, error: "bad_board" });
+      if (!ppBoardOk(board)) return cb?.({ ok: false, error: "bad_board" });
+      dropLoneRoom(ppRooms, socket.data.ppCode, socket);
       const room = ppNewRoom(ppCode(), board, [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }]);
       ppRooms.set(room.code, room);
       ppJoinRoom(socket, room);
@@ -821,16 +891,18 @@ app.prepare().then(() => {
       const me = room.players.find((p) => p.id === socket.id);
       if (!me || me.mark !== room.turn) return;
       room.clocks[me.mark] = Math.max(0, room.clocks[me.mark] - (Date.now() - room.turnStart));
-      if (name) {
-        const hexes = Array.isArray(claims) ? claims.map(Number).filter((i) => i >= 0 && i < PP_HEXES) : [];
-        // The first claim is the chosen hex and must be neutral; the name must be new
-        if (!hexes.length || room.owners[hexes[0]] || room.used.includes(name)) {
+      const player = nameOf(name);
+      if (player) {
+        const hexes = Array.isArray(claims) ? [...new Set(claims)].filter((i) => Number.isInteger(i) && i >= 0 && i < PP_HEXES) : [];
+        // The first claim is the chosen hex and must be neutral; the rest must touch it; the name must be new
+        const touching = hexes.slice(1).every((i) => PP_NEIGHBOURS[hexes[0]].includes(i));
+        if (!hexes.length || hexes.length !== (claims?.length ?? 0) || !touching || room.owners[hexes[0]] || room.used.includes(player)) {
           return socket.emit("pp:update", ppPublic(room));
         }
         const stolen = hexes.filter((i) => room.owners[i] && room.owners[i].mark !== me.mark).length;
-        for (const i of hexes) room.owners[i] = { mark: me.mark, name: String(name).slice(0, 60) };
-        room.used.push(String(name).slice(0, 60));
-        room.flash = { mark: me.mark, reason: "claim", name: String(name).slice(0, 60), count: hexes.length, stolen };
+        for (const i of hexes) room.owners[i] = { mark: me.mark, name: player };
+        room.used.push(player);
+        room.flash = { mark: me.mark, reason: "claim", name: player, count: hexes.length, stolen };
         room.winner = ppResult(room.owners);
       } else {
         room.flash = { mark: me.mark, reason: "wrong" };
@@ -848,7 +920,7 @@ app.prepare().then(() => {
 
     socket.on("pp:rematch", ({ board }) => {
       const room = ppRooms.get(socket.data.ppCode);
-      if (!room || !room.winner || room.players[0].id !== socket.id || !Array.isArray(board) || board.length !== PP_HEXES) return;
+      if (!room || !room.winner || room.players[0].id !== socket.id || !ppBoardOk(board)) return;
       const players = room.players.map((p) => ({ ...p, mark: p.mark === "X" ? "O" : "X" }));
       Object.assign(room, ppNewRoom(room.code, board, players), { started: true });
       ppStartTurn(room);
@@ -870,7 +942,7 @@ app.prepare().then(() => {
     };
 
     socket.on("pp:queue", ({ nick, board, tier, avatar, frame }) => {
-      if (!Array.isArray(board) || board.length !== PP_HEXES) return;
+      if (!ppBoardOk(board)) return;
       ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
       ppQueue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: ppPair });
       matchQueues();
@@ -1000,6 +1072,7 @@ app.prepare().then(() => {
 
     socket.on("dz:create", ({ nick, hand }, cb) => {
       if (!dzHandOk(hand)) return cb?.({ ok: false, error: "bad_hand" });
+      dropLoneRoom(dzRooms, socket.data.dzCode, socket);
       const room = dzNewRoom(dzCode(), [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), side: 0, hand }]);
       dzRooms.set(room.code, room);
       dzJoinRoom(socket, room);
@@ -1119,7 +1192,8 @@ app.prepare().then(() => {
     };
 
     socket.on("ht:create", ({ nick, grid, steals, league }, cb) => {
-      if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return cb?.({ ok: false, error: "bad_grid" });
+      if (!htGridOk(grid)) return cb?.({ ok: false, error: "bad_grid" });
+      dropLoneRoom(htRooms, socket.data.htCode, socket);
       const code = htCode();
       const room = {
         code,
@@ -1190,7 +1264,7 @@ app.prepare().then(() => {
     };
 
     socket.on("ht:queue", ({ nick, grid, league, tier, avatar, frame }) => {
-      if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return;
+      if (!htGridOk(grid)) return;
       const lg = typeof league === "string" ? league.slice(0, 12) : "all";
       htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
       htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: htPair });
@@ -1215,17 +1289,18 @@ app.prepare().then(() => {
       if (!room || !room.started || room.winner) return;
       const me = room.players.find((p) => p.id === socket.id);
       if (!me || me.mark !== room.turn) return;
-      if (name) {
-        const i = Number(cell);
+      const player = nameOf(name);
+      if (player) {
+        const i = Number.isInteger(cell) ? cell : -1;
         const taken = i >= 0 && i < 9 ? room.board[i] : null;
         // A taken square is only allowed as a steal of the opponent's square
         const steal = !!taken && !!room.steals && taken.mark !== me.mark && room.steals[me.mark] > 0;
         // Bad square or a name already on the board: resync the sender only
-        if (!(i >= 0 && i < 9) || (taken && !steal) || room.used.includes(name)) {
+        if (!(i >= 0 && i < 9) || (taken && !steal) || room.used.includes(player)) {
           return socket.emit("ht:update", htPublic(room));
         }
         if (steal) room.steals[me.mark]--;
-        room.board[i] = { mark: me.mark, name: String(name).slice(0, 60) };
+        room.board[i] = { mark: me.mark, name: player };
         room.used.push(room.board[i].name);
         room.flash = null;
         room.winner = htResult(room.board);
@@ -1301,7 +1376,7 @@ app.prepare().then(() => {
     // Host deals a new grid; marks swap so the other player starts
     socket.on("ht:rematch", ({ grid }) => {
       const room = htRooms.get(socket.data.htCode);
-      if (!room || !room.winner || room.players[0].id !== socket.id || !grid) return;
+      if (!room || !room.winner || room.players[0].id !== socket.id || !htGridOk(grid)) return;
       if (gridHasMate(grid) && !htAllKnowMates(room)) return;
       // next game of the series, or a fresh series once it's decided
       if (htSeries(room).over) {
