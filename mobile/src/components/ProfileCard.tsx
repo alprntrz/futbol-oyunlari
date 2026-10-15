@@ -158,7 +158,7 @@ export function ProfileCard() {
           setAvatar(await saveAvatar(a));
           if (photo !== myPhoto) await savePhoto(photo).catch(() => {});
           setEditing(false);
-          syncProfile(savedNick, a);
+          syncProfile(savedNick, a, frame);
         }}
       />
     </>

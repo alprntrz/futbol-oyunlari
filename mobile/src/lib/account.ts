@@ -18,6 +18,8 @@ export interface Account {
   provider: "apple" | "google";
   nick: string;
   avatar: string;
+  /** the frame others see (server-accounts.js frameOf) */
+  frame?: string;
   xp: number;
   byGame: Partial<Record<XpSource, number>>;
   bonusToday: boolean;
@@ -31,6 +33,7 @@ export interface BoardRow {
   rank: number;
   nick: string;
   avatar: string;
+  frame?: string;
   value: number;
   level: number;
   games?: number;
@@ -204,10 +207,12 @@ export async function deleteAccount() {
 }
 
 /** Push a nickname / avatar change to the account (no-op for guests). */
-export async function syncProfile(nick: string, avatar: string) {
+/** `frame`: the picked frame, null = automatic (the best the rank has opened) */
+export async function syncProfile(nick: string, avatar: string, frame?: string | null) {
   if (!token) return;
   try {
-    const { user } = await api<{ user: Account }>("/profile", { method: "PUT", body: JSON.stringify({ nick, avatar }) });
+    const body = frame === undefined ? { nick, avatar } : { nick, avatar, frame: frame ?? "" };
+    const { user } = await api<{ user: Account }>("/profile", { method: "PUT", body: JSON.stringify(body) });
     setAccount(user);
   } catch {}
 }
@@ -217,6 +222,7 @@ export interface Friend {
   code: string;
   nick: string;
   avatar: string;
+  frame?: string;
   level: number;
   online: boolean;
 }

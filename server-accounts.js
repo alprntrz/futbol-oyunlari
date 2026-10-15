@@ -3,7 +3,7 @@
  * the player's XP kept on the server so it follows them to a new phone.
  *
  * Privacy (keep site/privacy.html true): we store the provider + its opaque user
- * id, nickname, avatar id and XP. No e-mail, no name, no IP. Deleting the account
+ * id, nickname, avatar id, avatar frame and XP. No e-mail, no name, no IP. Deleting the account
  * removes every row and revokes the Apple token.
  *
  * Storage: node:sqlite in ACCOUNTS_DB (default data/accounts.db; on Fly /data).
@@ -77,6 +77,8 @@ db.exec(`
 `);
 // friend code: a short public handle to share (users added later get one on first use)
 if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "friend_code")) db.exec("ALTER TABLE users ADD COLUMN friend_code TEXT");
+// avatar frame the player picked ('' = the best their rank has opened)
+if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "frame")) db.exec("ALTER TABLE users ADD COLUMN frame TEXT NOT NULL DEFAULT ''");
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS users_friend_code ON users (friend_code)");
 
 // jose is ESM-only on some installs; load it lazily
@@ -127,10 +129,37 @@ async function appleForm(endpoint, fields) {
 const sha = (s) => crypto.createHash("sha256").update(s).digest("hex");
 const today = () => new Date().toISOString().slice(0, 10);
 
+// Avatar frames open with the rank (mobile/src/lib/cosmetics.ts FRAMES, src/lib/levels.ts RANKS)
+const FRAME_RANK = { none: 0, bronze: 1, silver: 2, gold: 3, emerald: 4, galaxy: 5, legend: 6 };
+const FRAME_BY_RANK = ["none", "bronze", "silver", "gold", "emerald", "galaxy", "legend"];
+const RANK_FROM = [1, 5, 10, 15, 20, 30, 40];
+const rankIndex = (xp) => {
+  const level = levelOf(xp);
+  let i = 0;
+  while (i + 1 < RANK_FROM.length && level >= RANK_FROM[i + 1]) i++;
+  return i;
+};
+/** the frame others see: the pick if the rank has opened it, else the best open one */
+const frameOf = (u) => {
+  const rank = rankIndex(u.xp ?? 0);
+  return u.frame && FRAME_RANK[u.frame] !== undefined && FRAME_RANK[u.frame] <= rank ? u.frame : FRAME_BY_RANK[rank];
+};
+
+/**
+ * The look a phone shows strangers in a random match (avatar + frame), checked:
+ * a known avatar id, and a frame the sent rank has opened. Old apps send none.
+ */
+function cleanLook({ avatar, frame } = {}, tier = 0) {
+  return {
+    avatar: AVATARS.has(avatar) ? avatar : null,
+    frame: FRAME_RANK[frame] !== undefined && FRAME_RANK[frame] <= tier ? frame : null,
+  };
+}
+
 function publicUser(u) {
   const ratings = {};
   for (const r of db.prepare("SELECT game, rating, games, wins FROM ratings WHERE user_id = ?").all(u.id)) ratings[r.game] = { rating: Math.round(r.rating), games: r.games, wins: r.wins };
-  return { id: u.id, provider: u.provider, nick: u.nick, avatar: u.avatar, xp: u.xp, byGame: JSON.parse(u.by_game || "{}"), bonusToday: u.bonus_day === today(), ratings };
+  return { id: u.id, provider: u.provider, nick: u.nick, avatar: u.avatar, frame: frameOf(u), xp: u.xp, byGame: JSON.parse(u.by_game || "{}"), bonusToday: u.bonus_day === today(), ratings };
 }
 
 function userFromRequest(req) {
@@ -166,11 +195,11 @@ function friendCodeOf(user) {
 
 function friendList(user) {
   const rows = db
-    .prepare("SELECT u.id, u.friend_code, u.nick, u.avatar, u.xp FROM friends f JOIN users u ON u.id = f.friend_id WHERE f.user_id = ? ORDER BY f.created DESC")
+    .prepare("SELECT u.id, u.friend_code, u.nick, u.avatar, u.frame, u.xp FROM friends f JOIN users u ON u.id = f.friend_id WHERE f.user_id = ? ORDER BY f.created DESC")
     .all(user.id);
   return {
     code: friendCodeOf(user),
-    friends: rows.map((u) => ({ code: friendCodeOf(u), nick: u.nick, avatar: u.avatar, level: levelOf(u.xp), online: isOnline(u.id) })),
+    friends: rows.map((u) => ({ code: friendCodeOf(u), nick: u.nick, avatar: u.avatar, frame: frameOf(u), level: levelOf(u.xp), online: isOnline(u.id) })),
   };
 }
 
@@ -182,8 +211,8 @@ function friendIdByCode(userId, code) {
 
 /** Nickname and avatar to show on an invite. */
 function inviteCard(userId) {
-  const u = db.prepare("SELECT nick, avatar, friend_code FROM users WHERE id = ?").get(userId);
-  return u ? { nick: u.nick, avatar: u.avatar, code: u.friend_code } : null;
+  const u = db.prepare("SELECT nick, avatar, frame, xp, friend_code FROM users WHERE id = ?").get(userId);
+  return u ? { nick: u.nick, avatar: u.avatar, frame: frameOf(u), code: u.friend_code } : null;
 }
 
 // ── Skill ratings (Elo) for the online modes: signed-in players only, no bots
@@ -265,9 +294,9 @@ function leaderboard(board, me) {
   const top = [];
   let mine = null;
   if (board === "xp") {
-    const rows = db.prepare("SELECT id, nick, avatar, xp FROM users WHERE xp > 0 ORDER BY xp DESC, created ASC").all();
+    const rows = db.prepare("SELECT id, nick, avatar, frame, xp FROM users WHERE xp > 0 ORDER BY xp DESC, created ASC").all();
     rows.forEach((r, i) => {
-      const row = { rank: i + 1, nick: r.nick || "?", avatar: r.avatar, value: r.xp, level: levelOf(r.xp), me: r.id === me };
+      const row = { rank: i + 1, nick: r.nick || "?", avatar: r.avatar, frame: frameOf(r), value: r.xp, level: levelOf(r.xp), me: r.id === me };
       if (i < 50) top.push(row);
       if (r.id === me) mine = row;
     });
@@ -275,10 +304,10 @@ function leaderboard(board, me) {
   }
   if (!RATED.has(board)) return null;
   const rows = db
-    .prepare("SELECT u.id, u.nick, u.avatar, u.xp, r.rating, r.games, r.wins FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.game = ? AND r.games > 0 ORDER BY r.rating DESC, r.games DESC")
+    .prepare("SELECT u.id, u.nick, u.avatar, u.frame, u.xp, r.rating, r.games, r.wins FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.game = ? AND r.games > 0 ORDER BY r.rating DESC, r.games DESC")
     .all(board);
   rows.forEach((r, i) => {
-    const row = { rank: i + 1, nick: r.nick || "?", avatar: r.avatar, value: Math.round(r.rating), level: levelOf(r.xp), games: r.games, wins: r.wins, me: r.id === me };
+    const row = { rank: i + 1, nick: r.nick || "?", avatar: r.avatar, frame: frameOf(r), value: Math.round(r.rating), level: levelOf(r.xp), games: r.games, wins: r.wins, me: r.id === me };
     if (i < 50) top.push(row);
     if (r.id === me) mine = row;
   });
@@ -395,8 +424,9 @@ async function handleAccountApi(req, res, cleanNick) {
       const b = await readJson(req);
       const nick = b.nick !== undefined ? cleanNick(String(b.nick)) || user.nick : user.nick;
       const avatar = AVATARS.has(b.avatar) ? b.avatar : user.avatar;
-      db.prepare("UPDATE users SET nick = ?, avatar = ? WHERE id = ?").run(nick, avatar, user.id);
-      return send(res, 200, { user: publicUser({ ...user, nick, avatar }) }), true;
+      const frame = b.frame === undefined ? user.frame : b.frame === "" || FRAME_RANK[b.frame] !== undefined ? b.frame : user.frame;
+      db.prepare("UPDATE users SET nick = ?, avatar = ?, frame = ? WHERE id = ?").run(nick, avatar, frame, user.id);
+      return send(res, 200, { user: publicUser({ ...user, nick, avatar, frame }) }), true;
     }
 
     if (url === "/api/account/friends" && req.method === "GET") return send(res, 200, friendList(user)), true;
@@ -445,4 +475,4 @@ async function handleAccountApi(req, res, cleanNick) {
   }
 }
 
-module.exports = { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard };
+module.exports = { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook };

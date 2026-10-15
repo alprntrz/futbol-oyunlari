@@ -120,6 +120,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   with react-native-svg; `<Avatar me />` wears the chosen / best one, picker in Edit profile) and 12 badges (`loadBadges`,
   `components/Badges.tsx`; progress from XP, play streak, trophies and `history.ts` totals). Badge art brief:
   `docs/design/rozet-brief.md` → `python3 scripts/badge-assets.py <dir>` → `mobile/assets/brand/rozet/`.
+  Others see the frame: `users.frame` (the pick, '' = auto) in server-accounts.js, `frameOf` checks it against the rank from XP and
+  goes out with friends, leaderboards and invites; random queues (ht / pp / dz) carry `avatar` + `frame` (`loadMyLook`, checked
+  by `cleanLook` against the sent tier); house players get `houseLook(tier)`.
 - Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.

@@ -12,14 +12,14 @@ import { FrameRing } from "./FrameRing";
  * (`photo`: a draft photo to preview instead) inside the frame its rank opened
  * (`frame` draws a given one instead, e.g. in the picker).
  */
-export function Avatar({ me, photo, frame, ...props }: AvatarProps & { me?: boolean; photo?: string | null; frame?: FrameId }) {
+export function Avatar({ me, photo, frame, ...props }: AvatarProps & { me?: boolean; photo?: string | null; frame?: FrameId | string | null }) {
   const inner = photo ? <PhotoAvatar uri={photo} size={props.size} ring={props.ring} /> : me ? <MyAvatar {...props} /> : <PresetAvatar {...props} />;
   if (me && !frame) return <MyFramed size={props.size ?? 56}>{inner}</MyFramed>;
   if (!frame) return inner;
   return (
     <View>
       {inner}
-      <FrameRing id={frame} size={props.size ?? 56} />
+      <FrameRing id={frame as FrameId} size={props.size ?? 56} />
     </View>
   );
 }

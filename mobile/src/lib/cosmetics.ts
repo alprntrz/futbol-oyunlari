@@ -3,6 +3,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { rankOf } from "@/lib/levels";
 
+import { AVATARS, loadAvatar } from "./avatar";
 import { loadTotals } from "./history";
 import { loadTrophies } from "./trophies";
 import { loadXp, onXpAward, type XpGame } from "./xp";
@@ -77,6 +78,19 @@ export function useMyFrame(): FrameId {
     return onXpAward((a) => setLevel(a.after.level));
   }, []);
   return frameFor(level, choice);
+}
+
+/** Avatar + frame to show a random opponent (server.js checks the frame against the rank). */
+export async function loadMyLook(): Promise<{ avatar: string; frame: FrameId }> {
+  const [avatar, xp, saved] = await Promise.all([loadAvatar(), loadXp(), AsyncStorage.getItem(FRAME_KEY).catch(() => null)]);
+  return { avatar, frame: frameFor(xp.level, chosen ?? (frameById(saved) ? (saved as FrameId) : null)) };
+}
+
+/** A house player's look: a random avatar and a frame its rank could have. */
+export function houseLook(tier: number | null): { avatar: string; frame: FrameId | null } {
+  const open = FRAMES.filter((f) => f.rank <= (tier ?? 0));
+  const avatar = AVATARS[Math.floor(Math.random() * AVATARS.length)].id;
+  return { avatar, frame: open[Math.floor(Math.random() * open.length)]?.id ?? null };
 }
 
 // ── Badges

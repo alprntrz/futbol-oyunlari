@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 
 import { Text } from "~/components/Text";
 import { MatchSearch } from "~/components/MatchSearch";
+import { loadMyLook } from "~/lib/cosmetics";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { GAME_ICON, useSearchActivity } from "~/lib/liveActivity";
@@ -27,7 +28,7 @@ export default function PossessionRandom() {
     const onError = () => setError(t("serverUnreachable"));
     const enqueue = () => {
       setError(null);
-      loadTier().then((tier) => socket.emit("pp:queue", { nick: "", board: boardToIds(generateBoard()), tier }));
+      Promise.all([loadTier(), loadMyLook()]).then(([tier, look]) => socket.emit("pp:queue", { nick: "", board: boardToIds(generateBoard()), tier, ...look }));
     };
     socket.on("pp:matched", onMatched);
     socket.on("connect_error", onError);

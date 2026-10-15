@@ -11,6 +11,7 @@ import { gridToIds, type Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid, useHtLeague } from "~/lib/league";
 import { GAME_ICON, useSearchActivity } from "~/lib/liveActivity";
+import { houseLook, loadMyLook } from "~/lib/cosmetics";
 import { loadNick, randomNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { F } from "~/lib/theme";
@@ -20,7 +21,8 @@ import { loadTier } from "~/lib/xp";
 const BOT_AFTER_MS = 20_000;
 
 /** the opponent's rank comes from the server; a house player shows yours */
-type Matched = { kind: "room"; code: string; me: Mark; opponent: string; tier: number | null } | { kind: "bot"; opponent: string; tier: number | null };
+type Look = { avatar: string | null; frame: string | null };
+type Matched = ({ kind: "room"; code: string; me: Mark; opponent: string; tier: number | null } | { kind: "bot"; opponent: string; tier: number | null }) & Look;
 
 /** Random opponent: wait in the server queue, show the VS intro, then jump into the game. */
 export default function HatTrickRandom() {
@@ -34,22 +36,22 @@ export default function HatTrickRandom() {
     if (matched) return;
     const id = setTimeout(() => {
       getSocket().emit("ht:unqueue");
-      loadTier().then((tier) => setMatched({ kind: "bot", opponent: randomNick(), tier }));
+      loadTier().then((tier) => setMatched({ kind: "bot", opponent: randomNick(), tier, ...houseLook(tier) }));
     }, BOT_AFTER_MS);
     return () => clearTimeout(id);
   }, [matched]);
 
   useEffect(() => {
     const socket = getSocket();
-    const onMatched = (m: { code: string; players: { id: string; nick: string; mark: Mark; tier?: number | null }[] }) => {
+    const onMatched = (m: { code: string; players: ({ id: string; nick: string; mark: Mark; tier?: number | null } & Partial<Look>)[] }) => {
       const me = m.players.find((p) => p.id === socket.id) ?? m.players[0];
       const them = m.players.find((p) => p !== me);
-      setMatched({ kind: "room", code: m.code, me: me.mark, opponent: them?.nick || t("opponent"), tier: them?.tier ?? null });
+      setMatched({ kind: "room", code: m.code, me: me.mark, opponent: them?.nick || t("opponent"), tier: them?.tier ?? null, avatar: them?.avatar ?? null, frame: them?.frame ?? null });
     };
     const onError = () => setError(t("serverUnreachable"));
     const enqueue = async () => {
       setError(null);
-      socket.emit("ht:queue", { nick: await loadNick(), grid: gridToIds(dealGrid(league)), league, tier: await loadTier() });
+      socket.emit("ht:queue", { nick: await loadNick(), grid: gridToIds(dealGrid(league)), league, tier: await loadTier(), ...(await loadMyLook()) });
     };
     socket.on("ht:matched", onMatched);
     socket.on("connect_error", onError);
@@ -96,7 +98,7 @@ export default function HatTrickRandom() {
   return (
     <View style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
-      <MatchSearch found={matched ? { nick: matched.opponent, tier: matched.tier } : null} onCancel={() => router.back()} />
+      <MatchSearch found={matched ? { nick: matched.opponent, tier: matched.tier, avatar: matched.avatar, frame: matched.frame } : null} onCancel={() => router.back()} />
       {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );

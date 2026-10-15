@@ -97,7 +97,7 @@ function Row({ row, board, divider }: { row: BoardRow; board: Board; divider: bo
       <View style={[styles.rank, row.rank <= 3 && { backgroundColor: MEDAL[row.rank - 1] }]}>
         <Text style={[styles.rankText, row.rank <= 3 && { color: "#3B2A05" }]}>{row.rank}</Text>
       </View>
-      <Avatar id={row.avatar} nick={row.nick} size={38} />
+      <Avatar id={row.avatar} nick={row.nick} size={38} frame={row.frame} />
       <View style={{ flex: 1 }}>
         <Text style={T.headline} numberOfLines={1}>
           {row.nick}

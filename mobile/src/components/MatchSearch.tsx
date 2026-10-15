@@ -35,7 +35,7 @@ const lockIn = new Keyframe({
  * player cards flick past like a slot machine, blue bottom half with your own
  * card. `found` locks the top card on the real opponent.
  */
-export function MatchSearch({ found, onCancel }: { found: { nick: string; tier?: number | null } | null; onCancel: () => void }) {
+export function MatchSearch({ found, onCancel }: { found: { nick: string; tier?: number | null; avatar?: string | null; frame?: string | null } | null; onCancel: () => void }) {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
@@ -64,10 +64,10 @@ export function MatchSearch({ found, onCancel }: { found: { nick: string; tier?:
     return () => clearInterval(id);
   }, [found]);
 
-  const card = (name: string, color: string, avatar: string | null, tier: number | null | undefined, mine = false) => (
+  const card = (name: string, color: string, avatar: string | null, tier: number | null | undefined, mine = false, frame?: string | null) => (
     <View style={[styles.card, { backgroundColor: color }]}>
       <View style={styles.avatar}>
-        <Avatar id={avatar} size={46} me={mine} />
+        <Avatar id={avatar} size={46} me={mine} frame={mine ? undefined : frame} />
       </View>
       <View style={{ flexShrink: 1, gap: 4 }}>
         <Text style={styles.cardName} numberOfLines={1}>
@@ -86,7 +86,7 @@ export function MatchSearch({ found, onCancel }: { found: { nick: string; tier?:
       <View style={[styles.slot, { top: height * 0.24 }]}>
         {found ? (
           <Animated.View key="found" entering={lockIn}>
-            {card(found.nick, "#C42E3C", null, found.tier)}
+            {card(found.nick, "#C42E3C", found.avatar ?? null, found.tier, false, found.frame)}
           </Animated.View>
         ) : (
           <Animated.View key={tick} entering={flick}>

@@ -7,7 +7,7 @@ const next = require("next");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
-const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard } = require("./server-accounts");
+const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -168,7 +168,7 @@ function htPublic(room) {
     league: room.league || "all",
     // every phone in the room can draw "played with" criteria: the host may deal them
     mates: htAllKnowMates(room),
-    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark, tier: p.tier ?? null })),
+    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
 }
 
@@ -492,7 +492,7 @@ function dzPublic(room) {
     results: room.results,
     score,
     over: room.over,
-    players: room.players.map((p) => ({ id: p.id, nick: p.nick, side: p.side, tier: p.tier ?? null })),
+    players: room.players.map((p) => ({ id: p.id, nick: p.nick, side: p.side, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
 }
 
@@ -743,21 +743,22 @@ app.prepare().then(() => {
 
     const ppPair = (waiting, other) => {
       const room = ppNewRoom(ppCode(), waiting.board, [
-        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier },
-        { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier },
+        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
+        { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
       ]);
       room.started = true;
       ppRooms.set(room.code, room);
       ppJoinRoom(waiting.socket, room);
       ppJoinRoom(other.socket, room);
       ppStartTurn(room);
-      io.to("pp:" + room.code).emit("pp:matched", { code: room.code });
+      const look = (p) => ({ id: p.id, nick: p.nick, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null });
+      io.to("pp:" + room.code).emit("pp:matched", { code: room.code, players: room.players.map(look) });
     };
 
-    socket.on("pp:queue", ({ nick, board, tier }) => {
+    socket.on("pp:queue", ({ nick, board, tier, avatar, frame }) => {
       if (!Array.isArray(board) || board.length !== PP_HEXES) return;
       ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
-      ppQueue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), since: Date.now(), pair: ppPair });
+      ppQueue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: ppPair });
       matchQueues();
     });
 
@@ -902,8 +903,8 @@ app.prepare().then(() => {
 
     const dzPair = (waiting, other) => {
       const room = dzNewRoom(dzCode(), [
-        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, side: 0, hand: waiting.hand, tier: waiting.tier },
-        { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, side: 1, hand: other.hand, tier: other.tier },
+        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, side: 0, hand: waiting.hand, tier: waiting.tier, ...waiting.look },
+        { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, side: 1, hand: other.hand, tier: other.tier, ...other.look },
       ]);
       dzRooms.set(room.code, room);
       dzJoinRoom(waiting.socket, room);
@@ -912,10 +913,10 @@ app.prepare().then(() => {
       dzStart(room, DZ_INTRO_MS);
     };
 
-    socket.on("dz:queue", ({ nick, hand, tier }) => {
+    socket.on("dz:queue", ({ nick, hand, tier, avatar, frame }) => {
       if (!dzHandOk(hand)) return;
       dzQueue = dzQueue.filter((w) => w.socket.id !== socket.id);
-      dzQueue.push({ socket, nick: cleanNick(nick), hand, tier: cleanTier(tier), since: Date.now(), pair: dzPair });
+      dzQueue.push({ socket, nick: cleanNick(nick), hand, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: dzPair });
       matchQueues();
     });
 
@@ -1029,8 +1030,8 @@ app.prepare().then(() => {
         steals: null,
         used: [],
         players: [
-          { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier },
-          { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier },
+          { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
+          { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
         ],
       };
       htRooms.set(code, room);
@@ -1042,11 +1043,11 @@ app.prepare().then(() => {
       io.to("ht:" + code).emit("ht:matched", { code, players: htPublic(room).players });
     };
 
-    socket.on("ht:queue", ({ nick, grid, league, tier }) => {
+    socket.on("ht:queue", ({ nick, grid, league, tier, avatar, frame }) => {
       if (!grid || !Array.isArray(grid.rows) || !Array.isArray(grid.cols)) return;
       const lg = typeof league === "string" ? league.slice(0, 12) : "all";
       htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
-      htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg, tier: cleanTier(tier), since: Date.now(), pair: htPair });
+      htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: htPair });
       matchQueues();
     });
 

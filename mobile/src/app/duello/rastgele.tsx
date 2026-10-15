@@ -9,6 +9,7 @@ import { Page } from "~/components/ui";
 import { useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { houseLook, loadMyLook } from "~/lib/cosmetics";
 import { loadNick, randomNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { F } from "~/lib/theme";
@@ -17,7 +18,8 @@ import { loadTier } from "~/lib/xp";
 /** Nobody found by then: play the house player, who looks and plays like anyone else. */
 const BOT_AFTER_MS = 20_000;
 
-type Matched = { kind: "room"; code: string; opponent: string; tier: number | null } | { kind: "bot"; opponent: string; tier: number | null };
+type Look = { avatar: string | null; frame: string | null };
+type Matched = ({ kind: "room"; code: string; opponent: string; tier: number | null } | { kind: "bot"; opponent: string; tier: number | null }) & Look;
 
 /** Random Card Duel opponent: wait in the server queue (by rank), VS intro, then the match. */
 export default function DuelRandom() {
@@ -30,7 +32,7 @@ export default function DuelRandom() {
     if (matched) return;
     const id = setTimeout(() => {
       getSocket().emit("dz:unqueue");
-      loadTier().then((tier) => setMatched({ kind: "bot", opponent: randomNick(), tier }));
+      loadTier().then((tier) => setMatched({ kind: "bot", opponent: randomNick(), tier, ...houseLook(tier) }));
     }, BOT_AFTER_MS);
     return () => clearTimeout(id);
   }, [matched]);
@@ -38,14 +40,14 @@ export default function DuelRandom() {
   useEffect(() => {
     if (hand.length === 0) return;
     const socket = getSocket();
-    const onMatched = (m: { code: string; players: { id: string; nick: string; tier: number | null }[] }) => {
+    const onMatched = (m: { code: string; players: ({ id: string; nick: string; tier: number | null } & Partial<Look>)[] }) => {
       const them = m.players.find((p) => p.id !== socket.id);
-      setMatched({ kind: "room", code: m.code, opponent: them?.nick || t("opponent"), tier: them?.tier ?? null });
+      setMatched({ kind: "room", code: m.code, opponent: them?.nick || t("opponent"), tier: them?.tier ?? null, avatar: them?.avatar ?? null, frame: them?.frame ?? null });
     };
     const onError = () => setError(t("serverUnreachable"));
     const enqueue = async () => {
       setError(null);
-      socket.emit("dz:queue", { nick: await loadNick(), hand, tier: await loadTier() });
+      socket.emit("dz:queue", { nick: await loadNick(), hand, tier: await loadTier(), ...(await loadMyLook()) });
     };
     socket.on("dz:matched", onMatched);
     socket.on("connect_error", onError);
@@ -89,7 +91,7 @@ export default function DuelRandom() {
   return (
     <View style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
-      <MatchSearch found={matched ? { nick: matched.opponent, tier: matched.tier } : null} onCancel={() => router.back()} />
+      <MatchSearch found={matched ? { nick: matched.opponent, tier: matched.tier, avatar: matched.avatar, frame: matched.frame } : null} onCancel={() => router.back()} />
       {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );

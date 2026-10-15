@@ -160,7 +160,7 @@ export default function Friends() {
                 <Animated.View key={f.code} entering={softIn(i)} style={[styles.friend, i > 0 && styles.divider]}>
                   <Tap onLongPress={() => remove(f)} delayLongPress={400} style={styles.who} accessibilityLabel={`${f.nick}, ${f.online ? t("friendsOnline") : t("friendsOffline")}`} accessibilityHint={t("friendsRemove")}>
                     <View>
-                      <Avatar id={f.avatar} size={44} />
+                      <Avatar id={f.avatar} size={44} frame={f.frame} />
                       <View style={[styles.dot, { backgroundColor: f.online ? C.green : "#C7CDC9" }]} />
                     </View>
                     <View style={{ flex: 1, gap: 3 }}>

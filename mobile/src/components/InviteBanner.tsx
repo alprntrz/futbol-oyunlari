@@ -15,7 +15,7 @@ import { Avatar } from "./Avatar";
 import { Text } from "./Text";
 import { Tap } from "./ui";
 
-type From = { nick: string; avatar: string; code: string } | null;
+type From = { nick: string; avatar: string; frame?: string; code: string } | null;
 /** a room invite, or "X added you as a friend" (`fr:added`) */
 type Invite = { kind: "invite"; from: From; game: "ht"; room: string } | { kind: "added"; from: From };
 
@@ -74,7 +74,7 @@ export function InviteBanner() {
   return (
     <Animated.View entering={SlideInUp.springify().damping(16)} exiting={SlideOutUp.duration(200)} style={[styles.wrap, { top: insets.top + 6 }]} pointerEvents="box-none">
       <View style={styles.card} accessibilityLiveRegion="polite">
-        <Avatar id={invite.from?.avatar ?? null} size={42} />
+        <Avatar id={invite.from?.avatar ?? null} size={42} frame={invite.from?.frame} />
         <View style={{ flex: 1 }}>
           <Text style={styles.title} numberOfLines={1}>
             {t(invite.kind === "invite" ? "inviteTitle" : "friendAddedTitle").replace("{nick}", nick)}
