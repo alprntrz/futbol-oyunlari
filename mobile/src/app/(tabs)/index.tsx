@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import { QuestsCard } from "~/components/DailyCards";
+import { HomeBoard } from "~/components/HomeBoard";
 import { HomeFixtures } from "~/components/HomeFixtures";
 import { HomeNext, PlayBar } from "~/components/HomeNext";
 import { HomePitch } from "~/components/HomePitch";
@@ -56,6 +57,18 @@ export default function Home() {
       soft: C.coralSoft,
     },
   ];
+
+  if (HOME_LAYOUT === "board") {
+    return (
+      <Page topInset>
+        <HomeStatus />
+        <HomeBoard />
+        <Animated.View entering={enter(2)} style={{ marginTop: 6 }}>
+          <QuestsCard />
+        </Animated.View>
+      </Page>
+    );
+  }
 
   if (HOME_LAYOUT === "next") {
     return (
