@@ -10,10 +10,12 @@ import { cardById, dailyRand, houseHand, PICK_SECONDS, questionKey, ROUNDS, stat
 import { XP } from "@/lib/levels";
 
 import { DuelCardView } from "~/components/duel/DuelCardView";
+import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
 import { surname } from "~/components/taktik/Card";
 import { Text } from "~/components/Text";
 import { Button, Icon, Tap } from "~/components/ui";
 import { saveDaily, useDuel } from "~/lib/duel";
+import { useRecordMatch } from "~/lib/history";
 import { REVEAL_MS, useLocalDuel, useOnlineDuel, type DuelMatch, type RoundResult } from "~/lib/duelMatch";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -69,7 +71,7 @@ function Local({ mode, hand, nick, themeId }: { mode: Mode; hand: number[]; nick
 
 function Online({ code, hand }: { code: string; hand: number[] }) {
   const m = useOnlineDuel(code);
-  return <Board m={m} hand={hand} opponent={m.opponent} xpKey={`dz-room-${code}-${m.game}`} onAgain={m.peerLeft ? undefined : m.again} />;
+  return <Board m={m} hand={hand} opponent={m.opponent} xpKey={`dz-room-${code}-${m.game}`} online onAgain={m.peerLeft ? undefined : m.again} />;
 }
 
 const BG = "#0E3B22";
@@ -81,9 +83,11 @@ function Board({
   xpKey,
   practice,
   daily,
+  online = false,
   onAgain,
 }: {
   m: DuelMatch;
+  online?: boolean;
   hand: number[];
   opponent: string | null;
   xpKey: string;
@@ -95,6 +99,7 @@ function Board({
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [now, setNow] = useState(() => Date.now());
+  const emotes = useEmotes("dz", online);
   // the result card for this game (xpKey changes every game) once the last reveal has been seen
   const [endShownFor, setEndShownFor] = useState<string | null>(null);
   const showEnd = m.over && endShownFor === xpKey;
@@ -127,6 +132,13 @@ function Board({
   const [mine, theirs] = m.score;
   const outcome = mine === theirs ? "draw" : mine > theirs ? "win" : "lose";
   const xp = (outcome === "win" ? XP.dzWin : outcome === "draw" ? XP.dzDraw : XP.dzLoss) + (daily ? XP.dzDaily : 0);
+  useRecordMatch(showEnd && !practice, {
+    key: xpKey,
+    game: "dz",
+    opponent: opponent ?? t("opponent"),
+    result: outcome === "win" ? "win" : outcome === "lose" ? "loss" : "draw",
+    score: `${mine}–${theirs}`,
+  });
   // paid once the result card is up; only a win gets the full reward screen, the rest a "+XP" toast
   useXpAward(showEnd, xpKey, "dz", xp, {
     practice,
@@ -152,7 +164,7 @@ function Board({
           <Icon name="chevron.left" size={18} color="white" fallback="‹" />
         </Tap>
         <Text style={styles.round}>{t("dzRound").replace("{n}", String(Math.min(ROUNDS, m.round + (revealing ? 0 : 1)))).replace("{max}", String(ROUNDS))}</Text>
-        <View style={{ width: 32 }} />
+        <EmoteButton e={emotes} />
       </View>
       <View style={styles.scoreRow}>
         <Text style={styles.nick} numberOfLines={1}>
@@ -213,6 +225,8 @@ function Board({
           />
         ))}
       </View>
+
+      <EmoteLayer e={emotes} top={insets.top + 44} />
 
       {showEnd && (
         <View style={[StyleSheet.absoluteFill, styles.backdrop]}>

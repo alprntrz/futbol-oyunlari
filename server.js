@@ -782,6 +782,16 @@ app.prepare().then(() => {
       }
     });
 
+    // ── Quick emotes: a fixed set (no free text), to the other player in the game you're in ──
+    const EMOTES = new Set(["clap", "wow", "laugh", "fire", "gg", "think", "cry", "cool"]);
+    socket.on("em:send", ({ game, emote }) => {
+      if (!EMOTES.has(emote) || Date.now() - (socket.data.lastEmote ?? 0) < 1500) return;
+      const code = game === "ht" ? socket.data.htCode : game === "pp" ? socket.data.ppCode : game === "dz" ? socket.data.dzCode : null;
+      if (!code) return;
+      socket.data.lastEmote = Date.now();
+      socket.to(game + ":" + code).emit("em:recv", { game, emote });
+    });
+
     // ── Card Duel ──
     const dzEmit = (room) => io.to("dz:" + room.code).emit("dz:update", dzPublic(room));
 

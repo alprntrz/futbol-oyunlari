@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { XP } from "@/lib/levels";
 
 import { PossessionBoard } from "~/components/PossessionBoard";
+import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
 import { Text } from "~/components/Text";
 import { WaitingRoom } from "~/components/WaitingRoom";
 import { Button, Card, Icon, Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
+import { useRecordMatch } from "~/lib/history";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
@@ -39,6 +41,7 @@ interface PpRoom {
 /** Online Possession Play room: waiting screen, then the shared hex board driven by the server. */
 export default function PossessionRoom() {
   const { t } = useI18n();
+  const emotes = useEmotes("pp", true);
   const params = useLocalSearchParams<{ code: string }>();
   const code = (params.code ?? "").toUpperCase();
   const [room, setRoom] = useState<PpRoom | null>(null);
@@ -56,6 +59,14 @@ export default function PossessionRoom() {
     "pp",
     room?.winner === "draw" ? XP.ppDraw : room?.winner === myMark ? XP.ppWin : XP.ppLoss
   );
+  const held = (m?: string) => room?.owners.filter((o) => o?.mark === m).length ?? 0;
+  useRecordMatch(!!room?.winner && !!myMark, {
+    key: room ? `pp-${code}-${room.board.slice(0, 4).join(",")}` : "pp",
+    game: "pp",
+    opponent: room?.players.find((p) => p.id !== myId)?.nick || t("opponent"),
+    result: room?.winner === "draw" ? "draw" : room?.winner === myMark ? "win" : "loss",
+    score: `${held(myMark)}–${held(myMark === "X" ? "O" : "X")}`,
+  });
 
   useEffect(() => {
     const socket = getSocket();
@@ -166,7 +177,7 @@ export default function PossessionRoom() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: code }} />
+      <Stack.Screen options={{ title: code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
       {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
       <PossessionBoard
         board={board}
@@ -203,6 +214,7 @@ export default function PossessionRoom() {
           ) : null
         }
       />
+      <EmoteLayer e={emotes} top={4} />
     </Page>
   );
 }

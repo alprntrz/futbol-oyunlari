@@ -5,6 +5,9 @@ import { View } from "react-native";
 import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
+import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { C } from "~/lib/theme";
+import { useRecordMatch } from "~/lib/history";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { Button, Page } from "~/components/ui";
@@ -24,6 +27,7 @@ const fakeCode = () => Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(
  */
 export default function HatTrickHouse() {
   const { t } = useI18n();
+  const emotes = useEmotes("ht", false);
   const params = useLocalSearchParams<{ nick?: string; league?: string }>();
   const nick = params.nick || t("opponent");
   const [code] = useState(fakeCode);
@@ -43,6 +47,14 @@ export default function HatTrickHouse() {
   // series score: follows the people, marks swap every game
   const [wins, setWins] = useState({ mine: 0, theirs: 0 });
   const seriesOver = wins.mine >= SERIES_TARGET || wins.theirs >= SERIES_TARGET;
+  const [startedAt] = useState(() => Date.now());
+  useRecordMatch(seriesOver, {
+    key: `ht-house-${startedAt}`,
+    game: "ht",
+    opponent: nick,
+    result: wins.mine > wins.theirs ? "win" : "loss",
+    score: `${wins.mine}–${wins.theirs}`,
+  });
   // comeback bonus, as online: whoever lost the last game gets longer turns
   const [comeback, setComeback] = useState<"me" | "rival" | null>(null);
   const turnSecondsOf = (m: Mark, meNow = me, cb = comeback) => TURN_SECONDS + ((cb === "me" ? meNow : cb === "rival" ? other(meNow) : null) === m ? COMEBACK_SECONDS : 0);
@@ -200,7 +212,7 @@ export default function HatTrickHouse() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: code }} />
+      <Stack.Screen options={{ title: code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
       <HatTrickBoard
         steals={null}
         usedNames={usedNames}
@@ -238,6 +250,7 @@ export default function HatTrickHouse() {
         }
       />
       <SeriesEnd over={seriesOver} won={wins.mine >= SERIES_TARGET} mine={wins.mine} theirs={wins.theirs} onRematch={rematch} />
+      <EmoteLayer e={emotes} top={4} />
     </Page>
   );
 }

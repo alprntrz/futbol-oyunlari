@@ -5,12 +5,14 @@ import { Share, StyleSheet, View } from "react-native";
 
 
 import { GameActions } from "~/components/GameActions";
+import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
+import { useRecordMatch } from "~/lib/history";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { dealGrid } from "~/lib/league";
@@ -53,6 +55,7 @@ interface HtRoom {
 /** Online Hat-trick room: waiting screen, then the shared board driven by the server. */
 export default function HatTrickRoom() {
   const { t } = useI18n();
+  const emotes = useEmotes("ht", true);
   // `random` is set when the room came from the random queue: offer a new match after the game
   const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
@@ -126,6 +129,16 @@ export default function HatTrickRoom() {
   const turnMs = room?.turnMs ?? TURN_SECONDS * 1000;
   const timeLeft = Math.min(turnMs / 1000, Math.max(0, Math.ceil((deadline - now) / 1000)));
   const opponent = room?.players.find((p) => p.id !== myId);
+  // the series for Profile's recent matches
+  const mineWon = me && room?.series ? room.series[me.mark] : 0;
+  const theirsWon = me && room?.series ? room.series[me.mark === "X" ? "O" : "X"] : 0;
+  useRecordMatch(seriesOver && !!me, {
+    key: `ht-${code}-${[...(room?.grid?.rows ?? []), ...(room?.grid?.cols ?? [])].join(",")}`,
+    game: "ht",
+    opponent: opponent?.nick || t("opponent"),
+    result: mineWon > theirsWon ? "win" : mineWon < theirsWon ? "loss" : "draw",
+    score: `${mineWon}–${theirsWon}`,
+  });
 
   // Lock Screen / Dynamic Island: whose turn, the clock, the series score
   useDuelActivity(
@@ -243,7 +256,7 @@ export default function HatTrickRoom() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: code }} />
+      <Stack.Screen options={{ title: code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
       {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
       <HatTrickBoard
         steals={room.steals}
@@ -294,6 +307,7 @@ export default function HatTrickRoom() {
         theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
         onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) }) : null}
       />
+      <EmoteLayer e={emotes} top={4} />
     </Page>
   );
 }
