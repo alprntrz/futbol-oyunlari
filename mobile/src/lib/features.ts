@@ -19,8 +19,9 @@ export const LIVE_ACTIVITIES = true;
 export const LIVE_PUSH = true;
 
 /**
- * Home layout: "list" (status, quick play, today's puzzles, quests, versus modes),
+ * Home layout: "next" (the outside designer's "Sıradaki maç", components/HomeNext.tsx),
+ * "list" (status, quick play, today's puzzles, quests, versus modes),
  * "fixtures" (draft B, components/HomeFixtures.tsx: today's dailies as a match-day list)
  * or "pitch" (draft C, components/HomePitch.tsx, not liked: kept for reference).
  */
-export const HOME_LAYOUT: "list" | "fixtures" | "pitch" = "fixtures";
+export const HOME_LAYOUT: "list" | "fixtures" | "pitch" | "next" = "next";

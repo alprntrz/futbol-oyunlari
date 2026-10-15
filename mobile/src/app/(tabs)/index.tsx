@@ -4,6 +4,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 
 import { QuestsCard } from "~/components/DailyCards";
 import { HomeFixtures } from "~/components/HomeFixtures";
+import { HomeNext } from "~/components/HomeNext";
 import { HomePitch } from "~/components/HomePitch";
 import { HomeStatus } from "~/components/HomeStatus";
 import { ModeList, type Mode } from "~/components/ModeGrid";
@@ -55,6 +56,15 @@ export default function Home() {
       soft: C.coralSoft,
     },
   ];
+
+  if (HOME_LAYOUT === "next") {
+    return (
+      <Page topInset>
+        <HomeStatus />
+        <HomeNext />
+      </Page>
+    );
+  }
 
   if (HOME_LAYOUT === "fixtures") {
     return (
