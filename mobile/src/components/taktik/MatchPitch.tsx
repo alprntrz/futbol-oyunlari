@@ -11,7 +11,7 @@ import Animated, {
   withTiming,
   type SharedValue,
 } from "react-native-reanimated";
-import Svg, { Circle, Line, Path, Rect } from "react-native-svg";
+import Svg, { Circle, Line, Rect } from "react-native-svg";
 
 import { SLOTS, type Pos } from "@/lib/taktik/rules";
 import type { MatchEvent, Unit } from "@/lib/taktik/types";
@@ -19,15 +19,34 @@ import type { MatchEvent, Unit } from "@/lib/taktik/types";
 import { useI18n } from "~/lib/i18n";
 import { C, F } from "~/lib/theme";
 
+import { CLUB_KITS, type Kit } from "../HatTrickBoard";
+import { Jersey } from "../Jersey";
 import { Text } from "../Text";
-import { surname } from "./Card";
+import { clubCriterion, surname } from "./Card";
 
 /** where each line stands in its own half at kick-off (0 = own goal line, 0.5 = halfway) */
 const DEPTH: Record<Pos, number> = { GK: 0.05, DEF: 0.2, MID: 0.34, FWD: 0.45 };
 /** how far each line follows the ball up and down the pitch */
 const FOLLOW: Record<Pos, number> = { GK: 0.06, DEF: 0.3, MID: 0.45, FWD: 0.55 };
-/** kits: me in blue, the opponent in coral (the app's X / O colours); keepers a darker shade */
-const KIT = { home: { shirt: "#2563EB", gk: "#1E3A8A" }, away: { shirt: "#F43F5E", gk: "#9F1239" } };
+/** fallback kits (no club in the squad, or two kits too alike): me in blue, the opponent in coral */
+const PLAIN = { home: { body: "#2563EB", sleeves: "#2563EB" } as Kit, away: { body: "#F43F5E", sleeves: "#F43F5E" } as Kit };
+const KEEPER: Record<"home" | "away", Kit> = { home: { body: "#1F2937", sleeves: "#1F2937" }, away: { body: "#FACC15", sleeves: "#FACC15" } };
+
+/** a side plays in the kit of the club most of its players come from */
+function teamKit(units: Unit[] | null): Kit | null {
+  const count = new Map<string, number>();
+  for (const u of units ?? []) if (u.slot !== null && u.club) count.set(u.club, (count.get(u.club) ?? 0) + 1);
+  const top = [...count.entries()].sort((a, b) => b[1] - a[1])[0];
+  const c = top && clubCriterion(top[0]);
+  return c ? (CLUB_KITS[c.id] ?? (c.c1 ? { body: c.c1, sleeves: c.c1 } : null)) : null;
+}
+
+/** how alike two colours are (0 = same) */
+function gap(a: string, b: string) {
+  const n = (h: string) => [1, 3, 5].map((i) => parseInt(h.replace("#", "").padEnd(6, "0").slice(i - 1, i + 1), 16));
+  const [x, y] = [n(a), n(b)];
+  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+}
 
 type Dot = { key: string; x: number; y: number; name: string; label: string; gk: boolean; pos: Pos; home: boolean };
 
@@ -67,6 +86,7 @@ export function MatchPitch({
   theirs,
   events,
   shown,
+  over = false,
   sliceMs,
   width,
 }: {
@@ -77,12 +97,21 @@ export function MatchPitch({
   events: MatchEvent[];
   /** slices played so far */
   shown: number;
+  /** full time (or skipped): everyone back in shape, the ball on the spot */
+  over?: boolean;
   sliceMs: number;
   width: number;
 }) {
   const { t } = useI18n();
   const height = width * 0.66;
   const home = useMemo(() => lineUp(onPitch(mine), true), [mine]);
+  // kits: each side's main club; if they'd look alike, the opponent changes to its plain away colour
+  const kits = useMemo(() => {
+    const h = teamKit(mine) ?? PLAIN.home;
+    let a = teamKit(theirs) ?? PLAIN.away;
+    if (gap(h.body, a.body) < 110) a = gap(h.body, PLAIN.away.body) < 110 ? PLAIN.home : PLAIN.away;
+    return { home: h, away: a };
+  }, [mine, theirs]);
   const away = useMemo(() => lineUp(theirs ? onPitch(theirs) : ghostOf(home.length), false), [theirs, home.length]);
 
   const bx = useSharedValue(0.5);
@@ -97,6 +126,12 @@ export function MatchPitch({
 
   useEffect(() => {
     if (shown === 0) return;
+    if (over) {
+      runKey.set("");
+      bx.set(withTiming(0.5, { duration: 500, easing: Easing.inOut(Easing.quad) }));
+      by.set(withTiming(0.5, { duration: 500, easing: Easing.inOut(Easing.quad) }));
+      return;
+    }
     const s = shown - 1;
     const ev = events.find((e) => e.slice === s);
     const side = ev ? ev.side : s % 2 === 0 ? 0 : 1;
@@ -120,17 +155,38 @@ export function MatchPitch({
 
     const leg = sliceMs / 3;
     const ease = Easing.inOut(Easing.quad);
+    const cut = Easing.out(Easing.quad);
     // the shooter runs from his spot to where he'll get the ball, then the move is over and he's back in line
     const back = setTimeout(() => runKey.set(""), sliceMs * 0.95);
-    if (shooter) {
+    if (ev && shooter) {
       runKey.set(shooter.key);
       rx.set(shooter.x);
       ry.set(shooter.y);
       rx.set(withTiming(p2.x, { duration: leg * 2, easing: ease }));
       ry.set(withTiming(p2.y, { duration: leg * 2, easing: ease }));
+      bx.set(withSequence(withTiming(p1.x, { duration: leg, easing: ease }), withTiming(p2.x, { duration: leg, easing: ease }), withTiming(end.x, { duration: leg, easing: cut })));
+      by.set(withSequence(withTiming(p1.y, { duration: leg, easing: ease }), withTiming(p2.y, { duration: leg, easing: ease }), withTiming(end.y, { duration: leg, easing: cut })));
+    } else {
+      // a quiet minute: a carrier dribbles a few yards, then a quick one-two and a pass on (four short touches)
+      const carrier = team[(s * 5) % Math.max(1, team.length)] ?? shooter;
+      const mate = team[(s * 5 + 2) % Math.max(1, team.length)] ?? carrier;
+      const wob = (k: number) => (((s * 13 + k * 29) % 21) - 10) / 100;
+      const start = carrier ? { x: carrier.x + (bx.get() - 0.5) * FOLLOW[carrier.pos], y: carrier.y } : { x: bx.get(), y: by.get() };
+      const drib = { x: clamp(start.x + dir * 0.08), y: clamp(start.y + wob(1)) };
+      const pass = mate ? { x: clamp(mate.x + dir * 0.1), y: clamp(mate.y + wob(2)) } : drib;
+      const ret = { x: clamp(drib.x + dir * 0.06), y: clamp(drib.y + wob(3)) };
+      const on = { x: clamp(ret.x + dir * 0.1), y: clamp(0.5 + wob(4) * 2.5) };
+      const q = sliceMs / 4;
+      if (carrier) {
+        runKey.set(carrier.key);
+        rx.set(start.x);
+        ry.set(start.y);
+        rx.set(withSequence(withTiming(drib.x, { duration: q, easing: ease }), withTiming(drib.x + dir * 0.03, { duration: q }), withTiming(ret.x, { duration: q, easing: ease })));
+        ry.set(withSequence(withTiming(drib.y, { duration: q, easing: ease }), withTiming(drib.y, { duration: q }), withTiming(ret.y, { duration: q, easing: ease })));
+      }
+      bx.set(withSequence(withTiming(drib.x, { duration: q, easing: ease }), withTiming(pass.x, { duration: q, easing: cut }), withTiming(ret.x, { duration: q, easing: cut }), withTiming(on.x, { duration: q, easing: cut })));
+      by.set(withSequence(withTiming(drib.y, { duration: q, easing: ease }), withTiming(pass.y, { duration: q, easing: cut }), withTiming(ret.y, { duration: q, easing: cut }), withTiming(on.y, { duration: q, easing: cut })));
     }
-    bx.set(withSequence(withTiming(p1.x, { duration: leg, easing: ease }), withTiming(p2.x, { duration: leg, easing: ease }), withTiming(end.x, { duration: leg, easing: Easing.out(Easing.quad) })));
-    by.set(withSequence(withTiming(p1.y, { duration: leg, easing: ease }), withTiming(p2.y, { duration: leg, easing: ease }), withTiming(end.y, { duration: leg, easing: Easing.out(Easing.quad) })));
     if (ev?.kind === "goal") flash.set(withSequence(withTiming(0, { duration: leg * 2 }), withTiming(1, { duration: 160 }), withTiming(0, { duration: 700 })));
     // the shot's trail appears as the ball leaves his foot
     const id = ev ? setTimeout(() => setShot({ from: p2, to: end, kind: ev.kind, id: s }), leg * 2) : null;
@@ -138,7 +194,7 @@ export function MatchPitch({
       clearTimeout(back);
       if (id) clearTimeout(id);
     };
-  }, [shown, events, home, away, sliceMs, bx, by, flash, runKey, rx, ry]);
+  }, [shown, over, events, home, away, sliceMs, bx, by, flash, runKey, rx, ry]);
 
   const ball = useAnimatedStyle(() => ({ transform: [{ translateX: bx.get() * width - 7 }, { translateY: by.get() * height - 7 }] }));
   const flashStyle = useAnimatedStyle(() => ({ opacity: flash.get() * 0.35 }));
@@ -161,7 +217,7 @@ export function MatchPitch({
       {shot && <ShotTrail key={shot.id} shot={shot} width={width} height={height} ms={sliceMs / 3} />}
 
       {[...home, ...away].map((d) => (
-        <Player key={d.key} d={d} bx={bx} by={by} runKey={runKey} rx={rx} ry={ry} width={width} height={height} />
+        <Player key={d.key} d={d} kit={d.gk ? KEEPER[d.home ? "home" : "away"] : d.home ? kits.home : kits.away} bx={bx} by={by} runKey={runKey} rx={rx} ry={ry} width={width} height={height} />
       ))}
 
       <Animated.View style={[styles.ball, ball]} />
@@ -194,16 +250,6 @@ function ShotTrail({ shot, width, height, ms }: { shot: Shot; width: number; hei
   );
 }
 
-/** a little football shirt in the kit colour with a white trim */
-function Shirt({ color, size }: { color: string; size: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
-      <Path d="M8 2.5 L4 4.5 L1.5 9 L5 10.8 L6 9.3 V21.5 H18 V9.3 L19 10.8 L22.5 9 L20 4.5 L16 2.5 C15 4.3 13.6 5 12 5 C10.4 5 9 4.3 8 2.5 Z" fill={color} stroke="white" strokeWidth={1.4} strokeLinejoin="round" />
-      <Path d="M9.2 2.9 C10 4.1 11 4.6 12 4.6 C13 4.6 14 4.1 14.8 2.9" stroke="white" strokeWidth={1.4} fill="none" />
-    </Svg>
-  );
-}
-
 /**
  * One player: holds his line while the team shifts with the ball, goes for the
  * ball when it's near, runs to his shooting spot when it's his move, and a
@@ -211,6 +257,7 @@ function Shirt({ color, size }: { color: string; size: number }) {
  */
 function Player({
   d,
+  kit,
   bx,
   by,
   runKey,
@@ -220,6 +267,7 @@ function Player({
   height,
 }: {
   d: Dot;
+  kit: Kit;
   bx: SharedValue<number>;
   by: SharedValue<number>;
   runKey: SharedValue<string>;
@@ -230,7 +278,6 @@ function Player({
 }) {
   const size = 28;
   const follow = FOLLOW[d.pos];
-  const kit = d.home ? KIT.home : KIT.away;
   const style = useAnimatedStyle(() => {
     const ballX = bx.get();
     const ballY = by.get();
@@ -257,7 +304,7 @@ function Player({
   });
   return (
     <Animated.View style={[styles.player, { width: size, height: size + 9 }, style]}>
-      <Shirt color={d.gk ? kit.gk : kit.shirt} size={size} />
+      <Jersey body={kit.body} sleeves={kit.sleeves} pattern={kit.pattern} numberColor="#000" number={0} size={size} variant="crew" hideNumber />
       {d.label ? (
         <Text allowFontScaling={false} style={styles.playerText}>
           {d.label}

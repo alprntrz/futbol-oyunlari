@@ -91,6 +91,7 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
             theirs={mine.away === -1 || mine.awayName.endsWith("*") ? null : (lobby.managers[flip ? mine.home : mine.away]?.units ?? null)}
             events={(mine.events ?? []).map((e) => ({ ...e, side: side(e.side) }))}
             shown={shown}
+            over={done}
             sliceMs={TICK_MS}
             width={width - 32}
           />
