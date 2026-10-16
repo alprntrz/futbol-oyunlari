@@ -21,6 +21,14 @@ export const REWARD = {
 
 /** Taktik Tahtası art (docs/design/taktik-tahtasi.md §17). */
 export const TAKTIK = {
+  pitch: {
+    grass: require("../../assets/brand/taktik/pitch/pitch-grass.jpg"),
+    goalLeft: require("../../assets/brand/taktik/pitch/pitch-goal-left.png"),
+    goalRight: require("../../assets/brand/taktik/pitch/pitch-goal-right.png"),
+    ball: require("../../assets/brand/taktik/pitch/pitch-ball.png"),
+    shadow: require("../../assets/brand/taktik/pitch/pitch-shadow.png"),
+    flashGoal: require("../../assets/brand/taktik/pitch/pitch-flash-goal.png"),
+  },
   aug: {
     gegenpress: require("../../assets/brand/taktik/aug/aug-gegenpress.png"),
     bus: require("../../assets/brand/taktik/aug/aug-bus.png"),

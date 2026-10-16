@@ -24,7 +24,7 @@ PARTS = {
     "goal-right": (180, False),
     "ball": (48, False),
     "shadow": (96, False),
-    "flash-goal": (600, False),
+    "flash-goal": (420, False),
 }
 
 done = []
@@ -41,15 +41,21 @@ for name, (size, opaque) in PARTS.items():
             continue
         im = im.crop(box)
     im.thumbnail((size, size), Image.LANCZOS)
-    im.save(OUT / f"pitch-{name}.png", optimize=True)
+    # the grass is opaque and big: a JPEG is a fraction of the PNG's size
+    if opaque:
+        (OUT / f"pitch-{name}.png").unlink(missing_ok=True)
+        im.save(OUT / f"pitch-{name}.jpg", quality=84, optimize=True, progressive=True)
+    else:
+        im.save(OUT / f"pitch-{name}.png", optimize=True)
     done.append(name)
     print(name, im.size)
 
 key = lambda n: re.sub(r"-(\w)", lambda m: m.group(1).upper(), n)
 brand = ROOT / "mobile" / "src" / "lib" / "brand.ts"
 src = brand.read_text()
-installed = [n for n in PARTS if (OUT / f"pitch-{n}.png").exists()]
-block = "  pitch: {\n" + "".join(f'    {key(n)}: require("../../assets/brand/taktik/pitch/pitch-{n}.png"),\n' for n in installed) + "  },\n"
+ext = lambda n: "jpg" if PARTS[n][1] else "png"
+installed = [n for n in PARTS if (OUT / f"pitch-{n}.{ext(n)}").exists()]
+block = "  pitch: {\n" + "".join(f'    {key(n)}: require("../../assets/brand/taktik/pitch/pitch-{n}.{ext(n)}"),\n' for n in installed) + "  },\n"
 pattern = r"\n  pitch: \{\n(?:    [^\n]*\n)*  \},\n"
 if re.search(pattern, src):
     src = re.sub(pattern, "\n" + block, src, count=1)

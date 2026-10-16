@@ -556,14 +556,15 @@ export default function TaktikGame() {
             {me.place === 1 && me.hp >= START_HP && <Text style={[T.caption, { textAlign: "center", color: C.greenMid, fontWeight: "800" }]}>{t("ttkFlawless")}</Text>}
             {/* everyone's final place, squad and best synergies */}
             <ScrollView style={{ maxHeight: 300 }} contentContainerStyle={{ gap: 6 }}>
-              {standings.map((m) => {
+              {standings.map((m, i) => {
                 const top = sheet({ name: m.name, units: m.units, coach: m.coach, augments: m.augments })
                   .traits.filter((x) => x.tier > 0)
                   .sort((a, b) => b.tier - a.tier || b.count - a.count)
                   .slice(0, 3);
                 return (
                   <View key={m.id} style={[styles.finalRow, m.id === me.id && styles.finalMe]}>
-                    <Text style={styles.finalPlace}>{m.place ?? 1}</Text>
+                    {/* still playing: their place is where they stand now (by health) */}
+                    <Text style={styles.finalPlace}>{m.place ?? i + 1}</Text>
                     <View style={{ flex: 1 }}>
                       <Text style={T.headline} numberOfLines={1}>
                         {m.id === me.id ? t("you") : m.name}
