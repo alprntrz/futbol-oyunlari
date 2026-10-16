@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Modal, ScrollView, StyleSheet, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -15,8 +15,10 @@ import { C, F, T } from "~/lib/theme";
 import { Text } from "../Text";
 import { Button, Icon } from "../ui";
 import { ItemIcon } from "./Card";
+import { MatchPitch } from "./MatchPitch";
 
-const TICK_MS = 420;
+/** one slice of the match; slow enough to follow the ball on the pitch */
+const TICK_MS = 850;
 const minute = (slice: number) => Math.round(((slice + 0.6) * 90) / SLICES);
 
 /**
@@ -27,6 +29,7 @@ const minute = (slice: number) => Math.round(((slice + 0.6) * 90) / SLICES);
 export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number; onClose: () => void }) {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const mine = lobby.last.find((r) => r.home === meId || r.away === meId);
   const others = lobby.last.filter((r) => r !== mine && r.away !== -1);
   const [shown, setShown] = useState(0);
@@ -77,6 +80,18 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
         </View>
         <View style={styles.clock}>
           <Text style={styles.clockText}>{done ? "90'" : t("ttkMinute").replace("{m}", String(minute(Math.max(0, shown - 1))))}</Text>
+        </View>
+
+        {/* the match on a little pitch (prototype), me attacking left to right */}
+        <View style={{ marginTop: 14 }}>
+          <MatchPitch
+            mine={lobby.managers[meId].units}
+            theirs={mine.away === -1 || mine.awayName.endsWith("*") ? null : (lobby.managers[flip ? mine.home : mine.away]?.units ?? null)}
+            events={(mine.events ?? []).map((e) => ({ ...e, side: side(e.side) }))}
+            shown={shown}
+            sliceMs={TICK_MS}
+            width={width - 32}
+          />
         </View>
 
         {/* events */}
