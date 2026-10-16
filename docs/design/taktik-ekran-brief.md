@@ -1,129 +1,144 @@
-# Pitch Chess hazırlık ekranı: tasarım brief'i (ChatGPT)
+# Pitch Chess hazırlık ekranı: tasarım brief'i (3D + Duolingo sadeliği)
 
 Pitch Chess (Taktik Tahtası), Tiktako'daki futbol temalı otomatik savaş oyunu. 8 menajer
 her turda mağazadan futbolcu alıp sahaya dizer, süre bitince maçlar kendiliğinden oynanır.
-Bu brief, turlar arasındaki **hazırlık ekranının** yeniden tasarımı içindir. Kod:
-`mobile/src/app/taktik/oyun.tsx`.
+Bu brief, turlar arasındaki **hazırlık ekranının** tasarımı içindir (kod:
+`mobile/src/app/taktik/oyun.tsx`). ChatGPT'den iki şey istiyoruz:
 
-İki şey istiyoruz:
+1. **Ekran tasarımı (mockup):** bütün ekran, tek görsel.
+2. **3D parça seti:** ekranı kodda kurmak için ayrı ayrı şeffaf PNG'ler.
 
-1. **Ekran tasarımı (mockup):** tüm ekranın tek bir görselde, telefonda nasıl göründüğü.
-2. **3D parça seti:** tasarımda kullanılan ikon ve yüzeylerin ayrı ayrı, şeffaf arka planlı
-   PNG'leri. Ekranı React Native'de bu parçalarla kuracağım; mockup sadece yol gösterir.
+## Yön: "Duolingo'nun sadeliği, oyunun 3D nesneleri"
+
+İki dünyayı şöyle bölüyoruz:
+
+- **Arayüz iskeleti Duolingo gibi:** açık, ferah zemin; az ve kısa yazı; kalın, yuvarlak,
+  düz renkli paneller; alt kenarı koyu "basılabilir" kalın butonlar (Duolingo'nun
+  "CONTINUE" butonu gibi); kalın ilerleme çubukları; ekranda tek bir parlak ana renk vurgusu;
+  bol boşluk. Gölge, parıltı, doku yok; derinlik sadece butonların alt kenarından gelir.
+- **Oyunun nesneleri 3D:** saha, futbolcu kartları, madeni para, kalp, kronometre, taktik
+  kartı çizimleri yumuşak, "kil / oyuncak" hissi veren 3D render. Bu nesneler ekranın
+  kahramanı; arayüz onların etrafında sade kalır.
+
+Kısaca: düz ve sakin bir arayüz üstünde parlak, dokunulası 3D oyun parçaları.
 
 ## Kesin kurallar
 
-- **Her şey tek ekranda.** Sekme, sayfa ya da kaydırma yok. Mağaza, yedek kulübesi,
-  sinerjiler ve saha aynı anda görünür. iPhone dikey ekran, 440×956 pt (görsel 1320×2868).
-- **3D oyun görünümü.** Yumuşak parlak 3D, yuvarlak hatlı, "kalın" yüzeyler, sol üstten sıcak
-  ışık. Clash Royale / Brawl Stars / Magic Chess tarzında bir mobil oyun arayüzü, ama sade.
-- **Okunabilir.** En küçük yazı 11 pt. Futbolcu soyadı her kartta okunur.
-- **Gerçek kişi, yüz, kulüp arması, logo, sponsor yok.** Futbolcular yüzsüz; formalar düz
-  renk ya da çizgili, armasız.
-- **Yazılar Türkçe** (aşağıdaki örnek metinler).
-- **Renkler:** Tiktako yeşilleri (koyu saha yeşili #0F3D24, çim #3BA55C), sıcak sarı vurgu
-  (#FACC15, "Maça çık" butonu), krem kartlar. Neon, mor uzay ya da gece ışığı yok.
-- **Tek ana buton:** "Maça çık". Diğer butonlar ikincil.
+- **Her şey tek ekranda.** Sekme, ayrı sayfa ya da kaydırma yok. Saha, taktik/sinerji
+  çipleri, yedek kulübesi, mağaza ve butonlar aynı anda görünür. iPhone dikey,
+  440×956 pt (görsel 1320×2868).
+- **Açık zemin.** Kırık beyaz / çok açık yeşil gri (#F1F4F1) arka plan, beyaz kartlar.
+  Saha koyu yeşil değil, canlı çim yeşili bir 3D obje olarak ortada durur.
+- **Renkler (Duolingo gibi az ve net):**
+  - Ana yeşil #16A34A (alt kenarı #0F7A35).
+  - Ana buton sarısı #FACC15 (alt kenarı #CA8A04). Sadece "Maça çık" bu renkte.
+  - Metin #0E1A14.
+  - Can kırmızısı #F43F5E, altın sarısı #F59E0B, mavi #2563EB.
+  - Maliyet renkleri 1 gri, 2 yeşil, 3 mavi, 4 mor, 5 altın.
+- **Yazı:** kalın, yuvarlak hatlı bir sans-serif (Duolingo'nun Feather Bold'u gibi). Türkçe,
+  kısa. En küçük yazı 11 pt.
+- **Gerçek kişi, yüz, kulüp arması, logo, sponsor yok.** Futbolcular yüzsüz, formalar düz
+  ya da çizgili, armasız.
+- **Tek başparmakla kullanım:** önemli her şey dokunulabilir büyüklükte (en az 44 pt).
 
 ## Ekranda olması gerekenler (yukarıdan aşağı)
 
-1. **Üst şerit**
-   - Geri butonu, tur adı "Aşama 2-1", soru işareti (nasıl oynanır).
-   - Can: kalp + "86". Altın: madeni para + "14". Seri varsa: ateş + "3".
-   - **Hazırlık süresi:** "Maça 22 sn" ve azalan bir çubuk (son 5 saniyede kırmızı).
-2. **Menajerler şeridi:** 8 menajer; küçük avatar, kısa isim ve can çubuğu. Sen vurgulusun.
-3. **Saha (ekranın en büyük parçası):** hafif eğik, 3D bir futbol sahası. 12 yer:
-   - 3 forvet, 4 orta saha, 4 defans, 1 kaleci.
-   - Dolu yer: futbolcu kartı.
-     - Forma (kulüp renkleri).
+1. **Üst şerit (beyaz, düz):**
+   - Solda geri oku.
+   - Ortada "Aşama 2-1".
+   - Sağda üç küçük 3D sayaç: kalp "86", madeni para "14", ateş "3".
+   - Altında kalın bir süre çubuğu, Duolingo ders çubuğu gibi yuvarlak uçlu. Üstünde
+     "Maça 22 sn" yazar. Son 5 saniyede kırmızıya döner.
+2. **Menajerler:** 8 küçük yuvarlak avatar, altlarında ince can çubukları. Sen yeşil
+   halkalısın.
+3. **Saha (ekranın en büyük parçası):** hafif eğik, yumuşak 3D bir oyuncak futbol sahası.
+   12 yer var: 3 forvet, 4 orta saha, 4 defans, 1 kaleci.
+   - Dolu yer: küçük 3D futbolcu kartı.
+     - Yüzsüz forma (kulüp renkleri).
      - Soyadı ("Hauge").
-     - Bayrak.
-     - Mevki etiketi (FW/MF/DF/GK).
-     - Üstte 1–3 yıldız.
-     - Maliyet rengi şeridi: gri, yeşil, mavi, mor, altın.
-   - Boş yer: mevkisi yazan yarı saydam bir yuva.
-   - Sahanın köşelerinde iki küçük düğme:
-     - "Sahada 5/5" (kapasite).
-     - "En iyi diziliş" (sihirli değnek ikonu).
-4. **Taktik kartları ve sinerjiler (tek satır, yatay):**
-   - Seçilmiş taktik kartları küçük çip olarak: çizim + "Savunma +%25".
-   - Sinerjiler: forma ya da bayrak + "2/3". Aktif olanlar parlak, olmayanlar soluk.
-   - Eşyalar (varsa): küçük 3D eşya ikonları (eldiven, altın krampon).
-5. **Yedek kulübesi:** 8 küçük yuva, yan yana. Dolu olanlarda mini futbolcu kartı.
-6. **Bilgi satırı:** "+7 altın · maaş 5 · faiz 1 · seri 1" gibi kısa bir mesaj alanı.
-7. **Mağaza:** 5 futbolcu kartı yan yana. Her kartta:
-   - Fiyat rozeti (madeni para + 1–5).
-   - Elinde aynısından kaç tane olduğu: "2/3".
-   - Bazen bir **gözcü kartı:** mor, büyüteçli, futbolcu gizli.
-8. **Alt butonlar:**
-   - "Yenile · 2"
-   - "Seviye 3 · XP al 4" ve küçük bir ilerleme çubuğu.
-   - Büyük sarı "Maça çık".
+     - Küçük bayrak.
+     - Mevki rozeti (FW/MF/DF/GK).
+     - 1–3 yıldız.
+     - Kartın alt kenarı maliyet renginde.
+   - Boş yer: yarı saydam, kesik çizgili yuva; üstünde mevki yazar.
+   - Sahanın altında iki küçük hap düğme: "5/5 sahada" ve "✨ En iyi diziliş".
+4. **Çip satırı (tek satır, beyaz hap şeklinde):**
+   - Taktik kartları: minik 3D çizim + "Savunma +%25".
+   - Sinerjiler: forma ya da bayrak + "2/3". Aktif olanlar yeşil dolgulu, olmayanlar gri
+     çerçeveli.
+5. **Yedek kulübesi:** 8 küçük yuva tek satırda, dolu olanlarda mini kart.
+6. **Mağaza:** 5 futbolcu kartı yan yana, beyaz zeminde.
+   - Kartın altında fiyat hapı: madeni para + 1–5.
+   - Sol üstte "2/3" rozeti.
+   - Bazen mor bir **gözcü kartı:** büyüteçli, futbolcu gizli.
+   - Mağazanın üstünde tek satır bilgi: "+7 altın · maaş 5 · faiz 1".
+7. **Alt butonlar (Duolingo tarzı kalın, alt kenarlı):**
+   - Gri-beyaz "↻ Yenile · 2".
+   - Mavi "Seviye 3 · XP al 4" ve içinde ince ilerleme çubuğu.
+   - Geniş sarı **"Maça çık"** (top ikonu). Ekranın tek parlak butonu.
 
-Bir futbolcu seçiliyken alt kısımda kırmızı "Sat · 2" butonu çıkar. Bunu ikinci bir küçük
-görselde göster.
+Bir futbolcu seçiliyken alt butonların yerine kırmızı, kalın "Sat · 2" butonu gelir. Bunu
+ikinci küçük bir görselde göster.
 
 ## ChatGPT'ye yapıştırılacak prompt (ekran tasarımı)
 
 > Design a mobile game screen, portrait iPhone (1320×2868), for a football auto-battler
-> called Pitch Chess. Polished 3D casual mobile-game UI in the style of Clash Royale and
-> Brawl Stars but calmer and cleaner: soft glossy 3D surfaces, chunky rounded panels with
-> thick bevelled edges, warm top-left light, deep pitch-green background (#0F3D24), grass
-> green (#3BA55C), warm yellow accent (#FACC15) for the main button, cream player cards.
-> No neon, no space theme, no real people, no faces, no club crests, no logos.
-> EVERYTHING ON ONE SCREEN, no tabs, no scrolling. Turkish text. From top to bottom:
-> (1) top bar: back button, title "Aşama 2-1", heart "86", gold coin "14", flame "3", a help
-> button, and a countdown "Maça 22 sn" with a draining yellow bar;
-> (2) a strip of 8 managers with small round avatars, short names and health bars, mine
-> highlighted;
-> (3) the biggest element: a slightly tilted 3D football pitch with 12 spots (3 forwards,
-> 4 midfielders, 4 defenders, 1 goalkeeper); filled spots hold small player cards (faceless
-> kit shirt in club colours, surname like "Hauge", a small flag, a position tag FW/MF/DF/GK,
-> 1–3 stars, a coloured cost stripe); empty spots are translucent sockets labelled with
-> the position; two small chips on the pitch: "Sahada 5/5" and "En iyi diziliş" with a
-> magic-wand icon;
-> (4) one horizontal row of chips: tactics cards ("Savunma +%25" with a tiny bus
-> illustration), synergies (a shirt or flag with "2/3", active ones glowing), items
-> (gloves, golden boot);
-> (5) a bench of 8 small slots;
-> (6) one short info line "+7 altın · maaş 5 · faiz 1";
-> (7) a shop of 5 player cards with coin price badges 1–5 and "2/3" owned counters, one of
-> them a purple mystery scout card with a magnifying glass;
-> (8) bottom buttons: "Yenile · 2", "Seviye 3 · XP al 4" with a small progress bar, and a
-> big yellow "Maça çık" button with a ball icon. Clear hierarchy, readable text (minimum
-> 11 pt), generous spacing, easy to use with one thumb.
+> called Pitch Chess. The look blends Duolingo's minimal UI with soft 3D game objects:
+> the interface is flat, light and calm like Duolingo (off-white #F1F4F1 background, white
+> rounded cards, bold rounded sans-serif text, very few words, thick progress bars with
+> round ends, chunky buttons with a darker bottom edge instead of shadows, lots of white
+> space, one bright accent), while the game objects are glossy, toy-like 3D renders (a
+> slightly tilted 3D toy football pitch, small 3D player cards, a 3D heart, gold coin,
+> flame, stopwatch). Colours: green #16A34A, yellow #FACC15 only for the main button, text
+> #0E1A14, red #F43F5E, gold #F59E0B, blue #2563EB. No gradients in the UI chrome, no glow,
+> no neon, no dark background, no real people, no faces, no club crests, no logos.
+> EVERYTHING ON ONE SCREEN, no tabs, no scrolling. Turkish text. Top to bottom:
+> (1) a white top bar with a back arrow, "Aşama 2-1", three small 3D counters (heart "86",
+> coin "14", flame "3"), and under it a thick rounded countdown bar labelled "Maça 22 sn";
+> (2) 8 small round manager avatars with thin health bars, mine with a green ring;
+> (3) the hero: a slightly tilted, soft 3D toy football pitch with 12 spots (3 forwards,
+> 4 midfielders, 4 defenders, 1 goalkeeper); filled spots hold small 3D player cards
+> (faceless kit shirt in club colours, surname "Hauge", tiny flag, position badge, 1–3
+> stars, a cost-coloured bottom edge), empty spots are dashed translucent sockets with the
+> position; two small pills under the pitch: "5/5 sahada" and "✨ En iyi diziliş";
+> (4) one row of white pill chips: a tactics card ("Savunma +%25" with a tiny 3D bus) and
+> synergies (a shirt or a flag with "2/3", active ones filled green);
+> (5) a bench of 8 small slots in one row;
+> (6) a one-line note "+7 altın · maaş 5 · faiz 1";
+> (7) a shop of 5 player cards with coin price pills 1–5 and "2/3" badges, one a purple
+> mystery scout card with a magnifying glass;
+> (8) Duolingo-style chunky bottom buttons: a white "↻ Yenile · 2", a blue "Seviye 3 ·
+> XP al 4" with a thin progress bar, and a wide yellow "Maça çık" with a ball icon.
+> Clear hierarchy, readable text (minimum 11 pt), easy to use with one thumb.
 
-İstersen ikinci bir yön için sonuna şunu ekle: *"Variant B: a flatter, top-down pitch and a
-darker stadium-at-night mood with floodlights."*
+İkinci bir görsel için: *"Same screen, a player is selected: the bottom buttons are replaced
+by one wide red chunky button 'Sat · 2', the selected card on the pitch is lifted and
+outlined in green."*
 
 ## 3D parça seti
 
-Ekranı bu parçalarla kodda kuracağım. Her biri şeffaf arka planlı PNG, tek nesne, ortada,
-~%8 boşlukla, 1024×1024 (aksi yazmıyorsa). Stil yukarıdaki ekranla aynı olmalı.
+Ekranı bu parçalarla kodda kuracağım. Butonlar, paneller, çipler ve çubuklar kodla çizilir
+(Duolingo tarzı düz yüzeyler); sadece 3D nesneler görsel olarak gelir. Her biri şeffaf
+arka planlı PNG, tek nesne, ortada, ~%8 boşlukla, 1024×1024 (aksi yazmıyorsa).
 
 Ortak prompt başı:
 
-> Mobile game UI asset, polished 3D casual style, soft glossy surfaces, chunky rounded
-> shapes, warm top-left light, gentle rim light, no text, no letters, no numbers, no logos,
-> transparent background PNG, single object centred.
+> Soft 3D toy-like game object, matte-glossy clay look, rounded chunky shapes, warm
+> top-left light, gentle soft shadow under the object only, bright clean colours that sit
+> well on a white background, no text, no letters, no numbers, no logos, transparent
+> background PNG, single object centred.
 
 | Dosya | Ne | Prompt sonu |
 |---|---|---|
-| `ui-heart.png` | Can | A glossy red heart. |
+| `ui-heart.png` | Can | A chunky red heart. |
 | `ui-coin.png` | Altın | A thick gold coin with a small football embossed on it. |
 | `ui-flame.png` | Seri | A small orange flame. |
-| `ui-stopwatch.png` | Hazırlık süresi | A small yellow stopwatch. |
-| `ui-reroll.png` | Yenile | Two curved green arrows forming a circle, chunky. |
+| `ui-stopwatch.png` | Süre | A small yellow stopwatch. |
+| `ui-ball.png` | Maça çık | A small football. |
+| `ui-wand.png` | En iyi diziliş | A short magic wand with a yellow star tip and two sparkles. |
+| `ui-reroll.png` | Yenile | Two curved arrows forming a circle, light grey-green. |
 | `ui-xp.png` | XP al | A blue upward arrow on a small star. |
-| `ui-kickoff.png` | Maça çık | A football with motion lines, ready to be kicked. |
-| `ui-sell.png` | Sat | A gold coin stack with a small red price tag. |
-| `ui-wand.png` | En iyi diziliş | A short magic wand with sparkles, yellow tip. |
-| `ui-star.png` | Yıldız | A single chunky gold star. |
-| `ui-scout.png` | Gözcü kartı | A purple card back with a big golden magnifying glass. |
-| `slot-empty.png` (512×640) | Boş saha yuvası | An empty translucent rounded socket on grass, seen from slightly above, soft white rim, nothing inside. |
-| `slot-bench.png` (512×640) | Yedek yuvası | A dark green rounded bench socket, slightly recessed. |
-| `card-frame-1.png` … `card-frame-5.png` (512×640) | Kart çerçeveleri | An empty cream player-card frame with a thick rounded bevelled border coloured by cost (1 grey, 2 green, 3 blue, 4 purple, 5 gold); a blank area in the middle for a shirt; no text. |
-| `pitch-tilted.png` (1320×1200, opak) | Eğik saha | A football pitch seen from above at a slight tilt (about 25°), striped grass, white lines, both goals at the top and bottom edges, no players, no ball, no stadium, fills the image. |
-| `panel.png` (1024×512) | Panel zemini | A rounded dark-green 3D panel with a thick bevelled rim, empty, for the shop and bench rows. |
+| `ui-scout.png` | Gözcü kartı | A purple card with a big golden magnifying glass on it. |
+| `pitch-toy.png` (1320×1100) | Saha | A small toy football pitch seen from above at a slight tilt (about 25°), soft rounded edges like a board-game tile, striped bright grass, white lines, small white goals at the top and bottom, no players, no ball, no stadium. |
 
 Bitince dosyaları bir klasöre koy, söyle; içe aktarma betiğini yazıp ekranı kurarım.
