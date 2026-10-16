@@ -16,9 +16,10 @@ export interface RingSeat {
 }
 
 /**
- * Matchmaking ring, as in the reference game's "match found" screen: a big
- * countdown in the middle with the arc running down, "3/5" under it, and the
- * seats spread around the ring. `endsAt` is a local time (ms); null = no clock.
+ * Matchmaking ring, after the reference game's "match found" screen: the seconds
+ * spent searching count up in the middle while the arc fills towards the start,
+ * "3/5" under it, and the seats spread around the ring. `endsAt` is a local time
+ * (ms) when the room starts anyway; null = no clock.
  */
 export function QueueRing({
   endsAt,
@@ -54,13 +55,13 @@ export function QueueRing({
   const len = 2 * Math.PI * r;
   const left = endsAt ? Math.max(0, endsAt - now) : 0;
 
-  // the arc runs down smoothly to the end time
-  const frac = useSharedValue(endsAt ? left / totalMs : 1);
+  // the arc fills smoothly until the start time
+  const frac = useSharedValue(endsAt ? 1 - left / totalMs : 0);
   useEffect(() => {
     if (!endsAt) return;
     const ms = Math.max(0, endsAt - Date.now());
-    frac.set(Math.min(1, ms / totalMs));
-    frac.set(withTiming(0, { duration: ms, easing: Easing.linear }));
+    frac.set(Math.max(0, 1 - ms / totalMs));
+    frac.set(withTiming(1, { duration: ms, easing: Easing.linear }));
   }, [endsAt, totalMs, frac]);
   const arc = useAnimatedProps(() => ({ strokeDashoffset: len * (1 - frac.get()) }));
 
@@ -85,7 +86,7 @@ export function QueueRing({
           />
         </Svg>
         <Text allowFontScaling={false} style={[styles.count, { color: ink, fontSize: ring * 0.3 }]}>
-          {endsAt ? Math.ceil(left / 1000) : "…"}
+          {endsAt ? Math.min(Math.round(totalMs / 1000), Math.floor((totalMs - left) / 1000)) : "…"}
         </Text>
         <Text allowFontScaling={false} style={[styles.filled, { color: ink }]}>
           {filled}/{max}
