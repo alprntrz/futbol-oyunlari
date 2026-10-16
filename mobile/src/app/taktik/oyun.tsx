@@ -1,5 +1,5 @@
 import { router, Stack } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
 import { alive, bench, buy, buyXp, chooseAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, roundKind, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
-import { INCOME, INTEREST_STEP, REROLL_COST, SCOUT_DISCOUNT, SLOTS, XP_COST, type Pos } from "@/lib/taktik/rules";
+import { INCOME, INTEREST_STEP, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
 import { STYLES, type TraitState } from "@/lib/taktik/traits";
 import type { Manager, ShopCard } from "@/lib/taktik/types";
@@ -67,6 +67,25 @@ export default function TaktikGame() {
 
   const me: Manager | undefined = lobby?.managers[0];
   const out = !!me && (me.place !== null || !!lobby?.over);
+  // a new round: say where the gold came from (salary, interest, streak), like the reference game's round card
+  const roundKey = lobby ? `${lobby.stage}-${lobby.round}` : "";
+  const [incomeSeen, setIncomeSeen] = useState("");
+  const inc = me?.income;
+  const incomeNote =
+    inc && !match && incomeSeen !== roundKey
+      ? `+${inc.base + inc.interest + inc.streak} 🪙 · ${[
+          t("ttkIncomeBase").replace("{g}", String(inc.base)),
+          inc.interest ? t("ttkIncomeInterest").replace("{g}", String(inc.interest)) : "",
+          inc.streak ? t("ttkIncomeStreak").replace("{g}", String(inc.streak)) : "",
+        ]
+          .filter(Boolean)
+          .join(" · ")}`
+      : null;
+  useEffect(() => {
+    if (!incomeNote) return;
+    const id = setTimeout(() => setIncomeSeen(roundKey), 3500);
+    return () => clearTimeout(id);
+  }, [incomeNote, roundKey]);
   // a plain "+XP" toast: the reward screen is a second modal on top of the end card and froze the screen
   useXpAward(out && !match && !!me?.place, `ttk-${lobby?.seed}`, "tt", me?.place ? XP.ttPlace[me.place - 1] : 0, {
     label: me?.place === 1 ? t("ttkWinner") : t("ttkPlace").replace("{n}", String(me?.place ?? "")),
@@ -225,6 +244,17 @@ export default function TaktikGame() {
             <Text style={{ fontSize: 13 }}>🪙</Text>
             <Text style={styles.statText}>{me.gold}</Text>
           </View>
+          {/* a streak of 2+ pays extra gold each round: show it */}
+          {Math.abs(me.streak) >= 2 && (
+            <Tap
+              onPress={() => flash(t(me.streak > 0 ? "ttkWinStreak" : "ttkLossStreak").replace("{n}", String(Math.abs(me.streak))).replace("{g}", String(streakGold(Math.abs(me.streak)))))}
+              style={[styles.stat, { backgroundColor: me.streak > 0 ? "rgba(249,115,22,0.35)" : "rgba(96,165,250,0.3)" }]}
+              accessibilityLabel={t(me.streak > 0 ? "ttkWinStreak" : "ttkLossStreak").replace("{n}", String(Math.abs(me.streak))).replace("{g}", String(streakGold(Math.abs(me.streak))))}
+            >
+              <Text style={{ fontSize: 12 }}>{me.streak > 0 ? "🔥" : "🧊"}</Text>
+              <Text style={styles.statText}>{Math.abs(me.streak)}</Text>
+            </Tap>
+          )}
           <Tap onPress={tour.start} style={styles.back} accessibilityLabel={t("ttkHowTo")}>
             <Icon name="questionmark" size={16} color="white" fallback="?" />
           </Tap>
@@ -326,7 +356,7 @@ export default function TaktikGame() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 6 }]}>
-        <View style={styles.noteSlot}>{note ? <Animated.Text entering={FadeIn} style={styles.note}>{note}</Animated.Text> : <Text style={styles.hint}>{t("ttkHint")}</Text>}</View>
+        <View style={styles.noteSlot}>{note ?? incomeNote ? <Animated.Text entering={FadeIn} style={styles.note}>{note ?? incomeNote}</Animated.Text> : <Text style={styles.hint}>{t("ttkHint")}</Text>}</View>
 
         {/* shop, or sell while a player is picked */}
         {selectedUnit ? (
@@ -485,6 +515,37 @@ export default function TaktikGame() {
             <Image source={TAKTIK.hero} style={{ width: 120, height: 120, alignSelf: "center" }} />
             <Text style={[T.title, { textAlign: "center" }]}>{me.place === 1 ? t("ttkWinner") : t("ttkOver")}</Text>
             <Text style={[T.headline, { textAlign: "center" }]}>{t("ttkPlace").replace("{n}", String(me.place ?? alive(lobby).length))}</Text>
+            {me.place === 1 && me.hp >= START_HP && <Text style={[T.caption, { textAlign: "center", color: C.greenMid, fontWeight: "800" }]}>{t("ttkFlawless")}</Text>}
+            {/* everyone's final place, squad and best synergies */}
+            <ScrollView style={{ maxHeight: 300 }} contentContainerStyle={{ gap: 6 }}>
+              {standings.map((m) => {
+                const top = sheet({ name: m.name, units: m.units, coach: m.coach, augments: m.augments })
+                  .traits.filter((x) => x.tier > 0)
+                  .sort((a, b) => b.tier - a.tier || b.count - a.count)
+                  .slice(0, 3);
+                return (
+                  <View key={m.id} style={[styles.finalRow, m.id === me.id && styles.finalMe]}>
+                    <Text style={styles.finalPlace}>{m.place ?? 1}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={T.headline} numberOfLines={1}>
+                        {m.id === me.id ? t("you") : m.name}
+                      </Text>
+                      <Text style={T.caption} numberOfLines={1}>
+                        {t("ttkOnPitchN").replace("{n}", String(fielded(m).length))}
+                      </Text>
+                    </View>
+                    <View style={styles.finalTraits}>
+                      {top.map((x) => (
+                        <View key={`${x.kind}-${x.id}`} style={styles.finalTrait}>
+                          {traitIcon(x)}
+                          <Text style={styles.finalTraitText}>{x.count}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                );
+              })}
+            </ScrollView>
             <Button
               title={t("ttkNewGame")}
               onPress={() => {
@@ -551,7 +612,8 @@ const styles = StyleSheet.create({
   footer: { backgroundColor: "#0B3D22", paddingTop: 2 },
   actions: { flexDirection: "row", gap: 8, paddingHorizontal: 12, marginTop: 14 },
   kick: { backgroundColor: "#FACC15", flexDirection: "row", gap: 6 },
-  small: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2, backgroundColor: "rgba(255,255,255,0.14)", borderRadius: 12, paddingVertical: 8, flexDirection: "column" },
+  // the walkthrough wraps each button in a flex: 1 box (the width); the button keeps its own height
+  small: { minHeight: 50, alignItems: "center", justifyContent: "center", gap: 2, backgroundColor: "rgba(255,255,255,0.14)", borderRadius: 12, paddingVertical: 8, flexDirection: "column" },
   smallText: { fontFamily: F.display, fontSize: 16, color: "white" },
   smallSub: { color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: "700" },
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)" },
@@ -559,5 +621,11 @@ const styles = StyleSheet.create({
   sheet: { backgroundColor: C.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, gap: 10 },
   input: { backgroundColor: C.card, borderRadius: 14, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, height: 50, fontSize: 18, color: C.text },
   offer: { backgroundColor: C.bg, borderRadius: 22, padding: 18, gap: 10 },
+  finalRow: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: C.card, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
+  finalMe: { borderWidth: 2, borderColor: C.green },
+  finalPlace: { width: 22, fontFamily: F.display, fontSize: 20, color: C.text2, textAlign: "center" },
+  finalTraits: { flexDirection: "row", gap: 4 },
+  finalTrait: { flexDirection: "row", alignItems: "center", gap: 2, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 6, paddingVertical: 3 },
+  finalTraitText: { fontFamily: F.display, fontSize: 13, color: C.greenDark },
   aug: { backgroundColor: C.card, borderRadius: 14, padding: 14, gap: 2, borderWidth: 2, borderColor: C.border },
 });

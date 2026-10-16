@@ -49,6 +49,8 @@ export interface Manager {
   locked: boolean;
   /** > 0 win streak, < 0 loss streak */
   streak: number;
+  /** where this round's gold came from (shown at the start of the round); absent in old saves */
+  income?: { base: number; interest: number; streak: number } | null;
   coach: CoachId;
   augments: AugmentId[];
   /** tactics cards to choose from, when one is due */

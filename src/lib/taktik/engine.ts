@@ -325,7 +325,8 @@ function startRound(l: Lobby, first = false) {
   for (const m of alive(l)) {
     if (!first) {
       const interest = Math.min(INTEREST_CAP, Math.floor(m.gold / INTEREST_STEP));
-      m.gold += INCOME + interest + streakGold(Math.abs(m.streak));
+      m.income = { base: INCOME, interest, streak: streakGold(Math.abs(m.streak)) };
+      m.gold += INCOME + interest + m.income.streak;
       gainXp(m, XP_PER_ROUND);
     } else m.gold += INCOME - 2;
     if (!m.locked || first) refreshShop(l, m);
