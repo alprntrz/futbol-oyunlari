@@ -16,6 +16,7 @@ import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { COST_COLOR, ItemIcon, PosTag, UnitCard, clubCriterion } from "~/components/taktik/Card";
+import { LobbyIntro } from "~/components/taktik/LobbyIntro";
 import { TacticsCard } from "~/components/taktik/TacticsCard";
 import { MatchView } from "~/components/taktik/MatchView";
 import { Text } from "~/components/Text";
@@ -37,6 +38,9 @@ const ROWS: Pos[] = ["FWD", "MID", "DEF", "GK"];
  * One Taktik Tahtası game: health table, the pitch (12 spots by zone), synergies,
  * items, the bench, the shop and the buttons. Tap a player, then a spot.
  */
+/** seed of the game whose intro has played (kept while the app runs) */
+let introShown = -1;
+
 export default function TaktikGame() {
   // the engine mutates the lobby in place: no compiler memoization here
   "use no memo";
@@ -53,6 +57,8 @@ export default function TaktikGame() {
   const [info, setInfo] = useState<TraitState | null>(null);
   /** the tactics card just tapped: it lights up for a moment before it's taken */
   const [augPick, setAugPick] = useState<number | null>(null);
+  /** the lobby intro was seen for this game (seed) */
+  const [introSeen, setIntroSeen] = useState(() => introShown);
   const scroller = useRef<ScrollView>(null);
   // first game: a walkthrough that lights up each part of the screen in turn
   const tour = useTour("taktik-v1", [
@@ -103,6 +109,7 @@ export default function TaktikGame() {
   }
 
   const augW = Math.min(150, (width - 24 - 20) / 3);
+  const showIntro = introSeen !== lobby.seed && lobby.played === 0 && lobby.stage === 1 && lobby.round === 0;
   const pickAugment = (i: number) => {
     haptic.success();
     setAugPick(i);
@@ -589,7 +596,19 @@ export default function TaktikGame() {
         </View>
       )}
 
-      {!out && !match && <TourOverlay tour={tour} />}
+      {/* a new game opens on the eight managers' cards (first round only, once per game) */}
+      {showIntro ? (
+        <LobbyIntro
+          managers={lobby.managers}
+          meId={me.id}
+          onDone={() => {
+            introShown = lobby.seed;
+            setIntroSeen(lobby.seed);
+          }}
+        />
+      ) : (
+        !out && !match && <TourOverlay tour={tour} />
+      )}
     </View>
   );
 }
