@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Circle, Line, Rect } from "react-native-svg";
 
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
@@ -252,12 +251,23 @@ export default function TaktikGame() {
   const xpNeed = xpToNext(me);
 
   // the flat pitch fills what's left between the top rows and the bottom panels; spots sit on four lines
-  const LINE_Y: Record<Pos, number> = { FWD: 0.15, MID: 0.4, DEF: 0.65, GK: 0.88 };
-  const LINE_X: Record<number, number[]> = { 1: [0.5], 3: [0.2, 0.5, 0.8], 4: [0.13, 0.38, 0.62, 0.87] };
+  // the pitch picture laid back a little (rotateX) like a TV camera; spots are projected the same way so they sit on it
+  const LINE_Y: Record<Pos, number> = { FWD: 0.17, MID: 0.42, DEF: 0.66, GK: 0.88 };
+  const LINE_X: Record<number, number[]> = { 1: [0.5], 3: [0.2, 0.5, 0.8], 4: [0.12, 0.37, 0.63, 0.88] };
+  const img = { w: pitchBox.w * 1.04, h: pitchBox.h / Math.cos(TILT) };
+  const project = (px: number, py: number) => {
+    const y = py - pitchBox.h / 2;
+    const k = PERSPECTIVE / (PERSPECTIVE - y * Math.sin(TILT));
+    return { x: pitchBox.w / 2 + (px - pitchBox.w / 2) * k, y: pitchBox.h / 2 + y * Math.cos(TILT) * k, k };
+  };
   const spot = (slot: number) => {
     const zone = SLOTS[slot];
     const inZone = SLOTS.map((z, i) => (z === zone ? i : -1)).filter((i) => i >= 0);
-    return { x: LINE_X[inZone.length][inZone.indexOf(slot)] * pitchBox.w, y: LINE_Y[zone] * pitchBox.h };
+    // into the picture's playing area (pitch-full: touchlines at 5–95 % across, 5.3–93.1 % down)
+    const fx = 0.05 + 0.9 * LINE_X[inZone.length][inZone.indexOf(slot)];
+    const fy = 0.053 + 0.878 * LINE_Y[zone];
+    const p = project((pitchBox.w - img.w) / 2 + fx * img.w, (pitchBox.h - img.h) / 2 + fy * img.h);
+    return { x: p.x, y: p.y, sz: shirtW * p.k };
   };
   const shirtW = Math.min(64, pitchBox.w * 0.15, pitchBox.h * 0.13);
   const looks = avatarsOf(lobby.managers, me.id);
@@ -350,7 +360,14 @@ export default function TaktikGame() {
       {/* the pitch: big and flat, the spots on four lines, every player his shirt and his name */}
       <View ref={tour.ref("pitch")} collapsable={false} style={{ flex: 1 }} onLayout={(e) => setPitchBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         <Pressable onPress={() => setSel(null)} style={StyleSheet.absoluteFill}>
-          <PitchLines w={pitchBox.w} h={pitchBox.h} />
+          {pitchBox.h > 0 && (
+            <View style={[StyleSheet.absoluteFill, { overflow: "hidden" }]} pointerEvents="none">
+              <View style={{ position: "absolute", left: (pitchBox.w - img.w) / 2, top: (pitchBox.h - img.h) / 2, width: img.w, height: img.h, transform: [{ perspective: PERSPECTIVE }, { rotateX: `${(TILT * 180) / Math.PI}deg` }] }}>
+                {/* explicit size: absoluteFill on an Image misrenders in RN */}
+                <Image source={TAKTIK.pitch.full} style={{ width: img.w, height: img.h }} resizeMode="stretch" />
+              </View>
+            </View>
+          )}
           {pitchBox.h > 0 &&
             SLOTS.map((zone, slot) => {
               const p = spot(slot);
@@ -361,15 +378,15 @@ export default function TaktikGame() {
                   <Tap
                     key={slot}
                     onPress={() => tapSlot(slot)}
-                    style={[styles.plus, { left: p.x - shirtW * 0.62, top: p.y - shirtW * 0.55, width: shirtW * 1.24, height: shirtW * 1.1 }, sel?.kind === "unit" && styles.plusLit]}
+                    style={[styles.plus, { left: p.x - p.sz * 0.62, top: p.y - p.sz * 0.55, width: p.sz * 1.24, height: p.sz * 1.1 }, sel?.kind === "unit" && styles.plusLit]}
                     accessibilityLabel={t(`ttkPos_${zone}`)}
                   >
                     <Text style={styles.plusText}>+</Text>
                   </Tap>
                 );
               return (
-                <Tap key={slot} onPress={() => tapUnit(u.uid)} style={[styles.onPitch, { left: p.x - shirtW, top: p.y - shirtW * 0.8, width: shirtW * 2 }, picked && { transform: [{ translateY: -4 }] }]} accessibilityLabel={u.name}>
-                  <Shirt club={u.club} size={shirtW} number={NUMBER[slot]} />
+                <Tap key={slot} onPress={() => tapUnit(u.uid)} style={[styles.onPitch, { left: p.x - p.sz, top: p.y - p.sz * 0.8, width: p.sz * 2 }, picked && { transform: [{ translateY: -4 }] }]} accessibilityLabel={u.name}>
+                  <Shirt club={u.club} size={p.sz} number={NUMBER[slot]} />
                   <View style={[styles.tag, picked && styles.tagPicked, { borderBottomColor: COST_COLOR[u.cost] }]}>
                     <Text style={styles.tagName} numberOfLines={1}>
                       {surname(u.name)}
@@ -685,6 +702,10 @@ export default function TaktikGame() {
   );
 }
 
+/** the set-up pitch's camera: tilted back this much, seen from this far */
+const TILT = (24 * Math.PI) / 180;
+const PERSPECTIVE = 900;
+
 /** shirt numbers by spot: keeper 1, back four 2–5, midfield 6, 8, 10, 7, front three 9, 11, 7 */
 const NUMBER = [1, 2, 5, 4, 3, 6, 8, 10, 7, 9, 11, 7];
 
@@ -693,28 +714,6 @@ function Shirt({ club, size, number }: { club: string | null; size: number; numb
   const c = clubCriterion(club);
   const kit = (c && (CLUB_KITS[c.id] ?? (c.c1 ? { body: c.c1, sleeves: c.c1 } : null))) ?? { body: "#CBD5D0", sleeves: "#CBD5D0" };
   return <Jersey body={kit.body} sleeves={kit.sleeves} pattern={kit.pattern} numberColor={kit.body === "#FFFFFF" || kit.body.toUpperCase() === "#FACC15" ? "#111" : "#fff"} number={number ?? 0} hideNumber={number === undefined} size={size} variant="crew" />;
-}
-
-/** a flat striped pitch with its lines (the far goal at the top) */
-function PitchLines({ w, h }: { w: number; h: number }) {
-  if (!w || !h) return null;
-  const line = "rgba(255,255,255,0.75)";
-  const boxW = w * 0.56;
-  const boxH = h * 0.14;
-  return (
-    <Svg width={w} height={h} style={StyleSheet.absoluteFill}>
-      {Array.from({ length: 9 }, (_, i) => (
-        <Rect key={i} x={0} y={(i * h) / 9} width={w} height={h / 9 + 1} fill={i % 2 ? "#3F9B4F" : "#45A556"} />
-      ))}
-      <Rect x={6} y={4} width={w - 12} height={h - 8} stroke={line} strokeWidth={2} fill="none" />
-      <Line x1={6} y1={h * 0.5} x2={w - 6} y2={h * 0.5} stroke={line} strokeWidth={2} />
-      <Circle cx={w / 2} cy={h * 0.5} r={Math.min(w, h) * 0.12} stroke={line} strokeWidth={2} fill="none" />
-      <Rect x={(w - boxW) / 2} y={4} width={boxW} height={boxH} stroke={line} strokeWidth={2} fill="none" />
-      <Rect x={(w - boxW) / 2} y={h - 4 - boxH} width={boxW} height={boxH} stroke={line} strokeWidth={2} fill="none" />
-      <Rect x={(w - boxW * 0.45) / 2} y={4} width={boxW * 0.45} height={boxH * 0.45} stroke={line} strokeWidth={2} fill="none" />
-      <Rect x={(w - boxW * 0.45) / 2} y={h - 4 - boxH * 0.45} width={boxW * 0.45} height={boxH * 0.45} stroke={line} strokeWidth={2} fill="none" />
-    </Svg>
-  );
 }
 
 const styles = StyleSheet.create({
