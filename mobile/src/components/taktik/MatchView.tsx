@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Modal, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SLICES } from "@/lib/taktik/rules";
@@ -49,6 +49,8 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   for (const e of events) if (e.kind === "goal") score[side(e.side)]++;
 
   const lastGoals = events.filter((e) => e.kind === "goal").length;
+  const lastEvent = events[events.length - 1];
+  const eventLabel = (k: string) => (k === "goal" ? t("ttkGoal") : k === "shield" ? t("ttkShield") : k === "save" ? t("ttkSave") : t("ttkMiss"));
   useEffect(() => {
     if (lastGoals === 0) return;
     haptic.press();
@@ -94,22 +96,21 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
           />
         </View>
 
-        {/* events */}
-        <ScrollView style={{ flex: 1, marginTop: 12 }} contentContainerStyle={{ gap: 6, paddingBottom: 12 }}>
-          {events.map((e, i) => {
-            const mineSide = side(e.side) === 0;
-            const label = e.kind === "goal" ? t("ttkGoal") : e.kind === "shield" ? t("ttkShield") : e.kind === "save" ? t("ttkSave") : t("ttkMiss");
-            return (
-              <Animated.View key={i} entering={FadeInDown.duration(200)} style={[styles.event, mineSide ? styles.eventMine : styles.eventTheirs, e.kind === "goal" && styles.goal]}>
-                <Text style={[styles.min, e.kind === "goal" && { color: "white" }]}>{`${minute(e.slice)}'`}</Text>
-                <Icon name={e.kind === "goal" ? "soccerball" : e.kind === "shield" ? "xmark.shield.fill" : "hand.raised.fill"} size={14} color={e.kind === "goal" ? "white" : C.text2} fallback="⚽" />
-                <Text style={[styles.eventText, e.kind === "goal" && { color: "white" }]} numberOfLines={1}>
-                  {label} · {e.name}
-                </Text>
-              </Animated.View>
-            );
-          })}
+        {/* just the pitch: the last thing that happened under it, one line */}
+        <View style={styles.lastSlot}>
+          {lastEvent && (
+            <Animated.View key={`${lastEvent.slice}-${lastEvent.kind}`} entering={FadeIn.duration(200)} style={[styles.event, lastEvent.kind === "goal" && styles.goal, { alignSelf: "center" }]}>
+              <Text style={[styles.min, lastEvent.kind === "goal" && { color: "white" }]}>{`${minute(lastEvent.slice)}'`}</Text>
+              <Icon name={lastEvent.kind === "goal" ? "soccerball" : lastEvent.kind === "shield" ? "xmark.shield.fill" : "hand.raised.fill"} size={14} color={lastEvent.kind === "goal" ? "white" : C.text2} fallback="⚽" />
+              <Text style={[styles.eventText, lastEvent.kind === "goal" && { color: "white" }]} numberOfLines={1}>
+                {eventLabel(lastEvent.kind)} · {lastEvent.name}
+              </Text>
+              <View style={[styles.sideDot, { backgroundColor: side(lastEvent.side) === 0 ? "#2563EB" : "#F43F5E" }]} />
+            </Animated.View>
+          )}
+        </View>
 
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 6, paddingBottom: 12 }}>
           {done && (
             <Animated.View entering={ZoomIn.duration(260)} style={[styles.result, { backgroundColor: iWon ? C.greenSoft : C.redSoft }]}>
               {pens && (
@@ -167,9 +168,9 @@ const styles = StyleSheet.create({
   score: { fontFamily: F.black, fontSize: 38, color: "white", fontVariant: ["tabular-nums"] },
   clock: { alignSelf: "center", marginTop: -10, backgroundColor: "#FACC15", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 2 },
   clockText: { fontFamily: F.display, fontSize: 16, color: "#3B2A05" },
-  event: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 12, maxWidth: "88%" },
-  eventMine: { alignSelf: "flex-start", backgroundColor: C.card },
-  eventTheirs: { alignSelf: "flex-end", backgroundColor: "#E7ECE8" },
+  lastSlot: { height: 44, justifyContent: "center", marginTop: 10 },
+  sideDot: { width: 10, height: 10, borderRadius: 5 },
+  event: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12, maxWidth: "100%", backgroundColor: C.card },
   goal: { backgroundColor: C.green },
   min: { fontFamily: F.display, fontSize: 14, color: C.text3, minWidth: 26 },
   eventText: { fontSize: 14, fontWeight: "700", color: C.text, flexShrink: 1 },
