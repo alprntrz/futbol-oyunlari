@@ -24,7 +24,6 @@ PARTS = {
     "goal-right": (180, False),
     "ball": (48, False),
     "shadow": (96, False),
-    "flash-goal": (420, False),
 }
 
 done = []

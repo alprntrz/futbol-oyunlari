@@ -113,3 +113,38 @@ const styles = StyleSheet.create({
   name: { fontFamily: F.display, fontSize: 19, lineHeight: 20, color: "white", textAlign: "center", marginTop: 8 },
   desc: { fontSize: 11.5, lineHeight: 15, fontWeight: "600", color: "rgba(255,255,255,0.88)", textAlign: "center", marginTop: 4 },
 });
+
+/** The tactics cards a manager has taken, as small chips (art + what it does), shown on the board and at the match. */
+export function TacticsChips({ ids, dark, align = "flex-start" }: { ids: AugmentId[]; dark?: boolean; align?: "flex-start" | "center" | "flex-end" }) {
+  const { t } = useI18n();
+  if (!ids.length) return null;
+  const arts = (TAKTIK as { aug?: Partial<Record<AugmentId, ImageSourcePropType>> }).aug ?? {};
+  return (
+    <View style={[chip.row, { justifyContent: align }]}>
+      {ids.map((id) => {
+        const face = FACE[KIND[id]];
+        return (
+          <View key={id} style={[chip.chip, { backgroundColor: dark ? "rgba(255,255,255,0.1)" : "white", borderColor: face.frame }]}>
+            {arts[id] ? (
+              <Image source={arts[id]} style={chip.art} />
+            ) : (
+              <Text allowFontScaling={false} style={{ fontSize: 13 }}>
+                {EMOJI[id]}
+              </Text>
+            )}
+            <Text allowFontScaling={false} style={[chip.text, { color: dark ? "white" : "#0E1A14" }]} numberOfLines={1}>
+              {t(`ttkAs_${id}`)}
+            </Text>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+const chip = StyleSheet.create({
+  row: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
+  chip: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: 999, borderWidth: 1.5, paddingLeft: 3, paddingRight: 9, paddingVertical: 2 },
+  art: { width: 22, height: 22 },
+  text: { fontSize: 12, fontWeight: "800" },
+});

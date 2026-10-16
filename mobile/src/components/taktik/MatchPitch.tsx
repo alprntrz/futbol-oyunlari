@@ -30,7 +30,7 @@ const DEPTH: Record<Pos, number> = { GK: 0.1, DEF: 0.2, MID: 0.34, FWD: 0.45 };
 /** how far each line follows the ball up and down the pitch */
 const FOLLOW: Record<Pos, number> = { GK: 0.06, DEF: 0.3, MID: 0.45, FWD: 0.55 };
 /** drawn pitch parts (docs/design/taktik-saha-brief.md → scripts/taktik-pitch-assets.py); a missing one is drawn in code */
-const ART = (TAKTIK as { pitch?: Partial<Record<"grass" | "goalLeft" | "goalRight" | "ball" | "shadow" | "flashGoal", ImageSourcePropType>> }).pitch ?? {};
+const ART = (TAKTIK as { pitch?: Partial<Record<"grass" | "goalLeft" | "goalRight" | "ball" | "shadow", ImageSourcePropType>> }).pitch ?? {};
 
 /** each side's colour: the base under its players and its name tag (me blue, the opponent coral) */
 const SIDE = { home: "#2563EB", away: "#F43F5E" };
@@ -231,17 +231,6 @@ export function MatchPitch({
 
       {ART.ball ? <Animated.Image source={ART.ball} style={[styles.ball, styles.ballArt, ball]} /> : <Animated.View style={[styles.ball, ball]} />}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.flash, flashStyle]} />
-      {goalNow && ART.flashGoal && (
-        <Animated.View
-          key={`b-${shown}`}
-          entering={FadeIn.delay(sliceMs * 0.66).duration(180)}
-          exiting={FadeOut.duration(300)}
-          pointerEvents="none"
-          style={[styles.burst, { width: height * 0.9, height: height * 0.9, left: goalNow.side === 0 ? width - height * 0.55 : -height * 0.35, top: height * 0.05 }]}
-        >
-          <Image source={ART.flashGoal} style={{ width: height * 0.9, height: height * 0.9 }} resizeMode="contain" />
-        </Animated.View>
-      )}
       {goalNow && (
         <Animated.View key={`g-${shown}`} entering={FadeIn.delay(sliceMs * 0.66).duration(160)} exiting={FadeOut.duration(200)} style={styles.goalTag} pointerEvents="none">
           <Text style={styles.goalText}>
@@ -349,7 +338,6 @@ const styles = StyleSheet.create({
   ball: { position: "absolute", left: 0, top: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: "white", borderWidth: 2, borderColor: C.text, zIndex: 5 },
   flash: { backgroundColor: "#FACC15" },
   goal: { position: "absolute", zIndex: 1 },
-  burst: { position: "absolute", zIndex: 6 },
   ballArt: { borderWidth: 0, backgroundColor: "transparent" },
   shadowArt: { position: "absolute", top: 18, width: 34, height: 14 },
   goalTag: { position: "absolute", alignSelf: "center", top: 32, backgroundColor: C.greenDark, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 5, zIndex: 6 },

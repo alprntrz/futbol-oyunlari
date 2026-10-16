@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
 import { alive, bench, buy, buyXp, chooseAugment, rerollAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, roundKind, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
-import { INCOME, INTEREST_STEP, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
+import { INCOME, INTEREST_STEP, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
 import { STYLES, type TraitState } from "@/lib/taktik/traits";
 import type { Manager, ShopCard } from "@/lib/taktik/types";
@@ -17,7 +17,8 @@ import { Flag } from "~/components/Flag";
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { COST_COLOR, ItemIcon, PosTag, UnitCard, clubCriterion } from "~/components/taktik/Card";
 import { LobbyIntro } from "~/components/taktik/LobbyIntro";
-import { TacticsCard } from "~/components/taktik/TacticsCard";
+import { PlanClock } from "~/components/taktik/PlanClock";
+import { TacticsCard, TacticsChips } from "~/components/taktik/TacticsCard";
 import { MatchView } from "~/components/taktik/MatchView";
 import { Text } from "~/components/Text";
 import { TourOverlay, useTour } from "~/components/Tour";
@@ -279,6 +280,13 @@ export default function TaktikGame() {
             <Icon name="questionmark" size={16} color="white" fallback="?" />
           </Tap>
         </View>
+        {/* the set-up clock: at zero the match kicks off (online, everyone at once); it waits while a walkthrough, the intro or a card pick is up */}
+        <PlanClock
+          key={`clock-${lobby.seed}-${roundKey}`}
+          seconds={planSeconds(lobby.stage)}
+          running={!match && !out && !showIntro && tour.step === null && augPick === null && scout === null}
+          onEnd={startMatch}
+        />
         {/* everyone's health */}
         <View ref={tour.ref("table")} collapsable={false}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.table}>
@@ -328,6 +336,13 @@ export default function TaktikGame() {
           </View>
         </Pressable>
         </View>
+
+        {/* the tactics cards in play this game */}
+        {me.augments.length > 0 && (
+          <View style={{ paddingHorizontal: 12, marginTop: 10 }}>
+            <TacticsChips ids={me.augments} dark />
+          </View>
+        )}
 
         {/* synergies */}
         <View ref={tour.ref("traits")} collapsable={false}>

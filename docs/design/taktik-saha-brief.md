@@ -34,7 +34,6 @@ eksik olan parça kodla çizilmeye devam eder.
 | `pitch-goal-right.png` | Sağ kale | 256×512, şeffaf | The same goal mirrored: opening to the left, transparent background. |
 | `pitch-ball.png` | Top | 256×256, şeffaf | A classic black-and-white football seen from above with a soft round shadow under it, transparent background. |
 | `pitch-shadow.png` | Oyuncu gölgesi | 256×128, şeffaf | A soft dark oval shadow on grass seen from above, blurred edges, transparent background, nothing else. |
-| `pitch-flash-goal.png` | Gol anı efekti | 1024×1024, şeffaf | A burst of golden confetti and light rays radiating from the centre, top-down, transparent background, no text. |
 
 ## Kurallar
 

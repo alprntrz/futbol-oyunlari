@@ -27,7 +27,6 @@ export const TAKTIK = {
     goalRight: require("../../assets/brand/taktik/pitch/pitch-goal-right.png"),
     ball: require("../../assets/brand/taktik/pitch/pitch-ball.png"),
     shadow: require("../../assets/brand/taktik/pitch/pitch-shadow.png"),
-    flashGoal: require("../../assets/brand/taktik/pitch/pitch-flash-goal.png"),
   },
   aug: {
     gegenpress: require("../../assets/brand/taktik/aug/aug-gegenpress.png"),

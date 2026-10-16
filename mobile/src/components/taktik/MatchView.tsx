@@ -16,6 +16,7 @@ import { Text } from "../Text";
 import { Button, Icon } from "../ui";
 import { ItemIcon } from "./Card";
 import { MatchPitch } from "./MatchPitch";
+import { TacticsChips } from "./TacticsCard";
 
 /** one slice of the match; slow enough to follow the ball on the pitch */
 const TICK_MS = 850;
@@ -60,6 +61,9 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   if (!mine) return null;
   const name = (id: number, fallback: string) => (id === -1 ? t("ttkFriendly") : (lobby.managers[id]?.name ?? fallback));
   const myName = lobby.managers[meId].name;
+  const myCards = lobby.managers[meId].augments;
+  const oppId = flip ? mine.home : mine.away;
+  const theirCards = oppId >= 0 && !mine.awayName.endsWith("*") ? (lobby.managers[oppId]?.augments ?? []) : [];
   const theirName = mine.away === -1 ? t("ttkFriendly") : name(flip ? mine.home : mine.away, mine.awayName);
   const iWon = side(mine.winner) === 0;
   const pens = mine.pens ? [mine.pens[side(0)], mine.pens[side(1)]] : null;
@@ -97,6 +101,18 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
             width={width - 32}
           />
         </View>
+
+        {/* the tactics cards each side plays with */}
+        {(myCards.length > 0 || theirCards.length > 0) && (
+          <View style={styles.cards}>
+            <View style={{ flex: 1 }}>
+              <TacticsChips ids={myCards} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <TacticsChips ids={theirCards} align="flex-end" />
+            </View>
+          </View>
+        )}
 
         {/* just the pitch: the last thing that happened under it, one line */}
         <View style={styles.lastSlot}>
@@ -170,6 +186,7 @@ const styles = StyleSheet.create({
   score: { fontFamily: F.black, fontSize: 38, color: "white", fontVariant: ["tabular-nums"] },
   clock: { alignSelf: "center", marginTop: -10, backgroundColor: "#FACC15", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 2 },
   clockText: { fontFamily: F.display, fontSize: 16, color: "#3B2A05" },
+  cards: { flexDirection: "row", gap: 8, marginTop: 10 },
   lastSlot: { height: 44, justifyContent: "center", marginTop: 10 },
   sideDot: { width: 10, height: 10, borderRadius: 5 },
   event: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12, maxWidth: "100%", backgroundColor: C.card },
