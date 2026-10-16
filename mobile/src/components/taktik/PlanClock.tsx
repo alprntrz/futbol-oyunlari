@@ -13,7 +13,7 @@ import { Text } from "../Text";
  * last five seconds and kicks off by itself at zero. Mount it with a key per
  * round so every round starts from full time.
  */
-export function PlanClock({ seconds, running, onEnd }: { seconds: number; running: boolean; onEnd: () => void }) {
+export function PlanClock({ seconds, running, onEnd, compact }: { seconds: number; running: boolean; onEnd: () => void; compact?: boolean }) {
   const { t } = useI18n();
   const [left, setLeft] = useState(seconds);
 
@@ -30,6 +30,20 @@ export function PlanClock({ seconds, running, onEnd }: { seconds: number; runnin
   }, [running, left]);
 
   const hurry = left <= 5;
+  if (compact)
+    return (
+      <View style={styles.compact} accessibilityLabel={t("ttkPlanLeft").replace("{s}", String(left))}>
+        <Image source={TAKTIK.ui.stopwatch} style={{ width: 20, height: 22 }} />
+        <View style={{ gap: 3 }}>
+          <Text allowFontScaling={false} style={[styles.compactText, hurry && { color: C.red }]}>
+            {left} {t("ttkSec")}
+          </Text>
+          <View style={styles.compactTrack}>
+            <View style={[styles.compactFill, { width: `${(left / seconds) * 100}%` }, hurry && { backgroundColor: C.red }]} />
+          </View>
+        </View>
+      </View>
+    );
   return (
     <View style={styles.wrap} accessibilityLabel={t("ttkPlanLeft").replace("{s}", String(left))}>
       <View style={styles.row}>
@@ -47,6 +61,10 @@ export function PlanClock({ seconds, running, onEnd }: { seconds: number; runnin
 }
 
 const styles = StyleSheet.create({
+  compact: { flexDirection: "row", alignItems: "center", gap: 7 },
+  compactText: { fontFamily: F.display, fontSize: 20, lineHeight: 21, color: C.text },
+  compactTrack: { width: 72, height: 4, borderRadius: 2, backgroundColor: C.key, overflow: "hidden" },
+  compactFill: { height: 4, borderRadius: 2, backgroundColor: "#F43F5E" },
   wrap: { marginTop: 8, gap: 4 },
   row: { flexDirection: "row", alignItems: "center", gap: 6 },
   text: { fontFamily: F.display, fontSize: 15, color: C.text2 },
