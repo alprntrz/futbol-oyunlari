@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Animated, {
   Easing,
   FadeIn,
@@ -16,6 +16,7 @@ import Svg, { Circle, Line, Rect } from "react-native-svg";
 import { SLOTS, type Pos } from "@/lib/taktik/rules";
 import type { MatchEvent, Unit } from "@/lib/taktik/types";
 
+import { TAKTIK } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, F } from "~/lib/theme";
 
@@ -28,48 +29,42 @@ import { clubCriterion, surname } from "./Card";
 const DEPTH: Record<Pos, number> = { GK: 0.05, DEF: 0.2, MID: 0.34, FWD: 0.45 };
 /** how far each line follows the ball up and down the pitch */
 const FOLLOW: Record<Pos, number> = { GK: 0.06, DEF: 0.3, MID: 0.45, FWD: 0.55 };
-/** fallback kits (no club in the squad, or two kits too alike): me in blue, the opponent in coral */
-const PLAIN = { home: { body: "#2563EB", sleeves: "#2563EB" } as Kit, away: { body: "#F43F5E", sleeves: "#F43F5E" } as Kit };
-const KEEPER: Record<"home" | "away", Kit> = { home: { body: "#1F2937", sleeves: "#1F2937" }, away: { body: "#FACC15", sleeves: "#FACC15" } };
+/** drawn pitch parts (docs/design/taktik-saha-brief.md → scripts/taktik-pitch-assets.py); a missing one is drawn in code */
+const ART = (TAKTIK as { pitch?: Partial<Record<"grass" | "goalLeft" | "goalRight" | "ball" | "shadow" | "flashGoal", ImageSourcePropType>> }).pitch ?? {};
 
-/** a side plays in the kit of the club most of its players come from */
-function teamKit(units: Unit[] | null): Kit | null {
-  const count = new Map<string, number>();
-  for (const u of units ?? []) if (u.slot !== null && u.club) count.set(u.club, (count.get(u.club) ?? 0) + 1);
-  const top = [...count.entries()].sort((a, b) => b[1] - a[1])[0];
-  const c = top && clubCriterion(top[0]);
-  return c ? (CLUB_KITS[c.id] ?? (c.c1 ? { body: c.c1, sleeves: c.c1 } : null)) : null;
+/** each side's colour: the base under its players and its name tag (me blue, the opponent coral) */
+const SIDE = { home: "#2563EB", away: "#F43F5E" };
+/** a player without a club on his card (friendlies) wears his side's plain shirt */
+const plainKit = (home: boolean): Kit => ({ body: home ? SIDE.home : SIDE.away, sleeves: home ? SIDE.home : SIDE.away });
+/** the shirt from a player's card: his main club's kit */
+function kitOf(d: { club: string | null; home: boolean }): Kit {
+  const c = clubCriterion(d.club);
+  return (c && (CLUB_KITS[c.id] ?? (c.c1 ? { body: c.c1, sleeves: c.c1 } : null))) ?? plainKit(d.home);
 }
 
-/** how alike two colours are (0 = same) */
-function gap(a: string, b: string) {
-  const n = (h: string) => [1, 3, 5].map((i) => parseInt(h.replace("#", "").padEnd(6, "0").slice(i - 1, i + 1), 16));
-  const [x, y] = [n(a), n(b)];
-  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
-}
-
-type Dot = { key: string; x: number; y: number; name: string; label: string; gk: boolean; pos: Pos; home: boolean };
+type Dot = { key: string; x: number; y: number; name: string; label: string; gk: boolean; pos: Pos; home: boolean; club: string | null };
 
 /** a side's players by line, spread across the width; away attacks right to left */
-function lineUp(units: { name: string; pos: Pos }[], home: boolean): Dot[] {
-  const byLine = new Map<Pos, { name: string; pos: Pos }[]>();
+type Lined = { name: string; pos: Pos; club: string | null };
+function lineUp(units: Lined[], home: boolean): Dot[] {
+  const byLine = new Map<Pos, Lined[]>();
   for (const u of units) byLine.set(u.pos, [...(byLine.get(u.pos) ?? []), u]);
   const out: Dot[] = [];
   for (const [pos, us] of byLine) {
     us.forEach((u, i) => {
       const x = DEPTH[pos];
       const y = us.length === 1 ? 0.5 : 0.18 + (0.64 * i) / (us.length - 1);
-      out.push({ key: `${home ? "h" : "a"}-${pos}-${i}`, x: home ? x : 1 - x, y, name: u.name, label: u.name ? surname(u.name).slice(0, 3).toUpperCase() : "", gk: pos === "GK", pos, home });
+      out.push({ key: `${home ? "h" : "a"}-${pos}-${i}`, x: home ? x : 1 - x, y, name: u.name, label: u.name ? surname(u.name) : "", gk: pos === "GK", pos, home, club: u.club });
     });
   }
   return out;
 }
 
-const onPitch = (units: Unit[]) => units.filter((u) => u.slot !== null).map((u) => ({ name: u.name, pos: SLOTS[u.slot!] }));
+const onPitch = (units: Unit[]): Lined[] => units.filter((u) => u.slot !== null).map((u) => ({ name: u.name, pos: SLOTS[u.slot!], club: u.club }));
 
 /** a friendly side has no squad to show: a faceless side of about my size */
 const ghostOf = (n: number) =>
-  Array.from({ length: Math.max(3, n) }, (_, i) => ({ name: "", pos: (i === 0 ? "GK" : i < 4 ? "DEF" : i < 7 ? "MID" : "FWD") as Pos }));
+  Array.from({ length: Math.max(3, n) }, (_, i): Lined => ({ name: "", pos: i === 0 ? "GK" : i < 4 ? "DEF" : i < 7 ? "MID" : "FWD", club: null }));
 
 /** a shot's flight, drawn for a moment: from where it was hit to where it ended */
 type Shot = { from: { x: number; y: number }; to: { x: number; y: number }; kind: MatchEvent["kind"]; id: number };
@@ -89,7 +84,10 @@ export function MatchPitch({
   over = false,
   sliceMs,
   width,
+  names,
 }: {
+  /** the two managers' nicknames, shown over each half */
+  names: [string, string];
   mine: Unit[];
   /** null = a friendly side */
   theirs: Unit[] | null;
@@ -105,13 +103,7 @@ export function MatchPitch({
   const { t } = useI18n();
   const height = width * 0.66;
   const home = useMemo(() => lineUp(onPitch(mine), true), [mine]);
-  // kits: each side's main club; if they'd look alike, the opponent changes to its plain away colour
-  const kits = useMemo(() => {
-    const h = teamKit(mine) ?? PLAIN.home;
-    let a = teamKit(theirs) ?? PLAIN.away;
-    if (gap(h.body, a.body) < 110) a = gap(h.body, PLAIN.away.body) < 110 ? PLAIN.home : PLAIN.away;
-    return { home: h, away: a };
-  }, [mine, theirs]);
+
   const away = useMemo(() => lineUp(theirs ? onPitch(theirs) : ghostOf(home.length), false), [theirs, home.length]);
 
   const bx = useSharedValue(0.5);
@@ -214,13 +206,29 @@ export function MatchPitch({
         <Rect x={width - 5} y={height * 0.4} width={5} height={height * 0.2} fill="white" />
       </Svg>
 
+      {ART.grass && <Image source={ART.grass} style={StyleSheet.absoluteFill} resizeMode="stretch" />}
+      {ART.goalLeft && <Image source={ART.goalLeft} style={[styles.goal, { left: 0, top: height * 0.36, height: height * 0.28, width: height * 0.14 }]} resizeMode="contain" />}
+      {ART.goalRight && <Image source={ART.goalRight} style={[styles.goal, { right: 0, top: height * 0.36, height: height * 0.28, width: height * 0.14 }]} resizeMode="contain" />}
+
+      {/* who's who: each half carries its manager's nickname */}
+      <View style={[styles.side, { left: 8, backgroundColor: SIDE.home }]} pointerEvents="none">
+        <Text allowFontScaling={false} style={styles.sideText} numberOfLines={1}>
+          {names[0]}
+        </Text>
+      </View>
+      <View style={[styles.side, { right: 8, backgroundColor: SIDE.away }]} pointerEvents="none">
+        <Text allowFontScaling={false} style={styles.sideText} numberOfLines={1}>
+          {names[1]}
+        </Text>
+      </View>
+
       {shot && <ShotTrail key={shot.id} shot={shot} width={width} height={height} ms={sliceMs / 3} />}
 
       {[...home, ...away].map((d) => (
-        <Player key={d.key} d={d} kit={d.gk ? KEEPER[d.home ? "home" : "away"] : d.home ? kits.home : kits.away} bx={bx} by={by} runKey={runKey} rx={rx} ry={ry} width={width} height={height} />
+        <Player key={d.key} d={d} kit={kitOf(d)} bx={bx} by={by} runKey={runKey} rx={rx} ry={ry} width={width} height={height} />
       ))}
 
-      <Animated.View style={[styles.ball, ball]} />
+      {ART.ball ? <Animated.Image source={ART.ball} style={[styles.ball, styles.ballArt, ball]} /> : <Animated.View style={[styles.ball, ball]} />}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.flash, flashStyle]} />
       {goalNow && (
         <Animated.View key={`g-${shown}`} entering={FadeIn.delay(sliceMs * 0.66).duration(160)} exiting={FadeOut.duration(200)} style={styles.goalTag} pointerEvents="none">
@@ -300,13 +308,18 @@ function Player({
       x += (ballX - x) * chase;
       y += (ballY - y) * chase;
     }
+    // keep the name tag inside the pitch
+    x = Math.min(0.94, Math.max(0.06, x));
     return { transform: [{ translateX: x * width - size / 2 }, { translateY: y * height - size / 2 }, { rotate: `${rotate}deg` }] };
   });
   return (
-    <Animated.View style={[styles.player, { width: size, height: size + 9 }, style]}>
-      <Jersey body={kit.body} sleeves={kit.sleeves} pattern={kit.pattern} numberColor="#000" number={0} size={size} variant="crew" hideNumber />
+    <Animated.View style={[styles.player, { width: 56, marginLeft: -(56 - size) / 2 }, style]}>
+      {/* his side's colour under his feet, so club kits from both teams never mix up */}
+      {ART.shadow && <Image source={ART.shadow} style={styles.shadowArt} resizeMode="contain" />}
+      <View style={[styles.base, { backgroundColor: d.home ? SIDE.home : SIDE.away }]} />
+      <Jersey body={kit.body} sleeves={kit.sleeves} pattern={kit.pattern} numberColor="#000" number={0} size={size} variant={d.gk ? "vneck" : "crew"} hideNumber />
       {d.label ? (
-        <Text allowFontScaling={false} style={styles.playerText}>
+        <Text allowFontScaling={false} style={[styles.playerText, { backgroundColor: d.home ? SIDE.home : SIDE.away }]} numberOfLines={1}>
           {d.label}
         </Text>
       ) : null}
@@ -317,9 +330,15 @@ function Player({
 const styles = StyleSheet.create({
   pitch: { borderRadius: 14, overflow: "hidden", alignSelf: "center" },
   player: { position: "absolute", left: 0, top: 0, alignItems: "center" },
-  playerText: { fontSize: 8, fontWeight: "900", color: "white", marginTop: -3, textShadowColor: "rgba(0,0,0,0.55)", textShadowRadius: 2 },
+  base: { position: "absolute", top: 20, width: 26, height: 9, borderRadius: 5, opacity: 0.85 },
+  playerText: { fontSize: 8, fontWeight: "900", color: "white", marginTop: -2, paddingHorizontal: 3, borderRadius: 3, overflow: "hidden", maxWidth: 56 },
+  side: { position: "absolute", top: 6, maxWidth: "40%", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, zIndex: 4 },
+  sideText: { fontFamily: F.display, fontSize: 13, color: "white" },
   ball: { position: "absolute", left: 0, top: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: "white", borderWidth: 2, borderColor: C.text, zIndex: 5 },
   flash: { backgroundColor: "#FACC15" },
-  goalTag: { position: "absolute", alignSelf: "center", top: 10, backgroundColor: C.greenDark, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 5, zIndex: 6 },
+  goal: { position: "absolute", zIndex: 1 },
+  ballArt: { borderWidth: 0, backgroundColor: "transparent" },
+  shadowArt: { position: "absolute", top: 18, width: 34, height: 14 },
+  goalTag: { position: "absolute", alignSelf: "center", top: 32, backgroundColor: C.greenDark, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 5, zIndex: 6 },
   goalText: { fontFamily: F.black, fontSize: 20, color: "white" },
 });

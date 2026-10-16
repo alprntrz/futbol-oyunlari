@@ -87,6 +87,7 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
         {/* the match on a little pitch (prototype), me attacking left to right */}
         <View style={{ marginTop: 14 }}>
           <MatchPitch
+            names={[myName, theirName]}
             mine={lobby.managers[meId].units}
             theirs={mine.away === -1 || mine.awayName.endsWith("*") ? null : (lobby.managers[flip ? mine.home : mine.away]?.units ?? null)}
             events={(mine.events ?? []).map((e) => ({ ...e, side: side(e.side) }))}
