@@ -321,6 +321,28 @@ export function autoArrange(m: Manager) {
 
 // ── rounds
 
+/**
+ * Put bench players into free spots on the pitch while there's room, best first,
+ * each in his own zone (or a near one). Players already on the pitch stay where
+ * the manager put them. Returns how many were placed.
+ */
+export function fillField(m: Manager): number {
+  const cap = fieldCap(m);
+  const taken = new Set(m.units.filter((u) => u.slot !== null).map((u) => u.slot!));
+  const value = (u: Unit) => u.cost * (u.star === 1 ? 1 : u.star === 2 ? 2.4 : 5) + u.items.length * 0.4;
+  let placed = 0;
+  for (const u of m.units.filter((x) => x.slot === null).sort((a, b) => value(b) - value(a))) {
+    if (taken.size >= cap) break;
+    const zones: Pos[] = u.pos === "GK" ? ["GK"] : [u.pos, ...NEAR[u.pos]];
+    const slot = zones.flatMap(ZONE_SLOTS).find((i) => !taken.has(i));
+    if (slot === undefined) continue;
+    u.slot = slot;
+    taken.add(slot);
+    placed++;
+  }
+  return placed;
+}
+
 /** Gold, XP, a fresh shop and a tactics card offer, at the start of each round. */
 function startRound(l: Lobby, first = false) {
   for (const m of alive(l)) {

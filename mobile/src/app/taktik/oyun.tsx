@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
-import { alive, bench, buy, buyXp, chooseAugment, rerollAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, roundKind, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
+import { alive, autoArrange, bench, buy, buyXp, chooseAugment, fillField, rerollAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, roundKind, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
 import { INCOME, INTEREST_STEP, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
 import { STYLES, type TraitState } from "@/lib/taktik/traits";
@@ -58,6 +58,8 @@ export default function TaktikGame() {
   const [info, setInfo] = useState<TraitState | null>(null);
   /** the tactics card just tapped: it lights up for a moment before it's taken */
   const [augPick, setAugPick] = useState<number | null>(null);
+  /** what shows under the pitch */
+  const [tab, setTab] = useState<"shop" | "bench" | "traits">("shop");
   /** the lobby intro was seen for this game (seed) */
   const [introSeen, setIntroSeen] = useState(() => introShown);
   const scroller = useRef<ScrollView>(null);
@@ -66,9 +68,9 @@ export default function TaktikGame() {
     { target: "shop", title: t("ttkTour1T"), body: t("ttkTour1") },
     { target: "gold", title: t("ttkTour2T"), body: t("ttkTour2").replace("{income}", String(INCOME)).replace("{step}", String(INTEREST_STEP)) },
     { target: "pitch", title: t("ttkTour3T"), body: t("ttkTour3") },
-    { target: "traits", title: t("ttkTour4T"), body: t("ttkTour4") },
-    { target: "bench", title: t("ttkTour5T"), body: t("ttkTour5"), before: () => scroller.current?.scrollToEnd({ animated: true }) },
-    { target: "reroll", title: t("ttkTour6T"), body: t("ttkTour6").replace("{g}", String(REROLL_COST)) },
+    { target: "traits", title: t("ttkTour4T"), body: t("ttkTour4"), before: () => setTab("traits") },
+    { target: "bench", title: t("ttkTour5T"), body: t("ttkTour5"), before: () => setTab("bench") },
+    { target: "reroll", title: t("ttkTour6T"), body: t("ttkTour6").replace("{g}", String(REROLL_COST)), before: () => setTab("shop") },
     { target: "xp", title: t("ttkTour7T"), body: t("ttkTour7").replace("{g}", String(XP_COST)) },
     { target: "hp", title: t("ttkTour8T"), body: t("ttkTour8"), before: () => scroller.current?.scrollTo({ y: 0, animated: true }) },
     { target: "table", title: t("ttkTour9T"), body: t("ttkTour9") },
@@ -186,7 +188,11 @@ export default function TaktikGame() {
     const r = act((l) => buy(l, me, i));
     if (r === "gold") flash(t("ttkNoGold"));
     else if (r === "full") flash(t("ttkBenchFull"));
-    else haptic.success();
+    else {
+      // straight onto the pitch while there's room (the manager's own placements stay)
+      act(() => fillField(me));
+      haptic.success();
+    }
   };
 
   const scoutCard = scout !== null ? me.shop[scout] : null;
@@ -199,6 +205,7 @@ export default function TaktikGame() {
       return;
     }
     const r = act((l) => buy(l, me, scout, guess));
+    if (r === "ok") act(() => fillField(me));
     if (r === "ok") {
       haptic.success();
       flash(t("ttkScoutRight").replace("{name}", scoutPlayer.name));
@@ -334,79 +341,54 @@ export default function TaktikGame() {
           <View style={styles.capPill}>
             <Text style={styles.capText}>{t("ttkOnPitch").replace("{n}", String(onPitch.length)).replace("{m}", String(cap))}</Text>
           </View>
+          {/* one tap sets up the best side from everyone you have */}
+          <Tap
+            onPress={() => {
+              act(() => autoArrange(me));
+              setSel(null);
+              haptic.success();
+            }}
+            style={styles.bestPill}
+            accessibilityLabel={t("ttkBestLineup")}
+          >
+            <Icon name="sparkles" size={13} color="#3B2A05" fallback="✨" />
+            <Text style={styles.bestText}>{t("ttkBestLineup")}</Text>
+          </Tap>
         </Pressable>
         </View>
 
-        {/* the tactics cards in play this game */}
-        {me.augments.length > 0 && (
-          <View style={{ paddingHorizontal: 12, marginTop: 10 }}>
-            <TacticsChips ids={me.augments} dark />
-          </View>
-        )}
-
-        {/* synergies */}
-        <View ref={tour.ref("traits")} collapsable={false}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.traits}>
-          {traits.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
-          {traits.map((x) => (
-            <Tap key={`${x.kind}-${x.id}`} onPress={() => setInfo(x)} style={[styles.trait, x.tier > 0 && styles.traitOn]} accessibilityLabel={traitLabel(x)}>
-              {traitIcon(x)}
-              <Text style={[styles.traitText, x.tier > 0 && { color: C.greenDark }]}>
-                {x.count}/{x.steps[Math.min(x.tier, x.steps.length - 1)]}
-              </Text>
-            </Tap>
-          ))}
-        </ScrollView>
-        </View>
-
-        {/* items */}
-        {me.items.length > 0 && (
-          <View style={styles.itemsRow}>
-            <Text style={styles.label}>{t("ttkItems")}</Text>
-            {me.items.map((it, i) => (
-              <Tap key={i} onPress={() => setSel(sel?.kind === "item" && sel.index === i ? null : { kind: "item", index: i })} style={[styles.item, sel?.kind === "item" && sel.index === i && styles.itemOn]} accessibilityLabel={t(`ttkI_${it}`)}>
-                <ItemIcon id={it} size={30} />
-              </Tap>
-            ))}
-            {sel?.kind === "item" && <Text style={styles.hint}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
-          </View>
-        )}
-
-        {/* bench */}
-        <View ref={tour.ref("bench")} collapsable={false}>
-        <Pressable onPress={tapBench} style={styles.benchWrap}>
-          <Text style={styles.label}>
-            {t("ttkBench")} {bench(me).length}/8
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.bench}>
-            {bench(me).map((u) => (
-              <UnitCard key={u.uid} unit={u} width={benchW} selected={sel?.kind === "unit" && sel.uid === u.uid} onPress={() => tapUnit(u.uid)} />
-            ))}
-            {Array.from({ length: Math.max(0, 8 - bench(me).length) }, (_, i) => (
-              <Pressable key={`e${i}`} onPress={tapBench} style={[styles.benchEmpty, { width: benchW, height: benchW * 1.12 }]} />
-            ))}
-          </ScrollView>
-        </Pressable>
-        </View>
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 6 }]}>
         <View style={styles.noteSlot}>{note ?? incomeNote ? <Animated.Text entering={FadeIn} style={styles.note}>{note ?? incomeNote}</Animated.Text> : <Text style={styles.hint}>{t("ttkHint")}</Text>}</View>
 
-        {/* shop, or sell while a player is picked */}
-        {selectedUnit ? (
+        {/* a picked player can be sold from any tab */}
+        {selectedUnit && (
           <Tap
             onPress={() => {
               act((l) => sell(l, me, selectedUnit.uid));
               haptic.success();
               setSel(null);
             }}
-            style={[styles.sell, { marginHorizontal: 12 }]}
+            style={[styles.sell, { marginHorizontal: 12, marginBottom: 6 }]}
           >
             <Icon name="dollarsign.circle.fill" size={22} color="white" fallback="$" />
             <Text style={styles.sellText}>{t("ttkSell").replace("{g}", String(sellValue(selectedUnit)))}</Text>
           </Tap>
-        ) : (
+        )}
+
+        {/* one thing at a time under the pitch: the shop, the bench or the synergies */}
+        <View style={styles.tabs}>
+          {(["shop", "bench", "traits"] as const).map((k) => (
+            <Tap key={k} onPress={() => (haptic.tap(), setTab(k))} style={[styles.tab, tab === k && styles.tabOn]} accessibilityRole="tab" accessibilityState={{ selected: tab === k }}>
+              <Text style={[styles.tabText, tab === k && styles.tabTextOn]} numberOfLines={1}>
+                {k === "shop" ? t("ttkShop") : k === "bench" ? `${t("ttkBench")} ${bench(me).length}/8` : t("ttkTraits")}
+              </Text>
+            </Tap>
+          ))}
+        </View>
+        <View style={styles.panel}>
+          {tab === "shop" && (
           <View ref={tour.ref("shop")} collapsable={false} style={styles.shop}>
             {me.shop.map((card, i) => {
               if (!card) return <View key={i} style={{ width: shopW }} />;
@@ -442,7 +424,64 @@ export default function TaktikGame() {
               );
             })}
           </View>
+          )}
+          {tab === "bench" && (
+            <>
+        <View ref={tour.ref("bench")} collapsable={false}>
+        <Pressable onPress={tapBench} style={styles.benchWrap}>
+          <Text style={styles.label}>
+            {t("ttkBench")} {bench(me).length}/8
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.bench}>
+            {bench(me).map((u) => (
+              <UnitCard key={u.uid} unit={u} width={benchW} selected={sel?.kind === "unit" && sel.uid === u.uid} onPress={() => tapUnit(u.uid)} />
+            ))}
+            {Array.from({ length: Math.max(0, 8 - bench(me).length) }, (_, i) => (
+              <Pressable key={`e${i}`} onPress={tapBench} style={[styles.benchEmpty, { width: benchW, height: benchW * 1.12 }]} />
+            ))}
+          </ScrollView>
+        </Pressable>
+        </View>
+            </>
+          )}
+          {tab === "traits" && (
+            <ScrollView style={{ maxHeight: 150 }} contentContainerStyle={{ paddingBottom: 4 }}>
+        {/* the tactics cards in play this game */}
+        {me.augments.length > 0 && (
+          <View style={{ paddingHorizontal: 12, marginTop: 10 }}>
+            <TacticsChips ids={me.augments} dark />
+          </View>
         )}
+
+        <View ref={tour.ref("traits")} collapsable={false}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.traits}>
+          {traits.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
+          {traits.map((x) => (
+            <Tap key={`${x.kind}-${x.id}`} onPress={() => setInfo(x)} style={[styles.trait, x.tier > 0 && styles.traitOn]} accessibilityLabel={traitLabel(x)}>
+              {traitIcon(x)}
+              <Text style={[styles.traitText, x.tier > 0 && { color: C.greenDark }]}>
+                {x.count}/{x.steps[Math.min(x.tier, x.steps.length - 1)]}
+              </Text>
+            </Tap>
+          ))}
+        </ScrollView>
+        </View>
+
+        {me.items.length > 0 && (
+          <View style={styles.itemsRow}>
+            <Text style={styles.label}>{t("ttkItems")}</Text>
+            {me.items.map((it, i) => (
+              <Tap key={i} onPress={() => setSel(sel?.kind === "item" && sel.index === i ? null : { kind: "item", index: i })} style={[styles.item, sel?.kind === "item" && sel.index === i && styles.itemOn]} accessibilityLabel={t(`ttkI_${it}`)}>
+                <ItemIcon id={it} size={30} />
+              </Tap>
+            ))}
+            {sel?.kind === "item" && <Text style={styles.hint}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
+          </View>
+        )}
+
+            </ScrollView>
+          )}
+        </View>
 
         <View style={styles.actions}>
           <View ref={tour.ref("reroll")} collapsable={false} style={{ flex: 1 }}>
@@ -687,6 +726,14 @@ const styles = StyleSheet.create({
   sheet: { backgroundColor: C.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, gap: 10 },
   input: { backgroundColor: C.card, borderRadius: 14, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, height: 50, fontSize: 18, color: C.text },
   offer: { backgroundColor: C.bg, borderRadius: 22, padding: 18, gap: 10 },
+  tabs: { flexDirection: "row", marginHorizontal: 12, backgroundColor: "rgba(0,0,0,0.25)", borderRadius: 12, padding: 3 },
+  tab: { flex: 1, alignItems: "center", paddingVertical: 7, borderRadius: 9 },
+  tabOn: { backgroundColor: "white" },
+  tabText: { fontFamily: F.display, fontSize: 15, color: "rgba(255,255,255,0.75)" },
+  tabTextOn: { color: C.greenDark },
+  panel: { minHeight: 112, justifyContent: "center", marginTop: 8 },
+  bestPill: { position: "absolute", left: 8, bottom: 8, flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#FACC15", borderRadius: 999, paddingHorizontal: 9, paddingVertical: 4 },
+  bestText: { fontFamily: F.display, fontSize: 13, color: "#3B2A05" },
   finalRow: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: C.card, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
   finalMe: { borderWidth: 2, borderColor: C.green },
   finalPlace: { width: 22, fontFamily: F.display, fontSize: 20, color: C.text2, textAlign: "center" },
