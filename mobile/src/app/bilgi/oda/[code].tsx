@@ -1,7 +1,7 @@
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, Share, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, Share, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, FadeOut, FadeOutUp, Keyframe, SlideInDown, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg";
@@ -14,7 +14,7 @@ import { ComboBurst, ComboChip } from "~/components/Combo";
 import { GrassPattern } from "~/components/GrassPattern";
 import { Victory } from "~/components/Victory";
 import { LevelProgress, type QuizProfile } from "~/components/QuizLevel";
-import { RunningPlayer } from "~/components/RunningPlayer";
+import { QueueRing } from "~/components/QueueRing";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
@@ -37,6 +37,9 @@ interface QzPlayer {
   choice: number | null;
   gained: number;
 }
+/** a random room starts this long after it opens (server.js QZ_FILL_MS) */
+const QZ_FILL_MS = 15_000;
+
 interface QzRoom {
   code: string;
   random: boolean;
@@ -48,6 +51,8 @@ interface QzRoom {
   question: { text: L; context: L | null; options: L[] } | null;
   answer: number | null;
   remainingMs: number;
+  /** random room still filling: ms until it starts anyway (null otherwise; older servers send none) */
+  startsInMs?: number | null;
   players: QzPlayer[];
 }
 
@@ -134,7 +139,10 @@ export default function QuizRoom() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
+  const { width } = useWindowDimensions();
   const [room, setRoom] = useState<QzRoom | null>(null);
+  /** when a random room starts anyway (local ms), for the countdown ring */
+  const [startsAt, setStartsAt] = useState<number | null>(null);
   const [deadline, setDeadline] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [error, setError] = useState<string | null>(null);
@@ -153,6 +161,8 @@ export default function QuizRoom() {
     const apply = (r: QzRoom) => {
       setRoom(r);
       setDeadline(Date.now() + r.remainingMs);
+      // the search ring's clock: set once per room, so updates don't make it jump
+      if (r.startsInMs != null) setStartsAt((at) => at ?? Date.now() + r.startsInMs!);
       const key = `${r.phase}-${r.index}`;
       if (key === lastPhase.current) return;
       lastPhase.current = key;
@@ -277,10 +287,38 @@ export default function QuizRoom() {
     body = (
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24, gap: 14 }} showsVerticalScrollIndicator={false}>
         {room.random ? (
-          <Animated.View entering={FadeIn.duration(250)} style={{ alignItems: "center", gap: 6, paddingVertical: 8 }}>
-            <RunningPlayer shirt={NIGHT.kit.shirt} shorts={NIGHT.kit.shorts} />
+          <Animated.View entering={FadeIn.duration(250)} style={{ alignItems: "center", gap: 4, paddingTop: 4 }}>
             <Text style={styles.big}>{t("qzSearching")}</Text>
-            <Text style={styles.sub}>{t("qzSearchingDesc")}</Text>
+            <Text style={[styles.sub, { marginBottom: 6 }]}>{t("qzSearchingDesc")}</Text>
+            {/* the countdown ring with everyone who's in around it, like the reference game's match screen */}
+            <QueueRing
+              endsAt={startsAt}
+              totalMs={QZ_FILL_MS}
+              filled={room.players.length}
+              max={room.settings.maxPlayers}
+              color={NIGHT.accent}
+              track={NIGHT.accentSoft}
+              ink={NIGHT.ink}
+              size={Math.min(330, width - 40)}
+              seats={Array.from({ length: room.settings.maxPlayers }, (_, i) => {
+                const p = room.players[i];
+                return {
+                  key: p?.id ?? `empty-${i}`,
+                  node: p ? (
+                    <Animated.View entering={FadeIn.duration(220)} style={styles.ringSeat}>
+                      <Avatar name={p.nick || "?"} size={48} ring={p.id === myId ? NIGHT.accent : "white"} me={p.id === myId} />
+                      <Text style={[styles.seatName, styles.ringName]} numberOfLines={1}>
+                        {nameOf(p)}
+                      </Text>
+                    </Animated.View>
+                  ) : (
+                    <View style={styles.ringSeat}>
+                      <View style={styles.emptySeat} />
+                    </View>
+                  ),
+                };
+              })}
+            />
           </Animated.View>
         ) : (
           <Animated.View entering={FadeIn.duration(250)} style={[styles.card, { alignItems: "center", gap: 10 }]}>
@@ -295,6 +333,7 @@ export default function QuizRoom() {
             <WideButton title={t("shareCode")} kind="ghost" icon="square.and.arrow.up" onPress={() => Share.share({ message: `${t("qzInvite")} ${code}` })} />
           </Animated.View>
         )}
+        {!room.random && (
         <View style={styles.seats}>
           {Array.from({ length: room.settings.maxPlayers }, (_, i) => {
             const p = room.players[i];
@@ -313,6 +352,7 @@ export default function QuizRoom() {
             );
           })}
         </View>
+        )}
         {!room.random &&
           (isHost ? (
             <>
@@ -582,6 +622,9 @@ const styles = StyleSheet.create({
 
   seats: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 14 },
   seat: { width: 62, alignItems: "center", gap: 6 },
+  // a seat on the search ring: the avatar is centred on its spot, the name hangs below it
+  ringSeat: { width: 62, height: 62, alignItems: "center", justifyContent: "center" },
+  ringName: { position: "absolute", top: 58, width: 80, textAlign: "center" },
   seatName: { fontSize: 12, fontWeight: "700", color: NIGHT.ink, maxWidth: 62 },
   emptySeat: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderStyle: "dashed", borderColor: NIGHT.ink3 },
 

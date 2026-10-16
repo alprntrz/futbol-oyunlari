@@ -304,6 +304,8 @@ function qzPublic(room, viewer) {
     question: showQ ? { text: q.text, context: q.context ?? null, options: q.options } : null,
     answer: room.phase === "reveal" ? q.answer : null,
     remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : 0,
+    // a random room still filling up: how long until it starts anyway (the search screen's countdown ring)
+    startsInMs: room.random && room.phase === "lobby" && room.fillAt ? Math.max(0, room.fillAt - Date.now()) : null,
     players: room.players.map((p) => ({
       id: p.id,
       nick: p.nick,
