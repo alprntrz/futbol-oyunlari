@@ -156,7 +156,7 @@ function Pill({ award }: { award: Shown }) {
               {levelled && badgeLevel === award.after.level
                 ? t("levelUpTo").replace("{n}", String(award.after.level))
                 : award.label
-                  ? `${t(award.label as Parameters<typeof t>[0])} · +${shownXp} XP`
+                  ? `${t(award.label as Parameters<typeof t>[0]) ?? award.label} · +${shownXp} XP`
                   : `+${shownXp} XP`}
             </Text>
             <View style={styles.track}>

@@ -16,7 +16,8 @@ import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { COST_COLOR, ItemIcon, PosTag, UnitCard, clubCriterion } from "~/components/taktik/Card";
-import { LobbyIntro } from "~/components/taktik/LobbyIntro";
+import { avatarsOf, LobbyIntro } from "~/components/taktik/LobbyIntro";
+import { Avatar } from "~/components/Avatar";
 import { PlanClock } from "~/components/taktik/PlanClock";
 import { TacticsCard, TacticsChips } from "~/components/taktik/TacticsCard";
 import { MatchView } from "~/components/taktik/MatchView";
@@ -33,7 +34,6 @@ import { useXpAward } from "~/lib/xp";
 type Sel = { kind: "unit"; uid: string } | { kind: "item"; index: number } | null;
 
 const COUNTRY = new Map(ALL_CRITERIA.filter((c) => c.kind === "country").map((c) => [c.id, c]));
-const ROWS: Pos[] = ["FWD", "MID", "DEF", "GK"];
 
 /**
  * One Taktik Tahtası game: health table, the pitch (12 spots by zone), synergies,
@@ -47,7 +47,7 @@ export default function TaktikGame() {
   "use no memo";
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const { lobby } = useTaktik();
   const [sel, setSel] = useState<Sel>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -58,6 +58,8 @@ export default function TaktikGame() {
   const [info, setInfo] = useState<TraitState | null>(null);
   /** the tactics card just tapped: it lights up for a moment before it's taken */
   const [augPick, setAugPick] = useState<number | null>(null);
+  /** height left for the board between the top bar and the shop (the pitch fits into it) */
+  const [boardH, setBoardH] = useState(0);
   /** the lobby intro was seen for this game (seed) */
   const [introSeen, setIntroSeen] = useState(() => introShown);
   const scroller = useRef<ScrollView>(null);
@@ -116,6 +118,8 @@ export default function TaktikGame() {
     setAugPick(i);
     setTimeout(() => {
       act((l) => chooseAugment(l, me, i));
+      // a card that brings players (Academy, Star signing) walks them onto the pitch too
+      act(() => fillField(me));
       setAugPick(null);
     }, 650);
   };
@@ -132,11 +136,6 @@ export default function TaktikGame() {
   const sh = sheet({ name: me.name, units: me.units, coach: me.coach, augments: me.augments });
   const traits = sh.traits.filter((x) => x.count >= 1 && (x.tier > 0 || x.count >= x.steps[0] - 1));
 
-  // sizes: four cards across the widest pitch row
-  const pitchW = width - 24;
-  const cardW = Math.min(78, (pitchW - 16 - 3 * 6) / 4);
-  const benchW = Math.min(58, cardW * 0.78);
-  const shopW = (width - 24 - 4 * 6) / 5;
 
   const tapUnit = (uid: string) => {
     haptic.tap();
@@ -249,40 +248,64 @@ export default function TaktikGame() {
   const standings = lobby.managers.slice().sort((a, b) => (a.place ?? 0) - (b.place ?? 0) || b.hp - a.hp);
   const xpNeed = xpToNext(me);
 
+  // the toy pitch: where its playing area sits in the picture (a trapezoid, narrower at the far end)
+  // the pitch takes what's left once the rows around it are laid out, so everything fits on one screen
+  const benchSlotW = (width - 24 - 7 * 5) / 8;
+  const around = 52 + 46 + 50 + benchSlotW * 1.12 + 14;
+  const pitchImgH = Math.max(220, Math.min((width - 24) * (921 / 914), (boardH || height * 0.55) - around));
+  const pitchImgW = pitchImgH * (914 / 921);
+  // the touchlines in the picture, as fractions of it (measured from pitch-toy.png)
+  const FIELD = { top: 0.1, bottom: 0.84, topL: 0.172, topR: 0.8, botL: 0.068, botR: 0.893 };
+  const LINE_V: Record<Pos, number> = { FWD: 0.12, MID: 0.38, DEF: 0.64, GK: 0.9 };
+  const LINE_U: Record<number, number[]> = { 1: [0.5], 3: [0.18, 0.5, 0.82], 4: [0.12, 0.37, 0.63, 0.88] };
+  const spot = (slot: number) => {
+    const zone = SLOTS[slot];
+    const inZone = SLOTS.map((z, i) => (z === zone ? i : -1)).filter((i) => i >= 0);
+    const v = LINE_V[zone];
+    const u = LINE_U[inZone.length][inZone.indexOf(slot)];
+    const l = FIELD.topL + (FIELD.botL - FIELD.topL) * v;
+    const r = FIELD.topR + (FIELD.botR - FIELD.topR) * v;
+    const scale = 0.84 + 0.2 * v;
+    return { x: (l + (r - l) * u) * pitchImgW, y: (FIELD.top + (FIELD.bottom - FIELD.top) * v) * pitchImgH, w: pitchImgW * 0.15 * scale };
+  };
+  const looks = avatarsOf(lobby.managers, me.id);
+  const shopCardW = (width - 24 - 4 * 8) / 5;
+
   return (
-    <View style={{ flex: 1, backgroundColor: C.greenDark }}>
+    <View style={{ flex: 1, backgroundColor: C.bg }}>
       <Stack.Screen options={{ headerShown: false }} />
-      <FocusStatusBar style="light" />
-      <View style={[styles.top, { paddingTop: insets.top + 4 }]}>
+      <FocusStatusBar style="dark" />
+      {/* top bar: back, the round, health / gold / streak as little 3D counters, the set-up clock */}
+      <View style={[styles.top, { paddingTop: insets.top + 2 }]}>
         <View style={styles.topRow}>
           <Tap onPress={() => router.back()} style={styles.back} accessibilityLabel="‹">
-            <Icon name="chevron.left" size={18} color="white" fallback="‹" />
+            <Icon name="arrow.left" size={20} color={C.text} fallback="‹" />
           </Tap>
-          <Text style={styles.stage}>
+          <Text style={styles.stage} numberOfLines={1}>
             {t("ttkStage").replace("{s}", String(lobby.stage)).replace("{r}", String(lobby.round + 1))}
             {roundKind(lobby) === "pve" ? ` · ${t("ttkFriendly")}` : ""}
           </Text>
           <View ref={tour.ref("hp")} collapsable={false} style={styles.stat}>
-            <Icon name="heart.fill" size={14} color="#FF5A6E" fallback="♥" />
+            <Image source={TAKTIK.ui.heart} style={styles.statIcon} />
             <Text style={styles.statText}>{Math.max(0, me.hp)}</Text>
           </View>
           <View ref={tour.ref("gold")} collapsable={false} style={styles.stat}>
-            <Text style={{ fontSize: 13 }}>🪙</Text>
+            <Image source={TAKTIK.ui.coin} style={styles.statIcon} />
             <Text style={styles.statText}>{me.gold}</Text>
           </View>
           {/* a streak of 2+ pays extra gold each round: show it */}
           {Math.abs(me.streak) >= 2 && (
             <Tap
               onPress={() => flash(t(me.streak > 0 ? "ttkWinStreak" : "ttkLossStreak").replace("{n}", String(Math.abs(me.streak))).replace("{g}", String(streakGold(Math.abs(me.streak)))))}
-              style={[styles.stat, { backgroundColor: me.streak > 0 ? "rgba(249,115,22,0.35)" : "rgba(96,165,250,0.3)" }]}
+              style={styles.stat}
               accessibilityLabel={t(me.streak > 0 ? "ttkWinStreak" : "ttkLossStreak").replace("{n}", String(Math.abs(me.streak))).replace("{g}", String(streakGold(Math.abs(me.streak))))}
             >
-              <Text style={{ fontSize: 12 }}>{me.streak > 0 ? "🔥" : "🧊"}</Text>
+              {me.streak > 0 ? <Image source={TAKTIK.ui.flame} style={styles.statIcon} /> : <Text style={{ fontSize: 15 }}>🧊</Text>}
               <Text style={styles.statText}>{Math.abs(me.streak)}</Text>
             </Tap>
           )}
-          <Tap onPress={tour.start} style={styles.back} accessibilityLabel={t("ttkHowTo")}>
-            <Icon name="questionmark" size={16} color="white" fallback="?" />
+          <Tap onPress={tour.start} style={styles.help} accessibilityLabel={t("ttkHowTo")}>
+            <Icon name="questionmark" size={14} color={C.text2} fallback="?" />
           </Tap>
         </View>
         {/* the set-up clock: at zero the match kicks off (online, everyone at once); it waits while a walkthrough, the intro or a card pick is up */}
@@ -292,126 +315,152 @@ export default function TaktikGame() {
           running={!match && !out && !showIntro && tour.step === null && augPick === null && scout === null}
           onEnd={startMatch}
         />
-        {/* everyone's health */}
-        <View ref={tour.ref("table")} collapsable={false}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.table}>
+      </View>
+
+      <ScrollView
+        ref={scroller}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 6 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        onLayout={(e) => setBoardH(e.nativeEvent.layout.height)}
+      >
+        {/* everyone's health: round avatars with a bar under each */}
+        <View ref={tour.ref("table")} collapsable={false} style={styles.table}>
           {standings.map((m) => (
-            <View key={m.id} style={[styles.mgr, m.id === me.id && styles.mgrMe, m.place !== null && { opacity: 0.35 }]}>
-              <Text style={styles.mgrName} numberOfLines={1}>
-                {m.id === me.id ? t("you") : m.name}
-              </Text>
+            <View key={m.id} style={[styles.mgr, m.place !== null && { opacity: 0.35 }]}>
+              <Avatar id={m.id === me.id ? null : (looks.get(m.id) ?? null)} me={m.id === me.id} size={34} ring={m.id === me.id ? C.green : "white"} />
               <View style={styles.mgrBar}>
-                <View style={[styles.mgrFill, { width: `${Math.max(0, m.hp)}%`, backgroundColor: m.hp > 50 ? "#4ADE80" : m.hp > 25 ? "#FACC15" : "#F87171" }]} />
+                <View style={[styles.mgrFill, { width: `${Math.max(0, m.hp)}%`, backgroundColor: m.hp > 50 ? C.green : m.hp > 25 ? "#F59E0B" : C.red }]} />
               </View>
             </View>
           ))}
-        </ScrollView>
         </View>
-      </View>
 
-      <ScrollView ref={scroller} style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 12 }} keyboardShouldPersistTaps="handled">
-        {/* the pitch */}
+        {/* the pitch: a toy pitch with the twelve spots set out in perspective */}
         <View ref={tour.ref("pitch")} collapsable={false}>
-        <Pressable onPress={() => setSel(null)} style={[styles.pitch, { marginHorizontal: 12 }]}>
-          <View style={styles.pitchLine} />
-          <View style={styles.circle} />
-          {ROWS.map((zone) => (
-            <View key={zone} style={styles.row}>
-              {SLOTS.map((z, i) => (z === zone ? i : -1))
-                .filter((i) => i >= 0)
-                .map((slot) => {
-                  const u = me.units.find((x) => x.slot === slot);
-                  return u ? (
-                    <UnitCard key={slot} unit={u} width={cardW} selected={sel?.kind === "unit" && sel.uid === u.uid} onPress={() => tapUnit(u.uid)} />
+          <Pressable onPress={() => setSel(null)} style={{ width: pitchImgW, height: pitchImgH, alignSelf: "center" }}>
+            {/* explicit size: absoluteFill on an Image misrenders in RN */}
+            <Image source={TAKTIK.ui.pitch} style={{ position: "absolute", left: 0, top: 0, width: pitchImgW, height: pitchImgH }} />
+            {SLOTS.map((zone, slot) => {
+              const p = spot(slot);
+              const u = me.units.find((x) => x.slot === slot);
+              const h = p.w * 1.12;
+              return (
+                <View key={slot} style={{ position: "absolute", left: p.x - p.w / 2, top: p.y - h / 2, width: p.w, height: h }}>
+                  {u ? (
+                    <UnitCard unit={u} width={p.w} selected={sel?.kind === "unit" && sel.uid === u.uid} onPress={() => tapUnit(u.uid)} />
                   ) : (
-                    <Tap
-                      key={slot}
-                      onPress={() => tapSlot(slot)}
-                      style={[styles.empty, { width: cardW, height: cardW * 1.12 }, sel?.kind === "unit" && styles.emptyLit]}
-                      accessibilityLabel={t(`ttkPos_${zone}`)}
-                    >
+                    <Tap onPress={() => tapSlot(slot)} style={[styles.empty, { width: p.w, height: h }, sel?.kind === "unit" && styles.emptyLit]} accessibilityLabel={t(`ttkPos_${zone}`)}>
                       <Text style={styles.emptyText}>{t(`ttkPos_${zone}`)}</Text>
                     </Tap>
-                  );
-                })}
-            </View>
-          ))}
-          <View style={styles.capPill}>
-            <Text style={styles.capText}>{t("ttkOnPitch").replace("{n}", String(onPitch.length)).replace("{m}", String(cap))}</Text>
+                  )}
+                </View>
+              );
+            })}
+          </Pressable>
+        </View>
+
+        {/* under the pitch: how many are on it, and one tap for the best side */}
+        <View style={styles.pills}>
+          <View style={styles.pill}>
+            <Text style={styles.pillText}>{t("ttkOnPitch").replace("{n}", String(onPitch.length)).replace("{m}", String(cap))}</Text>
           </View>
-          {/* one tap sets up the best side from everyone you have */}
           <Tap
             onPress={() => {
               act(() => autoArrange(me));
               setSel(null);
               haptic.success();
             }}
-            style={styles.bestPill}
+            style={styles.pill}
             accessibilityLabel={t("ttkBestLineup")}
           >
-            <Icon name="sparkles" size={13} color="#3B2A05" fallback="✨" />
-            <Text style={styles.bestText}>{t("ttkBestLineup")}</Text>
+            <Image source={TAKTIK.ui.wand} style={{ width: 16, height: 17 }} />
+            <Text style={styles.pillText}>{t("ttkBestLineup")}</Text>
           </Tap>
-        </Pressable>
         </View>
 
-        {/* the tactics cards in play this game */}
-        {me.augments.length > 0 && (
-          <View style={{ paddingHorizontal: 12, marginTop: 10 }}>
-            <TacticsChips ids={me.augments} dark />
-          </View>
-        )}
-
-        {/* synergies */}
+        {/* tactics cards and synergies, one row of pills */}
         <View ref={tour.ref("traits")} collapsable={false}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.traits}>
-          {traits.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
-          {traits.map((x) => (
-            <Tap key={`${x.kind}-${x.id}`} onPress={() => setInfo(x)} style={[styles.trait, x.tier > 0 && styles.traitOn]} accessibilityLabel={traitLabel(x)}>
-              {traitIcon(x)}
-              <Text style={[styles.traitText, x.tier > 0 && { color: C.greenDark }]}>
-                {x.count}/{x.steps[Math.min(x.tier, x.steps.length - 1)]}
-              </Text>
-            </Tap>
-          ))}
-        </ScrollView>
-        </View>
-
-        {/* items */}
-        {me.items.length > 0 && (
-          <View style={styles.itemsRow}>
-            <Text style={styles.label}>{t("ttkItems")}</Text>
-            {me.items.map((it, i) => (
-              <Tap key={i} onPress={() => setSel(sel?.kind === "item" && sel.index === i ? null : { kind: "item", index: i })} style={[styles.item, sel?.kind === "item" && sel.index === i && styles.itemOn]} accessibilityLabel={t(`ttkI_${it}`)}>
-                <ItemIcon id={it} size={30} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.traits}>
+            {me.augments.length > 0 && <TacticsChips ids={me.augments} />}
+            {traits.length === 0 && me.augments.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
+            {traits.map((x) => (
+              <Tap key={`${x.kind}-${x.id}`} onPress={() => setInfo(x)} style={[styles.trait, x.tier > 0 && styles.traitOn]} accessibilityLabel={traitLabel(x)}>
+                {traitIcon(x)}
+                <Text style={[styles.traitText, x.tier > 0 && { color: "white" }]}>
+                  {x.count}/{x.steps[Math.min(x.tier, x.steps.length - 1)]}
+                </Text>
               </Tap>
             ))}
-            {sel?.kind === "item" && <Text style={styles.hint}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
-          </View>
-        )}
-
-        {/* bench */}
-        <View ref={tour.ref("bench")} collapsable={false}>
-        <Pressable onPress={tapBench} style={styles.benchWrap}>
-          <Text style={styles.label}>
-            {t("ttkBench")} {bench(me).length}/8
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.bench}>
-            {bench(me).map((u) => (
-              <UnitCard key={u.uid} unit={u} width={benchW} selected={sel?.kind === "unit" && sel.uid === u.uid} onPress={() => tapUnit(u.uid)} />
-            ))}
-            {Array.from({ length: Math.max(0, 8 - bench(me).length) }, (_, i) => (
-              <Pressable key={`e${i}`} onPress={tapBench} style={[styles.benchEmpty, { width: benchW, height: benchW * 1.12 }]} />
+            {me.items.map((it, i) => (
+              <Tap key={`i${i}`} onPress={() => setSel(sel?.kind === "item" && sel.index === i ? null : { kind: "item", index: i })} style={[styles.item, sel?.kind === "item" && sel.index === i && styles.itemOn]} accessibilityLabel={t(`ttkI_${it}`)}>
+                <ItemIcon id={it} size={24} />
+              </Tap>
             ))}
           </ScrollView>
-        </Pressable>
+          {sel?.kind === "item" && <Text style={[styles.hint, { marginTop: -2 }]}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
+        </View>
+
+        {/* the bench: eight slots in one row */}
+        <View ref={tour.ref("bench")} collapsable={false}>
+          <Pressable onPress={tapBench} style={styles.bench}>
+            {Array.from({ length: 8 }, (_, i) => {
+              const u = bench(me)[i];
+              return u ? (
+                <UnitCard key={u.uid} unit={u} width={benchSlotW} selected={sel?.kind === "unit" && sel.uid === u.uid} onPress={() => tapUnit(u.uid)} />
+              ) : (
+                <Pressable key={`e${i}`} onPress={tapBench} style={[styles.benchEmpty, { width: benchSlotW, height: benchSlotW * 1.12 }, sel?.kind === "unit" && styles.emptyLit]} />
+              );
+            })}
+          </Pressable>
         </View>
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 6 }]}>
-        <View style={styles.noteSlot}>{note ?? incomeNote ? <Animated.Text entering={FadeIn} style={styles.note}>{note ?? incomeNote}</Animated.Text> : <Text style={styles.hint}>{t("ttkHint")}</Text>}</View>
+        {/* one short line: the round's gold, or what just happened; the how-to hint only on the first rounds */}
+        <View style={styles.noteSlot}>
+          {note ?? incomeNote ? (
+            <Animated.Text entering={FadeIn} style={styles.note} numberOfLines={1}>
+              {note ?? incomeNote}
+            </Animated.Text>
+          ) : lobby.played < 2 ? (
+            <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit>
+              {t("ttkHint")}
+            </Text>
+          ) : null}
+        </View>
 
-        {/* shop, or sell while a player is picked */}
+        {/* the shop: five cards, the price under each */}
+        <View ref={tour.ref("shop")} collapsable={false} style={styles.shop}>
+          {me.shop.map((card, i) => {
+            if (!card) return <View key={i} style={{ width: shopCardW }} />;
+            const p = lobby.players[card.pid];
+            const owned = me.units.filter((u) => u.pid === p.pid && u.star === 1).length;
+            return (
+              <View key={i} style={{ width: shopCardW, alignItems: "center", gap: 5 }}>
+                {card.scout ? (
+                  <Tap onPress={() => tapShop(i, card)} style={[styles.scoutCard, { width: shopCardW, height: shopCardW * 1.12 }]} accessibilityLabel={t("ttkScoutTitle")}>
+                    <Image source={TAKTIK.ui.scout} style={{ width: shopCardW * 0.86, height: shopCardW * 0.97 }} resizeMode="contain" />
+                  </Tap>
+                ) : (
+                  <UnitCard unit={{ ...p, star: 1, items: [] }} width={shopCardW} dim={me.gold < p.cost} onPress={() => tapShop(i, card)} />
+                )}
+                <View style={styles.price}>
+                  <Image source={TAKTIK.ui.coin} style={{ width: 15, height: 15 }} />
+                  <Text style={styles.priceText}>{p.cost}</Text>
+                </View>
+                {owned > 0 && (
+                  <View style={styles.owned}>
+                    <Text style={styles.ownedText}>{owned}/3</Text>
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+
+        {/* buttons: sell while a player is picked; else reroll, buy XP and the one big Kick off */}
         {selectedUnit ? (
           <Tap
             onPress={() => {
@@ -419,75 +468,42 @@ export default function TaktikGame() {
               haptic.success();
               setSel(null);
             }}
-            style={[styles.sell, { marginHorizontal: 12 }]}
+            style={[styles.chunky, styles.sell]}
           >
-            <Icon name="dollarsign.circle.fill" size={22} color="white" fallback="$" />
+            <Image source={TAKTIK.ui.coin} style={{ width: 26, height: 26 }} />
             <Text style={styles.sellText}>{t("ttkSell").replace("{g}", String(sellValue(selectedUnit)))}</Text>
           </Tap>
         ) : (
-          <View ref={tour.ref("shop")} collapsable={false} style={styles.shop}>
-            {me.shop.map((card, i) => {
-              if (!card) return <View key={i} style={{ width: shopW }} />;
-              const p = lobby.players[card.pid];
-              const owned = me.units.filter((u) => u.pid === p.pid && u.star === 1).length;
-              const club = clubCriterion(p.club);
-              if (card.scout)
-                return (
-                  <Tap key={i} onPress={() => tapShop(i, card)} style={[styles.shopCard, { width: shopW, borderColor: "#7C3AED" }]} accessibilityLabel={t("ttkScoutTitle")}>
-                    <Image source={TAKTIK.scout} style={{ width: shopW * 0.62, height: shopW * 0.62 }} />
-                    <View style={styles.clues}>
-                      <Flag id={p.country} width={18} />
-                      {club && <ClubShirt c={club} size={12} />}
-                      <PosTag pos={p.pos} small />
-                    </View>
-                    <View style={[styles.price, { backgroundColor: "#7C3AED" }]}>
-                      <Text style={styles.priceText}>🪙 {p.cost}</Text>
-                    </View>
-                  </Tap>
-                );
-              return (
-                <View key={i} style={{ width: shopW }}>
-                  <UnitCard unit={{ ...p, star: 1, items: [] }} width={shopW} dim={me.gold < p.cost} onPress={() => tapShop(i, card)} />
-                  <View style={[styles.price, { backgroundColor: COST_COLOR[p.cost] }]}>
-                    <Text style={styles.priceText}>🪙 {p.cost}</Text>
+          <>
+            <View style={styles.actions}>
+              <View ref={tour.ref("reroll")} collapsable={false} style={{ flex: 1 }}>
+                <Tap onPress={() => (act((l) => reroll(l, me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={[styles.chunky, styles.reroll]} accessibilityLabel={t("ttkReroll")}>
+                  <Image source={TAKTIK.ui.reroll} style={{ width: 22, height: 21 }} />
+                  <Text style={styles.rerollText}>
+                    {t("ttkReroll")} · {REROLL_COST}
+                  </Text>
+                  <Image source={TAKTIK.ui.coin} style={{ width: 15, height: 15 }} />
+                </Tap>
+              </View>
+              <View ref={tour.ref("xp")} collapsable={false} style={{ flex: 1 }}>
+                <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={[styles.chunky, styles.xpBtn]} accessibilityLabel={t("ttkBuyXp")}>
+                  <Text style={styles.xpText}>
+                    {t("ttkLevel").replace("{n}", String(me.level))} · {t("ttkBuyXp")} {XP_COST}
+                  </Text>
+                  <View style={styles.xpTrack}>
+                    <View style={[styles.xpFill, { width: `${xpNeed ? (me.xp / xpNeed) * 100 : 100}%` }]} />
                   </View>
-                  {owned > 0 && (
-                    <View style={styles.owned}>
-                      <Text style={styles.ownedText}>{owned}/3</Text>
-                    </View>
-                  )}
-                </View>
-              );
-            })}
-          </View>
+                </Tap>
+              </View>
+            </View>
+            <View ref={tour.ref("kick")} collapsable={false}>
+              <Tap onPress={startMatch} style={[styles.chunky, styles.kick]} accessibilityLabel={t("ttkPlayMatch")}>
+                <Image source={TAKTIK.ui.ball} style={{ width: 30, height: 31 }} />
+                <Text style={styles.kickText}>{t("ttkPlayMatch")}</Text>
+              </Tap>
+            </View>
+          </>
         )}
-
-        <View style={styles.actions}>
-          <View ref={tour.ref("reroll")} collapsable={false} style={{ flex: 1 }}>
-          <Tap onPress={() => (act((l) => reroll(l, me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.small} accessibilityLabel={t("ttkReroll")}>
-            <Icon name="arrow.clockwise" size={16} color="white" fallback="↻" />
-            <Text style={styles.smallText}>
-              {t("ttkReroll")} · {REROLL_COST}
-            </Text>
-          </Tap>
-          </View>
-          <View ref={tour.ref("xp")} collapsable={false} style={{ flex: 1 }}>
-          <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.small} accessibilityLabel={t("ttkBuyXp")}>
-            <Text style={styles.smallText}>
-              {t("ttkLevel").replace("{n}", String(me.level))} {xpNeed ? `${me.xp}/${xpNeed}` : ""}
-            </Text>
-            <Text style={styles.smallSub}>
-              {t("ttkBuyXp")} · {XP_COST}
-            </Text>
-          </Tap>
-          </View>
-          <View ref={tour.ref("kick")} collapsable={false} style={{ flex: 1 }}>
-          <Tap onPress={startMatch} style={[styles.small, styles.kick]} accessibilityLabel={t("ttkPlayMatch")}>
-            <Icon name="play.fill" size={16} color="#3B2A05" fallback="▶" />
-            <Text style={[styles.smallText, { color: "#3B2A05" }]}>{t("ttkPlayMatch")}</Text>
-          </Tap>
-          </View>
-        </View>
       </View>
 
       {/* synergy info */}
@@ -648,65 +664,61 @@ export default function TaktikGame() {
 }
 
 const styles = StyleSheet.create({
-  top: { backgroundColor: "#0B3D22", paddingHorizontal: 12, paddingBottom: 8 },
-  topRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  back: { width: 32, height: 32, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center" },
-  stage: { flex: 1, fontFamily: F.display, fontSize: 20, color: "white" },
-  stat: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(0,0,0,0.25)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
-  statText: { fontFamily: F.display, fontSize: 17, color: "white" },
-  table: { gap: 6, paddingTop: 8 },
-  mgr: { width: 66, gap: 3, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 8, padding: 5 },
-  mgrMe: { backgroundColor: "rgba(250,204,21,0.25)" },
-  mgrName: { color: "white", fontSize: 10, fontWeight: "700" },
-  mgrBar: { height: 4, borderRadius: 2, backgroundColor: "rgba(0,0,0,0.35)", overflow: "hidden" },
+  top: { backgroundColor: C.card, paddingHorizontal: 12, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: C.border },
+  topRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  back: { width: 34, height: 34, alignItems: "center", justifyContent: "center" },
+  help: { width: 28, height: 28, borderRadius: 14, backgroundColor: C.bg, alignItems: "center", justifyContent: "center" },
+  stage: { flex: 1, fontFamily: F.display, fontSize: 20, color: C.text },
+  stat: { flexDirection: "row", alignItems: "center", gap: 3 },
+  statIcon: { width: 22, height: 22, resizeMode: "contain" },
+  statText: { fontFamily: F.display, fontSize: 18, color: C.text },
+  table: { flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 12, paddingTop: 8, paddingBottom: 2 },
+  mgr: { alignItems: "center", gap: 4 },
+  mgrBar: { width: 30, height: 4, borderRadius: 2, backgroundColor: C.key, overflow: "hidden" },
   mgrFill: { height: 4, borderRadius: 2 },
-  pitch: { marginTop: 10, backgroundColor: C.pitchA, borderRadius: 18, padding: 8, gap: 8, borderWidth: 2, borderColor: C.pitchLine, overflow: "hidden" },
-  pitchLine: { position: "absolute", left: 0, right: 0, top: "48%", height: 2, backgroundColor: C.pitchLine },
-  circle: { position: "absolute", alignSelf: "center", top: "39%", width: 90, height: 90, borderRadius: 45, borderWidth: 2, borderColor: C.pitchLine },
-  row: { flexDirection: "row", justifyContent: "center", gap: 6 },
-  empty: { borderRadius: 10, borderWidth: 2, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.45)", alignItems: "center", justifyContent: "center" },
-  emptyLit: { borderColor: "#FACC15", backgroundColor: "rgba(250,204,21,0.12)" },
-  emptyText: { fontFamily: F.display, fontSize: 14, color: "rgba(255,255,255,0.7)" },
-  capPill: { position: "absolute", right: 8, bottom: 8, backgroundColor: "rgba(0,0,0,0.35)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 },
-  capText: { color: "white", fontSize: 11, fontWeight: "700" },
+  empty: { borderRadius: 10, borderWidth: 1.5, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.85)", backgroundColor: "rgba(255,255,255,0.14)", alignItems: "center", justifyContent: "center" },
+  emptyLit: { borderColor: "#FACC15", backgroundColor: "rgba(250,204,21,0.25)" },
+  emptyText: { fontFamily: F.display, fontSize: 13, color: "white" },
+  pills: { flexDirection: "row", justifyContent: "center", gap: 8, marginTop: 4 },
+  pill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 7, borderWidth: 1, borderColor: C.border, borderBottomWidth: 3 },
+  pillText: { fontFamily: F.display, fontSize: 15, color: C.text },
   traits: { gap: 6, paddingHorizontal: 12, paddingVertical: 8, alignItems: "center" },
-  trait: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(255,255,255,0.12)", borderRadius: 999, paddingHorizontal: 9, paddingVertical: 5 },
-  traitOn: { backgroundColor: "#BBF7D0" },
-  traitText: { fontFamily: F.display, fontSize: 14, color: "white" },
-  itemsRow: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, flexWrap: "wrap" },
-  item: { width: 40, height: 40, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center" },
-  itemOn: { backgroundColor: "#FACC15" },
-  label: { color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: "800", marginRight: 4 },
-  benchWrap: { paddingHorizontal: 12, paddingTop: 8, gap: 4 },
-  bench: { gap: 6 },
-  benchEmpty: { borderRadius: 10, backgroundColor: "rgba(255,255,255,0.08)" },
-  noteSlot: { height: 26, justifyContent: "center", paddingHorizontal: 12 },
-  note: { color: "#FDE68A", fontWeight: "800", fontSize: 13, textAlign: "center" },
-  hint: { color: "rgba(255,255,255,0.6)", fontSize: 12, textAlign: "center" },
-  shop: { flexDirection: "row", gap: 6, paddingHorizontal: 12 },
-  shopCard: { borderRadius: 10, borderWidth: 3, backgroundColor: "#EDE7FF", alignItems: "center", paddingTop: 6, aspectRatio: 1 / 1.12 },
-  clues: { flexDirection: "row", alignItems: "center", gap: 3 },
+  trait: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: C.border },
+  traitOn: { backgroundColor: C.green, borderColor: C.green },
+  traitText: { fontFamily: F.display, fontSize: 14, color: C.text },
+  item: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
+  itemOn: { backgroundColor: "#FEF3C7", borderColor: "#FACC15" },
+  bench: { flexDirection: "row", gap: 5, paddingHorizontal: 12 },
+  benchEmpty: { borderRadius: 9, backgroundColor: C.key },
+  noteSlot: { height: 22, justifyContent: "center", paddingHorizontal: 12 },
+  note: { color: C.greenMid, fontWeight: "800", fontSize: 13, textAlign: "center" },
+  hint: { color: C.text3, fontSize: 12, textAlign: "center" },
+  shop: { flexDirection: "row", gap: 8, paddingHorizontal: 12 },
   cluesBig: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 4 },
-  price: { position: "absolute", bottom: -8, alignSelf: "center", borderRadius: 999, paddingHorizontal: 7, paddingVertical: 1 },
-  priceText: { color: "white", fontWeight: "800", fontSize: 11 },
-  owned: { position: "absolute", top: 14, left: 3, backgroundColor: "#FACC15", borderRadius: 6, paddingHorizontal: 4 },
-  ownedText: { fontSize: 10, fontWeight: "900", color: "#3B2A05" },
-  sell: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: C.red, borderRadius: 14, height: 70 },
-  sellText: { fontFamily: F.display, fontSize: 22, color: "white" },
-  footer: { backgroundColor: "#0B3D22", paddingTop: 2 },
-  actions: { flexDirection: "row", gap: 8, paddingHorizontal: 12, marginTop: 14 },
-  kick: { backgroundColor: "#FACC15", flexDirection: "row", gap: 6 },
-  // the walkthrough wraps each button in a flex: 1 box (the width); the button keeps its own height
-  small: { minHeight: 50, alignItems: "center", justifyContent: "center", gap: 2, backgroundColor: "rgba(255,255,255,0.14)", borderRadius: 12, paddingVertical: 8, flexDirection: "column" },
-  smallText: { fontFamily: F.display, fontSize: 16, color: "white" },
-  smallSub: { color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: "700" },
+  scoutCard: { borderRadius: 10, backgroundColor: "#EDE9FE", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#A78BFA" },
+  price: { flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: C.border },
+  priceText: { fontFamily: F.display, fontSize: 14, color: C.text },
+  owned: { position: "absolute", top: -6, left: -4, backgroundColor: C.text, borderRadius: 7, paddingHorizontal: 5, paddingVertical: 1 },
+  ownedText: { fontSize: 10, fontWeight: "900", color: "white" },
+  footer: { backgroundColor: C.bg, paddingTop: 0, gap: 8 },
+  actions: { flexDirection: "row", gap: 8, paddingHorizontal: 12, marginTop: 4 },
+  // Duolingo-style chunky buttons: a darker bottom edge instead of a shadow
+  chunky: { minHeight: 50, borderRadius: 14, borderBottomWidth: 4, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingHorizontal: 10 },
+  reroll: { backgroundColor: C.card, borderWidth: 1.5, borderColor: C.border, borderBottomColor: "#D3DBD6", borderBottomWidth: 4 },
+  rerollText: { fontFamily: F.display, fontSize: 17, color: C.text },
+  xpBtn: { backgroundColor: "#2563EB", borderBottomColor: "#1E40AF", flexDirection: "column", gap: 5 },
+  xpText: { fontFamily: F.display, fontSize: 15, color: "white" },
+  xpTrack: { alignSelf: "stretch", height: 6, borderRadius: 3, backgroundColor: "rgba(255,255,255,0.3)", overflow: "hidden" },
+  xpFill: { height: 6, borderRadius: 3, backgroundColor: "white" },
+  kick: { marginHorizontal: 12, minHeight: 58, backgroundColor: "#FACC15", borderBottomColor: "#CA8A04", gap: 10 },
+  kickText: { fontFamily: F.black, fontSize: 26, color: "#3B2A05" },
+  sell: { marginHorizontal: 12, minHeight: 62, backgroundColor: "#F43F5E", borderBottomColor: "#BE123C", gap: 10 },
+  sellText: { fontFamily: F.black, fontSize: 26, color: "white" },
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)" },
   infoCard: { margin: 24, marginTop: "60%", backgroundColor: C.card, borderRadius: 18, padding: 16, gap: 8 },
   sheet: { backgroundColor: C.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, gap: 10 },
   input: { backgroundColor: C.card, borderRadius: 14, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, height: 50, fontSize: 18, color: C.text },
   offer: { backgroundColor: C.bg, borderRadius: 22, padding: 18, gap: 10 },
-  bestPill: { position: "absolute", left: 8, bottom: 8, flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#FACC15", borderRadius: 999, paddingHorizontal: 9, paddingVertical: 4 },
-  bestText: { fontFamily: F.display, fontSize: 13, color: "#3B2A05" },
   finalRow: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: C.card, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
   finalMe: { borderWidth: 2, borderColor: C.green },
   finalPlace: { width: 22, fontFamily: F.display, fontSize: 20, color: C.text2, textAlign: "center" },

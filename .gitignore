@@ -65,3 +65,9 @@ scripts/.cache/raw-wikidata.json
 
 # full-size card art originals (14 MB); the app copies live in mobile/assets/brand/taktik/aug
 /docs/design/taktik-card-art/originals/
+
+# full-size screen art (mockups and 1024 px parts); the app copies live in mobile/assets/brand/taktik/ui
+/docs/design/taktik-screen-art/
+/docs/design/taktik-screen-art-v2/*.png
+!/docs/design/taktik-screen-art-v2/preview-*.png
+/docs/design/taktik-pitch-art/

@@ -1,0 +1,149 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "file": "screen-preparation.png",
+      "width": 1320,
+      "height": 2868,
+      "mode": "RGB",
+      "transparent": false,
+      "generated_size": [
+        850,
+        1850
+      ],
+      "bytes": 2687224
+    },
+    {
+      "file": "ui-heart.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 501734
+    },
+    {
+      "file": "ui-coin.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 840972
+    },
+    {
+      "file": "ui-flame.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 529314
+    },
+    {
+      "file": "ui-stopwatch.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 583310
+    },
+    {
+      "file": "ui-ball.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 744931
+    },
+    {
+      "file": "ui-wand.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 390159
+    },
+    {
+      "file": "ui-reroll.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 468041
+    },
+    {
+      "file": "ui-xp.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 576295
+    },
+    {
+      "file": "ui-scout.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "bytes": 708315
+    },
+    {
+      "file": "pitch-toy.png",
+      "width": 1320,
+      "height": 1100,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1374,
+        1145
+      ],
+      "bytes": 1479385
+    },
+    {
+      "file": "screen-selected.png",
+      "width": 1320,
+      "height": 2868,
+      "mode": "RGB",
+      "transparent": false,
+      "generated_size": [
+        850,
+        1850
+      ],
+      "bytes": 2755448
+    }
+  ]
+}

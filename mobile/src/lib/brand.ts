@@ -21,6 +21,18 @@ export const REWARD = {
 
 /** Taktik Tahtası art (docs/design/taktik-tahtasi.md §17). */
 export const TAKTIK = {
+  ui: {
+    heart: require("../../assets/brand/taktik/ui/ui-heart.png"),
+    coin: require("../../assets/brand/taktik/ui/ui-coin.png"),
+    flame: require("../../assets/brand/taktik/ui/ui-flame.png"),
+    stopwatch: require("../../assets/brand/taktik/ui/ui-stopwatch.png"),
+    ball: require("../../assets/brand/taktik/ui/ui-ball.png"),
+    wand: require("../../assets/brand/taktik/ui/ui-wand.png"),
+    reroll: require("../../assets/brand/taktik/ui/ui-reroll.png"),
+    xp: require("../../assets/brand/taktik/ui/ui-xp.png"),
+    scout: require("../../assets/brand/taktik/ui/ui-scout.png"),
+    pitch: require("../../assets/brand/taktik/ui/pitch-toy.jpg"),
+  },
   pitch: {
     grass: require("../../assets/brand/taktik/pitch/pitch-grass.jpg"),
     goalLeft: require("../../assets/brand/taktik/pitch/pitch-goal-left.png"),

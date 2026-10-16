@@ -144,7 +144,7 @@ export function TacticsChips({ ids, dark, align = "flex-start" }: { ids: Augment
 
 const chip = StyleSheet.create({
   row: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
-  chip: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: 999, borderWidth: 1.5, paddingLeft: 3, paddingRight: 9, paddingVertical: 2 },
+  chip: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: 999, borderWidth: 1.5, paddingLeft: 3, paddingRight: 9, paddingVertical: 2, maxWidth: "100%" },
   art: { width: 22, height: 22 },
-  text: { fontSize: 12, fontWeight: "800" },
+  text: { fontSize: 12, fontWeight: "800", flexShrink: 1 },
 });

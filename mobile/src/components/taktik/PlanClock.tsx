@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { F } from "~/lib/theme";
+import { TAKTIK } from "~/lib/brand";
+import { C, F } from "~/lib/theme";
 
 import { Text } from "../Text";
-import { Icon } from "../ui";
 
 /**
  * The set-up clock before kick-off: counts down while `running`, ticks in the
@@ -33,14 +33,14 @@ export function PlanClock({ seconds, running, onEnd }: { seconds: number; runnin
   return (
     <View style={styles.wrap} accessibilityLabel={t("ttkPlanLeft").replace("{s}", String(left))}>
       <View style={styles.row}>
-        <Icon name="stopwatch.fill" size={13} color={hurry ? "#FCA5A5" : "#FDE68A"} fallback="⏱" />
-        <Text allowFontScaling={false} style={[styles.text, hurry && { color: "#FCA5A5" }]}>
+        <Image source={TAKTIK.ui.stopwatch} style={{ width: 16, height: 18 }} />
+        <Text allowFontScaling={false} style={[styles.text, hurry && { color: C.red }]}>
           {hurry ? t("ttkPlanHurry") : t("ttkPlanLeft").replace("{s}", String(left))}
         </Text>
-        {hurry && <Text style={[styles.text, { color: "#FCA5A5" }]}>{left}</Text>}
+        {hurry && <Text style={[styles.text, { color: C.red }]}>{left}</Text>}
       </View>
       <View style={styles.track}>
-        <View style={[styles.fill, { width: `${(left / seconds) * 100}%` }, hurry && { backgroundColor: "#F87171" }]} />
+        <View style={[styles.fill, { width: `${(left / seconds) * 100}%` }, hurry && { backgroundColor: C.red }]} />
       </View>
     </View>
   );
@@ -49,7 +49,7 @@ export function PlanClock({ seconds, running, onEnd }: { seconds: number; runnin
 const styles = StyleSheet.create({
   wrap: { marginTop: 8, gap: 4 },
   row: { flexDirection: "row", alignItems: "center", gap: 6 },
-  text: { fontFamily: F.display, fontSize: 15, color: "#FDE68A" },
-  track: { height: 5, borderRadius: 3, backgroundColor: "rgba(255,255,255,0.12)", overflow: "hidden" },
-  fill: { height: 5, borderRadius: 3, backgroundColor: "#FACC15" },
+  text: { fontFamily: F.display, fontSize: 15, color: C.text2 },
+  track: { height: 12, borderRadius: 6, backgroundColor: C.key, overflow: "hidden" },
+  fill: { height: 12, borderRadius: 6, backgroundColor: C.green },
 });

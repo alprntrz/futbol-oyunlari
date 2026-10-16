@@ -18,7 +18,7 @@ import { Text } from "../Text";
 import { Tap } from "../ui";
 
 /** house managers' avatars: picked from each name, stepping on so no two share one */
-function avatarsOf(managers: Manager[], meId: number) {
+export function avatarsOf(managers: Manager[], meId: number) {
   const used = new Set<number>();
   const out = new Map<number, string>();
   for (const m of managers) {
