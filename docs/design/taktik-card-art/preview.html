@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="tr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taktik kartları · Görsel kontrol</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #101827; color: #f8fafc; font: 15px system-ui,sans-serif; }
+  main { max-width: 1080px; padding: 36px 24px; margin: auto; }
+  h1 { margin: 0 0 8px; font-size: 28px; }
+  p { color: #b4c1d5; line-height: 1.5; }
+  h2 { font-size: 18px; margin: 28px 0 14px; }
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
+  .card { min-width: 0; padding: 10px 8px 14px; border: 2px solid var(--frame); border-radius: 16px; text-align:center; background: linear-gradient(var(--top),var(--bottom)); }
+  .tactic { --top:#6366f1; --bottom:#1e1b4b; --frame:#a5b4fc; --tag:#c7d2fe; }
+  .squad { --top:#22c55e; --bottom:#052e16; --frame:#86efac; --tag:#bbf7d0; }
+  .support { --top:#f59e0b; --bottom:#451a03; --frame:#fcd34d; --tag:#fde68a; }
+  .tag { display:inline-block; border-radius:99px; padding:3px 8px; font-size:10px; font-weight:900; color:var(--bottom); background:var(--tag); }
+  .art { height:132px; display:flex; align-items:center; justify-content:center; margin-top:8px; border-radius:12px; background:#ffffff1f; }
+  .art img { width:120px; height:120px; }
+  h3 { margin:10px 0 6px; font-size:17px; }
+  .desc { margin:0; color:#ffffffe0; font-size:11px; line-height:15px; }
+  .small { display:flex; gap:12px; flex-wrap:wrap; }
+  .small figure { margin:0; text-align:center; }
+  .small img { display:block; width:80px; height:80px; border-radius:8px; background:#243348; }
+  figcaption { font-size:10px; margin-top:5px; color:#b4c1d5; }
+  .alpha { display:flex; gap:8px; flex-wrap:wrap; }
+  .alpha img { width:80px; height:80px; background:#fff; border-radius:8px; }
+  footer { margin-top:28px; font-size:12px; color:#91a3bc; }
+  @media(max-width:760px) { .grid { grid-template-columns:repeat(3,1fr); } }
+  @media(max-width:480px) { main{padding:24px 12px} .grid { grid-template-columns:repeat(2,1fr); gap:12px; } }
+</style>
+<main>
+  <h1>Taktik kartları</h1>
+  <p>On kart, üç renk ailesi. Uygulamaya aktarılan şeffaf PNG’ler ile görsel kontrol.</p>
+  <div class="grid" id="cards"></div>
+  <h2>Dar ekran · 80 px</h2>
+  <div class="small" id="small"></div>
+  <h2>Açık zemin · Alfa kontrolü</h2>
+  <div class="alpha" id="alpha"></div>
+  <footer>Bu sayfa statik görsel önizlemedir; cihazdaki kart seçimi ve animasyon testinin yerine geçmez.</footer>
+</main>
+<script>
+const cards = [
+ ['gegenpress','Gegenpress','tactic','Rakibin topa sahip olması −%10'],
+ ['bus','Otobüsü çek','tactic','Savunma +%25, hücum −%10'],
+ ['longball','Uzun top','tactic','Hücum +%15, topa sahip olma −%10'],
+ ['wings','Kanat oyunu','tactic','Forvette en az 2 kişi varsa şut kalitesi +%15'],
+ ['academy','Altyapı','squad','Hemen 3 farklı 2 maliyetli oyuncudan ikişer kart'],
+ ['signing','Yıldız transferi','squad','Hemen rastgele bir 4 maliyetli oyuncu'],
+ ['legend','Kulüp efsanesi','squad','En güçlü kulüp sinerjin bir basamak yukarı'],
+ ['intl','Milli ara','squad','En güçlü ülke sinerjin bir basamak yukarı'],
+ ['cash','Kasa dolu','support','Hemen 15 altın'],
+ ['crowd','Seyirci desteği','support','Kaybettiğin maçlarda 3 can daha az'],
+];
+const labels={tactic:'TAKTİK',squad:'KADRO',support:'DESTEK'};
+const picture=(id,name)=>`<img src="../../../mobile/assets/brand/taktik/aug/aug-${id}.png" alt="${name}">`;
+document.querySelector('#cards').innerHTML=cards.map(([id,name,kind,desc])=>`<article class="card ${kind}"><span class="tag">${labels[kind]}</span><div class="art">${picture(id,name)}</div><h3>${name}</h3><p class="desc">${desc}</p></article>`).join('');
+document.querySelector('#small').innerHTML=cards.map(([id,name])=>`<figure>${picture(id,name)}<figcaption>${name}</figcaption></figure>`).join('');
+document.querySelector('#alpha').innerHTML=cards.map(([id,name])=>picture(id,name)).join('');
+</script>
+</html>

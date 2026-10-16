@@ -62,3 +62,6 @@ scripts/.cache/tm-coaches/
 scripts/.cache/raw-coaches.json
 scripts/.cache/raw-positions.json
 scripts/.cache/raw-wikidata.json
+
+# full-size card art originals (14 MB); the app copies live in mobile/assets/brand/taktik/aug
+/docs/design/taktik-card-art/originals/
