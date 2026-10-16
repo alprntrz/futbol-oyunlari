@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Modal, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
+import { Modal, StyleSheet, useWindowDimensions, View } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SLICES } from "@/lib/taktik/rules";
@@ -13,13 +13,14 @@ import { play } from "~/lib/sound";
 import { C, F, T } from "~/lib/theme";
 
 import { Text } from "../Text";
-import { Button, Icon } from "../ui";
-import { ItemIcon } from "./Card";
-import { MatchPitch } from "./MatchPitch";
+import { Icon, Tap } from "../ui";
+import { ItemIcon, surname } from "./Card";
+import { MatchPitch, PITCH_RATIO, SIDE } from "./MatchPitch";
 import { TacticsChips } from "./TacticsCard";
 
 /** one slice of the match; slow enough to follow the ball on the pitch */
 const TICK_MS = 850;
+const KICKOFF_MS = 1600;
 const minute = (slice: number) => Math.round(((slice + 0.6) * 90) / SLICES);
 
 /**
@@ -34,11 +35,14 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   const mine = lobby.last.find((r) => r.home === meId || r.away === meId);
   const others = lobby.last.filter((r) => r !== mine && r.away !== -1);
   const [shown, setShown] = useState(0);
+  /** height left for the pitch */
+  const [area, setArea] = useState(0);
   const done = shown >= SLICES;
 
   useEffect(() => {
     if (done) return;
-    const id = setTimeout(() => setShown((s) => s + 1), TICK_MS);
+    // the kick-off badge stays a moment before the first move
+    const id = setTimeout(() => setShown((s) => s + 1), shown === 0 ? KICKOFF_MS : TICK_MS);
     return () => clearTimeout(id);
   }, [shown, done]);
 
@@ -68,137 +72,182 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   const iWon = side(mine.winner) === 0;
   const pens = mine.pens ? [mine.pens[side(0)], mine.pens[side(1)]] : null;
 
+  // the man of the match: my top scorer, else my best player on the pitch
+  const myGoals = new Map<string, number>();
+  for (const e of mine.events ?? []) if (e.kind === "goal" && side(e.side) === 0) myGoals.set(e.name, (myGoals.get(e.name) ?? 0) + 1);
+  const motmName = [...myGoals.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+  const myUnits = lobby.managers[meId].units.filter((u) => u.slot !== null);
+  const motm = (motmName && myUnits.find((u) => u.name === motmName)) || [...myUnits].sort((a, b) => b.cost * b.star - a.cost * a.star)[0];
+  const pitchW = Math.max(200, Math.min(width - 24, area / PITCH_RATIO));
+
   return (
     <Modal visible animationType="fade" onRequestClose={onClose}>
       <StatusBar style="dark" />
-      <View style={[styles.screen, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
-        {/* scoreboard */}
+      <View style={[styles.screen, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 8 }]}>
+        {/* scoreboard: my name, the score and the minute, theirs */}
         <View style={styles.board}>
-          <Text style={styles.team} numberOfLines={1}>
-            {myName}
-          </Text>
-          <Text style={styles.score}>
-            {score[0]} – {score[1]}
-          </Text>
-          <Text style={[styles.team, { textAlign: "right" }]} numberOfLines={1}>
-            {theirName}
-          </Text>
-        </View>
-        <View style={styles.clock}>
-          <Text style={styles.clockText}>{done ? "90'" : t("ttkMinute").replace("{m}", String(minute(Math.max(0, shown - 1))))}</Text>
-        </View>
-
-        {/* the match on a little pitch (prototype), me attacking left to right */}
-        <View style={{ marginTop: 14 }}>
-          <MatchPitch
-            names={[myName, theirName]}
-            mine={lobby.managers[meId].units}
-            theirs={mine.away === -1 || mine.awayName.endsWith("*") ? null : (lobby.managers[flip ? mine.home : mine.away]?.units ?? null)}
-            events={(mine.events ?? []).map((e) => ({ ...e, side: side(e.side) }))}
-            shown={shown}
-            over={done}
-            sliceMs={TICK_MS}
-            width={width - 32}
-          />
-        </View>
-
-        {/* the tactics cards each side plays with */}
-        {(myCards.length > 0 || theirCards.length > 0) && (
-          <View style={styles.cards}>
-            <View style={{ flex: 1 }}>
-              <TacticsChips ids={myCards} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <TacticsChips ids={theirCards} align="flex-end" />
+          <View style={[styles.namePill, { backgroundColor: SIDE.home }]}>
+            <Text style={styles.nameText} numberOfLines={1}>
+              {myName}
+            </Text>
+          </View>
+          <View style={{ alignItems: "center" }}>
+            <Text style={styles.score}>
+              {score[0]} – {score[1]}
+            </Text>
+            <View style={styles.clock}>
+              <Text style={styles.clockText}>{done ? t("ttkFullTime") : t("ttkMinute").replace("{m}", String(shown === 0 ? 0 : minute(shown - 1)))}</Text>
             </View>
           </View>
-        )}
+          <View style={[styles.namePill, { backgroundColor: SIDE.away }]}>
+            <Text style={styles.nameText} numberOfLines={1}>
+              {theirName}
+            </Text>
+          </View>
+        </View>
 
-        {/* just the pitch: the last thing that happened under it, one line */}
+        {/* the full pitch: me below attacking up, them above */}
+        <View style={{ flex: 1, marginTop: 8, justifyContent: "center" }} onLayout={(e) => setArea(e.nativeEvent.layout.height)}>
+          {area > 0 && (
+            <View style={{ alignSelf: "center" }}>
+              <MatchPitch
+                mine={lobby.managers[meId].units}
+                theirs={mine.away === -1 || mine.awayName.endsWith("*") ? null : (lobby.managers[flip ? mine.home : mine.away]?.units ?? null)}
+                events={(mine.events ?? []).map((e) => ({ ...e, side: side(e.side) }))}
+                shown={shown}
+                over={done}
+                sliceMs={TICK_MS}
+                width={pitchW}
+              />
+              {/* kick-off */}
+              {shown === 0 && (
+                <Animated.View entering={FadeIn.duration(220)} exiting={FadeOut.duration(220)} style={styles.kickoff} pointerEvents="none">
+                  <Text style={styles.kickoffTitle}>{t("ttkKickoff")}</Text>
+                  <Text style={styles.kickoffSub} numberOfLines={1}>
+                    {myName} – {theirName}
+                  </Text>
+                </Animated.View>
+              )}
+              {/* full time: the result over the lower half */}
+              {done && (
+                <Animated.View entering={FadeIn.duration(260)} style={[styles.result, { width: pitchW * 0.84 }]}>
+                  {pens && (
+                    <Text style={[T.caption, { fontWeight: "700" }]}>
+                      {t("ttkPens")} {pens[0]} – {pens[1]}
+                    </Text>
+                  )}
+                  <Text style={[styles.resultTitle, { color: iWon ? C.greenMid : C.red }]}>{iWon ? t("ttkWon") : t("ttkLost")}</Text>
+                  <Text style={styles.resultScore}>
+                    {score[0]} – {score[1]}
+                  </Text>
+                  {!iWon && mine.damage > 0 && <Text style={[T.headline, { color: C.red }]}>{t("ttkDamage").replace("{n}", String(mine.damage))}</Text>}
+                  {mine.drops && (
+                    <View style={styles.drops}>
+                      <Text style={T.headline}>{t("ttkDrop").replace("{g}", String(mine.drops.gold))}</Text>
+                      {mine.drops.item && (
+                        <View style={styles.dropItem}>
+                          <ItemIcon id={mine.drops.item} size={24} />
+                          <Text style={T.headline}>{t(`ttkI_${mine.drops.item}`)}</Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                  {motm && <Text style={styles.motm}>{t("ttkMotm").replace("{name}", surname(motm.name))}</Text>}
+                  {others.length > 0 && (
+                    <View style={styles.others}>
+                      {others.map((r: MatchResult, i) => (
+                        <View key={i} style={styles.other}>
+                          <Text style={[styles.otherName, r.winner === 0 && styles.otherWin]} numberOfLines={1}>
+                            {name(r.home, "?")}
+                          </Text>
+                          <Text style={styles.otherScore}>
+                            {r.goals[0]}–{r.goals[1]}
+                            {r.pens ? "*" : ""}
+                          </Text>
+                          <Text style={[styles.otherName, { textAlign: "right" }, r.winner === 1 && styles.otherWin]} numberOfLines={1}>
+                            {r.awayName.endsWith("*") ? `${r.awayName.slice(0, -1)} ${t("ttkGhost")}` : name(r.away, r.awayName)}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  <Tap onPress={onClose} style={styles.grayBtn}>
+                    <Text style={styles.grayBtnText}>{t("ttkContinue")}</Text>
+                  </Tap>
+                </Animated.View>
+              )}
+            </View>
+          )}
+        </View>
+
+        {/* the last thing that happened, one line */}
         <View style={styles.lastSlot}>
-          {lastEvent && (
-            <Animated.View key={`${lastEvent.slice}-${lastEvent.kind}`} entering={FadeIn.duration(200)} style={[styles.event, lastEvent.kind === "goal" && styles.goal, { alignSelf: "center" }]}>
+          {lastEvent && !done && (
+            <Animated.View key={`${lastEvent.slice}-${lastEvent.kind}`} entering={FadeIn.duration(200)} style={[styles.event, lastEvent.kind === "goal" && styles.goal]}>
               <Text style={[styles.min, lastEvent.kind === "goal" && { color: "white" }]}>{`${minute(lastEvent.slice)}'`}</Text>
               <Icon name={lastEvent.kind === "goal" ? "soccerball" : lastEvent.kind === "shield" ? "xmark.shield.fill" : "hand.raised.fill"} size={14} color={lastEvent.kind === "goal" ? "white" : C.text2} fallback="⚽" />
               <Text style={[styles.eventText, lastEvent.kind === "goal" && { color: "white" }]} numberOfLines={1}>
-                {eventLabel(lastEvent.kind)} · {lastEvent.name}
+                {eventLabel(lastEvent.kind)} · {surname(lastEvent.name)}
               </Text>
-              <View style={[styles.sideDot, { backgroundColor: side(lastEvent.side) === 0 ? "#2563EB" : "#F43F5E" }]} />
+              <View style={[styles.sideDot, { backgroundColor: side(lastEvent.side) === 0 ? SIDE.home : SIDE.away }]} />
             </Animated.View>
           )}
         </View>
 
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 6, paddingBottom: 12 }}>
-          {done && (
-            <Animated.View entering={ZoomIn.duration(260)} style={[styles.result, { backgroundColor: iWon ? C.greenSoft : C.redSoft }]}>
-              {pens && (
-                <Text style={[T.caption, { fontWeight: "700" }]}>
-                  {t("ttkPens")} {pens[0]} – {pens[1]}
-                </Text>
-              )}
-              <Text style={[styles.resultTitle, { color: iWon ? C.greenDark : C.red }]}>{iWon ? t("ttkWon") : t("ttkLost")}</Text>
-              {!iWon && mine.damage > 0 && <Text style={[T.headline, { color: C.red }]}>{t("ttkDamage").replace("{n}", String(mine.damage))}</Text>}
-              {mine.drops && (
-                <View style={styles.drops}>
-                  <Text style={T.headline}>{t("ttkDrop").replace("{g}", String(mine.drops.gold))}</Text>
-                  {mine.drops.item && (
-                    <View style={styles.dropItem}>
-                      <ItemIcon id={mine.drops.item} size={28} />
-                      <Text style={T.headline}>{t(`ttkI_${mine.drops.item}`)}</Text>
-                    </View>
-                  )}
-                </View>
-              )}
-            </Animated.View>
-          )}
+        {/* each side's tactics cards */}
+        <View style={styles.cards}>
+          <View style={[styles.cardCol, { borderLeftColor: SIDE.home }]}>
+            <Text style={styles.cardHead}>{t("ttkYou")}</Text>
+            {myCards.length > 0 ? <TacticsChips ids={myCards} /> : <Text style={T.caption}>–</Text>}
+          </View>
+          <View style={[styles.cardCol, { borderLeftColor: SIDE.away }]}>
+            <Text style={styles.cardHead}>{t("ttkThem")}</Text>
+            {theirCards.length > 0 ? <TacticsChips ids={theirCards} /> : <Text style={T.caption}>–</Text>}
+          </View>
+        </View>
 
-          {done && others.length > 0 && (
-            <View style={{ marginTop: 8, gap: 4 }}>
-              <Text style={[T.caption, { fontWeight: "700" }]}>{t("ttkOthers")}</Text>
-              {others.map((r: MatchResult, i) => (
-                <View key={i} style={styles.other}>
-                  <Text style={[styles.otherName, r.winner === 0 && styles.otherWin]} numberOfLines={1}>
-                    {name(r.home, "?")}
-                  </Text>
-                  <Text style={styles.otherScore}>
-                    {r.goals[0]}–{r.goals[1]}
-                    {r.pens ? "*" : ""}
-                  </Text>
-                  <Text style={[styles.otherName, { textAlign: "right" }, r.winner === 1 && styles.otherWin]} numberOfLines={1}>
-                    {r.awayName.endsWith("*") ? `${r.awayName.slice(0, -1)} ${t("ttkGhost")}` : name(r.away, r.awayName)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </ScrollView>
-
-        {done ? <Button title={t("ttkContinue")} onPress={onClose} /> : <Button title={t("ttkSkip")} kind="secondary" icon="forward.fill" onPress={() => setShown(SLICES)} />}
+        {!done && (
+          <Tap onPress={() => setShown(SLICES)} style={[styles.grayBtn, { alignSelf: "center", marginTop: 6 }]}>
+            <Text style={styles.grayBtnText}>{t("ttkSkip")}</Text>
+            <Icon name="forward.fill" size={14} color={C.text} fallback="⏩" />
+          </Tap>
+        )}
       </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: C.bg, paddingHorizontal: 16 },
-  board: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: C.greenDark, borderRadius: 18, padding: 14 },
-  team: { flex: 1, fontFamily: F.display, fontSize: 18, color: "white" },
-  score: { fontFamily: F.black, fontSize: 38, color: "white", fontVariant: ["tabular-nums"] },
-  clock: { alignSelf: "center", marginTop: -10, backgroundColor: "#FACC15", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 2 },
-  clockText: { fontFamily: F.display, fontSize: 16, color: "#3B2A05" },
-  cards: { flexDirection: "row", gap: 8, marginTop: 10 },
-  lastSlot: { height: 44, justifyContent: "center", marginTop: 10 },
-  sideDot: { width: 10, height: 10, borderRadius: 5 },
-  event: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12, maxWidth: "100%", backgroundColor: C.card },
-  goal: { backgroundColor: C.green },
-  min: { fontFamily: F.display, fontSize: 14, color: C.text3, minWidth: 26 },
-  eventText: { fontSize: 14, fontWeight: "700", color: C.text, flexShrink: 1 },
-  result: { marginTop: 10, borderRadius: 16, padding: 14, alignItems: "center", gap: 4 },
-  resultTitle: { fontFamily: F.black, fontSize: 30 },
-  drops: { alignItems: "center", gap: 6, marginTop: 4 },
+  screen: { flex: 1, backgroundColor: C.bg, paddingHorizontal: 12 },
+  board: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
+  namePill: { flex: 1, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 8, alignItems: "center" },
+  nameText: { fontFamily: F.display, fontSize: 17, color: "white" },
+  score: { fontFamily: F.black, fontSize: 34, lineHeight: 36, color: C.text, fontVariant: ["tabular-nums"] },
+  clock: { backgroundColor: "#FACC15", borderRadius: 6, paddingHorizontal: 8, marginTop: -2 },
+  clockText: { fontFamily: F.display, fontSize: 13, color: "#3B2A05" },
+  kickoff: { position: "absolute", alignSelf: "center", top: "42%", backgroundColor: "white", borderRadius: 12, paddingHorizontal: 18, paddingVertical: 10, alignItems: "center", borderWidth: 1, borderColor: C.border },
+  kickoffTitle: { fontFamily: F.black, fontSize: 26, color: C.text },
+  kickoffSub: { fontFamily: F.display, fontSize: 14, color: C.text2 },
+  result: { position: "absolute", alignSelf: "center", bottom: "6%", backgroundColor: "white", borderRadius: 14, padding: 14, alignItems: "center", gap: 3, borderWidth: 1, borderColor: C.border },
+  resultTitle: { fontFamily: F.black, fontSize: 34, lineHeight: 36, textTransform: "uppercase" },
+  resultScore: { fontFamily: F.black, fontSize: 26, color: C.text },
+  motm: { fontFamily: F.display, fontSize: 15, color: C.text, marginTop: 2 },
+  drops: { alignItems: "center", gap: 4 },
   dropItem: { flexDirection: "row", alignItems: "center", gap: 6 },
-  other: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6 },
-  otherName: { flex: 1, fontSize: 13, color: C.text2 },
+  others: { alignSelf: "stretch", gap: 2, marginTop: 4 },
+  other: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 4 },
+  otherName: { flex: 1, fontSize: 12, color: C.text2 },
   otherWin: { color: C.text, fontWeight: "800" },
-  otherScore: { fontFamily: F.display, fontSize: 16, color: C.text, minWidth: 44, textAlign: "center" },
+  otherScore: { fontFamily: F.display, fontSize: 14, color: C.text, minWidth: 40, textAlign: "center" },
+  lastSlot: { height: 40, justifyContent: "center", marginTop: 6 },
+  event: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 7, paddingHorizontal: 14, borderRadius: 8, maxWidth: "100%", backgroundColor: C.card },
+  goal: { backgroundColor: C.green },
+  min: { fontFamily: F.display, fontSize: 14, color: C.text3 },
+  eventText: { fontFamily: F.display, fontSize: 16, color: C.text, flexShrink: 1 },
+  sideDot: { width: 9, height: 9, borderRadius: 5 },
+  cards: { flexDirection: "row", gap: 10, marginTop: 4 },
+  cardCol: { flex: 1, gap: 4, borderLeftWidth: 3, paddingLeft: 8 },
+  cardHead: { fontFamily: F.black, fontSize: 13, color: C.text, textTransform: "uppercase" },
+  grayBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#E2E7E3", borderRadius: 8, paddingHorizontal: 18, paddingVertical: 9, marginTop: 6 },
+  grayBtnText: { fontFamily: F.display, fontSize: 17, color: C.text },
 });

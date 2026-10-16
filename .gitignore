@@ -71,3 +71,5 @@ scripts/.cache/raw-wikidata.json
 /docs/design/taktik-screen-art-v2/*.png
 !/docs/design/taktik-screen-art-v2/preview-*.png
 /docs/design/taktik-pitch-art/
+/docs/design/taktik-match-art/*.png
+!/docs/design/taktik-match-art/preview-screens.png
