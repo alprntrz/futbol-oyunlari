@@ -1,12 +1,12 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
-import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
-import { alive, bench, buy, buyXp, chooseAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, roundKind, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
+import { alive, bench, buy, buyXp, chooseAugment, rerollAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, roundKind, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
 import { INCOME, INTEREST_STEP, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
 import { STYLES, type TraitState } from "@/lib/taktik/traits";
@@ -16,6 +16,7 @@ import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { COST_COLOR, ItemIcon, PosTag, UnitCard, clubCriterion } from "~/components/taktik/Card";
+import { TacticsCard } from "~/components/taktik/TacticsCard";
 import { MatchView } from "~/components/taktik/MatchView";
 import { Text } from "~/components/Text";
 import { TourOverlay, useTour } from "~/components/Tour";
@@ -50,6 +51,8 @@ export default function TaktikGame() {
   const [guess, setGuess] = useState("");
   const [scoutMsg, setScoutMsg] = useState<string | null>(null);
   const [info, setInfo] = useState<TraitState | null>(null);
+  /** the tactics card just tapped: it lights up for a moment before it's taken */
+  const [augPick, setAugPick] = useState<number | null>(null);
   const scroller = useRef<ScrollView>(null);
   // first game: a walkthrough that lights up each part of the screen in turn
   const tour = useTour("taktik-v1", [
@@ -98,6 +101,16 @@ export default function TaktikGame() {
       </View>
     );
   }
+
+  const augW = Math.min(150, (width - 24 - 20) / 3);
+  const pickAugment = (i: number) => {
+    haptic.success();
+    setAugPick(i);
+    setTimeout(() => {
+      act((l) => chooseAugment(l, me, i));
+      setAugPick(null);
+    }, 650);
+  };
 
   const flash = (s: string) => {
     setNote(s);
@@ -491,16 +504,34 @@ export default function TaktikGame() {
         )}
       </Modal>
 
-      {/* tactics card offer */}
+      {/* tactics card offer: three tall cards, a swap under each, the pick lights up and is taken */}
       <Modal visible={!!me.offer && !match && !out} transparent animationType="fade">
-        <View style={[styles.backdrop, { justifyContent: "center", padding: 20 }]}>
-          <View style={styles.offer}>
-            <Text style={[T.title, { textAlign: "center" }]}>{t("ttkAugTitle")}</Text>
+        <View style={styles.augScreen}>
+          <View style={styles.augHead}>
+            <View style={styles.augLine} />
+            <Text style={styles.augTitle}>{t("ttkAugTitle")}</Text>
+            <View style={styles.augLine} />
+          </View>
+          <Text style={styles.augHint}>{t("ttkAugHint").replace("{n}", String(me.offerRerolls ?? 0))}</Text>
+          <View style={styles.augRow}>
             {me.offer?.map((a, i) => (
-              <Tap key={a} onPress={() => act((l) => chooseAugment(l, me, i))} style={styles.aug} accessibilityLabel={t(`ttkA_${a}`)}>
-                <Text style={T.headline}>{t(`ttkA_${a}`)}</Text>
-                <Text style={T.caption}>{t(`ttkAd_${a}`)}</Text>
-              </Tap>
+              <Animated.View key={`${a}-${i}`} entering={FadeInDown.delay(i * 90).duration(260)} style={{ alignItems: "center", gap: 12 }}>
+                <TacticsCard
+                  id={a}
+                  width={augW}
+                  state={augPick === null ? "idle" : augPick === i ? "picked" : "faded"}
+                  onPress={augPick === null ? () => pickAugment(i) : undefined}
+                />
+                <Tap
+                  onPress={() => (act((l) => rerollAugment(l, me, i)) ? haptic.tap() : flash(t("ttkAugNoSwaps")))}
+                  disabled={augPick !== null || !me.offerRerolls}
+                  style={[styles.augSwap, (!me.offerRerolls || augPick !== null) && { opacity: 0.35 }]}
+                  accessibilityLabel={t("ttkAugSwap")}
+                >
+                  <Icon name="arrow.triangle.2.circlepath" size={13} color="white" fallback="↻" />
+                  <Text style={styles.augSwapText}>{t("ttkAugSwap")}</Text>
+                </Tap>
+              </Animated.View>
             ))}
           </View>
         </View>
@@ -627,5 +658,12 @@ const styles = StyleSheet.create({
   finalTraits: { flexDirection: "row", gap: 4 },
   finalTrait: { flexDirection: "row", alignItems: "center", gap: 2, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 6, paddingVertical: 3 },
   finalTraitText: { fontFamily: F.display, fontSize: 13, color: C.greenDark },
-  aug: { backgroundColor: C.card, borderRadius: 14, padding: 14, gap: 2, borderWidth: 2, borderColor: C.border },
+  augScreen: { flex: 1, backgroundColor: "rgba(3,15,9,0.86)", justifyContent: "center", paddingHorizontal: 12 },
+  augHead: { flexDirection: "row", alignItems: "center", gap: 10, justifyContent: "center" },
+  augLine: { flex: 1, height: 1, backgroundColor: "rgba(253,230,138,0.5)" },
+  augTitle: { fontFamily: F.display, fontSize: 26, color: "#FDE68A" },
+  augHint: { color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: "600", textAlign: "center", marginTop: 4 },
+  augRow: { flexDirection: "row", justifyContent: "center", gap: 10, marginTop: 22 },
+  augSwap: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(255,255,255,0.14)", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
+  augSwapText: { fontFamily: F.display, fontSize: 15, color: "white" },
 });

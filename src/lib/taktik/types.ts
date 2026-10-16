@@ -55,6 +55,8 @@ export interface Manager {
   augments: AugmentId[];
   /** tactics cards to choose from, when one is due */
   offer: AugmentId[] | null;
+  /** swaps left on the current offer (each card can be swapped for a new one); absent in old saves */
+  offerRerolls?: number;
   /** finishing place once out (1 = winner) */
   place: number | null;
   lastOpponent: number | null;

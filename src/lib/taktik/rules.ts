@@ -72,6 +72,8 @@ export const STAGE1: RoundKind[] = ["pve", "pve"];
 export const STAGE: RoundKind[] = ["pvp", "pvp", "pvp", "pve", "pvp"];
 /** a tactics card is offered at the start of these stages */
 export const AUGMENT_STAGES = [2, 3, 4];
+/** free swaps per tactics card offer (shared by the three cards) */
+export const AUGMENT_REROLLS = 2;
 
 /** losing costs: 6 + 3 × (stage − 1) + goal difference (max 5); a shoot-out loss counts as 1 goal */
 export const damage = (stage: number, goalDiff: number) => 6 + 3 * (stage - 1) + Math.min(5, Math.max(1, goalDiff));

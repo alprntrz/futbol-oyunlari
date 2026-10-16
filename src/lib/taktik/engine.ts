@@ -1,5 +1,6 @@
 import { CATALOG, dealPool } from "./pool";
 import {
+  AUGMENT_REROLLS,
   AUGMENT_STAGES,
   BENCH,
   INCOME,
@@ -336,8 +337,19 @@ function startRound(l: Lobby, first = false) {
       const offer: AugmentId[] = [];
       while (offer.length < 3 && options.length) offer.push(options.splice(Math.floor(rand(l) * options.length), 1)[0]);
       m.offer = offer;
+      m.offerRerolls = AUGMENT_REROLLS;
     }
   }
+}
+
+/** Swap one card of the offer for another the manager has neither taken nor been offered. */
+export function rerollAugment(l: Lobby, m: Manager, i: number): boolean {
+  if (!m.offer?.[i] || !m.offerRerolls) return false;
+  const options = AUGMENTS.filter((a) => !m.augments.includes(a) && !m.offer!.includes(a));
+  if (!options.length) return false;
+  m.offer[i] = options[Math.floor(rand(l) * options.length)];
+  m.offerRerolls--;
+  return true;
 }
 
 /** Take a tactics card from the offer. */
