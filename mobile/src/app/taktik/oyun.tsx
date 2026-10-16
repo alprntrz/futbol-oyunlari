@@ -250,8 +250,10 @@ export default function TaktikGame() {
 
   // the toy pitch: where its playing area sits in the picture (a trapezoid, narrower at the far end)
   // the pitch takes what's left once the rows around it are laid out, so everything fits on one screen
-  const benchSlotW = (width - 24 - 7 * 5) / 8;
-  const around = 52 + 46 + 50 + benchSlotW * 1.12 + 14;
+  // bench cards as roomy as the store's: four and a half across, the rest a swipe away
+  const benchCardW = (width - 24 - 5 * 8) / 5.5;
+  const BENCH_CARD_H = 96;
+  const around = 52 + 46 + 36 + BENCH_CARD_H + 16;
   const pitchImgH = Math.max(220, Math.min((width - 24) * (921 / 914), (boardH || height * 0.55) - around));
   const pitchImgW = pitchImgH * (914 / 921);
   // the touchlines in the picture, as fractions of it (measured from pitch-toy.png)
@@ -359,11 +361,8 @@ export default function TaktikGame() {
                 </View>
               );
             })}
-          </Pressable>
-        </View>
-
-        {/* under the pitch: how many are on it, and one tap for the best side */}
-        <View style={styles.pills}>
+        {/* on the pitch's near edge: how many are on it, and one tap for the best side */}
+            <View style={styles.pills} pointerEvents="box-none">
           <View style={styles.pill}>
             <Text style={styles.pillText}>{t("ttkOnPitch").replace("{n}", String(onPitch.length)).replace("{m}", String(cap))}</Text>
           </View>
@@ -379,6 +378,9 @@ export default function TaktikGame() {
             <Image source={TAKTIK.ui.wand} style={{ width: 16, height: 17 }} />
             <Text style={styles.pillText}>{t("ttkBestLineup")}</Text>
           </Tap>
+        </View>
+
+          </Pressable>
         </View>
 
         {/* tactics cards and synergies, one row of pills */}
@@ -403,18 +405,32 @@ export default function TaktikGame() {
           {sel?.kind === "item" && <Text style={[styles.hint, { marginTop: -2 }]}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
         </View>
 
-        {/* the bench: eight slots in one row */}
-        <View ref={tour.ref("bench")} collapsable={false}>
-          <Pressable onPress={tapBench} style={styles.bench}>
+        {/* the bench: a header like the store's and the same roomy cards, scrolling sideways */}
+        <View ref={tour.ref("bench")} collapsable={false} style={{ marginTop: 2 }}>
+          <View style={[styles.shopHead, { marginHorizontal: 12 }]}>
+            <Text style={[styles.shopTitle, { fontSize: 20 }]}>{t("ttkBench")}</Text>
+            <Text style={styles.levelCount}>{bench(me).length} / 8</Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.benchRow}>
             {Array.from({ length: 8 }, (_, i) => {
               const u = bench(me)[i];
-              return u ? (
-                <UnitCard key={u.uid} unit={u} width={benchSlotW} selected={sel?.kind === "unit" && sel.uid === u.uid} onPress={() => tapUnit(u.uid)} />
-              ) : (
-                <Pressable key={`e${i}`} onPress={tapBench} style={[styles.benchEmpty, { width: benchSlotW, height: benchSlotW * 1.12 }, sel?.kind === "unit" && styles.emptyLit]} />
+              if (!u)
+                return <Pressable key={`e${i}`} onPress={tapBench} style={[styles.benchEmpty, { width: benchCardW, height: BENCH_CARD_H }, sel?.kind === "unit" && styles.emptyLit]} />;
+              const club = clubCriterion(u.club);
+              const picked = sel?.kind === "unit" && sel.uid === u.uid;
+              return (
+                <Tap key={u.uid} onPress={() => tapUnit(u.uid)} style={[styles.shopCard, styles.benchCard, { width: benchCardW, height: BENCH_CARD_H }, picked && styles.benchPicked]} accessibilityLabel={u.name}>
+                  <Text style={styles.benchStars}>{"★".repeat(u.star)}</Text>
+                  <View style={[styles.shopArt, { height: 34 }]}>{club ? <ClubShirt c={club} size={24} /> : <Icon name="tshirt.fill" size={28} color={C.text3} fallback="👕" />}</View>
+                  <Text style={[styles.shopName, { fontSize: 14, marginTop: 2 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                    {surname(u.name)}
+                  </Text>
+                  <Text style={styles.shopPos}>{t(`ttkPos_${u.pos}`)}</Text>
+                  <View style={[styles.costBar, { backgroundColor: COST_COLOR[u.cost] }]} />
+                </Tap>
               );
             })}
-          </Pressable>
+          </ScrollView>
         </View>
       </ScrollView>
 
@@ -436,6 +452,22 @@ export default function TaktikGame() {
         <View ref={tour.ref("shop")} collapsable={false} style={styles.shopBox}>
           <View style={styles.shopHead}>
             <Text style={styles.shopTitle}>{t("ttkTransfers")}</Text>
+            {/* club level: the bar to the next one and the button that buys XP */}
+            <View style={styles.levelBox}>
+              <Text style={styles.levelCount}>
+                {t("ttkLevel").replace("{n}", String(me.level))} · {xpNeed ? `${me.xp}/${xpNeed}` : "MAX"}
+              </Text>
+              <View style={styles.levelTrack}>
+                <View style={[styles.levelFill, { width: `${xpNeed ? (me.xp / xpNeed) * 100 : 100}%` }]} />
+              </View>
+            </View>
+            <View ref={tour.ref("xp")} collapsable={false}>
+              <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.xpBtn} accessibilityLabel={`${t("ttkBuyXp")} ${XP_COST}`}>
+                <Text style={styles.xpText}>XP</Text>
+                <Image source={TAKTIK.ui.coin} style={{ width: 15, height: 15 }} />
+                <Text style={styles.xpText}>{XP_COST}</Text>
+              </Tap>
+            </View>
             <View ref={tour.ref("reroll")} collapsable={false}>
               <Tap onPress={() => (act((l) => reroll(l, me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.rerollBtn} accessibilityLabel={`${t("ttkReroll")} ${REROLL_COST}`}>
                 <Image source={TAKTIK.ui.reroll} style={{ width: 20, height: 19 }} />
@@ -484,21 +516,6 @@ export default function TaktikGame() {
                 </Tap>
               );
             })}
-          </View>
-          {/* club level: the bar to the next one and the button that buys XP */}
-          <View style={styles.levelRow}>
-            <Text style={styles.levelText}>{t("ttkLevel").replace("{n}", String(me.level))}</Text>
-            <View style={styles.levelTrack}>
-              <View style={[styles.levelFill, { width: `${xpNeed ? (me.xp / xpNeed) * 100 : 100}%` }]} />
-            </View>
-            <Text style={styles.levelCount}>{xpNeed ? `${me.xp} / ${xpNeed}` : "MAX"}</Text>
-            <View ref={tour.ref("xp")} collapsable={false}>
-              <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.xpBtn} accessibilityLabel={`${t("ttkBuyXp")} ${XP_COST}`}>
-                <Text style={styles.xpText}>{t("ttkBuyXp")} ·</Text>
-                <Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />
-                <Text style={styles.xpText}>{XP_COST}</Text>
-              </Tap>
-            </View>
           </View>
         </View>
 
@@ -691,33 +708,37 @@ const styles = StyleSheet.create({
   empty: { borderRadius: 10, borderWidth: 1.5, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.85)", backgroundColor: "rgba(255,255,255,0.14)", alignItems: "center", justifyContent: "center" },
   emptyLit: { borderColor: "#FACC15", backgroundColor: "rgba(250,204,21,0.25)" },
   emptyText: { fontFamily: F.display, fontSize: 13, color: "white" },
-  pills: { flexDirection: "row", justifyContent: "center", gap: 8, marginTop: 4 },
-  pill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 7, borderWidth: 1, borderColor: C.border, borderBottomWidth: 3 },
-  pillText: { fontFamily: F.display, fontSize: 15, color: C.text },
+  pills: { position: "absolute", left: 0, right: 0, bottom: 0, flexDirection: "row", justifyContent: "space-between" },
+  pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: C.border, borderBottomWidth: 3 },
+  pillText: { fontFamily: F.display, fontSize: 14, color: C.text },
   traits: { gap: 6, paddingHorizontal: 12, paddingVertical: 8, alignItems: "center" },
   trait: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: C.border },
   traitOn: { backgroundColor: C.green, borderColor: C.green },
   traitText: { fontFamily: F.display, fontSize: 14, color: C.text },
   item: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
   itemOn: { backgroundColor: "#FEF3C7", borderColor: "#FACC15" },
-  bench: { flexDirection: "row", gap: 5, paddingHorizontal: 12 },
-  benchEmpty: { borderRadius: 9, backgroundColor: C.key },
+  benchEmpty: { borderRadius: 16, backgroundColor: C.key, borderWidth: 1.5, borderColor: C.border, borderStyle: "dashed" },
   noteSlot: { height: 22, justifyContent: "center", paddingHorizontal: 12 },
   note: { color: C.greenMid, fontWeight: "800", fontSize: 13, textAlign: "center" },
   hint: { color: C.text3, fontSize: 12, textAlign: "center" },
-  shopBox: { marginHorizontal: 12, gap: 10 },
+  shopBox: { marginHorizontal: 12, gap: 8, marginBottom: 4 },
+  benchRow: { gap: 8, paddingHorizontal: 12, paddingTop: 6 },
+  benchCard: { flex: 0, paddingTop: 4, paddingBottom: 8 },
+  benchPicked: { borderColor: C.green, borderWidth: 2.5, transform: [{ translateY: -3 }] },
+  benchStars: { fontSize: 10, color: "#F59E0B", fontWeight: "900", letterSpacing: 1 },
   cluesBig: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 4 },
   price: { flexDirection: "row", alignItems: "center", gap: 3, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 },
   priceText: { fontWeight: "800", fontSize: 12, color: "white" },
-  shopHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  shopTitle: { fontFamily: F.display, fontSize: 26, color: C.text },
-  rerollBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.card, borderRadius: 14, borderWidth: 1.5, borderColor: C.border, borderBottomWidth: 4, paddingHorizontal: 14, paddingVertical: 8 },
+  shopHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
+  levelBox: { flex: 1, gap: 3 },
+  shopTitle: { fontFamily: F.display, fontSize: 24, color: C.text },
+  rerollBtn: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderRadius: 14, borderWidth: 1.5, borderColor: C.border, borderBottomWidth: 4, paddingHorizontal: 11, paddingVertical: 7 },
   rerollText: { fontFamily: F.display, fontSize: 18, color: C.text },
   shop: { flexDirection: "row", gap: 8 },
-  shopCard: { flex: 1, alignItems: "center", backgroundColor: C.card, borderRadius: 16, borderWidth: 1.5, borderColor: C.border, paddingTop: 10, paddingBottom: 12, overflow: "hidden" },
+  shopCard: { flex: 1, alignItems: "center", backgroundColor: C.card, borderRadius: 16, borderWidth: 1.5, borderColor: C.border, paddingTop: 6, paddingBottom: 9, overflow: "hidden" },
   shopGone: { backgroundColor: "transparent", borderStyle: "dashed" },
   scoutCard: { backgroundColor: "#EDE9FE", borderColor: "#C4B5FD" },
-  shopArt: { height: 52, alignItems: "center", justifyContent: "center" },
+  shopArt: { height: 44, alignItems: "center", justifyContent: "center" },
   shopName: { fontFamily: F.display, fontSize: 17, color: C.text, marginTop: 4, paddingHorizontal: 4 },
   shopPos: { fontSize: 12, fontWeight: "700", color: C.text3 },
   shopPrice: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 6 },
@@ -725,12 +746,10 @@ const styles = StyleSheet.create({
   costBar: { position: "absolute", left: 0, right: 0, bottom: 0, height: 4 },
   owned: { position: "absolute", top: 5, left: 5, backgroundColor: C.text, borderRadius: 7, paddingHorizontal: 5, paddingVertical: 1 },
   ownedText: { fontSize: 10, fontWeight: "900", color: "white" },
-  levelRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-  levelText: { fontFamily: F.display, fontSize: 19, color: C.text },
-  levelTrack: { flex: 1, height: 10, borderRadius: 5, backgroundColor: C.key, overflow: "hidden" },
-  levelFill: { height: 10, borderRadius: 5, backgroundColor: C.greenDark },
+  levelTrack: { height: 8, borderRadius: 4, backgroundColor: C.key, overflow: "hidden" },
+  levelFill: { height: 8, borderRadius: 4, backgroundColor: C.greenDark },
   levelCount: { fontSize: 13, fontWeight: "700", color: C.text3 },
-  xpBtn: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: 14, borderWidth: 2, borderColor: C.greenDark, borderBottomWidth: 4, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: C.card },
+  xpBtn: { flexDirection: "row", alignItems: "center", gap: 4, borderRadius: 14, borderWidth: 2, borderColor: C.greenDark, borderBottomWidth: 4, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: C.card },
   xpText: { fontFamily: F.display, fontSize: 18, color: C.greenDark },
   footer: { backgroundColor: C.bg, paddingTop: 0, gap: 8 },
   // Duolingo-style chunky button: a darker bottom edge instead of a shadow
