@@ -1,7 +1,7 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
-import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeIn, FadeInDown, FadeOut, SlideInRight, SlideOutRight, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { XP } from "@/lib/levels";
@@ -63,6 +63,8 @@ export default function TaktikGame() {
   /** height left for the board between the top bar and the shop (the pitch fits into it) */
   /** the pitch's measured size (it takes whatever height is left) */
   const [pitchBox, setPitchBox] = useState({ w: 0, h: 0 });
+  /** the managers' panel is open */
+  const [mgrOpen, setMgrOpen] = useState(false);
   /** coins flying into the gold counter after a match: how many are still in the air */
   const [coins, setCoins] = useState<{ id: number; total: number; left: number; to: { x: number; y: number } } | null>(null);
   const goldRef = useRef<View | null>(null);
@@ -240,9 +242,9 @@ export default function TaktikGame() {
   const traitIcon = (x: TraitState) => {
     if (x.kind === "club") {
       const c = clubCriterion(x.id);
-      return c ? <ClubShirt c={c} size={16} /> : null;
+      return c ? <ClubShirt c={c} size={13} /> : null;
     }
-    if (x.kind === "country") return <Flag id={x.id} width={20} />;
+    if (x.kind === "country") return <Flag id={x.id} width={17} />;
     return <Text style={{ fontSize: 14 }}>{({ wc: "🏆", ucl: "⭐", ballon: "🥇", euro: "🌍" } as Record<string, string>)[x.id]}</Text>;
   };
 
@@ -286,7 +288,7 @@ export default function TaktikGame() {
   };
   const shirtW = Math.min(64, pitchBox.w * 0.15, pitchBox.h * 0.13);
   const looks = avatarsOf(lobby.managers, me.id);
-  const benchW = (width * 0.6 - 24 - 4 * 6) / 5;
+  const benchW = (width - 24 - 7 * 6) / 8;
   const shopW = (width - 24 - 4 * 8) / 5;
 
   return (
@@ -302,17 +304,7 @@ export default function TaktikGame() {
           <Text style={styles.stage} numberOfLines={1}>
             {t("ttkRound").replace("{s}", String(lobby.stage)).replace("{r}", String(lobby.round + 1))}
           </Text>
-          <View style={styles.vline} />
-          {/* the set-up clock: at zero the match kicks off (online, everyone at once); it waits while a walkthrough, the intro or a card pick is up */}
-          <View ref={tour.ref("kick")} collapsable={false} style={{ flex: 1 }}>
-            <PlanClock
-              key={`clock-${lobby.seed}-${roundKey}`}
-              compact
-              seconds={planSeconds(lobby.stage)}
-              running={!match && !out && !showIntro && tour.step === null && augPick === null && scout === null}
-              onEnd={startMatch}
-            />
-          </View>
+          <View style={{ flex: 1 }} />
           <View ref={tour.ref("hp")} collapsable={false} style={styles.stat}>
             <Image source={TAKTIK.ui.heart} style={styles.statIcon} />
             <Text style={styles.statText}>{Math.max(0, me.hp)}</Text>
@@ -340,27 +332,26 @@ export default function TaktikGame() {
               <Text style={styles.statText}>{Math.abs(me.streak)}</Text>
             </Tap>
           )}
+          {/* the other managers: a panel from the right */}
+          <View ref={tour.ref("table")} collapsable={false}>
+            <Tap onPress={() => setMgrOpen(true)} style={styles.mgrBtn} accessibilityLabel={t("ttkManagers")}>
+              <Icon name="person.3.fill" size={15} color={C.text} fallback="👥" />
+              <Text style={styles.mgrBtnText}>{alive(lobby).length}</Text>
+            </Tap>
+          </View>
           <Tap onPress={tour.start} style={styles.help} accessibilityLabel={t("ttkHowTo")}>
             <Icon name="questionmark" size={13} color={C.text2} fallback="?" />
           </Tap>
         </View>
-      </View>
-
-      {/* everyone's health: small round avatars with a bar under each */}
-      <View ref={tour.ref("table")} collapsable={false} style={styles.table}>
-        {standings.map((m) => (
-          <View key={m.id} style={[styles.mgr, m.place !== null && { opacity: 0.35 }]}>
-            <Avatar id={m.id === me.id ? null : (looks.get(m.id) ?? null)} me={m.id === me.id} size={26} ring={m.id === me.id ? C.green : "white"} />
-            <View style={styles.mgrBar}>
-              <View style={[styles.mgrFill, { width: `${Math.max(0, m.hp)}%`, backgroundColor: m.hp > 50 ? C.green : m.hp > 25 ? "#F59E0B" : C.red }]} />
-            </View>
-          </View>
-        ))}
+        {/* the set-up clock, big: at zero everyone kicks off at once; nothing pauses it but the first-time walkthrough */}
+        <View ref={tour.ref("kick")} collapsable={false} style={{ marginTop: 4 }}>
+          <PlanClock key={`clock-${lobby.seed}-${roundKey}`} wide seconds={planSeconds(lobby.stage)} running={!match && !out && !showIntro && tour.step === null} onEnd={startMatch} />
+        </View>
       </View>
 
       {/* the tactics cards in play and the synergies: what your side is getting right now */}
       <View ref={tour.ref("traits")} collapsable={false}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.traits}>
+        <View style={styles.traits}>
           {me.augments.length > 0 && <TacticsChips ids={me.augments} />}
           {traits.map((x) => (
             <Tap key={`${x.kind}-${x.id}`} onPress={() => setInfo(x)} style={[styles.trait, x.tier > 0 && styles.traitOn]} accessibilityLabel={traitLabel(x)}>
@@ -372,11 +363,11 @@ export default function TaktikGame() {
           ))}
           {me.items.map((it, i) => (
             <Tap key={`i${i}`} onPress={() => setSel(sel?.kind === "item" && sel.index === i ? null : { kind: "item", index: i })} style={[styles.item, sel?.kind === "item" && sel.index === i && styles.itemOn]} accessibilityLabel={t(`ttkI_${it}`)}>
-              <ItemIcon id={it} size={22} />
+              <ItemIcon id={it} size={18} />
             </Tap>
           ))}
           {traits.length === 0 && me.augments.length === 0 && me.items.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
-        </ScrollView>
+        </View>
         {sel?.kind === "item" && <Text style={[styles.hint, { marginBottom: 4 }]}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
       </View>
 
@@ -470,55 +461,47 @@ export default function TaktikGame() {
       </View>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 4 }]}>
-        {/* subs on the left, the club level on the right */}
-        <View style={styles.midRow}>
-          <View ref={tour.ref("bench")} collapsable={false} style={{ flex: 1.55 }}>
-            <View style={styles.headRow}>
-              <Text style={styles.head}>{t("ttkSubs")}</Text>
-              <Text style={styles.headSub}>{bench(me).length}/8</Text>
+        {/* subs: all eight in one row; the club level and Buy XP in its header */}
+        <View ref={tour.ref("bench")} collapsable={false} style={{ paddingHorizontal: 12 }}>
+          <View style={styles.headRow}>
+            <Text style={styles.head}>{t("ttkSubs")}</Text>
+            <Text style={styles.headSub}>{bench(me).length}/8</Text>
+            <View style={{ flex: 1 }} />
+            <Text style={[styles.head, { fontSize: 17 }]}>{t("ttkLevel").replace("{n}", String(me.level))}</Text>
+            <View style={styles.levelTrack}>
+              <View style={[styles.levelFill, { width: `${xpNeed ? (me.xp / xpNeed) * 100 : 100}%` }]} />
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
-              {Array.from({ length: 8 }, (_, i) => {
-                const u = bench(me)[i];
-                if (!u)
-                  return (
-                    <Pressable key={`e${i}`} onPress={tapBench} style={[styles.subEmpty, { width: benchW, height: benchW * 1.45 }, sel?.kind === "unit" && styles.plusLit]}>
-                      <Text style={[styles.plusText, { color: C.text3 }]}>+</Text>
-                    </Pressable>
-                  );
-                const picked = sel?.kind === "unit" && sel.uid === u.uid;
-                return (
-                  <Tap key={u.uid} onPress={() => tapUnit(u.uid)} style={[styles.sub, { width: benchW, height: benchW * 1.45, borderBottomColor: COST_COLOR[u.cost] }, picked && styles.subPicked]} accessibilityLabel={u.name}>
-                    <Shirt club={u.club} size={benchW * 0.72} />
-                    <Text style={styles.subName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-                      {surname(u.name)}
-                    </Text>
-                    <View style={styles.tagLine}>
-                      <Flag id={u.country} width={12} />
-                      <Text style={styles.subPos}>{t(`ttkPos_${u.pos}`)}</Text>
-                    </View>
-                  </Tap>
-                );
-              })}
-            </ScrollView>
-          </View>
-          <View style={styles.vlineTall} />
-          <View style={{ flex: 1, gap: 6 }}>
-            <Text style={styles.head}>{t("ttkLevel").replace("{n}", String(me.level))}</Text>
-            <View style={styles.levelLine}>
-              <View style={styles.levelTrack}>
-                <View style={[styles.levelFill, { width: `${xpNeed ? (me.xp / xpNeed) * 100 : 100}%` }]} />
-              </View>
-              <Text style={styles.headSub}>{xpNeed ? `${me.xp}/${xpNeed} XP` : "MAX"}</Text>
-            </View>
+            <Text style={styles.headSub}>{xpNeed ? `${me.xp}/${xpNeed}` : "MAX"}</Text>
             <View ref={tour.ref("xp")} collapsable={false}>
-              <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.grayBtn} accessibilityLabel={`${t("ttkBuyXp")} ${XP_COST}`}>
-                <Text style={styles.grayBtnText}>
-                  {t("ttkBuyXp")} · {XP_COST}
-                </Text>
-                <Image source={TAKTIK.ui.coin} style={{ width: 17, height: 17 }} />
+              <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={[styles.grayBtn, { paddingVertical: 6, paddingHorizontal: 9 }]} accessibilityLabel={`${t("ttkBuyXp")} ${XP_COST}`}>
+                <Text style={[styles.grayBtnText, { fontSize: 15 }]}>XP · {XP_COST}</Text>
+                <Image source={TAKTIK.ui.coin} style={{ width: 15, height: 15 }} />
               </Tap>
             </View>
+          </View>
+          <View style={{ flexDirection: "row", gap: 6 }}>
+            {Array.from({ length: 8 }, (_, i) => {
+              const u = bench(me)[i];
+              if (!u)
+                return (
+                  <Pressable key={`e${i}`} onPress={tapBench} style={[styles.subEmpty, { width: benchW, height: benchW * 1.4 }, sel?.kind === "unit" && styles.plusLit]}>
+                    <Text style={[styles.plusText, { color: C.text3 }]}>+</Text>
+                  </Pressable>
+                );
+              const picked = sel?.kind === "unit" && sel.uid === u.uid;
+              return (
+                <Tap key={u.uid} onPress={() => tapUnit(u.uid)} style={[styles.sub, { width: benchW, height: benchW * 1.4, borderBottomColor: COST_COLOR[u.cost] }, picked && styles.subPicked]} accessibilityLabel={u.name}>
+                  <Shirt club={u.club} size={benchW * 0.68} />
+                  <Text style={styles.subName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+                    {surname(u.name)}
+                  </Text>
+                  <View style={styles.tagLine}>
+                    <Flag id={u.country} width={11} />
+                    <Text style={styles.subPos}>{t(`ttkPos_${u.pos}`)}</Text>
+                  </View>
+                </Tap>
+              );
+            })}
           </View>
         </View>
 
@@ -688,6 +671,33 @@ export default function TaktikGame() {
         </View>
       </Modal>
 
+      {/* the managers' panel, from the right: place, avatar, name, health */}
+      {mgrOpen && (
+        <View style={StyleSheet.absoluteFill}>
+          <Animated.View entering={FadeIn.duration(180)} exiting={FadeOut.duration(180)} style={[StyleSheet.absoluteFill, styles.drawerShade]}>
+            <Pressable style={StyleSheet.absoluteFill} onPress={() => setMgrOpen(false)} accessibilityLabel={t("close")} />
+          </Animated.View>
+          <Animated.View entering={SlideInRight.duration(240)} exiting={SlideOutRight.duration(200)} style={[styles.drawer, { paddingTop: insets.top + 12 }]}>
+            <Text style={styles.drawerTitle}>{t("ttkManagers")}</Text>
+            {standings.map((m, i) => (
+              <View key={m.id} style={[styles.drawerRow, m.place !== null && { opacity: 0.4 }]}>
+                <Text style={[styles.drawerHp, { minWidth: 16, textAlign: "left" }]}>{m.place ?? i + 1}</Text>
+                <Avatar id={m.id === me.id ? null : (looks.get(m.id) ?? null)} me={m.id === me.id} size={34} ring={m.id === me.id ? C.green : "white"} />
+                <View style={{ flex: 1, gap: 3 }}>
+                  <Text style={[styles.drawerName, m.id === me.id && { color: C.greenMid }]} numberOfLines={1}>
+                    {m.id === me.id ? t("you") : m.name}
+                  </Text>
+                  <View style={[styles.mgrBar, { width: "100%" }]}>
+                    <View style={[styles.mgrFill, { width: `${Math.max(0, m.hp)}%`, backgroundColor: m.hp > 50 ? C.green : m.hp > 25 ? "#F59E0B" : C.red }]} />
+                  </View>
+                </View>
+                <Text style={styles.drawerHp}>{Math.max(0, m.hp)}</Text>
+              </View>
+            ))}
+          </Animated.View>
+        </View>
+      )}
+
       {match && <MatchView lobby={lobby} meId={me.id} onClose={closeMatch} />}
       {/* gold won in the match flies into the counter */}
       {coins && <CoinFly key={coins.id} count={coins.total} to={coins.to} onLand={() => setCoins((c) => (c && c.left > 1 ? { ...c, left: c.left - 1 } : null))} />}
@@ -788,11 +798,11 @@ const styles = StyleSheet.create({
   mgr: { alignItems: "center", gap: 3 },
   mgrBar: { width: 26, height: 3, borderRadius: 2, backgroundColor: C.key, overflow: "hidden" },
   mgrFill: { height: 3, borderRadius: 2 },
-  traits: { gap: 6, paddingHorizontal: 12, paddingVertical: 6, alignItems: "center" },
-  trait: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: C.border },
+  traits: { flexDirection: "row", flexWrap: "wrap", gap: 5, paddingHorizontal: 12, paddingVertical: 6, alignItems: "center" },
+  trait: { flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1, borderColor: C.border },
   traitOn: { backgroundColor: C.green, borderColor: C.green },
-  traitText: { fontFamily: F.display, fontSize: 14, color: C.text },
-  item: { width: 34, height: 34, borderRadius: 10, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
+  traitText: { fontFamily: F.display, fontSize: 13, color: C.text },
+  item: { width: 28, height: 26, borderRadius: 13, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
   itemOn: { backgroundColor: "#FEF3C7", borderColor: "#FACC15" },
   hint: { color: C.text3, fontSize: 12, textAlign: "center" },
   plus: { position: "absolute", borderRadius: 8, borderWidth: 1.5, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.75)", backgroundColor: "rgba(0,0,0,0.06)", alignItems: "center", justifyContent: "center" },
@@ -812,8 +822,14 @@ const styles = StyleSheet.create({
   pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(255,255,255,0.92)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 },
   pillText: { fontFamily: F.display, fontSize: 13, color: C.text },
   footer: { backgroundColor: C.bg, paddingTop: 10, gap: 8 },
-  midRow: { flexDirection: "row", paddingHorizontal: 12, gap: 12 },
-  vlineTall: { width: 1, backgroundColor: C.border },
+  mgrBtn: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: C.key, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 5 },
+  mgrBtnText: { fontFamily: F.display, fontSize: 15, color: C.text },
+  drawerShade: { backgroundColor: "rgba(0,0,0,0.3)" },
+  drawer: { position: "absolute", right: 0, top: 0, bottom: 0, width: 240, backgroundColor: C.card, paddingHorizontal: 14, gap: 4, shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 16 },
+  drawerTitle: { fontFamily: F.black, fontSize: 22, color: C.text, marginBottom: 6, textTransform: "uppercase" },
+  drawerRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: C.divider },
+  drawerName: { fontFamily: F.display, fontSize: 17, color: C.text },
+  drawerHp: { fontFamily: F.display, fontSize: 16, color: C.text2, minWidth: 30, textAlign: "right" },
   headRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 },
   head: { fontFamily: F.black, fontSize: 21, color: C.text, textTransform: "uppercase" },
   headSub: { fontSize: 13, fontWeight: "600", color: C.text2 },
@@ -823,7 +839,7 @@ const styles = StyleSheet.create({
   subName: { fontFamily: F.display, fontSize: 13, color: C.text, paddingHorizontal: 2 },
   subPos: { fontSize: 9, fontWeight: "800", color: C.text3 },
   levelLine: { flexDirection: "row", alignItems: "center", gap: 6 },
-  levelTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: C.key, overflow: "hidden" },
+  levelTrack: { width: 54, height: 6, borderRadius: 3, backgroundColor: C.key, overflow: "hidden" },
   levelFill: { height: 6, borderRadius: 3, backgroundColor: "#F43F5E" },
   grayBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#E2E7E3", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9 },
   grayBtnText: { fontFamily: F.display, fontSize: 17, color: C.text },

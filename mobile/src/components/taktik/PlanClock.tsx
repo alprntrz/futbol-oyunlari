@@ -13,7 +13,7 @@ import { Text } from "../Text";
  * last five seconds and kicks off by itself at zero. Mount it with a key per
  * round so every round starts from full time.
  */
-export function PlanClock({ seconds, running, onEnd, compact }: { seconds: number; running: boolean; onEnd: () => void; compact?: boolean }) {
+export function PlanClock({ seconds, running, onEnd, compact, wide }: { seconds: number; running: boolean; onEnd: () => void; compact?: boolean; wide?: boolean }) {
   const { t } = useI18n();
   const [left, setLeft] = useState(seconds);
 
@@ -30,6 +30,20 @@ export function PlanClock({ seconds, running, onEnd, compact }: { seconds: numbe
   }, [running, left]);
 
   const hurry = left <= 5;
+  // a full-width row: a big count and a thick bar (the set-up screen)
+  if (wide)
+    return (
+      <View style={styles.wide} accessibilityLabel={t("ttkPlanLeft").replace("{s}", String(left))}>
+        <Image source={TAKTIK.ui.stopwatch} style={{ width: 28, height: 31 }} />
+        <Text allowFontScaling={false} style={[styles.wideText, hurry && { color: C.red }]}>
+          {left}
+          <Text style={styles.wideUnit}> {t("ttkSec")}</Text>
+        </Text>
+        <View style={styles.wideTrack}>
+          <View style={[styles.wideFill, { width: `${(left / seconds) * 100}%` }, hurry && { backgroundColor: C.red }]} />
+        </View>
+      </View>
+    );
   if (compact)
     return (
       <View style={styles.compact} accessibilityLabel={t("ttkPlanLeft").replace("{s}", String(left))}>
@@ -61,6 +75,11 @@ export function PlanClock({ seconds, running, onEnd, compact }: { seconds: numbe
 }
 
 const styles = StyleSheet.create({
+  wide: { flexDirection: "row", alignItems: "center", gap: 10 },
+  wideText: { fontFamily: F.black, fontSize: 32, lineHeight: 34, color: C.text, minWidth: 74, fontVariant: ["tabular-nums"] },
+  wideUnit: { fontFamily: F.display, fontSize: 18, color: C.text2 },
+  wideTrack: { flex: 1, height: 10, borderRadius: 5, backgroundColor: C.key, overflow: "hidden" },
+  wideFill: { height: 10, borderRadius: 5, backgroundColor: C.green },
   compact: { flexDirection: "row", alignItems: "center", gap: 7 },
   compactText: { fontFamily: F.display, fontSize: 20, lineHeight: 21, color: C.text },
   compactTrack: { width: 72, height: 4, borderRadius: 2, backgroundColor: C.key, overflow: "hidden" },
