@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Share, StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import Animated, { Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
@@ -10,6 +10,7 @@ import { searchPlayers, type Criterion } from "@/lib/tiki";
 
 import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
+import { useShareCard, type Mark } from "~/components/ShareCard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
@@ -36,6 +37,7 @@ const OPEN = new Keyframe({
 /** Mystery Player: name the footballer from clues that open one at a time. */
 export default function MysteryPlayer() {
   const { t, locale } = useI18n();
+  const { share: shareCard, card: shareView } = useShareCard();
   const day = useMemo(() => dayNumber(), []);
   const daily = useMemo(() => mysteryForDay(day), [day]);
   const [mode, setMode] = useState<Mode>("daily");
@@ -101,7 +103,15 @@ export default function MysteryPlayer() {
 
   const share = () => {
     const marks = run.guesses.map((g) => (g === answer.name ? "🟩" : "🟥")).join("") + "⬜".repeat(run.hints);
-    Share.share({ message: `${t("myName")} #${day % 1000}\n${marks}\n${won ? `${spent}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`}` });
+    const score = won ? `${spent}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`;
+    shareCard({
+      game: "my",
+      name: t("myName"),
+      tag: `#${day % 1000}`,
+      rows: [[...run.guesses.map((g): Mark => (g === answer.name ? "ok" : "miss")), ...Array.from({ length: run.hints }, (): Mark => "empty")]],
+      score,
+      text: `${t("myName")} #${day % 1000}\n${marks}\n${score}`,
+    });
   };
 
   const clueText = (c: Clue) =>
@@ -253,6 +263,7 @@ export default function MysteryPlayer() {
           <Text style={[T.caption, { marginTop: 8 }]}>{t("myFeedbackHint")}</Text>
         </>
       )}
+      {shareView}
     </Page>
   );
 }

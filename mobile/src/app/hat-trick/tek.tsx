@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, ScrollView, Share, StyleSheet, TextInput, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 
 import type { GridPlayer } from "@/data/players";
@@ -11,6 +11,7 @@ import { generateGrid, GRID_PLAYERS, searchPlayers, seededRandom, withHonour, wi
 
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
+import { useShareCard } from "~/components/ShareCard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
@@ -46,6 +47,7 @@ const surname = (name: string) => name.trim().split(/\s+/).slice(-1)[0];
  */
 export default function HatTrickSolo() {
   const { t, locale } = useI18n();
+  const { share: shareCard, card: shareView } = useShareCard();
   const day = dayNumber();
   // null = today's shared grid (saved); a number = an extra random grid after it (not saved)
   const [seed, setSeed] = useState<number | null>(null);
@@ -191,7 +193,16 @@ export default function HatTrickSolo() {
   const share = () => {
     const squares = run.cells.map((c) => (c.length ? "🟩" : "⬜"));
     const rows = [0, 1, 2].map((r) => squares.slice(r * 3, r * 3 + 3).join("")).join("\n");
-    Share.share({ message: `${t("bbShareText")} #${day % 1000}\n${rows}\n${boxes}/9\n${players} ${t("bbPlayers")}, %${percent}` });
+    shareCard({
+      game: "ht",
+      name: "Tic-Tac-Toe",
+      tag: seed === null ? `#${day % 1000}` : undefined,
+      rows: [0, 1, 2].map((r) => run.cells.slice(r * 3, r * 3 + 3).map((c) => (c.length ? "ok" : "empty"))),
+      labels: [0, 1, 2].map((r) => run.cells.slice(r * 3, r * 3 + 3).map((c) => (c.length ? String(c.length) : ""))),
+      score: `${boxes}/9`,
+      detail: `${players} ${t("bbPlayers")}, %${percent}`,
+      text: `${t("bbShareText")} #${day % 1000}\n${rows}\n${boxes}/9\n${players} ${t("bbPlayers")}, %${percent}`,
+    });
   };
 
   return (
@@ -326,6 +337,7 @@ export default function HatTrickSolo() {
           )}
         </Card>
       )}
+      {shareView}
     </Page>
   );
 }

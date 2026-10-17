@@ -10,6 +10,7 @@ import { quizQuestions } from "@/lib/quiz";
 import { CLUB_KITS } from "~/components/HatTrickBoard";
 import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
+import { useShareCard } from "~/components/ShareCard";
 import { Button, Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -50,6 +51,7 @@ const BOARD_GAP = 9;
 export default function RushGame() {
   "use no memo";
   const { t, locale } = useI18n();
+  const { share: shareCard, card: shareView } = useShareCard();
   const insets = useSafeAreaInsets();
   const { width: W, height: H } = useWindowDimensions();
   const [club] = useFavClub();
@@ -362,10 +364,29 @@ export default function RushGame() {
               {final.metres} m · {final.coins} {t("rushCoins")}
             </Text>
             <Button title={t("rushAgain")} icon="arrow.clockwise" onPress={start} style={{ alignSelf: "stretch", marginTop: 12 }} />
+            <Button
+              title={t("share")}
+              icon="square.and.arrow.up"
+              kind="secondary"
+              onPress={() =>
+                shareCard({
+                  game: "rush",
+                  name: "Dribbling Rush",
+                  tag: newBest ? t("rushNewBest") : undefined,
+                  rows: [],
+                  art: KOSU.hero,
+                  score: String(final.score),
+                  detail: `${final.metres} m · ${final.coins} ${t("rushCoins")}`,
+                  text: `Dribbling Rush ⚽ ${final.score}${newBest ? ` (${t("rushNewBest")})` : ""}\n${final.metres} m · ${final.coins} ${t("rushCoins")}`,
+                })
+              }
+              style={{ alignSelf: "stretch", marginTop: 8 }}
+            />
             <Button title={t("close")} kind="secondary" onPress={() => router.back()} style={{ alignSelf: "stretch", marginTop: 8 }} />
           </View>
         </View>
       )}
+      {shareView}
     </View>
   );
 }

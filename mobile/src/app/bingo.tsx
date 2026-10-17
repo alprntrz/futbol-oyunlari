@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Share, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
@@ -12,6 +12,7 @@ import { GameHub } from "~/components/GameHub";
 import { BingoSteps } from "~/components/HowTo";
 import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
+import { useShareCard } from "~/components/ShareCard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
@@ -54,6 +55,7 @@ const practiceSeed = () => 1_000_000 + Math.floor(Math.random() * 1_000_000_000)
  */
 export default function Bingo() {
   const { t, locale } = useI18n();
+  const { share: shareCard, card: shareView } = useShareCard();
   const practice = useLocalSearchParams<{ practice?: string }>().practice === "1";
   const day = dayNumber();
   const [seed, setSeed] = useState(() => (practice ? practiceSeed() : day));
@@ -171,7 +173,15 @@ export default function Bingo() {
 
   const share = () => {
     const rows = [0, 1, 2, 3].map((r) => run.placed.slice(r * 4, r * 4 + 4).map((p) => (p ? "🟩" : "⬜")).join("")).join("\n");
-    Share.share({ message: `${t("bingoName")} #${day % 1000}\n${rows}\n${filled}/${CARD_SIZE}, ${used} ${t("bingoUsed")}` });
+    shareCard({
+      game: "bingo",
+      name: t("bingoName"),
+      tag: practice ? undefined : `#${day % 1000}`,
+      rows: [0, 1, 2, 3].map((r) => run.placed.slice(r * 4, r * 4 + 4).map((p) => (p ? "ok" : "empty"))),
+      score: `${filled}/${CARD_SIZE}`,
+      detail: `${used} ${t("bingoUsed")}`,
+      text: `${t("bingoName")} #${day % 1000}\n${rows}\n${filled}/${CARD_SIZE}, ${used} ${t("bingoUsed")}`,
+    });
   };
 
   return (
@@ -287,6 +297,7 @@ export default function Bingo() {
           );
         })}
       </View>
+      {shareView}
     </Page>
   );
 }
