@@ -4,6 +4,7 @@ import { Modal, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { myResult } from "@/lib/taktik/engine";
 import { SLICES } from "@/lib/taktik/rules";
 import type { Lobby, MatchResult } from "@/lib/taktik/types";
 
@@ -32,7 +33,8 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const mine = lobby.last.find((r) => r.home === meId || r.away === meId);
+  // my own match (not someone else's game against a copy of my side)
+  const mine = myResult(lobby, meId);
   const others = lobby.last.filter((r) => r !== mine && r.away !== -1);
   const [shown, setShown] = useState(0);
   /** height left for the pitch */

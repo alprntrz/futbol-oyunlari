@@ -170,7 +170,7 @@ export function DuelSteps() {
 
 export function TaktikSteps() {
   const { t } = useI18n();
-  return <NumberedRules items={[t("ttkRule1"), t("ttkRule2"), t("ttkRule3"), t("ttkRule4"), t("ttkRule5")]} />;
+  return <NumberedRules items={[t("ttkRule1"), t("ttkRule2"), t("ttkRule3"), t("ttkRule4"), t("ttkRule5"), t("ttkRule6")]} />;
 }
 
 export function BingoSteps() {

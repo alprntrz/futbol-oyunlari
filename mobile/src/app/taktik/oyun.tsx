@@ -7,9 +7,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
 import { alive, autoArrange, bench, buy, buyXp, chooseAugment, fillField, rerollAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
-import { INCOME, INTEREST_STEP, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
+import { INCOME, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
-import { STYLES, type TraitState } from "@/lib/taktik/traits";
+import { effectsOf, STYLES, type EffectKey, type TraitState } from "@/lib/taktik/traits";
 import type { Manager, ShopCard } from "@/lib/taktik/types";
 
 import { FocusStatusBar } from "~/components/StadiumHeader";
@@ -50,7 +50,7 @@ export default function TaktikGame() {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const { lobby } = useTaktik();
+  const { lobby, version } = useTaktik();
   const [sel, setSel] = useState<Sel>(null);
   const [note, setNote] = useState<string | null>(null);
   const [match, setMatch] = useState(false);
@@ -68,7 +68,9 @@ export default function TaktikGame() {
   /** every synergy, not just the live and nearly-live ones */
   const [allTraits, setAllTraits] = useState(false);
   /** coins flying into the gold counter after a match: how many are still in the air */
-  const [coins, setCoins] = useState<{ id: number; total: number; left: number; to: { x: number; y: number } } | null>(null);
+  const [coins, setCoins] = useState<{ id: number; total: number; left: number; amount: number; to: { x: number; y: number } } | null>(null);
+  /** gold at kick-off: what the round paid (win, friendly drop, salary, savings, streak) flies in after the match */
+  const goldAtKick = useRef<number | null>(null);
   const goldRef = useRef<View | null>(null);
   /** the lobby intro was seen for this game (seed) */
   const [introSeen, setIntroSeen] = useState(() => introShown);
@@ -76,7 +78,7 @@ export default function TaktikGame() {
   // first game: a walkthrough that lights up each part of the screen in turn
   const tour = useTour("taktik-v1", [
     { target: "shop", title: t("ttkTour1T"), body: t("ttkTour1") },
-    { target: "gold", title: t("ttkTour2T"), body: t("ttkTour2").replace("{income}", String(INCOME)).replace("{step}", String(INTEREST_STEP)) },
+    { target: "gold", title: t("ttkTour2T"), body: t("ttkTour2").replace("{income}", String(INCOME)) },
     { target: "pitch", title: t("ttkTour3T"), body: t("ttkTour3") },
     { target: "traits", title: t("ttkTour4T"), body: t("ttkTour4") },
     { target: "bench", title: t("ttkTour5T"), body: t("ttkTour5"), before: () => scroller.current?.scrollToEnd({ animated: true }) },
@@ -125,6 +127,45 @@ export default function TaktikGame() {
       markTaktikSeen();
     };
   }, []);
+  const traitLabel = (x: TraitState) => {
+    if (x.kind === "club") {
+      const c = clubCriterion(x.id);
+      return c ? (locale === "tr" ? c.tr : c.en) : x.id;
+    }
+    if (x.kind === "country") {
+      const c = COUNTRY.get(x.id);
+      return c ? (locale === "tr" ? c.tr : c.en) : x.id.charAt(0).toUpperCase() + x.id.slice(1);
+    }
+    return t(`ttkHonour_${x.id as "wc"}`);
+  };
+  /** one effect as a sentence ("Attack +7%"); accuracy counts at 30 % in the shot (sim.ts) */
+  const fxText = (key: EffectKey, value: number) => {
+    if (key === "flex" && value >= 1) return t("ttkFx_flexAll");
+    const v = Math.round(value * (key === "accuracy" ? 30 : 100));
+    return t(`ttkFx_${key}`).replace("{v}", String(v));
+  };
+  const fxLine = (x: TraitState, tier: number) => effectsOf(x.kind, x.id, tier).map((e) => fxText(e.key, e.value)).join(" · ");
+  // a synergy switching on (or going up a step) says what it gives, over the pitch for a moment
+  const tiersSeen = useRef<Map<string, number> | null>(null);
+  const [fxToast, setFxToast] = useState<{ id: number; text: string } | null>(null);
+  useEffect(() => {
+    const m = lobby?.managers[0];
+    if (!m) return;
+    const traits = sheet({ name: m.name, units: m.units, coach: m.coach, augments: m.augments }).traits;
+    const before = tiersSeen.current;
+    tiersSeen.current = new Map(traits.map((x) => [`${x.kind}:${x.id}`, x.tier]));
+    if (!before || match) return;
+    const up = traits.find((x) => x.tier > (before.get(`${x.kind}:${x.id}`) ?? 0));
+    if (!up) return;
+    haptic.success();
+    setFxToast({ id: Date.now(), text: t("ttkFxOn").replace("{name}", traitLabel(up)).replace("{fx}", fxLine(up, up.tier)) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version]);
+  useEffect(() => {
+    if (!fxToast) return;
+    const id = setTimeout(() => setFxToast(null), 2600);
+    return () => clearTimeout(id);
+  }, [fxToast]);
   // a plain "+XP" toast: the reward screen is a second modal on top of the end card and froze the screen
   useXpAward(out && !match && !!me?.place, `ttk-${lobby?.seed}`, "tt", me?.place ? XP.ttPlace[me.place - 1] : 0, {
     label: me?.place === 1 ? t("ttkWinner") : t("ttkPlace").replace("{n}", String(me?.place ?? "")),
@@ -258,19 +299,8 @@ export default function TaktikGame() {
     else setScoutMsg(r === "gold" ? t("ttkNoGold") : t("ttkBenchFull"));
   };
 
-  const traitLabel = (x: TraitState) => {
-    if (x.kind === "club") {
-      const c = clubCriterion(x.id);
-      return c ? (locale === "tr" ? c.tr : c.en) : x.id;
-    }
-    if (x.kind === "country") {
-      const c = COUNTRY.get(x.id);
-      return c ? (locale === "tr" ? c.tr : c.en) : x.id.charAt(0).toUpperCase() + x.id.slice(1);
-    }
-    return t(`ttkHonour_${x.id as "wc"}`);
-  };
   const traitDesc = (x: TraitState) =>
-    x.kind === "club" ? t("ttkClubTrait") : x.kind === "country" ? t(STYLES[x.id] ? (`ttkStyle_${x.id}` as "ttkStyle_brazil") : "ttkStyle_other") : x.id === "legend" ? t("ttkLegendTrait") : traitLabel(x);
+    x.kind === "club" ? t("ttkClubTrait") : x.kind === "country" ? t(STYLES[x.id] ? (`ttkStyle_${x.id}` as "ttkStyle_brazil") : "ttkStyle_other") : x.id === "legend" ? t("ttkLegendTrait") : "";
   const traitIcon = (x: TraitState) => {
     if (x.kind === "club") {
       const c = clubCriterion(x.id);
@@ -283,15 +313,18 @@ export default function TaktikGame() {
   // back from the match: gold it paid flies from the middle of the screen into the counter
   const closeMatch = () => {
     setMatch(false);
-    const gold = lobby.last.find((r) => r.home === me.id && r.away === -1)?.drops?.gold ?? 0;
-    if (!gold) return;
+    if (goldAtKick.current === null) return;
+    const gold = me.gold - goldAtKick.current;
+    goldAtKick.current = null;
+    if (gold <= 0) return;
     // once the match screen has faded away
-    setTimeout(() => goldRef.current?.measureInWindow((x, y, w, h) => setCoins({ id: Date.now(), total: Math.min(gold, 8), left: Math.min(gold, 8), to: { x: x + 11, y: y + h / 2 } })), 450);
+    setTimeout(() => goldRef.current?.measureInWindow((x, y, w, h) => setCoins({ id: Date.now(), total: Math.min(gold, 8), left: Math.min(gold, 8), amount: gold, to: { x: x + 11, y: y + h / 2 } })), 450);
   };
 
   const startMatch = () => {
     setSel(null);
     haptic.press();
+    goldAtKick.current = me.gold;
     kickOff();
     setMatch(true);
   };
@@ -361,7 +394,7 @@ export default function TaktikGame() {
           >
             <Image source={TAKTIK.ui.coin} style={styles.statIcon} />
             {/* coins still flying in aren't counted yet */}
-            <Text style={styles.statText}>{me.gold - (coins?.left ?? 0)}</Text>
+            <Text style={styles.statText}>{me.gold - (coins ? Math.round((coins.amount * coins.left) / coins.total) : 0)}</Text>
           </View>
           {/* a streak of 2+ pays extra gold each round: show it */}
           {Math.abs(me.streak) >= 2 && (
@@ -491,7 +524,14 @@ export default function TaktikGame() {
                 </Tap>
               );
             })}
-          {boardWarn && (
+          {fxToast ? (
+            <Animated.View key={fxToast.id} entering={FadeIn} exiting={FadeOut} style={styles.fxToast} pointerEvents="none">
+              <Icon name="sparkles" size={14} color="white" fallback="✨" />
+              <Text style={styles.fxToastText} numberOfLines={2}>
+                {fxToast.text}
+              </Text>
+            </Animated.View>
+          ) : boardWarn && (
             <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.warn} pointerEvents="none">
               <Icon name="exclamationmark.triangle.fill" size={13} color={C.amber} fallback="⚠️" />
               <Text style={styles.warnText}>{boardWarn}</Text>
@@ -661,8 +701,22 @@ export default function TaktikGame() {
                 {traitIcon(info)}
                 <Text style={T.headline}>{traitLabel(info)}</Text>
               </View>
-              <Text style={T.body}>{traitDesc(info)}</Text>
-              <Text style={T.caption}>{info.steps.map((s, i) => (i < info.tier ? `✓ ${s}` : String(s))).join("  ·  ")}</Text>
+              {traitDesc(info) ? <Text style={T.body}>{traitDesc(info)}</Text> : null}
+              {/* every step and exactly what it gives; the steps reached are lit */}
+              <View style={{ gap: 6, marginTop: 2 }}>
+                {info.steps.map((n, i) => {
+                  const on = i < info.tier;
+                  return (
+                    <View key={n} style={[styles.fxRow, on && styles.fxRowOn]}>
+                      <Text style={[styles.fxStep, on && { color: C.greenDark }]}>
+                        {on ? "✓ " : ""}
+                        {t("ttkFxStep").replace("{n}", String(n))}
+                      </Text>
+                      <Text style={[styles.fxText, on && { color: C.greenDark }]}>{fxLine(info, i + 1)}</Text>
+                    </View>
+                  );
+                })}
+              </View>
             </Animated.View>
           )}
         </Pressable>
@@ -930,6 +984,12 @@ const styles = StyleSheet.create({
   price: { flexDirection: "row", alignItems: "center", gap: 4, borderRadius: R.chip, paddingLeft: 4, paddingRight: 10, paddingVertical: 3 },
   priceText: { fontFamily: F.display, fontSize: 17, color: "white" },
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)" },
+  fxRow: { borderRadius: R.inner, backgroundColor: C.bg, paddingHorizontal: 12, paddingVertical: 8, gap: 2 },
+  fxRowOn: { backgroundColor: C.greenSoft },
+  fxStep: { fontFamily: F.display, fontSize: 16, color: C.text2 },
+  fxText: { fontSize: 14, fontWeight: "600", color: C.text },
+  fxToast: { position: "absolute", top: 8, alignSelf: "center", maxWidth: "92%", flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.green, borderRadius: R.chip, paddingHorizontal: 14, paddingVertical: 7, ...shadow },
+  fxToastText: { fontWeight: "800", fontSize: 13, color: "white", flexShrink: 1 },
   infoCard: { margin: 24, marginTop: "60%", backgroundColor: C.card, borderRadius: R.card, padding: 18, gap: 8, ...shadow },
   sheet: { backgroundColor: C.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, gap: 10 },
   input: { backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, height: 50, fontSize: 18, color: C.text },

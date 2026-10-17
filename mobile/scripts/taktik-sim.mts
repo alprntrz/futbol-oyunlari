@@ -72,7 +72,7 @@ for (let g = 0; g < LOBBIES; g++) {
 
 const avg = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
 console.log(`lobbies ${LOBBIES}`);
-console.log(`rounds per game  avg ${avg(rounds).toFixed(1)}  min ${Math.min(...rounds)}  max ${Math.max(...rounds)}  (≈ ${(avg(rounds) * 37 / 60).toFixed(1)} min at 37 s a round)`);
+console.log(`rounds per game  avg ${avg(rounds).toFixed(1)}  min ${Math.min(...rounds)}  max ${Math.max(...rounds)}  (≈ ${(avg(rounds) * 38 / 60).toFixed(1)} min at ~38 s a round: 25 s set-up + a 13 s match)`);
 console.log(`last stage       avg ${avg(stages).toFixed(1)}`);
 console.log(`goals per side   ${avg(goals).toFixed(2)}   shoot-outs ${((pens / Math.max(1, matches)) * 100).toFixed(0)} %`);
 console.log(`final level      ${avg(levels).toFixed(1)}   gold cards per lobby ${(golds / LOBBIES).toFixed(2)}   gold 5-costs per 50 lobbies ${((goldFive / LOBBIES) * 50).toFixed(1)}`);

@@ -51,6 +51,8 @@ export interface Manager {
   streak: number;
   /** where this round's gold came from (shown at the start of the round); absent in old saves */
   income?: { base: number; interest: number; streak: number } | null;
+  /** savings bonus earned at kick-off (gold held then), paid at the start of the next round */
+  saved?: number;
   coach: CoachId;
   augments: AugmentId[];
   /** tactics cards to choose from, when one is due */

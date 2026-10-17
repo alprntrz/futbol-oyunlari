@@ -1,5 +1,5 @@
 import { autoArrange, bench, buy, buyXp, chooseAugment, priceOf, rand, reroll, sell, equip, fielded, sellValue } from "./engine";
-import { BENCH, INTEREST_STEP, REROLL_COST, XP_COST } from "./rules";
+import { BENCH, REROLL_COST, SAVINGS, XP_COST } from "./rules";
 import type { Lobby, Manager, Personality, Unit } from "./types";
 
 /**
@@ -75,7 +75,7 @@ export function botTurn(l: Lobby, m: Manager) {
     m.target = clubs[0] ?? null;
   }
   const hurt = m.hp < 40;
-  const reserve = hurt ? 0 : Math.min(RESERVE[kind], Math.floor(m.gold / INTEREST_STEP) * INTEREST_STEP);
+  const reserve = hurt ? 0 : Math.min(RESERVE[kind], SAVINGS.find((s) => m.gold >= s.from)?.from ?? 0);
   buyRound(l, m, reserve);
 
   // level up on plan

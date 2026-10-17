@@ -24,8 +24,12 @@ export const LEVEL_XP = [2, 2, 6, 10, 20, 36, 48, 72];
 
 // ── Economy
 export const INCOME = 5;
-export const INTEREST_STEP = 10;
-export const INTEREST_CAP = 5;
+/** savings bonus: holding this much gold when the round kicks off pays extra at the end of it */
+export const SAVINGS: { from: number; gold: number }[] = [
+  { from: 20, gold: 4 },
+  { from: 10, gold: 2 },
+];
+export const savingsBonus = (gold: number) => SAVINGS.find((s) => gold >= s.from)?.gold ?? 0;
 export const WIN_GOLD = 1;
 export const REROLL_COST = 2;
 export const XP_COST = 4;
@@ -75,7 +79,7 @@ export const STAGE: RoundKind[] = ["pvp", "pvp", "pvp", "pve", "pvp"];
 /** a tactics card is offered at the start of these stages */
 export const AUGMENT_STAGES = [2, 3, 4];
 /** seconds to set up before every match kicks off (everyone at once when played online); stage 1 is short, its sides are small */
-export const planSeconds = (stage: number) => (stage === 1 ? 25 : 35);
+export const planSeconds = (stage: number) => (stage === 1 ? 15 : 25);
 /** free swaps per tactics card offer (shared by the three cards) */
 export const AUGMENT_REROLLS = 2;
 

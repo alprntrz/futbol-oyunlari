@@ -4,8 +4,6 @@ import {
   AUGMENT_STAGES,
   BENCH,
   INCOME,
-  INTEREST_CAP,
-  INTEREST_STEP,
   LEVEL_SLOTS,
   LEVEL_XP,
   MANAGERS,
@@ -27,6 +25,7 @@ import {
   XP_COST,
   XP_PER_ROUND,
   damage,
+  savingsBonus,
   streakGold,
   zoneFit,
   type Cost,
@@ -42,6 +41,12 @@ import type { AugmentId, CoachId, ItemId, Lobby, Manager, MatchResult, Personali
  * Pure functions over a plain Lobby object: no React, no timers. All randomness
  * goes through the lobby's seeded generator, so a lobby replays exactly.
  */
+
+/**
+ * This manager's own match of the last round. With an odd number left someone plays a copy of
+ * another side ("name*"): that copy's game is not theirs, so it never counts as their match.
+ */
+export const myResult = (l: Lobby, id: number) => l.last.find((r) => r.home === id || (r.away === id && !r.awayName.endsWith("*")));
 
 export const AUGMENTS: AugmentId[] = ["gegenpress", "bus", "longball", "academy", "cash", "signing", "wings", "crowd", "legend", "intl"];
 export const COACHES: CoachId[] = ["pass", "bus", "press"];
@@ -368,7 +373,9 @@ export function fillField(m: Manager): number {
 function startRound(l: Lobby, first = false) {
   for (const m of alive(l)) {
     if (!first) {
-      const interest = Math.min(INTEREST_CAP, Math.floor(m.gold / INTEREST_STEP));
+      // the savings bonus was settled at kick-off, from the gold held then
+      const interest = m.saved ?? 0;
+      m.saved = 0;
       m.income = { base: INCOME, interest, streak: streakGold(Math.abs(m.streak)) };
       m.gold += INCOME + interest + m.income.streak;
       gainXp(m, XP_PER_ROUND);
@@ -447,6 +454,8 @@ export function endRound(l: Lobby, botTurn: (l: Lobby, m: Manager) => void) {
     if (m.offer) chooseAugment(l, m, 0);
     if (m.bot) botTurn(l, m);
   }
+  // gold held at kick-off earns the savings bonus, paid with the next round's income
+  for (const m of alive(l)) m.saved = savingsBonus(m.gold);
   const kind = roundKind(l);
   const results: MatchResult[] = [];
   const live = alive(l);
