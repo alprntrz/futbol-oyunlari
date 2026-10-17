@@ -13,7 +13,7 @@ import { play } from "~/lib/sound";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Text } from "../Text";
-import { Button, Icon } from "../ui";
+import { Icon } from "../ui";
 import { ItemIcon, surname } from "./Card";
 import { MatchPitch, PITCH_RATIO, SIDE } from "./MatchPitch";
 import { TacticsChips } from "./TacticsCard";
@@ -25,7 +25,7 @@ const RESULT_MS = 1600;
 const minute = (slice: number) => Math.round(((slice + 0.6) * 90) / SLICES);
 
 /**
- * The round's matches: mine plays out slice by slice (~5 s, skippable) with
+ * The round's matches: mine plays out slice by slice (everyone watches the whole match: online the round ends together) with
  * goals, saves and the shoot-out, then health lost / gold won and the rest of
  * the round's scores.
  */
@@ -212,11 +212,6 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
           </View>
         </View>
 
-        {!done && (
-          <View style={styles.skip}>
-            <Button small kind="secondary" icon="forward.fill" title={t("ttkSkip")} onPress={() => setShown(SLICES)} />
-          </View>
-        )}
       </View>
     </Modal>
   );
@@ -252,6 +247,5 @@ const styles = StyleSheet.create({
   sideDot: { width: 9, height: 9, borderRadius: 5 },
   cards: { flexDirection: "row", gap: 10, marginTop: 4 },
   cardCol: { flex: 1, gap: 4, borderLeftWidth: 3, paddingLeft: 8 },
-  skip: { alignSelf: "center", marginTop: 8 },
   cardHead: { fontFamily: F.display, fontSize: 16, color: C.text },
 });
