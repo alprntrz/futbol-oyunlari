@@ -77,6 +77,12 @@
         {
           "enablePushNotifications": true
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "mode": "production"
+        }
       ]
     ],
     "experiments": {

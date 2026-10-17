@@ -8,6 +8,7 @@ import { HomeFixtures } from "~/components/HomeFixtures";
 import { HomeNext, PlayBar } from "~/components/HomeNext";
 import { HomePitch } from "~/components/HomePitch";
 import { HomeStatus } from "~/components/HomeStatus";
+import { ReminderAsk } from "~/components/ReminderAsk";
 import { ModeList, type Mode } from "~/components/ModeGrid";
 import { QuickPlay } from "~/components/QuickPlay";
 import { Text } from "~/components/Text";
@@ -63,6 +64,7 @@ export default function Home() {
       <Page topInset>
         <Wordmark />
         <HomeStatus />
+        <ReminderAsk />
         <HomeBoard />
         <Animated.View entering={enter(2)} style={{ marginTop: 6 }}>
           <QuestsCard />

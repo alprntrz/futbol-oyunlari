@@ -29,6 +29,7 @@ const MATERIAL: Record<string, AndroidSymbol> = {
   "arrow.up": "arrow_upward",
   "arrow.up.right": "north_east",
   "arrow.uturn.left": "undo",
+  "bell.fill": "notifications",
   calendar: "event",
   checkmark: "check",
   "checkmark.circle.fill": "check_circle",
