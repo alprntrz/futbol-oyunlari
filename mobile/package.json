@@ -32,6 +32,7 @@
     "expo-store-review": "~57.0.3",
     "expo-symbols": "~57.0.3",
     "expo-system-ui": "~57.0.4",
+    "expo-updates": "~57.0.26",
     "expo-web-browser": "~57.0.3",
     "expo-widgets": "~57.0.24",
     "react": "19.2.3",
@@ -58,7 +59,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "ota": "node scripts/ota.mjs"
   },
   "private": true
 }

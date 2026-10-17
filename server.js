@@ -12,6 +12,7 @@ const { pushLive } = require("./server-live");
 const { attachTaktik, ttRooms } = require("./server-taktik");
 const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
 const { refForSocket, addReport, shownNick, cleanBlocks } = require("./server-refs");
+const { handleAppApi } = require("./server-app");
 
 // socket id → that player's ref (server-refs.js), so room views can carry it for report / block
 const refById = new Map();
@@ -645,6 +646,8 @@ app.prepare().then(() => {
   const server = createServer(async (req, res) => {
     // /api/account/*: sign-in and the account's XP (server-accounts.js); the rest is the Next site
     if (req.url.startsWith("/api/account") && (await handleAccountApi(req, res, cleanNick))) return;
+    // /api/app/*: minimum app version, anonymous crash reports (server-app.js)
+    if (req.url.startsWith("/api/app/") && (await handleAppApi(req, res))) return;
     handle(req, res);
   });
   // small payload cap: the biggest message is a 20-question quiz (a few KB)

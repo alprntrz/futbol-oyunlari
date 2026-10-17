@@ -11,8 +11,10 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
+import { AppErrorScreen, UpdateRequired } from "~/components/AppError";
 import { InviteBanner } from "~/components/InviteBanner";
 import { PlayerMenuHost } from "~/components/PlayerMenu";
+import { useUpdateRequired } from "~/lib/appHealth";
 import { RatingAsk } from "~/lib/rating";
 import { RemindersSync } from "~/lib/reminders";
 import { RewardScreen } from "~/components/RewardScreen";
@@ -27,6 +29,9 @@ import { C, F } from "~/lib/theme";
 
 SplashScreen.preventAutoHideAsync();
 
+// a screen that throws shows a friendly page (and sends an anonymous report) instead of a white screen
+export const ErrorBoundary = AppErrorScreen;
+
 /** Tabs live in (tabs); every game screen is pushed full-screen on top. */
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -35,6 +40,7 @@ export default function RootLayout() {
     BarlowCondensed_800ExtraBold_Italic,
     BarlowCondensed_900Black,
   });
+  const updateFrom = useUpdateRequired();
 
   useEffect(() => {
     if (!loaded) return;
@@ -50,6 +56,14 @@ export default function RootLayout() {
   }, [loaded]);
 
   if (!loaded) return null;
+
+  if (updateFrom !== null)
+    return (
+      <I18nProvider>
+        <StatusBar style="dark" />
+        <UpdateRequired store={updateFrom} />
+      </I18nProvider>
+    );
 
   return (
     <I18nProvider>

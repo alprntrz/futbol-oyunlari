@@ -21,6 +21,7 @@ const MATERIAL: Record<string, AndroidSymbol> = {
   "20.circle.fill": "filter_9_plus",
   "antenna.radiowaves.left.and.right": "sensors",
   "arrow.clockwise": "refresh",
+  "arrow.down.circle.fill": "download",
   "arrow.down": "arrow_downward",
   "arrow.left.arrow.right": "swap_horiz",
   "arrow.right": "arrow_forward",

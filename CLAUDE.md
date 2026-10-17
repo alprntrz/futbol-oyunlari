@@ -173,6 +173,12 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   /data/reports.jsonl (3 different reporters hide the nick as "Player"); phones keep their block list (`lib/blocks.ts`, sent in the
   handshake + `blk:set`) and `takePairs` / quiz rooms / invites skip blocked pairs. UI: `components/PlayerMenu.tsx`
   (`openPlayerMenu`, `PlayerMenuButton` beside the emote button; house players get a made-up `houseRef`), Settings > Blocked.
+- Health (server-app.js, lib/appHealth.ts): root `ErrorBoundary` (`components/AppError.tsx`) shows a friendly page and POSTs an
+  anonymous report to /api/app/crash (→ /data/crashes.jsonl, capped); `/api/app/version` returns `MIN_APP_VERSION` (Fly env) and an
+  older app shows "Update needed" (raise it only once the new version is live in both stores).
+- OTA (expo-updates, channel "production", runtimeVersion = app version): JS/asset-only fixes ship with `npm run ota -- "msg"` in
+  mobile/ (scripts/ota.mjs injects eas.json's production EXPO_PUBLIC_* env; never run a bare `eas update`). Only builds made after
+  expo-updates was added (1.1, build 23+) receive them; native changes still need a store build.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`
