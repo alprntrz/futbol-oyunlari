@@ -1,4 +1,5 @@
 import { PLAYERS, type GridPlayer } from "@/data/players";
+import { ARAB_LINKS, ARAB_PLAYERS } from "@/data/players-arab";
 import { COACHES } from "@/data/coaches";
 import { TEAMMATES } from "@/data/teammates";
 import { normalizeAnswer } from "./wordle";
@@ -110,6 +111,34 @@ export const ALL_CRITERIA: Criterion[] = [
 ];
 
 /**
+ * Saudi and Egyptian clubs, and those two countries: only in their own league grids
+ * (leagues.ts "sa" / "eg"), never in ALL_CRITERIA, so seeded daily grids and the
+ * other games stay as they were. Ids start "arab-": the server deals such grids only
+ * to apps that know them (caps "arab"). Players: src/data/players-arab.ts.
+ */
+const ARAB_CLUBS: { id: string; tr: string; en: string; short: string; c1: string; c2: string }[] = [
+  { id: "arab-hilal", tr: "Al-Hilal", en: "Al-Hilal", short: "HIL", c1: "#0055a5", c2: "#ffffff" },
+  { id: "arab-nassr", tr: "Al-Nassr", en: "Al-Nassr", short: "NAS", c1: "#ffd200", c2: "#1c2c5b" },
+  { id: "arab-ittihad", tr: "Al-Ittihad", en: "Al-Ittihad", short: "ITT", c1: "#ffd100", c2: "#000000" },
+  { id: "arab-ahlisa", tr: "Al-Ahli", en: "Al-Ahli", short: "AHL", c1: "#00843d", c2: "#ffffff" },
+  { id: "arab-ahly", tr: "Al Ahly", en: "Al Ahly", short: "AHY", c1: "#c8102e", c2: "#ffffff" },
+  { id: "arab-zamalek", tr: "Zamalek", en: "Zamalek", short: "ZAM", c1: "#ffffff", c2: "#c8102e" },
+  { id: "arab-pyramids", tr: "Pyramids", en: "Pyramids", short: "PYR", c1: "#0a2240", c2: "#5dade2" },
+];
+export const ARAB_CRITERIA: Criterion[] = [
+  ...ARAB_CLUBS.map((c) => ({ kind: "club" as const, ...c, test: (p: GridPlayer) => p.clubs.includes(c.id) })),
+  { kind: "country", id: "arab-saudiarabia", tr: "Suudi Arabistan", en: "Saudi Arabia", icon: "🇸🇦", test: (p: GridPlayer) => p.country === "saudiarabia" },
+  { kind: "country", id: "arab-egypt", tr: "Mısır", en: "Egypt", icon: "🇪🇬", test: (p: GridPlayer) => p.country === "egypt" },
+];
+
+/**
+ * Tic-Tac-Toe answers: PLAYERS with their Saudi / Egyptian clubs added, plus the players who
+ * only played there. For the classic criteria nothing changes (the extra players have none
+ * of those clubs or honours), so every seeded grid stays solvable exactly as before.
+ */
+export const GRID_PLAYERS: GridPlayer[] = [...PLAYERS.map((p) => (ARAB_LINKS[p.name] ? { ...p, clubs: [...p.clubs, ...ARAB_LINKS[p.name]] } : p)), ...ARAB_PLAYERS];
+
+/**
  * "Played with X": club teammates of a star (src/data/teammates.ts). Not in
  * ALL_CRITERIA, so seeded grids (daily) and other games stay as they were;
  * `withLink` swaps one into a dealt grid. Ids are "mate-…".
@@ -133,7 +162,7 @@ const LINKS: { c: Criterion; global: boolean; clubs: string[] }[] = [
 const LINK_CRITERIA = LINKS.map((l) => l.c);
 const isLink = (c: Criterion) => c.kind === "mate" || c.kind === "coach";
 
-const BY_ID = new Map([...ALL_CRITERIA, ...LINK_CRITERIA].map((c) => [c.id, c]));
+const BY_ID = new Map([...ALL_CRITERIA, ...ARAB_CRITERIA, ...LINK_CRITERIA].map((c) => [c.id, c]));
 /** Any criterion by id, "played with" ones included (online grids travel as ids). */
 export const criterionById = (id: string): Criterion | undefined => BY_ID.get(id);
 
@@ -177,18 +206,18 @@ function acceptedForms(p: GridPlayer): Set<string> {
   }
   return forms;
 }
-const FORMS = new Map<GridPlayer, Set<string>>(PLAYERS.map((p) => [p, acceptedForms(p)]));
+const FORMS = new Map<GridPlayer, Set<string>>(GRID_PLAYERS.map((p) => [p, acceptedForms(p)]));
 
 /** Players whose accepted answer forms include the (normalized) guess. */
 export function matchPlayers(guess: string): GridPlayer[] {
   const g = normalizeAnswer(guess);
   if (!g) return [];
-  return PLAYERS.filter((p) => FORMS.get(p)!.has(g));
+  return GRID_PLAYERS.filter((p) => FORMS.get(p)!.has(g));
 }
 
 /** Normalized haystack (name + aliases, letters only) for substring search. */
 const HAYSTACK = new Map<GridPlayer, string>(
-  PLAYERS.map((p) => [p, [p.name, ...(p.aliases ?? [])].map(normalizeAnswer).join("|")])
+  GRID_PLAYERS.map((p) => [p, [p.name, ...(p.aliases ?? [])].map(normalizeAnswer).join("|")])
 );
 
 /**
@@ -200,7 +229,7 @@ export function searchPlayers(query: string, limit = 8): GridPlayer[] {
   if (q.length < 2) return [];
   const starts: GridPlayer[] = [];
   const contains: GridPlayer[] = [];
-  for (const p of PLAYERS) {
+  for (const p of GRID_PLAYERS) {
     const h = HAYSTACK.get(p)!;
     if (h.split("|").some((s) => s.startsWith(q))) starts.push(p);
     else if (h.includes(q)) contains.push(p);
@@ -210,7 +239,7 @@ export function searchPlayers(query: string, limit = 8): GridPlayer[] {
 
 /** Does any DB player satisfy both criteria? (for solvability checks) */
 export function cellSolvable(a: Criterion, b: Criterion): boolean {
-  return PLAYERS.some((p) => a.test(p) && b.test(p));
+  return GRID_PLAYERS.some((p) => a.test(p) && b.test(p));
 }
 
 /**

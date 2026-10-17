@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, Share, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 
-import { PLAYERS, type GridPlayer } from "@/data/players";
+import type { GridPlayer } from "@/data/players";
 import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
-import { generateGrid, searchPlayers, seededRandom, withLink, type Criterion } from "@/lib/tiki";
+import { generateGrid, GRID_PLAYERS, searchPlayers, seededRandom, withLink, type Criterion } from "@/lib/tiki";
 
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
@@ -64,7 +64,7 @@ export default function HatTrickSolo() {
   const cellCriteria = (i: number): [Criterion, Criterion] => [grid.rows[Math.floor(i / 3)], grid.cols[i % 3]];
   // How many (player, square) answers exist, for the "% of all answers" score
   const totalAnswers = useMemo(
-    () => Array.from({ length: 9 }, (_, i) => cellCriteria(i)).reduce((n, [r, c]) => n + PLAYERS.filter((p) => r.test(p) && c.test(p)).length, 0),
+    () => Array.from({ length: 9 }, (_, i) => cellCriteria(i)).reduce((n, [r, c]) => n + GRID_PLAYERS.filter((p) => r.test(p) && c.test(p)).length, 0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [grid]
   );

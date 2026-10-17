@@ -1,16 +1,20 @@
 import { PLAYERS, type GridPlayer } from "@/data/players";
+import { GRID_PLAYERS } from "@/lib/tiki";
 import type { Grid } from "@/lib/tiki";
 
 import { LINES, type HtCell, type Mark } from "./hattrick";
 
-/** Players a bot "knows": the better-known part of the list, so its answers look human. */
-const KNOWN = PLAYERS.slice(0, 2500);
+/**
+ * Players a bot "knows": the better-known part of the list, so its answers look human
+ * (with their Saudi / Egyptian clubs), plus the best-travelled players of those leagues.
+ */
+const KNOWN = [...GRID_PLAYERS.slice(0, 2500), ...GRID_PLAYERS.slice(PLAYERS.length, PLAYERS.length + 400)];
 
 /** Every player who fits a square, best known first. */
 export function answersFor(grid: Grid, cell: number): GridPlayer[] {
   const row = grid.rows[Math.floor(cell / 3)];
   const col = grid.cols[cell % 3];
-  return PLAYERS.filter((p) => row.test(p) && col.test(p));
+  return GRID_PLAYERS.filter((p) => row.test(p) && col.test(p));
 }
 
 /**

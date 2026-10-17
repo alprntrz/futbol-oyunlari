@@ -32,11 +32,18 @@ const CLUBS = {
   juventus: 506, milan: 5, inter: 46, napoli: 6195, roma: 12,
   psg: 583, monaco: 162, ajax: 610, psv: 383, porto: 720, benfica: 294, sporting: 336,
   galatasaray: 141, fenerbahce: 36, besiktas: 114,
+  // Saudi and Egyptian clubs: kept out of src/data/players.ts (they feed src/data/players-arab.ts,
+  // scripts/arab-build-players.mjs), ids prefixed "arab-" so the server can keep them from older apps
+  "arab-hilal": 1114, "arab-nassr": 18544, "arab-ittihad": 8023, "arab-ahlisa": 18487,
+  "arab-ahly": 7, "arab-zamalek": 664, "arab-pyramids": 44664,
 };
+// ONLY=club,club scrapes just those clubs (e.g. ONLY=arab-hilal,arab-nassr FROM=2000)
+const ONLY = process.env.ONLY ? new Set(process.env.ONLY.split(",")) : null;
 
 function parse(html) {
   const players = [];
-  const re = /<td class="hauptlink">\s*<a href="\/[^"]*\/profil\/spieler\/(\d+)"[^>]*>\s*([^<]+?)\s*<\/a>/g;
+  // (a captain's name carries a captain icon <span> inside the link)
+  const re = /<td class="hauptlink">\s*<a href="\/[^"]*\/profil\/spieler\/(\d+)"[^>]*>\s*([^<]+?)\s*(?:<span[^>]*>[^<]*<\/span>)?\s*<\/a>/g;
   let m;
   while ((m = re.exec(html))) {
     const after = html.slice(m.index + 10, m.index + 1800);
@@ -52,7 +59,7 @@ const done = new Set(state.done);
 const byId = state.byId;
 
 const jobs = [];
-for (const [club, id] of Object.entries(CLUBS)) for (let s = FROM; s <= TO; s++) jobs.push({ club, id, s });
+for (const [club, id] of Object.entries(CLUBS)) if (!ONLY || ONLY.has(club)) for (let s = FROM; s <= TO; s++) jobs.push({ club, id, s });
 
 let n = 0;
 for (const j of jobs) {

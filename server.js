@@ -55,12 +55,11 @@ function tierGap(since) {
   return waited < TIER_WIDEN_MS ? 0 : waited < 2 * TIER_WIDEN_MS ? 1 : 99;
 }
 /**
- * Criteria newer apps added ("mate-…" played with, "coach-…" managed by): the caps
+ * Criteria newer apps added ("mate-…" played with, "coach-…" managed by, "arab-…" Saudi / Egyptian clubs): the caps
  * a phone needs to draw a Tic-Tac-Toe grid. Older apps send no caps.
  */
 const gridNeeds = (grid) =>
-  [...(grid?.rows ?? []), ...(grid?.cols ?? [])].map((id) => (typeof id === "string" ? id.split("-")[0] : "")).filter((k) => k === "mate" || k === "coach");
-const gridHasMate = (grid) => gridNeeds(grid).length > 0;
+  [...(grid?.rows ?? []), ...(grid?.cols ?? [])].map((id) => (typeof id === "string" ? id.split("-")[0] : "")).filter((k) => k === "mate" || k === "coach" || k === "arab");
 const canDraw = (s, grid) => gridNeeds(grid).every((k) => !!s?.data.caps?.includes(k));
 /** knows every criterion kind the app can deal (so the host may use them all) */
 const knowsMates = (s) => ["mate", "coach"].every((k) => !!s?.data.caps?.includes(k));
@@ -1386,7 +1385,8 @@ app.prepare().then(() => {
     socket.on("ht:rematch", ({ grid }) => {
       const room = htRooms.get(socket.data.htCode);
       if (!room || !room.winner || room.players[0].id !== socket.id || !htGridOk(grid)) return;
-      if (gridHasMate(grid) && !htAllKnowMates(room)) return;
+      // every phone in the room must be able to draw the next grid (newer criteria)
+      if (!room.players.every((p) => canDraw(ioServer?.sockets.sockets.get(p.id), grid))) return;
       // next game of the series, or a fresh series once it's decided
       if (htSeries(room).over) {
         room.wins = {};

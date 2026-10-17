@@ -36,6 +36,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
   `ht:forfeit` end games early; a match is a series, first to `HT_TARGET` = 3 game wins,
   wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
+- Saudi / Egyptian leagues ("sa", "eg"): `ARAB_CRITERIA` in tiki.ts (ids "arab-…", never in ALL_CRITERIA so seeded daily
+  grids / Bingo / Mystery / Pitch Chess don't change), players in `src/data/players-arab.ts` ← `ONLY=arab-… FROM=2000 node
+  scripts/tiki-scrape-squads.mjs` → `scripts/arab-build-players.mjs`; answers search `GRID_PLAYERS` (PLAYERS + those). Phones send
+  caps "arab"; server.js `canDraw` keeps such grids from older apps.
 - Leagues (`src/lib/leagues.ts`): Hat-trick grids per league (`leagueGrid`, only that league's
   clubs plus countries/honours; leagues need 3+ clubs in tiki CLUBS); the pick lives in
   `mobile/src/lib/league.ts` and rooms/queue carry `league`. Missing 11 categories (`XI_CATEGORIES`)

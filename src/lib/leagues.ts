@@ -1,5 +1,5 @@
 import { recentMatches } from "./daily";
-import { ALL_CRITERIA, cellSolvable, type Criterion, type Grid } from "./tiki";
+import { ALL_CRITERIA, ARAB_CRITERIA, cellSolvable, type Criterion, type Grid } from "./tiki";
 import type { Match } from "./types";
 
 type L = { tr: string; en: string };
@@ -9,13 +9,15 @@ type L = { tr: string; en: string };
  * countries and honours). Only leagues with at least three clubs in the
  * criteria list can fill a grid, so this is the full set the data allows.
  */
-export type LeagueId = "all" | "tr" | "en" | "es" | "it" | "de" | "pt";
+export type LeagueId = "all" | "tr" | "en" | "es" | "it" | "de" | "pt" | "sa" | "eg";
 export interface League {
   id: LeagueId;
   name: L;
   /** Flag id (mobile Flag component); none = the all-clubs option */
   flag?: string;
   clubs: string[];
+  /** a league-only country criterion that joins the grid's countries (the Saudi and Egyptian leagues) */
+  country?: string;
 }
 
 export const LEAGUES: League[] = [
@@ -26,6 +28,9 @@ export const LEAGUES: League[] = [
   { id: "de", name: { tr: "Bundesliga", en: "Bundesliga" }, flag: "germany", clubs: ["bayern", "dortmund", "schalke", "leverkusen"] },
   { id: "pt", name: { tr: "Portekiz Ligi", en: "Portuguese league" }, flag: "portugal", clubs: ["porto", "benfica", "sporting"] },
   { id: "tr", name: { tr: "Süper Lig", en: "Turkish league" }, flag: "turkey", clubs: ["galatasaray", "fenerbahce", "besiktas"] },
+  // (squads from 2000 on; "arab-…" criteria: newer apps only, see ARAB_CRITERIA in tiki.ts)
+  { id: "sa", name: { tr: "Suudi Pro Ligi", en: "Saudi Pro League" }, flag: "saudiarabia", clubs: ["arab-hilal", "arab-nassr", "arab-ittihad", "arab-ahlisa"], country: "arab-saudiarabia" },
+  { id: "eg", name: { tr: "Mısır Ligi", en: "Egyptian league" }, flag: "egypt", clubs: ["arab-ahly", "arab-zamalek", "arab-pyramids"], country: "arab-egypt" },
 ];
 
 export const leagueById = (id: string | undefined) => LEAGUES.find((l) => l.id === id) ?? LEAGUES[0];
@@ -48,8 +53,8 @@ function shuffle<T>(xs: T[], rand: () => number): T[] {
 export function leagueGrid(id: LeagueId, rand: () => number = Math.random): Grid | null {
   const league = leagueById(id);
   if (!league.clubs.length) return null;
-  const clubs = ALL_CRITERIA.filter((c) => c.kind === "club" && league.clubs.includes(c.id));
-  const others = ALL_CRITERIA.filter((c) => c.kind !== "club");
+  const clubs = [...ALL_CRITERIA, ...ARAB_CRITERIA].filter((c) => c.kind === "club" && league.clubs.includes(c.id));
+  const others = [...ALL_CRITERIA, ...ARAB_CRITERIA].filter((c) => c.kind !== "club" && (!c.id.startsWith("arab-") || c.id === league.country));
   const pairs = rand() < 0.7;
   for (let attempt = 0; attempt < 800; attempt++) {
     const order = shuffle(clubs, rand);
