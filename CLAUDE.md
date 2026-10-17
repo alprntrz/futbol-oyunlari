@@ -152,6 +152,12 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   status bar on Android; Pitch Chess handles the hardware back (`BackHandler`). Google sign-in on Android needs
   `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (the project's Web client; also in the server's GOOGLE_CLIENT_IDS) plus an Android
   OAuth client (package + signing SHA-1). No Apple sign-in / Live Activities there. Emulator: `~/Library/Android/sdk`, AVD Pixel8.
+- Sharing / reminders / first launch (v1.1): `components/ShareCard.tsx` (`useShareCard`: draws a 1080×1350 result card off
+  screen, snaps it with react-native-view-shot and shares it with the emoji text + `SHARE_URL`; no nick or avatar on it; Android
+  sends the text) in the daily grid, Daily XI (`ResultCard`), Bingo, Mystery and Dribbling Rush. `lib/reminders.ts`: local
+  notifications only (expo-notifications, no push token): 19:00 for the next 7 days, skipped on a played day, re-planned by
+  `RemindersSync` (root layout); asked once on Home (`ReminderAsk`) after a finished game, toggle in Settings. `app/onboarding.tsx`:
+  one screen, shown to new installs only (no XP and no `onboarded-v1`), "Solve your first grid" opens today's grid.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

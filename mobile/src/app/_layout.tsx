@@ -20,6 +20,7 @@ import "~/lib/playStreak"; // counts finished games from app start
 import { ONBOARDING } from "~/lib/features";
 import { I18nProvider } from "~/lib/i18n";
 import { initSounds } from "~/lib/sound";
+import { loadXp } from "~/lib/xp";
 import { C, F } from "~/lib/theme";
 
 SplashScreen.preventAutoHideAsync();
@@ -39,10 +40,10 @@ export default function RootLayout() {
     initSounds();
     // restore the account session (if any), sync XP, pay the daily sign-in bonus
     initAccount();
-    // Onboarding (app/onboarding.tsx) is held back for v2 (lib/features.ts)
+    // Onboarding (app/onboarding.tsx): new installs only (no XP yet), so players updating from 1.0 never see it
     if (ONBOARDING)
-      AsyncStorage.getItem("onboarded-v1").then((done) => {
-        if (!done) router.push("/onboarding");
+      Promise.all([AsyncStorage.getItem("onboarded-v1"), loadXp()]).then(([done, xp]) => {
+        if (!done && xp.xp === 0) router.push("/onboarding");
       });
   }, [loaded]);
 
