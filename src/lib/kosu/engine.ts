@@ -288,7 +288,7 @@ export function obstacleX(o: Obstacle, runnerZ: number): number {
   return (o.lane + (o.moveTo - o.lane) * k) * LANE;
 }
 
-function bump(s: RunState, _where: "side" | "wall") {
+function bump(s: RunState) {
   "worklet";
   s.shake = 0.25;
   emit(s, "bump");
@@ -348,7 +348,7 @@ export function step(s: RunState, input: Input, dt: number) {
       s.from = s.lane;
       s.lane = to;
       emit(s, "lane");
-    } else bump(s, "wall");
+    } else bump(s);
   } else if (input === "up" && grounded) {
     s.vy = JUMP_V;
     s.slide = 0;
@@ -456,7 +456,7 @@ export function step(s: RunState, input: Input, dt: number) {
     // mostly beside it while switching lanes: a side bump, bounce back to where you came from
     if (dx > LANE * 0.32 && s.lane !== s.from) {
       s.lane = s.from;
-      bump(s, "side");
+      bump(s);
       continue;
     }
     // the armband forgives one crash: a moment to pass through, the run goes on

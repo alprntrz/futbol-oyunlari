@@ -141,15 +141,13 @@ export const ARAB_CRITERIA: Criterion[] = [
 export const GRID_PLAYERS: GridPlayer[] = [...PLAYERS.map((p) => (ARAB_LINKS[p.name] ? { ...p, clubs: [...p.clubs, ...ARAB_LINKS[p.name]] } : p)), ...ARAB_PLAYERS];
 
 /**
- * Honours with counts and birth decades ("2+ Champions League titles", "Played in a Champions
- * League final", "World Cup top scorer", "Born in the 1990s"…): src/data/honours.ts
- * (scripts/tiki-scrape-honours.mjs + tiki-scrape-finals.mjs → tiki-build-honours.mjs) and
+ * Honours with counts and birth decades ("2+ Champions League titles", "World Cup top scorer", "Born in the 1990s"…): src/data/honours.ts
+ * (scripts/tiki-scrape-honours.mjs → tiki-build-honours.mjs) and
  * src/data/born.ts. Not in ALL_CRITERIA (seeded daily grids stay as they were); `withHonour`
  * swaps one into a dealt grid. Ids "hon-…": the server deals them only to apps with caps "hon".
  */
 const HONOUR_LOOK: Record<HonourId, { tr: string; en: string; icon: string; league?: string }> = {
   ucl2: { tr: "2+ Şampiyonlar Ligi", en: "2+ Champions League titles", icon: "⭐" },
-  uclFinal: { tr: "ŞL finalinde oynadı", en: "Played in a UCL final", icon: "🏟️" },
   uclTop: { tr: "ŞL gol kralı", en: "Champions League top scorer", icon: "👟" },
   wcTop: { tr: "Dünya Kupası gol kralı", en: "World Cup top scorer", icon: "👟" },
   euroTop: { tr: "Avrupa Şampiyonası gol kralı", en: "Euros top scorer", icon: "👟" },
