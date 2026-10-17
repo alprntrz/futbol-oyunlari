@@ -6,7 +6,7 @@ import { ALL_CRITERIA } from "@/lib/tiki";
 import { ChoiceSheet, GameHub, HubSetting } from "~/components/GameHub";
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { Text } from "~/components/Text";
-import { BRAND } from "~/lib/brand";
+import { KOSU } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { useFavClub, useRushBest } from "~/lib/kosu";
 import { GAME, T } from "~/lib/theme";
@@ -26,7 +26,7 @@ export default function RushHome() {
   return (
     <GameHub
       title="Dribbling Rush"
-      image={BRAND.icon.race}
+      image={KOSU.hero}
       bg={GAME.rush.bg}
       tagline={t("rushShort")}
       primary={{ label: t("rushPlay"), icon: "play.fill", fallback: "▶", onPress: () => router.push("/kosu/oyun") }}

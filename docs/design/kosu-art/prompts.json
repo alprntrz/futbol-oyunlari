@@ -1,0 +1,292 @@
+{
+  "assets": [
+    {
+      "id": "runner-run-1",
+      "label": "Koşu 1",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nCreate the MASTER CHARACTER and RUN CYCLE FRAME1 for original football endless-runner Dribbling Rush. A friendly short chibi toy male footballer, oversized round head, medium warm tan skin, simple short dark-brown rounded hair, rounded big charcoal-black cleats. Plain PURE WHITE short-sleeved football shirt, PURE WHITE shorts and white socks; no colored trim. Back view, camera behind and about25degrees above horizontal, facing straight AWAY toward top of screen. No face details visible. Same hair, body proportions, garment and boots will be used for all later frames.\nRunning while dribbling a classic black-white football slightly ahead and to his right (visible around right boot, roughly x64% y78%). RUN PHASE1: anatomical LEFT leg extended forward toward screen top, RIGHT leg pushes back toward viewer; right arm swings forward and left arm swings back. Clearly readable running pose. Torso upright with slight forward lean, no sideways rotation. One foot contacts ground.\nSquare1024x1024 composition: character centerline x50%; top of head around y13%; standing contact baseline y86%; maximum silhouette width about64%canvas. Ground contact anchor at x50%,y86%. Entire character and ball visible with no crop. No speed trails, no scenery, no accessories. Render ONE character with ONE ball only, not sprite sheet.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-e94cfe3e-9a08-412d-92b8-1d89f85a5238.png"
+    },
+    {
+      "id": "runner-run-2",
+      "label": "Koşu 2",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nAnimation frame2 of4, first FLIGHT/PASSING phase after the left-forward stride. Both feet visibly briefly off ground, left leg beginning to extend backward and right knee moving forward; legs closer together beneath hips than in reference. Bent elbows counter-swing, torso same x,y and size as reference (maximum2%upward bob). Ball stays on ground ahead at same visible right-side x65%,y78% position. Head position and silhouette scale MUST MATCH reference so frames can be swapped without resizing. Change ONLY arm/leg pose, not hair, kit, framing, camera or ball size.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-bcb487c1-9f2d-4799-9881-ff294fd15512.png",
+      "edit_prompt": "Precise animation registration edit. Image1 is the target running pose; image2 is reference for FOOTBALL POSITION ONLY. Keep all character pixels, limbs pose, head, proportions, framing, camera and scale of IMAGE1 unchanged. Move only the football and its tiny contact shadow so football center and size precisely match image2: center approximately x65%,y75% of square, diameter about15%width. The ball should sit higher than currently in image1. Do not change the pose or move the body to match image2. Preserve genuine transparent background. One ball only, no speed lines."
+    },
+    {
+      "id": "runner-run-3",
+      "label": "Koşu 3",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nAnimation frame3 of4, the OPPOSITE STRIDE to reference: anatomical RIGHT leg extends FORWARD away from viewer and LEFT leg pushes BACK toward viewer, left boot sole visible. LEFT arm swings forward, RIGHT arm swings back. Make leg/arm reversal clear. Torso/head stay at exact reference coordinates, same size and camera. Ball stays on ground at visible right-side x65%,y78%, same size. Change ONLY limb pose.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-fe290a5a-cf9c-4f37-9f19-13f8d7bea8f6.png",
+      "edit_prompt": "Precise pose edit. The supplied transparent image is the target. Preserve this exact character identity, head position, hair, torso position, white kit, camera, lighting, overall size, and BALL POSITION at right. Change ONLY limb pose to OPPOSITE step. Currently the large boot sole is on SCREEN LEFT: it must be on SCREEN RIGHT. RIGHT leg extends backwards toward camera, large right boot sole visible centered around x58% y81%; LEFT leg goes forward away from camera, smaller left boot roughly x44% y72%. Arm swings also reversed: screen-right arm points down/back towards viewer; screen-left arm bent forward away. Do not mirror the whole picture, do not move the ball. Clearly alternating opposite stance from input. Preserve genuine transparent background and same1024 square framing. One character one ball."
+    },
+    {
+      "id": "runner-run-4",
+      "label": "Koşu 4",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nAnimation frame4 of4, second FLIGHT/PASSING phase after right-forward stride, preparing return to left-forward reference. Both feet briefly off ground; RIGHT leg folding back while LEFT knee swings forward. Opposite arm swing to flight frame2. Torso at same x,y and size as reference (maximum2%upward bob). Ball stays on ground at visible right-side x65%,y78%, same size. The pose must be distinct from reference with legs closer under hips and knees bent. Only arm/leg pose changes.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-143b817b-5944-4095-921c-1fec7447543c.png",
+      "edit_prompt": "Precise animation registration edit. Image1 is the target running pose; image2 is reference for FOOTBALL POSITION ONLY. Keep all character pixels, limbs pose, head, proportions, framing, camera and scale of IMAGE1 unchanged. Move only the football and its tiny contact shadow so football center and size precisely match image2: center approximately x65%,y75% of square, diameter about15%width. The ball should sit higher than currently in image1. Do not change the pose or move the body to match image2. Preserve genuine transparent background. One ball only, no speed lines."
+    },
+    {
+      "id": "runner-jump",
+      "label": "Zıplama",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nSame character JUMPING upward, both knees clearly bent and tucked, arms lifted sideways slightly for balance, classic black-white ball held in air BETWEEN boots. Rear view. Entire body airborne with very faint short ground shadow at original baseline y88%; character elevated within canvas, no cropping, keep same body/head scale. No speed trails or extra ball.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-d82d02a1-eb96-43b9-a71e-dee594f1d988.png"
+    },
+    {
+      "id": "runner-slide",
+      "label": "Kayma",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nSame character performing LOW FEET-FIRST GROUND SLIDE away from viewer. Rear elevated view, torso leaning backward close to ground, hips low, one leg stretched forward and one bent, arms out for balance. Ball clearly just ahead of extended boot toward screen top, visible to one side. This is a safe playful arcade slide, not injury. Keep same character scale and same ground baseline y88%; allow empty transparent space above low pose rather than enlarging head to fill. No grass or scenery.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-53b156a1-b6e0-4fda-adc0-9349332fa09f.png"
+    },
+    {
+      "id": "runner-fall",
+      "label": "Takılma",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nSame character in a funny harmless FORWARD TUMBLE after tripping: sprawled belly-down facing away toward screen top, hands extended to brace, knees bent and one boot tilted up, head facing ground so no face. Ball rolling a little ahead to upper right, a single tiny subtle motion streak near ball. No injury,pain,bruises,stars over head or violence. Keep same model scale and original ground anchor, low pose with empty transparent upper space rather than zooming. Single character/ball.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-2bf36e5e-a3e5-4814-83a7-2566c4db6b4d.png"
+    },
+    {
+      "id": "runner-goal",
+      "label": "Gol sevinci",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nFRONT VIEW of exact same character celebrating a goal with both arms raised in a wide V, feet planted, small joyous body bounce. Same dark-brown hair and tan skin, simple SMOOTH FACELESS rounded head: no eyes,nose,mouth or facial details. White shirt/shorts/socks, black boots. Head/body same proportions. A black-white football rests near one boot. Full figure centered with8%margin, celebratory result-card asset. No trophy or text.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-f39c6ee2-876c-4821-aa20-ef6c2374b4c9.png"
+    },
+    {
+      "id": "hero",
+      "label": "Giriş görseli",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nInput is the EXACT master character reference. Preserve same chibi boy, dark brown sculpted short hair, tan skin, white shirt/shorts/socks, charcoal rounded cleats, head/body proportions, shading and warm upper-left light. Same square canvas and camera from BEHIND about25degrees elevated, unless front explicitly requested. Preserve same apparent character scale; do not automatically zoom to fill. Ground anchor remains x50%,y88%. No letters,numbers,logos or faces visible from rear. One character and one ball, transparent background, no sprite sheet.\nSquare transparent HERO ICON composition for this football runner: same white-kit character dribbling black-white ball, dynamic rear THREE-QUARTER view with no facial features visible, running toward a small white football goal behind him at upper right. Character is main subject70%composition, goal secondary, a few chunky blue and gold speed swooshes behind him, no full background and no grass tile. Clean readable app game illustration with clear silhouette at80px, all composed elements contained in square with8%margin. No text,numbers,logos. One character,one ball,one goal.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-be27b4d2-3f71-442c-a458-6a8b0c931a7b.png",
+      "edit_prompt": "Precise framing edit. Preserve this exact character, pose, white kit, ball, blue/gold swooshes, goal and lighting. Make the ENTIRE composition smaller within the same square so every part of the goal including far right rear support is fully visible, with at least8percent transparent empty margin on ALL sides. The existing right edge clips the goal: restore that cut-off portion. No other changes. Genuine transparent PNG, no backdrop, no text."
+    },
+    {
+      "id": "obs-tackle",
+      "label": "Kayarak müdahale",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne chibi toy defender performing a low sliding tackle sideways across a lane, three-quarter SIDE/REAR view from25degrees above. One leg fully extended, other bent, arms balancing, no face visible. Plain neutral gray shirt and shorts (strictly equal R,G,B, no blue/purple tint), dark boots, tan skin and simple brown hair. A few chunky green grass particles near sliding boot, no grass floor. Clear wide low silhouette, playful nonviolent arcade obstacle. Match reference character's toy materials/proportions.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-2366e1f3-d125-4d42-95fc-198d96aec380.png",
+      "edit_prompt": "Precisely REMOVE ONLY the black-white football at the right of this sliding gray-kit defender. This is an obstacle character and must have NO BALL. Preserve exact character, gray kit, pose, hair, boots, small grass particles, scale and camera. Fill removed ball area with genuine transparency. Keep all other content unchanged."
+    },
+    {
+      "id": "obs-wall",
+      "label": "Dört kişilik baraj",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nFOUR chibi toy defenders standing closely shoulder-to-shoulder as one compact football defensive wall. BACK view from25degrees above, facing away, hands held together in FRONT of bodies and therefore mostly hidden. Four distinct rounded heads, gray matching shirts and shorts with neutral gray RGB-equal tones, white socks, charcoal boots, tan skin, simple short hair. Whole wall fits one lane as a wide chunky obstacle sprite, all four fully visible, no extra people. No front faces, no ball.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-8e68651f-9620-45b0-9e67-1894267496c6.png"
+    },
+    {
+      "id": "obs-defender",
+      "label": "Defansçı",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne stocky broad chibi toy defender FRONT view facing the approaching player, arms extended outward to block a lane, firmly planted wide stance. Big rounded smooth FACELESS head with no eyes,nose,mouth; tan skin, short dark hair, neutral GRAY shirt/shorts, white socks, charcoal rounded boots. Slight elevated25degree player camera. Solid readable silhouette, gray kit recolorable, no ball. Match reference style.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-34dbac36-297e-4f4a-971b-834a86ad1a69.png"
+    },
+    {
+      "id": "obs-referee",
+      "label": "Hakem",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne friendly chibi referee FRONT view, plain BLACK referee shirt/shorts, black socks and shoes, tan smooth FACELESS head without eyes/nose/mouth, simple short dark hair. One arm straight upward holding a single bright RED rectangular card, other arm relaxed. No whistle chain or badge, no letters. Whole raised arm/card and feet visible. Slight elevated player camera.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-0ae353bd-326b-465e-a28c-3f95a369ee06.png"
+    },
+    {
+      "id": "obs-cones",
+      "label": "Koniler",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nTHREE chunky bright ORANGE football training cones, low rounded cones with wide bases, arranged in a short diagonal row receding toward top. Back/slightly above25degree player camera, three cones distinct with small gaps; one compact low obstacle assembly. Smooth satin plastic, a simple white band allowed, no letters/logos. No grass patch.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-fad64fd6-6450-4388-a015-40d39e4dccf7.png"
+    },
+    {
+      "id": "obs-sprinkler",
+      "label": "Fıskiye",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nA small chunky green-and-dark-gray ground lawn sprinkler spraying a clear BLUE WATER ARC, the arc wide and tall enough to be readable as a game obstacle. Small shallow translucent blue puddle directly underneath, a few large rounded water droplets. Slight above/rear25degree camera, isolated object, transparent all around and through arc gaps. No large water curtain obscuring sprinkler, no opaque ground plane. Clean simplified toy water.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-f6339c82-40ba-4dc6-84bc-c11fb98996c3.png"
+    },
+    {
+      "id": "obs-board",
+      "label": "Pano engeli",
+      "w": 1536,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne blank football sideline advertising board partially toppled and leaning across the running lane, mounted between two chunky short dark supports. Plain vivid BLUE rectangular board, no text or logos. Its lower edge elevated visibly above ground leaving a clear wide GAP for a player to slide UNDER. View from the approaching player's rear camera position, slightly above25degrees; see front blank face at slight tilt, sturdy small support feet at sides. Wide low obstacle, not flat lying on ground. No surrounding pitch.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-0a643ca5-31ff-481b-980a-3fc7c488b180.png"
+    },
+    {
+      "id": "pick-coin",
+      "label": "Altın",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne thick GOLD coin, slightly angled so face and rim both visible, small embossed FOOTBALL symbol at center (not letter), chunky rounded rim, warm polished satin plastic-metal hybrid. Match friendly toy football game. No numbers/text. Single centered pickup.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-737a762f-496c-40f4-8e4f-8d903d03f7e7.png"
+    },
+    {
+      "id": "pick-boots",
+      "label": "Hız kramponları",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nA PAIR of bright orange and gold chunky football CLEATS with small white feathered WINGS attached at outer sides. Both boots visible overlapping slightly in a dynamic diagonal composition. Glossy toy material, bold silhouette, no logos, no laces so tiny they disappear. Speed-powerup icon, no text.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-355f67e9-6d0e-442c-8ba8-3e6ad9b3641b.png"
+    },
+    {
+      "id": "pick-magnet",
+      "label": "Mıknatıs",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nA chunky RED and WHITE horseshoe MAGNET curved around a classic black-white FOOTBALL at its tips, single unified powerup object. Both white magnet poles visible, football between tips, slight diagonal tilt, smooth glossy toy plastic. No lightning bolts, letters or text.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-39df142c-57c7-4d52-996e-2c0518d1adde.png"
+    },
+    {
+      "id": "pick-armband",
+      "label": "Kaptanlık bandı",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nA plain royal BLUE captain ARMBAND, visibly a thick circular fabric band with open center, front bearing a small solid blue SHIELD plate with GOLD border. It communicates shield protection, restrained golden rim sheen, no letter C or captain text, no crest or symbol inside shield. A single unified readable powerup object, slight angle shows the armband loop.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-4d31c088-6240-43ff-9e06-b0893db1d2af.png"
+    },
+    {
+      "id": "pick-2x",
+      "label": "Çarpan rozeti",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne chunky radiant GOLD five-point STAR BADGE with a broad smooth blank circular blue center for text that will be added later in code. No text, no numbers, especially do NOT write2x. Small two gold sparkle shapes nearby, no diffuse opaque glow background. Bold toy pickup silhouette, shiny but no neon.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-109d0b22-99dd-4899-97dd-ceb374b4f10e.png"
+    },
+    {
+      "id": "field-tile",
+      "label": "Saha dilimi",
+      "w": 1024,
+      "h": 2048,
+      "transparent": false,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOVERRIDE transparency and camera: OPAQUE full-bleed vertical1024x2048 texture, absolutely straight ORTHOGRAPHIC TOP-DOWN view of a football running track grass section. Seamlessly TILEABLE VERTICALLY. Alternating wide horizontal light/dark green mown stripes, ONLY TWO thin straight white SIDELINE STRIPES at x8% and x92% running perfectly continuously from top to bottom. No center markings, no crosswise white lines, no lane dividers, no goals, no players, no objects, no perspective, no border. Uniform even light, subtle soft stylized grass texture. Design vertical periodic repeat: TOP AND BOTTOM EDGES MUST BE IDENTICAL in color and texture, both in middle of the SAME light-green stripe; first half-stripe at top matches last half-stripe at bottom. No edge darkening or shadows. No text. Intended to repeat indefinitely as scrolling football field.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-797171ab-22ef-4b69-bc7a-012d0832f24c.png",
+      "edit_prompt": "Edit this top-down football grass texture into a truly vertically seamless repeating game texture. Preserve bright friendly short grass, alternating horizontal light and dark green mowing bands and two straight parallel white sidelines, no other markings. Portrait1024x2048 opaque. Remove all overall illumination gradients and vignetting. Uniform even lighting. Most crucial: FIRST ROW AND LAST ROW MUST HAVE IDENTICAL PIXEL COLORS across their entire widths. Create exactly8 identical light-dark stripe periods; each stripe128px tall except top/bottom have half-width64px light stripe so repeating edges join into complete128px stripe. Match grass noise pattern at top and bottom by wrapping. Sidelines straight x76 and948, consistent widths, matching top/bottom. No perspective, shadows, objects, lettering. Keep existing friendly lush style. Seamless vertical texture atlas, exact matching upper and lower border."
+    },
+    {
+      "id": "stand-left",
+      "label": "Sol tribün",
+      "w": 1024,
+      "h": 2048,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nA LEFT SIDELINE low stadium stand segment, tall NARROW portrait1:2 composition, meant to sit along the left edge of a vertically scrolling football track. Three tiers of bright blue simple seats with a colorful crowd of tiny FACELESS toy spectators, tan/brown featureless rounded heads, red/yellow/blue/green shirts. Straight flat side/elevation view, NO perspective convergence. Vertical rows run along image long axis, field-facing low railing on RIGHT edge. All tiers and base contained in narrow strip with transparent outside. Modules repeat regularly along VERTICAL axis and top/bottom design match for vertical tiling. No flags with symbols, no signs, no numbers. No field. Chunky coherent sprite, not real humans.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-78fb1777-5471-4478-b380-2cfc8d902568.png"
+    },
+    {
+      "id": "stand-right",
+      "label": "Sağ tribün",
+      "w": 1024,
+      "h": 2048,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nA RIGHT SIDELINE low stadium stand segment, tall NARROW portrait1:2 composition, meant to sit along right edge of vertically scrolling football track. Three tiers of bright blue simple seats with a colorful crowd of tiny FACELESS toy spectators, tan/brown featureless rounded heads, red/yellow/blue/green shirts. Straight flat side/elevation view, NO perspective convergence. Vertical rows run along image long axis, field-facing low railing on LEFT edge. All tiers and base contained in narrow strip with transparent outside. Modules repeat regularly along VERTICAL axis and top/bottom design match for vertical tiling. No flags with symbols, no signs, no numbers. No field. Chunky coherent sprite, not real humans.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-e0c923fd-4d89-4625-b75c-b3fa6ca5bbfc.png",
+      "edit_prompt": "Create the matching RIGHT SIDELINE counterpart to this exact LEFT stadium-stand sprite. Preserve its SAME low stand module design, seat count/scale, blue seats, gray tier structure, three repeated sections along vertical canvas, simple faceless colored toy crowd, materials and TOP-LEFT lighting. Mirror its STRUCTURE horizontally so the low field-facing railing is on the LEFT edge and higher rear structure on the RIGHT. It must be the same narrow low-tier strip in reverse orientation, not a tall tower or completely different stadium. Flat orthographic projection with no vanishing point. Keep every head, support and railing fully within image,8percent transparent padding top/bottom, clear transparent outside. Portrait1:2,1024x2048. No text/logos."
+    },
+    {
+      "id": "goal",
+      "label": "Kale",
+      "w": 1536,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne LARGE EMPTY football GOAL, FRONT view with slight glimpse into net depth. Thick smooth white rounded posts and crossbar, rectangular goal shape, white net with clean medium-large grid, subtle back rim lighting plus warm top-left highlights. Net holes genuinely transparent. Whole goal including feet and rear support fully visible with8%margin in landscape3:2 composition. No ball, player, grass, stadium or ground plane. Toy sports style, robust posts readable at80px, no tiny tangled threads.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-9fc196ee-2104-4c04-b669-fb82848b4644.png"
+    },
+    {
+      "id": "keeper",
+      "label": "Kaleci",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": true,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne chibi toy GOALKEEPER facing FRONT, legs apart in ready stance and both arms spread wide, large rounded light-gray gloves, emerald GREEN plain keeper shirt and shorts, green socks, charcoal cleats. Smooth tan featureless FACELESS rounded head, no eyes,nose,mouth, simple short dark hair. Slight elevated25degree player camera. No ball, no goal, no padding logos. Same chibi proportions as reference runner.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-3147e914-aef4-489d-b49b-b283a1dfe8be.png"
+    },
+    {
+      "id": "ball",
+      "label": "Top",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nOne classic black-white football alone, slightly elevated view, chunky soft toy proportions, clean large pentagons, warm upper-left highlight, light short contact shadow, no symbols or branding. Large centered isolated ball, usable HUD/result sprite.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-b4c313ae-73cb-4a1c-aa17-bee2802d8f96.png"
+    },
+    {
+      "id": "hud-distance",
+      "label": "Mesafe ikonu",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nSmall distance-counter icon: ONE chunky royal BLUE running shoe with white sole and tiny orange heel tab, viewed side-on at slight elevated angle, toe points right. Strong simple silhouette, smooth toy plastic-fabric, no brand marks, no wing, no text, no numbers. Single object.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-96b3c00d-4ec0-493b-b43f-c1a68c6d4db0.png"
+    },
+    {
+      "id": "hud-goal",
+      "label": "Gol sayacı ikonu",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "character": false,
+      "prompt": "Mobile casual football game asset, soft glossy 3D toy style: chunky rounded shapes, smooth satin plastic and fabric materials, thick clean silhouette, warm TOP-LEFT studio light, gentle rim light, rich saturated colors without neon. No text, letters, numbers, logos, club crests or sponsor marks. No real person, no recognizable face. Genuine transparent background PNG, whole subject centered with roughly8percent empty margin, readable at80px. Very light short soft contact shadow under subject only, no opaque ground or backdrop.\nSmall goal-counter icon: miniature WHITE football GOAL NET with a black-white football nestled in its lower-right corner. Compact unified square composition, frontal slight elevated angle, thick posts and simplified large net grid for readability at80px. One goal plus one ball, no grass, no numbers or text, transparent through net.",
+      "source": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-a088d42f-217a-48cc-8d56-9f049512c452.png"
+    }
+  ]
+}

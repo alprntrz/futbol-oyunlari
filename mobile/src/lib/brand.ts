@@ -184,3 +184,32 @@ export const BRAND = {
 } as const;
 
 export type JerseyStyle = keyof typeof BRAND.jersey;
+
+/** Dribbling Rush art (docs/design/futbol-kosu-brief.md → scripts/kosu-assets.py). Runner frames: run 1–4, jump, slide, fall, goal. */
+export const KOSU = {
+  runner: [
+    { base: require("../../assets/brand/kosu/runner-run-1.png"), cloth: require("../../assets/brand/kosu/runner-run-1-cloth.png"), shade: require("../../assets/brand/kosu/runner-run-1-shade.png") },
+    { base: require("../../assets/brand/kosu/runner-run-2.png"), cloth: require("../../assets/brand/kosu/runner-run-2-cloth.png"), shade: require("../../assets/brand/kosu/runner-run-2-shade.png") },
+    { base: require("../../assets/brand/kosu/runner-run-3.png"), cloth: require("../../assets/brand/kosu/runner-run-3-cloth.png"), shade: require("../../assets/brand/kosu/runner-run-3-shade.png") },
+    { base: require("../../assets/brand/kosu/runner-run-4.png"), cloth: require("../../assets/brand/kosu/runner-run-4-cloth.png"), shade: require("../../assets/brand/kosu/runner-run-4-shade.png") },
+    { base: require("../../assets/brand/kosu/runner-jump.png"), cloth: require("../../assets/brand/kosu/runner-jump-cloth.png"), shade: require("../../assets/brand/kosu/runner-jump-shade.png") },
+    { base: require("../../assets/brand/kosu/runner-slide.png"), cloth: require("../../assets/brand/kosu/runner-slide-cloth.png"), shade: require("../../assets/brand/kosu/runner-slide-shade.png") },
+    { base: require("../../assets/brand/kosu/runner-fall.png"), cloth: require("../../assets/brand/kosu/runner-fall-cloth.png"), shade: require("../../assets/brand/kosu/runner-fall-shade.png") },
+    { base: require("../../assets/brand/kosu/runner-goal.png"), cloth: require("../../assets/brand/kosu/runner-goal-cloth.png"), shade: require("../../assets/brand/kosu/runner-goal-shade.png") },
+  ],
+  obs: {
+    tackle: require("../../assets/brand/kosu/obs-tackle.png"),
+    board: require("../../assets/brand/kosu/obs-board.png"),
+    defender: require("../../assets/brand/kosu/obs-defender.png"),
+    referee: require("../../assets/brand/kosu/obs-referee.png"),
+    cones: require("../../assets/brand/kosu/obs-cones.png"),
+  },
+  pick: [require("../../assets/brand/kosu/pick-boots.png"), require("../../assets/brand/kosu/pick-magnet.png"), require("../../assets/brand/kosu/pick-armband.png"), require("../../assets/brand/kosu/pick-2x.png")],
+  coin: require("../../assets/brand/kosu/pick-coin.png"),
+  goal: require("../../assets/brand/kosu/goal.png"),
+  keeper: require("../../assets/brand/kosu/keeper.png"),
+  ball: require("../../assets/brand/kosu/ball.png"),
+  hero: require("../../assets/brand/kosu/hero.png"),
+  hudDistance: require("../../assets/brand/kosu/hud-distance.png"),
+  hudGoal: require("../../assets/brand/kosu/hud-goal.png"),
+};

@@ -8,7 +8,6 @@ import { LANE, multOf, newRun, nextGoalOf, obstacleX, POWER_S, scoreOf, step, ty
 import { quizQuestions } from "@/lib/quiz";
 
 import { CLUB_KITS } from "~/components/HatTrickBoard";
-import { Jersey } from "~/components/Jersey";
 import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Button, Icon, Tap } from "~/components/ui";
@@ -16,7 +15,7 @@ import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { recordRun, useFavClub } from "~/lib/kosu";
 import { questEvent } from "~/lib/quests";
-import { TAKTIK } from "~/lib/brand";
+import { KOSU } from "~/lib/brand";
 import { play } from "~/lib/sound";
 import { C, F, R, shadow } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
@@ -299,6 +298,7 @@ export default function RushGame() {
         </Tap>
         <View style={{ flex: 1 }} />
         <View style={styles.pill}>
+          <Image source={KOSU.hudDistance} style={{ width: 26, height: 15 }} />
           <Text style={styles.pillText}>{score}</Text>
         </View>
         {mult > 1 && (
@@ -307,7 +307,7 @@ export default function RushGame() {
           </View>
         )}
         <View style={[styles.pill, { backgroundColor: "#FEF3C7" }]}>
-          <Image source={TAKTIK.ui.coin} style={{ width: 20, height: 20 }} />
+          <Image source={KOSU.coin} style={{ width: 20, height: 21 }} />
           <Text style={styles.pillText}>{coins}</Text>
         </View>
       </View>
@@ -419,38 +419,42 @@ function Dash({ i, x, wide, line, state, W, fx, horizon }: View3D & { i: number;
   return <Animated.View style={[line ? styles.line : styles.dash, style]} />;
 }
 
-/** stand-in looks until the art is in: slide tackle (low, grey), wall (raised, striped), defender (tall), cones (low, orange) */
-const OB_LOOK = [
-  { w: 1.9, h: 0.55, color: "#8B95A1" },
-  { w: 2.2, h: 1.7, color: "#64748B" },
-  { w: 1.1, h: 2.0, color: "#DC2626" },
-  { w: 1.8, h: 0.5, color: "#FB923C" },
+/** obstacle art and its size on the pitch (m): slide tackle and cones (jump), the board (roll under), a defender (switch lane); a drifting one is the referee */
+const OB_ART = [
+  { src: KOSU.obs.tackle, w: 1.9, h: 1.63 },
+  { src: KOSU.obs.board, w: 2.4, h: 1.13 },
+  { src: KOSU.obs.defender, w: 1.75, h: 1.95 },
+  { src: KOSU.obs.cones, w: 1.7, h: 1.2 },
+  { src: KOSU.obs.referee, w: 0.98, h: 1.95 },
 ];
 
 function ObstacleSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
+  const [look, setLook] = useState(0);
+  useAnimatedReaction(
+    () => {
+      const o = state.value.obstacles[i];
+      return o ? (o.kind === 2 && o.moveTo !== o.lane ? 4 : o.kind) : -1;
+    },
+    (k, prev) => {
+      if (k !== prev && k >= 0) runOnJS(setLook)(k);
+    }
+  );
   const style = useAnimatedStyle(() => {
     const s = state.value;
     const o = s.obstacles[i];
     if (!o || o.z < s.z - 1.2) return { opacity: 0 };
     const p = project(s, obstacleX(o, s.z), 0, o.z, W, fx, horizon);
     if (!p || p.dz > 95) return { opacity: 0 };
-    const look = OB_LOOK[o.kind];
-    // a wall stands raised: its bottom edge sits above the ground, so you roll under
-    const lift = o.kind === 1 ? 0.75 : 0;
-    const w = look.w * p.k;
-    const h = look.h * p.k;
-    return {
-      opacity: Math.min(1, (95 - p.dz) / 15),
-      zIndex: Math.round(2000 - p.dz * 10),
-      width: w,
-      height: h,
-      left: p.sx - w / 2,
-      top: p.sy - h - lift * p.k,
-      backgroundColor: look.color,
-      borderRadius: Math.min(w, h) * 0.18,
-    };
+    const a = OB_ART[o.kind === 2 && o.moveTo !== o.lane ? 4 : o.kind];
+    const w = a.w * p.k;
+    const h = a.h * p.k;
+    return { opacity: Math.min(1, (95 - p.dz) / 15), zIndex: Math.round(2000 - p.dz * 10), width: w, height: h, left: p.sx - w / 2, top: p.sy - h };
   });
-  return <Animated.View style={[styles.obstacle, style]} />;
+  return (
+    <Animated.View style={[styles.sprite, style]}>
+      <Image source={OB_ART[look].src} style={styles.fill} resizeMode="contain" />
+    </Animated.View>
+  );
 }
 
 /** a blank advertising board standing on a touchline (alternating sides), rushing past */
@@ -477,14 +481,16 @@ function GoalSprite({ state, W, fx, horizon, lanes }: View3D & { lanes: string[]
     const g = nextGoalOf(s);
     const p = g ? project(s, 0, 0, g.z, W, fx, horizon) : null;
     if (!g || !p || p.dz > 110) return { opacity: 0 };
-    const w = (3 * LANE + 0.6) * p.k;
-    const h = 2.7 * p.k;
-    return { opacity: Math.min(1, (110 - p.dz) / 15), zIndex: Math.round(2000 - p.dz * 10), left: p.sx - w / 2, top: p.sy - h, width: w, height: h, borderWidth: Math.max(2, 0.14 * p.k) };
+    const w = (3 * LANE + 1.2) * p.k;
+    const h = 3.6 * p.k;
+    return { opacity: Math.min(1, (110 - p.dz) / 15), zIndex: Math.round(2000 - p.dz * 10), left: p.sx - w / 2, top: p.sy - h, width: w, height: h };
   });
   return (
     <Animated.View style={[styles.goal, frame]} pointerEvents="none">
+      <Image source={KOSU.goal} style={[styles.fill, { position: "absolute" }]} resizeMode="stretch" />
+      <Image source={KOSU.keeper} style={styles.keeper} resizeMode="contain" />
       {[0, 1, 2].map((i) => (
-        <View key={i} style={[styles.goalLane, i > 0 && styles.goalDivider]}>
+        <View key={i} style={styles.goalLane}>
           {lanes && (
             <View style={styles.goalLabel}>
               <Text style={styles.goalLabelText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.5}>
@@ -503,7 +509,7 @@ function PowerChip({ kind, share }: { kind: PowerKind; share: number }) {
   const look = POWER_LOOK[kind];
   return (
     <View style={[styles.powerChip, { borderColor: look.color }]}>
-      <Text style={styles.powerIcon}>{look.icon}</Text>
+      <Image source={KOSU.pick[kind]} style={{ width: 24, height: 22 }} resizeMode="contain" />
       <View style={styles.powerTrack}>
         <View style={[styles.powerFill, { width: `${Math.max(0, Math.min(1, share)) * 100}%`, backgroundColor: look.color }]} />
       </View>
@@ -527,7 +533,7 @@ function PickupSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
     const bob = Math.sin(s.t * 4 + i) * 0.15;
     const q = project(s, p.lane * LANE, 0.9 + bob, p.z, W, fx, horizon);
     if (!q || q.dz > 80) return { opacity: 0 };
-    const size = 1.15 * q.k;
+    const size = 1.3 * q.k;
     return {
       opacity: Math.min(1, (80 - q.dz) / 12),
       zIndex: Math.round(2000 - q.dz * 10),
@@ -535,20 +541,13 @@ function PickupSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
       height: size,
       left: q.sx - size / 2,
       top: q.sy - size / 2,
-      borderRadius: size / 2,
-      transform: [{ rotate: `${Math.sin(s.t * 3 + i) * 12}deg` }],
+      transform: [{ rotate: `${Math.sin(s.t * 3 + i) * 12}deg` }, { scale: 1 + Math.sin(s.t * 6 + i) * 0.06 }],
     };
   });
-  const label = useAnimatedStyle(() => {
-    const s = state.value;
-    const p = s.pickups[i];
-    const q = p ? project(s, 0, 0, p.z, W, fx, horizon) : null;
-    return { fontSize: q ? Math.max(6, Math.min(70, q.k * 0.55)) : 6 };
-  });
-  const look = POWER_LOOK[kind];
   return (
-    <Animated.View style={[styles.pickup, { backgroundColor: look.color }, style]}>
-      <Animated.Text style={[styles.pickupText, label]}>{look.icon}</Animated.Text>
+    <Animated.View style={[styles.sprite, style]}>
+      <View style={[styles.pickGlow, { backgroundColor: POWER_LOOK[kind].color }]} />
+      <Image source={KOSU.pick[kind]} style={styles.fill} resizeMode="contain" />
     </Animated.View>
   );
 }
@@ -560,51 +559,57 @@ function CoinSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
     if (!c || c.taken || c.z < s.z - 0.4) return { opacity: 0 };
     const p = project(s, c.lane * LANE, c.y + 0.7, c.z, W, fx, horizon);
     if (!p || p.dz > 80) return { opacity: 0 };
-    const size = 0.75 * p.k;
+    const size = 0.8 * p.k;
     // spinning: squash the width
     const spin = Math.abs(Math.cos(s.t * 5 + i));
     return {
       opacity: Math.min(1, (80 - p.dz) / 12),
       zIndex: Math.round(2000 - p.dz * 10),
-      width: Math.max(2, size * (0.25 + 0.75 * spin)),
+      width: Math.max(2, size * (0.2 + 0.8 * spin)),
       height: size,
-      left: p.sx - (size * (0.25 + 0.75 * spin)) / 2,
+      left: p.sx - (size * (0.2 + 0.8 * spin)) / 2,
       top: p.sy - size / 2,
-      borderRadius: size / 2,
     };
   });
-  return <Animated.View style={[styles.coin, style]} />;
+  return (
+    <Animated.View style={[styles.sprite, style]}>
+      <Image source={KOSU.coin} style={styles.fill} resizeMode="stretch" />
+    </Animated.View>
+  );
 }
 
-function Runner({ state, W, fx, horizon, kit }: View3D & { kit: { body: string; sleeves: string; pattern?: unknown } }) {
-  const size = (1.9 * fx) / CAM_BACK;
-  const body = useAnimatedStyle(() => {
+/** which runner frame shows now: 0–3 the run cycle, 4 jump, 5 slide, 6 fall */
+function frameOf(s: RunState): number {
+  "worklet";
+  if (s.dead) return 6;
+  if (s.y > 0.05) return 4;
+  if (s.slide > 0) return 5;
+  // the stride quickens with the speed
+  return Math.floor(s.z / 1.15) % 4;
+}
+
+/** The runner: the drawn frames, each with its kit tinted in the club colour (cloth layer) and the folds over it. */
+function Runner({ state, W, fx, horizon, kit }: View3D & { kit: { body: string } }) {
+  // the 1024 canvas: the figure stands ~1.8 m tall in it, its feet at 93 % down
+  const C = (2.6 * fx) / CAM_BACK;
+  const box = useAnimatedStyle(() => {
     const s = state.value;
-    const p = project(s, s.x, s.y, s.z, W, fx, horizon)!;
-    const ground = project(s, s.x, 0, s.z, W, fx, horizon)!;
-    const rolling = s.slide > 0 && s.y === 0;
-    const bob = s.dead || s.y > 0 || rolling ? 0 : Math.abs(Math.sin(s.t * 13)) * size * 0.05;
-    const fall = s.dead ? Math.min(1, (s.t - s.dead) / 0.35) : 0;
-    // a stumble flickers
+    const g = project(s, s.x, 0, s.z, W, fx, horizon)!;
+    const lift = s.y * g.k;
     const flicker = s.stumble < 0.6 || (s.ghost > 0 && s.boots === 0) ? (Math.floor(s.t * 20) % 2 ? 0.45 : 1) : 1;
-    return {
-      opacity: flicker,
-      zIndex: Math.round(2000 - CAM_BACK * 10),
-      left: p.sx - size / 2,
-      top: p.sy - size - bob - (ground.sy - p.sy) * 0,
-      transform: [{ translateY: size * 0.5 * (rolling ? 0.45 : 0) }, { scaleY: rolling ? 0.55 : 1 }, { rotateX: `${fall * 70}deg` }],
-    };
+    // a lane switch leans the body into it
+    const lean = (s.lane * LANE - s.x) * -4;
+    return { opacity: flicker, zIndex: Math.round(2000 - CAM_BACK * 10), left: g.sx - C / 2, top: g.sy - C * 0.93 - lift, transform: [{ rotate: `${Math.max(-12, Math.min(12, lean))}deg` }] };
   });
-  // power-up looks on the runner: a speed glow with the boots, a gold ring with the armband
   const aura = useAnimatedStyle(() => {
     const s = state.value;
-    const p = project(s, s.x, s.y, s.z, W, fx, horizon)!;
+    const g = project(s, s.x, s.y, s.z, W, fx, horizon)!;
     const on = s.boots > 0 || s.armband > 0;
-    const d = size * 1.15;
+    const d = C * 0.85;
     return {
       opacity: on ? 0.55 + Math.sin(s.t * 12) * 0.15 : 0,
-      left: p.sx - d / 2,
-      top: p.sy - size * 0.95,
+      left: g.sx - d / 2,
+      top: g.sy - C * 0.85,
       width: d,
       height: d,
       borderRadius: d / 2,
@@ -616,34 +621,30 @@ function Runner({ state, W, fx, horizon, kit }: View3D & { kit: { body: string; 
     const s = state.value;
     const g = project(s, s.x, 0, s.z, W, fx, horizon)!;
     const k = 1 / (1 + s.y * 0.5);
-    return { left: g.sx - (size * 0.55 * k) / 2, top: g.sy - size * 0.08, width: size * 0.55 * k, opacity: 0.35 * k };
-  });
-  const ball = useAnimatedStyle(() => {
-    const s = state.value;
-    // just in front of the right boot, between the runner and the camera, so you see it
-    const g = project(s, s.x + 0.38, 0, s.z - 0.35, W, fx, horizon)!;
-    const bounce = s.y > 0 ? s.y * g.k * 0.85 : Math.abs(Math.sin(s.t * 13 + 1)) * size * 0.05;
-    const b = size * 0.22;
-    return { zIndex: Math.round(2000 - CAM_BACK * 10) + 5, left: g.sx - b / 2, top: g.sy - b - bounce, width: b, height: b, transform: [{ rotate: `${s.z * 90}deg` }] };
+    const w = C * 0.38 * k;
+    return { left: g.sx - w / 2, top: g.sy - C * 0.06, width: w, opacity: 0.3 * k };
   });
   return (
     <>
-      <Animated.View style={[styles.shadow, { height: size * 0.12, borderRadius: size }, shadowStyle]} pointerEvents="none" />
+      <Animated.View style={[styles.shadow, { height: C * 0.07, borderRadius: C }, shadowStyle]} pointerEvents="none" />
       <Animated.View style={[styles.aura, aura]} pointerEvents="none" />
-      <Animated.View style={[styles.runner, { width: size, height: size }, body]} pointerEvents="none">
-        <View style={[styles.head, { width: size * 0.26, height: size * 0.26, borderRadius: size * 0.13, marginBottom: -size * 0.05 }]}>
-          {/* seen from behind: mostly hair */}
-          <View style={[styles.hair, { height: size * 0.2, borderTopLeftRadius: size * 0.13, borderTopRightRadius: size * 0.13, borderBottomLeftRadius: size * 0.06, borderBottomRightRadius: size * 0.06 }]} />
-        </View>
-        <Jersey body={kit.body} sleeves={kit.sleeves} pattern={kit.pattern as never} numberColor="#fff" number={10} hideNumber size={size * 0.72} variant="crew" />
-        <View style={[styles.shorts, { width: size * 0.36, height: size * 0.16 }]} />
-        <View style={styles.legs}>
-          <View style={[styles.leg, { height: size * 0.14 }]} />
-          <View style={[styles.leg, { height: size * 0.14 }]} />
-        </View>
+      <Animated.View style={[styles.runner, { width: C, height: C }, box]} pointerEvents="none">
+        {KOSU.runner.slice(0, 7).map((f, k) => (
+          <RunnerFrame key={k} k={k} f={f} state={state} tint={kit.body} />
+        ))}
       </Animated.View>
-      <Animated.Text style={[styles.ball, ball, { fontSize: size * 0.22 }]}>⚽</Animated.Text>
     </>
+  );
+}
+
+function RunnerFrame({ k, f, state, tint }: { k: number; f: (typeof KOSU.runner)[number]; state: SharedValue<RunState>; tint: string }) {
+  const style = useAnimatedStyle(() => ({ opacity: frameOf(state.value) === k ? 1 : 0 }));
+  return (
+    <Animated.View style={[StyleSheet.absoluteFill, style]}>
+      <Image source={f.base} style={styles.fill} />
+      <Image source={f.cloth} style={[styles.fill, styles.layer]} tintColor={tint} />
+      <Image source={f.shade} style={[styles.fill, styles.layer]} />
+    </Animated.View>
   );
 }
 
@@ -653,20 +654,17 @@ const styles = StyleSheet.create({
   crowd: { position: "absolute", left: 0, right: 0, backgroundColor: "#64748B", opacity: 0.6 },
   grass: { position: "absolute", left: 0, right: 0, bottom: 0, backgroundColor: "#4CAB51" },
   board: { position: "absolute", borderRadius: 3, borderBottomWidth: 3, borderBottomColor: "rgba(0,0,0,0.25)" },
-  head: { backgroundColor: "#E8B48A", overflow: "hidden", zIndex: 2 },
-  hair: { backgroundColor: "#3F2A1D" },
   band: { position: "absolute", left: 0, right: 0 },
   marks: { position: "absolute" },
   dash: { position: "absolute", top: 0, bottom: 0, backgroundColor: "rgba(255,255,255,0.55)", borderRadius: 2 },
   line: { position: "absolute", top: -2, bottom: -2, backgroundColor: "rgba(255,255,255,0.9)" },
-  obstacle: { position: "absolute", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "rgba(0,0,0,0.12)" },
-  coin: { position: "absolute", backgroundColor: "#FACC15", borderWidth: 2, borderColor: "#D97706" },
-  runner: { position: "absolute", alignItems: "center", justifyContent: "flex-end" },
-  shorts: { backgroundColor: "#111827", borderRadius: 6, marginTop: -6 },
-  legs: { flexDirection: "row", gap: 10 },
-  leg: { width: 9, backgroundColor: "#F2C9A0", borderRadius: 4, borderBottomWidth: 6, borderBottomColor: "#111" },
+  runner: { position: "absolute" },
+  sprite: { position: "absolute" },
+  fill: { width: "100%", height: "100%" },
+  layer: { position: "absolute", left: 0, top: 0 },
+  keeper: { position: "absolute", alignSelf: "center", bottom: "4%", width: "22%", height: "62%", opacity: 0.95 },
+  pickGlow: { position: "absolute", left: "12%", top: "12%", right: "12%", bottom: "12%", borderRadius: 999, opacity: 0.35 },
   shadow: { position: "absolute", backgroundColor: "#000" },
-  ball: { position: "absolute", textAlign: "center" },
   hud: { position: "absolute", left: 12, right: 12, flexDirection: "row", alignItems: "center", gap: 8 },
   back: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.card, alignItems: "center", justifyContent: "center", ...shadow },
   pill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderRadius: R.chip, paddingHorizontal: 12, height: 36, ...shadow },

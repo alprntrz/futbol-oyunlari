@@ -1,0 +1,22 @@
+{
+  "asset_count": 29,
+  "rgba_count": 29,
+  "transparent_count": 28,
+  "seams": [
+    {
+      "file": "field-tile.png",
+      "top_bottom_exact_match": false,
+      "mean_channel_difference": 6.28
+    },
+    {
+      "file": "stand-left.png",
+      "top_bottom_exact_match": true,
+      "mean_channel_difference": 0.0
+    },
+    {
+      "file": "stand-right.png",
+      "top_bottom_exact_match": true,
+      "mean_channel_difference": 0.0
+    }
+  ]
+}
