@@ -32,6 +32,8 @@ export type RatedGame = "ht" | "qz" | "pp" | "dz";
 export type Board = "xp" | RatedGame;
 export interface BoardRow {
   rank: number;
+  /** opaque handle for report / block (server-refs.js) */
+  ref?: string;
   nick: string;
   avatar: string;
   frame?: string;
@@ -46,6 +48,7 @@ export interface BoardRow {
 /** This week's league group (server-accounts.js leagueView); signed-in only. */
 export interface LeagueRow {
   rank: number;
+  ref?: string;
   nick: string;
   avatar: string;
   frame?: string;
@@ -255,6 +258,7 @@ export async function syncProfile(nick: string, avatar: string, frame?: string |
 // ── Friends (server-accounts.js): added by code, both ways
 export interface Friend {
   code: string;
+  ref?: string;
   nick: string;
   avatar: string;
   frame?: string;

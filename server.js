@@ -2,6 +2,7 @@
  * Custom Next.js server with Socket.IO for online race rooms.
  * Run with: npm run dev  (see package.json scripts)
  */
+const crypto = require("crypto");
 const { createServer } = require("http");
 const next = require("next");
 const { Server } = require("socket.io");
@@ -10,6 +11,15 @@ const path = require("path");
 const { pushLive } = require("./server-live");
 const { attachTaktik, ttRooms } = require("./server-taktik");
 const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
+const { refForSocket, addReport, shownNick, cleanBlocks } = require("./server-refs");
+
+// socket id → that player's ref (server-refs.js), so room views can carry it for report / block
+const refById = new Map();
+/** A seat as other phones see it: its ref (house players get a made-up one) and the nickname, hidden if reported enough. */
+const seatRef = (p) => p.ref ?? refById.get(p.id) ?? null;
+const seatNick = (p) => shownNick(seatRef(p), p.nick);
+/** Either of two queued players blocked the other. */
+const blockedPair = (a, b) => !!(a.socket.data.blocks?.has(b.socket.data.ref) || b.socket.data.blocks?.has(a.socket.data.ref));
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -76,7 +86,7 @@ function takePairs(queue, same = () => true) {
     if (taken.has(a)) continue;
     let best = null;
     for (const b of waiting) {
-      if (b === a || taken.has(b) || !same(a, b)) continue;
+      if (b === a || taken.has(b) || !same(a, b) || blockedPair(a, b)) continue;
       const gap = Math.abs(a.tier - b.tier);
       if (gap <= Math.max(tierGap(a.since), tierGap(b.since)) && (!best || gap < Math.abs(a.tier - best.tier))) best = b;
     }
@@ -172,7 +182,7 @@ function htPublic(room) {
     league: room.league || "all",
     // every phone in the room can draw "played with" criteria: the host may deal them
     mates: htAllKnowMates(room),
-    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
+    players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
 }
 
@@ -310,7 +320,8 @@ function qzPublic(room, viewer) {
     startsInMs: room.random && room.phase === "lobby" && room.fillAt ? Math.max(0, room.fillAt - Date.now()) : null,
     players: room.players.map((p) => ({
       id: p.id,
-      nick: p.nick,
+      ref: seatRef(p),
+      nick: seatNick(p),
       score: p.score,
       answered: room.answers.has(p.id),
       choice: reveal || (viewer && room.answers.has(viewer)) || p.id === viewer ? (room.answers.get(p.id)?.choice ?? null) : null,
@@ -398,7 +409,7 @@ function ppPublic(room) {
     winner: room.winner,
     flash: room.flash,
     used: room.used,
-    players: room.players.map((p) => ({ id: p.id, nick: p.nick, mark: p.mark })),
+    players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark })),
   };
 }
 
@@ -516,7 +527,7 @@ function dzPublic(room) {
     results: room.results,
     score,
     over: room.over,
-    players: room.players.map((p) => ({ id: p.id, nick: p.nick, side: p.side, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
+    players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), side: p.side, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
 }
 
@@ -732,6 +743,21 @@ app.prepare().then(() => {
       });
     // signed-in app players send their session token: their online results are rated
     socket.data.uid = userIdFromToken(socket.handshake.auth?.token);
+    // older apps send no install id: a ref for this connection only (reportable, blockable for the session)
+    socket.data.ref ??= refForSocket(socket.data.uid, socket.handshake.auth?.pid) ?? crypto.randomBytes(8).toString("hex");
+    refById.set(socket.id, socket.data.ref);
+    socket.data.blocks ??= cleanBlocks(socket.handshake.auth?.blocks);
+    socket.on("disconnect", () => setTimeout(() => !io.sockets.sockets.has(socket.id) && refById.delete(socket.id), REJOIN_MS + 5000));
+    // the phone's block list (refs) changed: matchmaking and invites skip those players
+    socket.on("blk:set", ({ refs }) => {
+      socket.data.blocks = cleanBlocks(refs);
+    });
+    // report a player (their nickname, cheating, other): one every 5 s
+    socket.on("rep:send", (p, cb) => {
+      if (Date.now() - (socket.data.lastReport ?? 0) < 5000) return cb?.({ ok: false, error: "slow" });
+      socket.data.lastReport = Date.now();
+      cb?.({ ok: addReport(socket.data.ref, p) });
+    });
 
     // Losing the connection in a live match: the other player hears "away" and the seat waits
     // REJOIN_MS for this phone to come back (recovered socket, below) before `drop` runs. Leaving on
@@ -765,7 +791,7 @@ app.prepare().then(() => {
       if (!targets.length) return cb?.({ ok: false, error: "offline" });
       socket.data.lastInvite = Date.now();
       const from = inviteCard(uid);
-      for (const s of targets) s.emit("fr:invited", { from, game, room: room.toUpperCase() });
+      for (const s of targets) if (!s.data.blocks?.has(socket.data.ref)) s.emit("fr:invited", { from, game, room: room.toUpperCase() });
       cb?.({ ok: true });
     });
 
@@ -982,7 +1008,7 @@ app.prepare().then(() => {
       ppJoinRoom(waiting.socket, room);
       ppJoinRoom(other.socket, room);
       ppStartTurn(room);
-      const look = (p) => ({ id: p.id, nick: p.nick, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null });
+      const look = (p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null });
       io.to("pp:" + room.code).emit("pp:matched", { code: room.code, players: room.players.map(look) });
     };
 
@@ -1611,7 +1637,7 @@ app.prepare().then(() => {
 
     const qzAddBot = (room) => {
       if (room.phase !== "lobby" || room.players.length >= room.settings.maxPlayers) return;
-      room.players.push({ id: "p" + Math.random().toString(36).slice(2, 10), nick: qzNick(), score: 0, bot: true, skill: 0.45 + Math.random() * 0.3 });
+      room.players.push({ id: "p" + Math.random().toString(36).slice(2, 10), ref: crypto.randomBytes(8).toString("hex"), nick: qzNick(), score: 0, bot: true, skill: 0.45 + Math.random() * 0.3 });
       qzEmit(room);
     };
 
@@ -1693,6 +1719,7 @@ app.prepare().then(() => {
       for (const [key, code] of Object.entries(qzOpen)) {
         const room = code && qzRooms.get(code);
         if (!room || !key.startsWith(level + ":") || room.phase !== "lobby" || room.players.length >= room.settings.maxPlayers) continue;
+        if (room.players.some((p) => { const r = seatRef(p); return socket.data.blocks?.has(r) || io.sockets.sockets.get(p.id)?.data.blocks?.has(socket.data.ref); })) continue;
         const gap = Math.abs(room.tier - myTier);
         if (gap <= tierGap(room.fillAt - QZ_FILL_MS) && (!open || gap < Math.abs(open.tier - myTier))) open = room;
       }
@@ -1777,7 +1804,11 @@ app.prepare().then(() => {
         .filter((r) => r.xp > 0)
         .sort((a, b) => b.xp - a.xp);
       const mine = rows.findIndex((r) => r.id === pid);
-      const strip = ({ id, ...r }, i) => ({ ...r, rank: i + 1, me: id === pid });
+      // the install id never leaves the server: rows carry its ref (report / block) instead
+      const strip = ({ id, ...r }, i) => {
+        const ref = refForSocket(null, id);
+        return { ...r, ref, nick: shownNick(ref, r.nick), rank: i + 1, me: id === pid };
+      };
       cb?.({ ok: true, top: rows.slice(0, 50).map(strip), me: mine >= 0 ? strip(rows[mine], mine) : null, total: rows.length });
     });
 

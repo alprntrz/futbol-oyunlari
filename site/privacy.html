@@ -39,6 +39,7 @@
 </ul>
 <p><strong>Canlı Etkinlik (kilit ekranı / Dynamic Island):</strong> online maçtayken uygulama arka plandaysa sıra sana geçtiğinde kilit ekranındaki maç kartının güncellenmesi için telefonun, o maça özel bir Apple bildirim anahtarı (push token) gönderir. Bu anahtar sadece maç sürerken sunucunun belleğinde durur, hiçbir yere yazılmaz ve maç bitince silinir; Apple'ın bildirim servisine yalnızca maçın skoru, sıra ve süre gider.</p>
 <p><strong>Günlük hatırlatma:</strong> açarsan telefonun kendisi akşam için bir hatırlatma planlar. Bunun için sunucuya hiçbir şey gitmez, bildirim anahtarı alınmaz; Ayarlar'dan istediğin zaman kapatabilirsin.</p>
+<p><strong>Şikayet ve engelleme:</strong> başka bir oyuncuyu şikayet edersen sunucuya şunlar kaydedilir: zaman, seninle onun için üretilen anonim kimlik (hesap ya da kurulum kimliğinden geri çözülemeyen bir özet), gördüğün takma ad, seçtiğin sebep ve oyun. IP adresi ve hesap bilgisi kaydedilmez. Şikayetler incelenir; birkaç farklı oyuncudan şikayet alan takma adlar gizlenir. Engellediğin oyuncuların listesi telefonunda durur; sunucu bu listeyi yalnızca seni onlarla eşleştirmemek ve davetlerini sana iletmemek için kullanır.</p>
 <p>Maç verileri maç bitince bellekten silinir. Sunucuda kalıcı olarak saklananlar: Bilgi Yarışı kaydı (rastgele kimlik, takma ad, XP, puan, maç ve galibiyet sayısı) ve giriş yaptıysan yukarıda yazan hesap bilgileri.</p>
 <p>Bağlantı sırasında IP adresin teknik olarak sunucuya ulaşır ancak kaydedilmez. Tüm bağlantılar şifrelidir (HTTPS).</p>
 
@@ -82,6 +83,7 @@
 </ul>
 <p><strong>Live Activity (Lock Screen / Dynamic Island):</strong> during an online match, so the match card on your Lock Screen can update and tell you when it's your turn while the app is in the background, your phone sends an Apple push token made for that one match. It stays in the server's memory only while the match lasts, is never written anywhere and is dropped when the match ends; only the score, whose turn it is and the clock go to Apple's push service.</p>
 <p><strong>Daily reminder:</strong> if you turn it on, your phone itself plans an evening reminder. Nothing goes to the server for it and no push token is taken; turn it off in Settings any time.</p>
+<p><strong>Reporting and blocking:</strong> when you report another player the server keeps: the time, an anonymous handle for you and for them (a one-way digest of the account or install id that can't be turned back), the nickname you saw, the reason you picked and the game. No IP address and no account details. Reports are reviewed; nicknames reported by several different players are hidden. The list of players you block stays on your phone; the server uses it only to keep you out of their matches and their invites away from you.</p>
 <p>Match data is dropped from memory when the match ends. Stored permanently: your Football Quiz record (the random ID, nickname, XP, points, games and wins) and, if you signed in, the account details listed above.</p>
 <p>Your IP address reaches the server during a connection but is not stored. All connections are encrypted (HTTPS).</p>
 

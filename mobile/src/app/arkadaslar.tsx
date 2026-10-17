@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, Share, StyleSheet, TextInput, View } from "react-native";
 import Animated from "react-native-reanimated";
 
+import { openPlayerMenu } from "~/components/PlayerMenu";
 import { Avatar } from "~/components/Avatar";
 import { softIn } from "~/components/motion";
 import { RankChip } from "~/components/Rank";
@@ -72,6 +73,20 @@ export default function Friends() {
       { text: t("cancel"), style: "cancel" },
       { text: t("friendsRemove"), style: "destructive", onPress: () => removeFriend(f.code).then(setInfo).catch(() => setNote({ text: t("friendsError"), ok: false })) },
     ]);
+
+  // tap or long-press a friend: remove, report or block (blocking also removes the friendship)
+  const menu = (f: Friend) =>
+    f.ref
+      ? openPlayerMenu({
+          ref: f.ref,
+          nick: f.nick,
+          game: "friends",
+          extra: { label: t("friendsRemove"), onPress: () => remove(f), danger: true },
+          onBlocked: () => {
+            removeFriend(f.code).then(setInfo).catch(() => {});
+          },
+        })
+      : remove(f);
 
   // open a Tic-Tac-Toe room, ring the friend's phone, then wait in the room
   const invite = async (f: Friend) => {
@@ -158,7 +173,7 @@ export default function Friends() {
             <Card style={{ paddingVertical: 4 }}>
               {info.friends.map((f, i) => (
                 <Animated.View key={f.code} entering={softIn(i)} style={[styles.friend, i > 0 && styles.divider]}>
-                  <Tap onLongPress={() => remove(f)} delayLongPress={400} style={styles.who} accessibilityLabel={`${f.nick}, ${f.online ? t("friendsOnline") : t("friendsOffline")}`} accessibilityHint={t("friendsRemove")}>
+                  <Tap onPress={() => menu(f)} onLongPress={() => menu(f)} delayLongPress={400} style={styles.who} accessibilityLabel={`${f.nick}, ${f.online ? t("friendsOnline") : t("friendsOffline")}`} accessibilityHint={t("pmMenu")}>
                     <View>
                       <Avatar id={f.avatar} size={44} frame={f.frame} />
                       <View style={[styles.dot, { backgroundColor: f.online ? C.green : "#C7CDC9" }]} />

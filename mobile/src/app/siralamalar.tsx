@@ -7,7 +7,9 @@ import { Avatar } from "~/components/Avatar";
 import { softIn } from "~/components/motion";
 import { LevelBadge } from "~/components/QuizLevel";
 import { Text } from "~/components/Text";
-import { Button, Card, Page, Segmented } from "~/components/ui";
+import { openPlayerMenu } from "~/components/PlayerMenu";
+import { Button, Card, Page, Segmented, Tap } from "~/components/ui";
+import { useIsBlocked } from "~/lib/blocks";
 import { fetchLeaderboard, useAccount, type Board, type BoardRow } from "~/lib/account";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
@@ -115,21 +117,25 @@ export default function Leaderboards() {
 
 function Row({ row, board, divider }: { row: BoardRow; board: Board; divider: boolean }) {
   const { t } = useI18n();
+  const isBlocked = useIsBlocked();
+  // a blocked player's name is hidden; tapping anyone else's row opens report / block
+  const nick = isBlocked(row.ref) ? t("blockedHidden") : row.nick;
+  const menu = !row.me && row.ref ? () => openPlayerMenu({ ref: row.ref as string, nick: row.nick, game: "board" }) : undefined;
   return (
-    <View style={[styles.row, divider && styles.divider, row.me && styles.me]}>
+    <Tap silent onPress={menu} disabled={!menu} accessibilityHint={menu ? t("pmMenu") : undefined} style={[styles.row, divider && styles.divider, row.me && styles.me]}>
       <View style={[styles.rank, row.rank <= 3 && { backgroundColor: MEDAL[row.rank - 1] }]}>
         <Text style={[styles.rankText, row.rank <= 3 && { color: "#3B2A05" }]}>{row.rank}</Text>
       </View>
-      <Avatar id={row.avatar} nick={row.nick} size={38} frame={row.frame} />
+      <Avatar id={row.avatar} nick={nick} size={38} frame={row.frame} />
       <View style={{ flex: 1 }}>
         <Text style={T.headline} numberOfLines={1}>
-          {row.nick}
+          {nick}
         </Text>
         {board !== "xp" && row.games !== undefined && <Text style={T.caption}>{(row.games === 1 ? t("gamesOne") : t("gamesN").replace("{n}", String(row.games)))}</Text>}
       </View>
       {board === "xp" && <LevelBadge level={row.level} size={28} />}
       <Text style={styles.value}>{board === "xp" ? `${row.value} XP` : row.value}</Text>
-    </View>
+    </Tap>
   );
 }
 

@@ -6,6 +6,7 @@ import { Share, StyleSheet, View } from "react-native";
 
 import { GameActions } from "~/components/GameActions";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { PlayerMenuButton } from "~/components/PlayerMenu";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
 import { ConnectionBanner } from "~/components/ConnectionBanner";
@@ -24,6 +25,7 @@ import { C, F, T } from "~/lib/theme";
 
 interface HtPlayer {
   id: string;
+  ref?: string | null;
   nick: string;
   mark: Mark;
 }
@@ -260,7 +262,14 @@ export default function HatTrickRoom() {
     <>
       <Page>
         {/* a friend room shows its code (to share); a random match the game's name */}
-        <Stack.Screen options={{ title: params.random ? t("tikiTakaName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+        <Stack.Screen options={{ title: params.random ? t("tikiTakaName") : code, headerRight: () => (
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <PlayerMenuButton target={opponent?.ref ? { ref: opponent.ref, nick: opponent.nick, game: "ht" } : null} color={C.text} bg="#EEF2EF" />
+                <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" />
+              </View>
+            ),
+          }}
+        />
         {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
         <HatTrickBoard
           steals={room.steals}

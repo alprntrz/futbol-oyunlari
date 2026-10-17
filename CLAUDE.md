@@ -168,6 +168,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   sends its old id (`prev`) and a per-run random key (`rk`, lib/socket.ts; only the server sees it) and `welcomeBack` hands the
   seats to the new socket (`seat:back`). Ping 10 s / timeout 10 s.
   `components/ConnectionBanner.tsx` shows reconnecting / too late / opponent away in the three online match screens.
+- Report / block (Apple 1.2): `server-refs.js` gives each player an opaque `ref` (HMAC of account id or install id; the install id
+  itself must never reach other phones) carried on room seats, boards, league, friends and quiz standings. `rep:send` appends to
+  /data/reports.jsonl (3 different reporters hide the nick as "Player"); phones keep their block list (`lib/blocks.ts`, sent in the
+  handshake + `blk:set`) and `takePairs` / quiz rooms / invites skip blocked pairs. UI: `components/PlayerMenu.tsx`
+  (`openPlayerMenu`, `PlayerMenuButton` beside the emote button; house players get a made-up `houseRef`), Settings > Blocked.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

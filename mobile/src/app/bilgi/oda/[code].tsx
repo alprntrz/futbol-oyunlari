@@ -9,6 +9,7 @@ import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg"
 import { quizQuestions, type QuizCategory, type QuizDifficulty } from "@/lib/quiz";
 import { XP } from "@/lib/levels";
 
+import { openPlayerMenu } from "~/components/PlayerMenu";
 import { Avatar as PlayerAvatar } from "~/components/Avatar";
 import { ComboBurst, ComboChip } from "~/components/Combo";
 import { GrassPattern } from "~/components/GrassPattern";
@@ -31,6 +32,7 @@ import { awardXp } from "~/lib/xp";
 type L = { tr: string; en: string };
 interface QzPlayer {
   id: string;
+  ref?: string | null;
   nick: string;
   score: number;
   answered: boolean;
@@ -266,6 +268,21 @@ export default function QuizRoom() {
       <Icon name="chevron.left" size={18} color={NIGHT.ink} fallback="‹" />
     </Pressable>
   );
+
+  // report / block the others (house players too: they carry a made-up ref), not over a live question
+  const others = (room?.players ?? []).filter((p) => p.id !== myId && p.ref);
+  const playersMenu =
+    room && room.phase !== "question" && room.phase !== "reveal" && others.length > 0 ? (
+      <Pressable
+        onPress={() => openPlayerMenu(others.map((p) => ({ ref: p.ref as string, nick: p.nick, game: "qz" })))}
+        style={[styles.leave, { top: insets.top + 6, left: undefined, right: 12 }]}
+        accessibilityRole="button"
+        accessibilityLabel={t("pmMenu")}
+        hitSlop={8}
+      >
+        <Icon name="ellipsis.circle" size={18} color={NIGHT.ink} fallback="…" />
+      </Pressable>
+    ) : null;
 
   let body: React.ReactNode = null;
 
@@ -566,6 +583,7 @@ export default function QuizRoom() {
         </Animated.View>
       ) : null}
       {leave}
+      {playersMenu}
       <View style={[styles.content, { paddingTop: room?.phase === "done" ? insets.top + 56 : insets.top + HEADER + 6 }]}>{body}</View>
       {room?.phase === "done" && <QuizCeremony room={room} myId={myId} progress={progress} closed={ceremonyClosed} onClose={() => setCeremonyClosed(true)} random={!!params.random} />}
     </View>

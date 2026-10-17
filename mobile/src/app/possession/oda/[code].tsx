@@ -1,10 +1,12 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
+import { View } from "react-native";
 
 import { XP } from "@/lib/levels";
 
 import { PossessionBoard } from "~/components/PossessionBoard";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { PlayerMenuButton } from "~/components/PlayerMenu";
 import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { Text } from "~/components/Text";
 import { WaitingRoom } from "~/components/WaitingRoom";
@@ -22,6 +24,7 @@ import { useXpAward } from "~/lib/xp";
 
 interface PpPlayer {
   id: string;
+  ref?: string | null;
   nick: string;
   mark: Mark;
 }
@@ -181,7 +184,14 @@ export default function PossessionRoom() {
     <>
       <Page>
         {/* a friend room shows its code (to share); a random match the game's name */}
-        <Stack.Screen options={{ title: params.random ? t("ppName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+        <Stack.Screen options={{ title: params.random ? t("ppName") : code, headerRight: () => (
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <PlayerMenuButton target={rival?.ref ? { ref: rival.ref, nick: rival.nick, game: "pp" } : null} color={C.text} bg="#EEF2EF" />
+                <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" />
+              </View>
+            ),
+          }}
+        />
         {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
         <PossessionBoard
           board={board}

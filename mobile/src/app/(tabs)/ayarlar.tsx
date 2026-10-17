@@ -133,6 +133,7 @@ export default function SettingsTab() {
       <Card style={{ padding: 0, overflow: "hidden" }}>
         <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
         <Row image={BRAND.settings.support} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
+        <Row icon="hand.raised.fill" iconFallback="✋" color={C.text2} soft="#EEF2EF" title={t("blockedTitle")} onPress={() => router.push("/engellenenler")} />
         <Row image={BRAND.settings.delete} title={account ? t("deleteAccount") : t("deleteData")} onPress={confirmDelete} last />
       </Card>
 

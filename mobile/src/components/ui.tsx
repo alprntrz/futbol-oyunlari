@@ -30,6 +30,7 @@ const MATERIAL: Record<string, AndroidSymbol> = {
   "arrow.up.right": "north_east",
   "arrow.uturn.left": "undo",
   "bell.fill": "notifications",
+  "ellipsis.circle": "more_horiz",
   hourglass: "hourglass_top",
   "wifi.slash": "wifi_off",
   calendar: "event",

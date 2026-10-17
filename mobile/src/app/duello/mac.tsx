@@ -12,10 +12,12 @@ import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { FocusStatusBar } from "~/components/StadiumHeader";
 import { DuelCardView } from "~/components/duel/DuelCardView";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { PlayerMenuButton } from "~/components/PlayerMenu";
 import { surname } from "~/components/taktik/Card";
 import { Text } from "~/components/Text";
 import { TourOverlay, useTour } from "~/components/Tour";
 import { Button, Icon, Tap } from "~/components/ui";
+import { houseRef } from "~/lib/blocks";
 import { saveDaily, useDuel } from "~/lib/duel";
 import { useRecordMatch } from "~/lib/history";
 import { GAME_ICON, useLivePush, useMatchActivity } from "~/lib/liveActivity";
@@ -57,6 +59,7 @@ function Local({ mode, hand, nick, themeId }: { mode: Mode; hand: number[]; nick
       m={m}
       hand={hand}
       opponent={opponent}
+      opponentRef={mode === "bot" ? houseRef(`${opponent}-${seed}`) : null}
       xpKey={mode === "daily" ? `dz-daily-${day}` : `dz-${mode}-${seed}-${game}-${themeId}`}
       practice={mode === "practice"}
       daily={mode === "daily"}
@@ -77,7 +80,7 @@ function Online({ code, hand }: { code: string; hand: number[] }) {
   useLivePush("dz", code);
   return (
     <>
-      <Board m={m} hand={hand} opponent={m.opponent} xpKey={`dz-room-${code}-${m.game}`} online onAgain={m.peerLeft ? undefined : m.again} />
+      <Board m={m} hand={hand} opponent={m.opponent} opponentRef={m.opponentRef} xpKey={`dz-room-${code}-${m.game}`} online onAgain={m.peerLeft ? undefined : m.again} />
       <ConnectionBanner game="dz" />
     </>
   );
@@ -89,6 +92,7 @@ function Board({
   m,
   hand,
   opponent,
+  opponentRef = null,
   xpKey,
   practice,
   daily,
@@ -99,6 +103,8 @@ function Board({
   online?: boolean;
   hand: number[];
   opponent: string | null;
+  /** report / block: the online opponent's ref, a made-up one for the random-queue house player */
+  opponentRef?: string | null;
   xpKey: string;
   practice?: boolean;
   daily?: boolean;
@@ -212,7 +218,10 @@ function Board({
           <Icon name="chevron.left" size={18} color="white" fallback="‹" />
         </Tap>
         <Text style={styles.round}>{t("dzRound").replace("{n}", String(Math.min(ROUNDS, m.round + (revealing ? 0 : 1)))).replace("{max}", String(ROUNDS))}</Text>
-        <EmoteButton e={emotes} />
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <PlayerMenuButton target={opponentRef && opponent ? { ref: opponentRef, nick: opponent, game: "dz" } : null} />
+          <EmoteButton e={emotes} />
+        </View>
       </View>
       <View ref={tour.ref("score")} collapsable={false} style={styles.scoreRow}>
         <Text style={styles.nick} numberOfLines={1}>

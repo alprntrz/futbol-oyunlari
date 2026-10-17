@@ -12,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import { InviteBanner } from "~/components/InviteBanner";
+import { PlayerMenuHost } from "~/components/PlayerMenu";
 import { RatingAsk } from "~/lib/rating";
 import { RemindersSync } from "~/lib/reminders";
 import { RewardScreen } from "~/components/RewardScreen";
@@ -72,6 +73,7 @@ export default function RootLayout() {
       <InviteBanner />
       <RemindersSync />
       <RatingAsk />
+      <PlayerMenuHost />
     </I18nProvider>
   );
 }

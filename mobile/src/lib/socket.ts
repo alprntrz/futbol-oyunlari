@@ -1,6 +1,9 @@
 import { AppState } from "react-native";
 import { io, type Socket } from "socket.io-client";
 
+import { blockedRefs, onBlocksChange } from "./blocks";
+import { loadPlayerId } from "./nick";
+
 /**
  * Online race server (the web project's server.js). Set EXPO_PUBLIC_SOCKET_URL
  * for a deployed server; the iOS simulator reaches the Mac's localhost directly.
@@ -27,8 +30,14 @@ export function getSocket(): Socket {
   if (!socket) {
     const s = io(SOCKET_URL, {
       transports: ["websocket"],
-      auth: (cb) => cb({ ...(sessionToken ? { token: sessionToken } : null), caps: CAPS, rk: REJOIN_KEY, ...(lastId ? { prev: lastId } : null) }),
+      // pid: the install id, only for the server to derive this player's ref (server-refs.js); blocks: refs kept out of matchmaking
+      auth: (cb) => {
+        Promise.all([loadPlayerId(), blockedRefs()])
+          .catch(() => [undefined, []] as const)
+          .then(([pid, blocks]) => cb({ ...(sessionToken ? { token: sessionToken } : null), caps: CAPS, rk: REJOIN_KEY, ...(lastId ? { prev: lastId } : null), pid, blocks }));
+      },
     });
+    onBlocksChange((refs) => s.emit("blk:set", { refs }));
     socket = s;
     s.on("connect", () => {
       lastId = s.id ?? null;

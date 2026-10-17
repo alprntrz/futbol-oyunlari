@@ -18,6 +18,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const { DatabaseSync } = require("node:sqlite");
+const { refForUser, shownNick } = require("./server-refs");
 
 const DB_FILE = process.env.ACCOUNTS_DB || path.join(__dirname, "data", "accounts.db");
 const APPLE_AUD = (process.env.APPLE_AUDIENCES || "com.alprntrz.tiktako").split(",").map((s) => s.trim()).filter(Boolean);
@@ -204,7 +205,7 @@ function friendList(user) {
     .all(user.id);
   return {
     code: friendCodeOf(user),
-    friends: rows.map((u) => ({ code: friendCodeOf(u), nick: u.nick, avatar: u.avatar, frame: frameOf(u), level: levelOf(u.xp), online: isOnline(u.id) })),
+    friends: rows.map((u) => ({ code: friendCodeOf(u), ref: refForUser(u.id), nick: shownNick(refForUser(u.id), u.nick), avatar: u.avatar, frame: frameOf(u), level: levelOf(u.xp), online: isOnline(u.id) })),
   };
 }
 
@@ -301,7 +302,7 @@ function leaderboard(board, me) {
   if (board === "xp") {
     const rows = db.prepare("SELECT id, nick, avatar, frame, xp FROM users WHERE xp > 0 ORDER BY xp DESC, created ASC").all();
     rows.forEach((r, i) => {
-      const row = { rank: i + 1, nick: r.nick || "?", avatar: r.avatar, frame: frameOf(r), value: r.xp, level: levelOf(r.xp), me: r.id === me };
+      const row = { rank: i + 1, ref: refForUser(r.id), nick: shownNick(refForUser(r.id), r.nick || "?"), avatar: r.avatar, frame: frameOf(r), value: r.xp, level: levelOf(r.xp), me: r.id === me };
       if (i < 50) top.push(row);
       if (r.id === me) mine = row;
     });
@@ -312,7 +313,7 @@ function leaderboard(board, me) {
     .prepare("SELECT u.id, u.nick, u.avatar, u.frame, u.xp, r.rating, r.games, r.wins FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.game = ? AND r.games > 0 ORDER BY r.rating DESC, r.games DESC")
     .all(board);
   rows.forEach((r, i) => {
-    const row = { rank: i + 1, nick: r.nick || "?", avatar: r.avatar, frame: frameOf(r), value: Math.round(r.rating), level: levelOf(r.xp), games: r.games, wins: r.wins, me: r.id === me };
+    const row = { rank: i + 1, ref: refForUser(r.id), nick: shownNick(refForUser(r.id), r.nick || "?"), avatar: r.avatar, frame: frameOf(r), value: Math.round(r.rating), level: levelOf(r.xp), games: r.games, wins: r.wins, me: r.id === me };
     if (i < 50) top.push(row);
     if (r.id === me) mine = row;
   });
@@ -402,7 +403,7 @@ function leagueView(user) {
   const rows = db
     .prepare("SELECT m.user_id, m.xp, u.nick, u.avatar, u.frame, u.xp AS total FROM league_members m JOIN users u ON u.id = m.user_id WHERE m.week = ? AND m.tier = ? AND m.grp = ? ORDER BY m.xp DESC, m.joined ASC")
     .all(week, mine.tier, mine.grp)
-    .map((r, i) => ({ rank: i + 1, nick: r.nick || "?", avatar: r.avatar, frame: frameOf({ frame: r.frame, xp: r.total }), xp: r.xp, me: r.user_id === user.id }));
+    .map((r, i) => ({ rank: i + 1, ref: refForUser(r.user_id), nick: shownNick(refForUser(r.user_id), r.nick || "?"), avatar: r.avatar, frame: frameOf({ frame: r.frame, xp: r.total }), xp: r.xp, me: r.user_id === user.id }));
   return { ...base, tier: mine.tier, league: LEAGUES[mine.tier], joined: true, rows };
 }
 

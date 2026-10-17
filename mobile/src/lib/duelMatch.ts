@@ -123,11 +123,11 @@ interface ServerState {
   picked: [boolean, boolean];
   results: { question: Question; cards: [number, number]; winner: 0 | 1 | "draw" }[];
   over: boolean;
-  players: { id: string; nick: string; side: 0 | 1; tier: number | null }[];
+  players: { id: string; ref?: string | null; nick: string; side: 0 | 1; tier: number | null }[];
 }
 
 /** An online match run by server.js (`dz:*`); this phone already joined room `code`. */
-export function useOnlineDuel(code: string): DuelMatch & { opponent: string | null; game: number } {
+export function useOnlineDuel(code: string): DuelMatch & { opponent: string | null; opponentRef: string | null; game: number } {
   const [state, setState] = useState<ServerState | null>(null);
   const [peerLeft, setPeerLeft] = useState(false);
   const [myPick, setMyPick] = useState<number | null>(null);
@@ -178,6 +178,7 @@ export function useOnlineDuel(code: string): DuelMatch & { opponent: string | nu
     theyPicked: !!state?.picked[1 - side],
     peerLeft,
     opponent: them?.nick ?? null,
+    opponentRef: them?.ref ?? null,
     game: state?.game ?? 0,
     pick: (card) => {
       if (!state?.deadline || pickNow !== null) return;

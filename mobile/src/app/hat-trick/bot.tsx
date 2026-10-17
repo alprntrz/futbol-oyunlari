@@ -6,6 +6,8 @@ import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { PlayerMenuButton } from "~/components/PlayerMenu";
+import { houseRef } from "~/lib/blocks";
 import { C } from "~/lib/theme";
 import { useRecordMatch } from "~/lib/history";
 import { SeriesEnd } from "~/components/SeriesEnd";
@@ -27,6 +29,8 @@ export default function HatTrickHouse() {
   const emotes = useEmotes("ht", false);
   const params = useLocalSearchParams<{ nick?: string; league?: string }>();
   const nick = params.nick || t("opponent");
+  // report / block work on the house player too (a made-up ref), like on anyone online
+  const [houseKey] = useState(() => houseRef(`${nick}-${Math.random()}`));
 
   const [me, setMe] = useState<Mark>("X");
   const rival = other(me);
@@ -208,7 +212,14 @@ export default function HatTrickHouse() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: t("tikiTakaName"), headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+      <Stack.Screen options={{ title: t("tikiTakaName"), headerRight: () => (
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <PlayerMenuButton target={{ ref: houseKey, nick, game: "ht" }} color={C.text} bg="#EEF2EF" />
+              <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" />
+            </View>
+          ),
+        }}
+      />
       <HatTrickBoard
         steals={null}
         usedNames={usedNames}

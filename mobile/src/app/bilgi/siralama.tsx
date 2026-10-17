@@ -4,10 +4,12 @@ import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { openPlayerMenu } from "~/components/PlayerMenu";
 import { LevelBadge } from "~/components/QuizLevel";
 import { goBack, NIGHT, NightStatusBar, StadiumHeader } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
-import { Icon } from "~/components/ui";
+import { Icon, Tap } from "~/components/ui";
+import { useIsBlocked } from "~/lib/blocks";
 import { useI18n } from "~/lib/i18n";
 import { loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
@@ -17,6 +19,7 @@ const HEADER = 110;
 
 interface Standing {
   rank: number;
+  ref?: string;
   nick: string;
   level: number;
   xp: number;
@@ -37,6 +40,7 @@ const MEDAL = ["#FACC15", "#CBD5E1", "#D97706"];
 /** Quiz standings across everyone who has played: all time or this week, ranked by XP. */
 export default function QuizStandings() {
   const { t } = useI18n();
+  const isBlocked = useIsBlocked();
   const insets = useSafeAreaInsets();
   const [period, setPeriod] = useState<Period>("all");
   const [data, setData] = useState<{ top: Standing[]; me: Standing | null; total: number } | null>(null);
@@ -59,8 +63,14 @@ export default function QuizStandings() {
     };
   }, [period]);
 
+  // tapping someone else opens report / block; a blocked player's name is hidden
   const row = (s: Standing, pinned = false) => (
-    <View style={[styles.row, s.me && styles.rowMe, pinned && { marginTop: 0 }]}>
+    <Tap
+      silent
+      disabled={s.me || !s.ref}
+      onPress={() => s.ref && openPlayerMenu({ ref: s.ref, nick: s.nick, game: "qz" })}
+      style={[styles.row, s.me && styles.rowMe, pinned && { marginTop: 0 }]}
+    >
       <View style={[styles.rank, s.rank <= 3 && { backgroundColor: MEDAL[s.rank - 1] }]}>
         <Text allowFontScaling={false} style={[styles.rankText, s.rank <= 3 && { color: "#1C1917" }]}>
           {s.rank}
@@ -73,7 +83,7 @@ export default function QuizStandings() {
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.nick} numberOfLines={1}>
-          {s.me ? `${s.nick} (${t("you")})` : s.nick}
+          {s.me ? `${s.nick} (${t("you")})` : isBlocked(s.ref) ? t("blockedHidden") : s.nick}
         </Text>
         <Text style={styles.meta}>
           {s.wins} {t("qzWins")}, {s.points} {t("qzPoints")}
@@ -81,7 +91,7 @@ export default function QuizStandings() {
       </View>
       <LevelBadge level={s.level} size={28} />
       <Text style={styles.xp}>{s.xp}</Text>
-    </View>
+    </Tap>
   );
 
   const meOutside = data?.me && data.me.rank > data.top.length ? data.me : null;

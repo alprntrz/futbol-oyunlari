@@ -5,7 +5,9 @@ import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
 import { Avatar } from "~/components/Avatar";
 import { Text } from "~/components/Text";
-import { Button, Icon, Page } from "~/components/ui";
+import { openPlayerMenu } from "~/components/PlayerMenu";
+import { Button, Icon, Page, Tap } from "~/components/ui";
+import { useIsBlocked } from "~/lib/blocks";
 import { fetchLeague, markLeagueSeen, useAccount, type League } from "~/lib/account";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
@@ -45,6 +47,7 @@ function useLeft(ends: number) {
  */
 export function LeagueBody() {
   const { t } = useI18n();
+  const isBlocked = useIsBlocked();
   const account = useAccount();
   const [data, setData] = useState<League | null>(null);
   const [failed, setFailed] = useState(false);
@@ -142,14 +145,19 @@ export function LeagueBody() {
                 <Animated.View key={`${r.rank}-${r.nick}`} entering={FadeInDown.delay(Math.min(i, 12) * 25).duration(200)}>
                   {i === upCount && upCount > 0 && <ZoneLine kind="up" />}
                   {i === downFrom && <ZoneLine kind="down" />}
-                  <View style={[styles.row, r.me && styles.rowMe]}>
+                  <Tap
+                    silent
+                    disabled={r.me || !r.ref}
+                    onPress={() => r.ref && openPlayerMenu({ ref: r.ref, nick: r.nick, game: "league" })}
+                    style={[styles.row, r.me && styles.rowMe]}
+                  >
                     <Text style={[styles.rank, zone === "up" && { color: C.greenMid }, zone === "down" && { color: C.red }]}>{r.rank}</Text>
                     <Avatar id={r.avatar} size={40} frame={r.frame} me={r.me} />
                     <Text style={[styles.nick, r.me && { color: C.greenDark }]} numberOfLines={1}>
-                      {r.me ? `${r.nick} · ${t("you")}` : r.nick}
+                      {r.me ? `${r.nick} · ${t("you")}` : isBlocked(r.ref) ? t("blockedHidden") : r.nick}
                     </Text>
                     <Text style={styles.xp}>{r.xp} XP</Text>
-                  </View>
+                  </Tap>
                 </Animated.View>
               );
             })}
