@@ -4,7 +4,7 @@ import { Image, StyleSheet, useWindowDimensions, View, type GestureResponderEven
 import Animated, { FadeInDown, FadeOut, ZoomIn, runOnJS, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { LANE, newRun, nextGoalOf, obstacleX, scoreOf, step, type Input, type RunState } from "@/lib/kosu/engine";
+import { LANE, multOf, newRun, nextGoalOf, obstacleX, POWER_S, scoreOf, step, type Input, type PowerKind, type RunState } from "@/lib/kosu/engine";
 import { quizQuestions } from "@/lib/quiz";
 
 import { CLUB_KITS } from "~/components/HatTrickBoard";
@@ -30,6 +30,14 @@ const BANDS = 30;
 /** sprite pools */
 const OBST = 18;
 const COINS = 40;
+const PICKUPS = 4;
+/** each power-up's look (stand-ins until the art): colour, symbol, name key */
+const POWER_LOOK: { color: string; icon: string; name: "rushP_boots" | "rushP_magnet" | "rushP_armband" | "rushP_double" }[] = [
+  { color: "#F97316", icon: "👟", name: "rushP_boots" },
+  { color: "#DC2626", icon: "🧲", name: "rushP_magnet" },
+  { color: "#FACC15", icon: "🛡️", name: "rushP_armband" },
+  { color: "#8B5CF6", icon: "✖️2", name: "rushP_double" },
+];
 /** the touchlines, and the advertising boards (blank) along them for a sense of speed */
 const HALF = 4.4;
 const BOARDS = 16;
@@ -62,6 +70,9 @@ export default function RushGame() {
   const [ask, setAsk] = useState(false);
   const [flash, setFlash] = useState<{ id: number; goal: boolean; mult: number } | null>(null);
   const [mult, setMult] = useState(1);
+  /** power-ups running: seconds left (boots, magnet, double) and the armband */
+  const [powers, setPowers] = useState<{ boots: number; magnet: number; double: number; armband: number }>({ boots: 0, magnet: 0, double: 0, armband: 0 });
+  const [toast, setToast] = useState<{ id: number; text: string; color: string } | null>(null);
 
   // the screen's projection, in numbers the worklets can use
   const fx = FX * W;
@@ -109,8 +120,20 @@ export default function RushGame() {
       runOnJS(onGoal)(Math.floor(v / 1000) > Math.floor(prev / 1000), state.value.mult);
     }
   );
-  const onEvent = (e: RunState["lastEvent"]) => {
+  const onEvent = (e: RunState["lastEvent"], kind: number) => {
     if (e === "goal" || e === "save") return;
+    if (e === "power") {
+      haptic.success();
+      play("coin");
+      const look = POWER_LOOK[kind];
+      setToast({ id: Date.now(), text: t(look.name), color: look.color });
+      return;
+    }
+    if (e === "saved") {
+      haptic.warning();
+      setToast({ id: Date.now(), text: t("rushArmbandUsed"), color: "#CA8A04" });
+      return;
+    }
     if (e === "coin") haptic.tap();
     else if (e === "bump") haptic.warning();
     else if (e === "dead") {
@@ -121,7 +144,15 @@ export default function RushGame() {
   useAnimatedReaction(
     () => state.value.events,
     (n, prev) => {
-      if (prev !== null && n !== prev) runOnJS(onEvent)(state.value.lastEvent);
+      if (prev === null || n === prev) return;
+      // the power-up just taken: the last one marked taken
+      const ps = state.value.pickups;
+      let kind = 0;
+      for (let k = ps.length - 1; k >= 0; k--) if (ps[k].taken) {
+        kind = ps[k].kind;
+        break;
+      }
+      runOnJS(onEvent)(state.value.lastEvent, kind);
     }
   );
   useAnimatedReaction(
@@ -131,6 +162,24 @@ export default function RushGame() {
       runOnJS(setCoins)(state.value.coinsTaken);
     }
   );
+  // power-up timers for the HUD, in tenths
+  useAnimatedReaction(
+    () => {
+      const s = state.value;
+      return `${Math.ceil(s.boots * 10)},${Math.ceil(s.magnet * 10)},${Math.ceil(s.double * 10)},${s.armband},${multOf(s)}`;
+    },
+    (v, prev) => {
+      if (v === prev) return;
+      const [b, m, d, a, x] = v.split(",").map(Number);
+      runOnJS(setPowers)({ boots: b / 10, magnet: m / 10, double: d / 10, armband: a });
+      runOnJS(setMult)(x);
+    }
+  );
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 1200);
+    return () => clearTimeout(id);
+  }, [toast]);
   const [newBest, setNewBest] = useState(false);
   // the next goal: which question, and show it once the goal is in sight
   useAnimatedReaction(
@@ -175,6 +224,8 @@ export default function RushGame() {
     });
     setQuestions(qs);
     setMult(1);
+    setPowers({ boots: 0, magnet: 0, double: 0, armband: 0 });
+    setToast(null);
     setFlash(null);
     setAsk(false);
     state.set(newRun(Math.floor(Math.random() * 2 ** 31), qs.map((q) => q.answer)));
@@ -228,6 +279,9 @@ export default function RushGame() {
         {Array.from({ length: BOARDS }, (_, i) => (
           <BoardSprite key={`b${i}`} i={i} state={state} W={W} fx={fx} horizon={horizon} />
         ))}
+        {Array.from({ length: PICKUPS }, (_, i) => (
+          <PickupSprite key={`p${i}`} i={i} state={state} W={W} fx={fx} horizon={horizon} />
+        ))}
         <GoalSprite state={state} W={W} fx={fx} horizon={horizon} lanes={goalQ >= 0 ? (questions[goalQ]?.lanes ?? null) : null} />
         <Runner state={state} W={W} fx={fx} horizon={horizon} kit={kit} />
       </Animated.View>
@@ -251,6 +305,21 @@ export default function RushGame() {
           <Text style={styles.pillText}>{coins}</Text>
         </View>
       </View>
+
+      {/* power-ups running: a ring that empties as the time runs out */}
+      <View style={[styles.powers, { top: insets.top + 54 + (ask ? 96 : 0) }]} pointerEvents="none">
+        {([0, 1, 3] as PowerKind[]).map((k) => {
+          const left = k === 0 ? powers.boots : k === 1 ? powers.magnet : powers.double;
+          if (left <= 0) return null;
+          return <PowerChip key={k} kind={k} share={left / POWER_S[k]} />;
+        })}
+        {powers.armband > 0 && <PowerChip kind={2} share={1} />}
+      </View>
+      {toast && (
+        <Animated.View key={toast.id} entering={ZoomIn.duration(180)} exiting={FadeOut.duration(200)} style={styles.toast} pointerEvents="none">
+          <Text style={[styles.toastText, { color: toast.color }]}>{toast.text}</Text>
+        </Animated.View>
+      )}
 
       {/* the goal's question, while it's coming up */}
       {phase === "run" && ask && goalQ >= 0 && questions[goalQ] && (
@@ -423,6 +492,61 @@ function GoalSprite({ state, W, fx, horizon, lanes }: View3D & { lanes: string[]
   );
 }
 
+/** a power-up badge on the HUD, its bar emptying with the time left */
+function PowerChip({ kind, share }: { kind: PowerKind; share: number }) {
+  const look = POWER_LOOK[kind];
+  return (
+    <View style={[styles.powerChip, { borderColor: look.color }]}>
+      <Text style={styles.powerIcon}>{look.icon}</Text>
+      <View style={styles.powerTrack}>
+        <View style={[styles.powerFill, { width: `${Math.max(0, Math.min(1, share)) * 100}%`, backgroundColor: look.color }]} />
+      </View>
+    </View>
+  );
+}
+
+/** a power-up floating over its lane, bobbing and turning */
+function PickupSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
+  const [kind, setKind] = useState<PowerKind>(0);
+  useAnimatedReaction(
+    () => state.value.pickups[i]?.kind ?? -1,
+    (k, prev) => {
+      if (k !== prev && k >= 0) runOnJS(setKind)(k as PowerKind);
+    }
+  );
+  const style = useAnimatedStyle(() => {
+    const s = state.value;
+    const p = s.pickups[i];
+    if (!p || p.taken || p.z < s.z - 0.4) return { opacity: 0 };
+    const bob = Math.sin(s.t * 4 + i) * 0.15;
+    const q = project(s, p.lane * LANE, 0.9 + bob, p.z, W, fx, horizon);
+    if (!q || q.dz > 80) return { opacity: 0 };
+    const size = 1.15 * q.k;
+    return {
+      opacity: Math.min(1, (80 - q.dz) / 12),
+      zIndex: Math.round(2000 - q.dz * 10),
+      width: size,
+      height: size,
+      left: q.sx - size / 2,
+      top: q.sy - size / 2,
+      borderRadius: size / 2,
+      transform: [{ rotate: `${Math.sin(s.t * 3 + i) * 12}deg` }],
+    };
+  });
+  const label = useAnimatedStyle(() => {
+    const s = state.value;
+    const p = s.pickups[i];
+    const q = p ? project(s, 0, 0, p.z, W, fx, horizon) : null;
+    return { fontSize: q ? Math.max(6, Math.min(70, q.k * 0.55)) : 6 };
+  });
+  const look = POWER_LOOK[kind];
+  return (
+    <Animated.View style={[styles.pickup, { backgroundColor: look.color }, style]}>
+      <Animated.Text style={[styles.pickupText, label]}>{look.icon}</Animated.Text>
+    </Animated.View>
+  );
+}
+
 function CoinSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
   const style = useAnimatedStyle(() => {
     const s = state.value;
@@ -456,13 +580,30 @@ function Runner({ state, W, fx, horizon, kit }: View3D & { kit: { body: string; 
     const bob = s.dead || s.y > 0 || rolling ? 0 : Math.abs(Math.sin(s.t * 13)) * size * 0.05;
     const fall = s.dead ? Math.min(1, (s.t - s.dead) / 0.35) : 0;
     // a stumble flickers
-    const flicker = s.stumble < 0.6 ? (Math.floor(s.t * 20) % 2 ? 0.45 : 1) : 1;
+    const flicker = s.stumble < 0.6 || (s.ghost > 0 && s.boots === 0) ? (Math.floor(s.t * 20) % 2 ? 0.45 : 1) : 1;
     return {
       opacity: flicker,
       zIndex: Math.round(2000 - CAM_BACK * 10),
       left: p.sx - size / 2,
       top: p.sy - size - bob - (ground.sy - p.sy) * 0,
       transform: [{ translateY: size * 0.5 * (rolling ? 0.45 : 0) }, { scaleY: rolling ? 0.55 : 1 }, { rotateX: `${fall * 70}deg` }],
+    };
+  });
+  // power-up looks on the runner: a speed glow with the boots, a gold ring with the armband
+  const aura = useAnimatedStyle(() => {
+    const s = state.value;
+    const p = project(s, s.x, s.y, s.z, W, fx, horizon)!;
+    const on = s.boots > 0 || s.armband > 0;
+    const d = size * 1.15;
+    return {
+      opacity: on ? 0.55 + Math.sin(s.t * 12) * 0.15 : 0,
+      left: p.sx - d / 2,
+      top: p.sy - size * 0.95,
+      width: d,
+      height: d,
+      borderRadius: d / 2,
+      borderColor: s.boots > 0 ? "#F97316" : "#FACC15",
+      zIndex: Math.round(2000 - CAM_BACK * 10) - 1,
     };
   });
   const shadowStyle = useAnimatedStyle(() => {
@@ -482,6 +623,7 @@ function Runner({ state, W, fx, horizon, kit }: View3D & { kit: { body: string; 
   return (
     <>
       <Animated.View style={[styles.shadow, { height: size * 0.12, borderRadius: size }, shadowStyle]} pointerEvents="none" />
+      <Animated.View style={[styles.aura, aura]} pointerEvents="none" />
       <Animated.View style={[styles.runner, { width: size, height: size }, body]} pointerEvents="none">
         <View style={[styles.head, { width: size * 0.26, height: size * 0.26, borderRadius: size * 0.13, marginBottom: -size * 0.05 }]}>
           {/* seen from behind: mostly hair */}
@@ -529,6 +671,16 @@ const styles = StyleSheet.create({
   overlay: { backgroundColor: "rgba(0,0,0,0.35)", alignItems: "center", justifyContent: "center", padding: 24 },
   card: { backgroundColor: C.card, borderRadius: R.card, padding: 20, alignItems: "center", alignSelf: "stretch", ...shadow },
   score: { fontFamily: F.black, fontSize: 56, color: C.greenDark },
+  pickup: { position: "absolute", alignItems: "center", justifyContent: "center", borderWidth: 3, borderColor: "white", ...shadow },
+  pickupText: { textAlign: "center" },
+  aura: { position: "absolute", borderWidth: 6, backgroundColor: "rgba(255,255,255,0.12)" },
+  powers: { position: "absolute", right: 12, gap: 6, alignItems: "flex-end" },
+  powerChip: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.card, borderRadius: R.chip, borderWidth: 2, paddingHorizontal: 8, height: 34, ...shadow },
+  powerIcon: { fontSize: 16 },
+  powerTrack: { width: 46, height: 6, borderRadius: 3, backgroundColor: C.key, overflow: "hidden" },
+  powerFill: { height: 6, borderRadius: 3 },
+  toast: { position: "absolute", left: 0, right: 0, top: "46%", alignItems: "center" },
+  toastText: { fontFamily: F.black, fontSize: 30, textShadowColor: "rgba(255,255,255,0.9)", textShadowRadius: 6, textShadowOffset: { width: 0, height: 0 } },
   goal: { position: "absolute", flexDirection: "row", borderColor: "white", borderBottomWidth: 0, backgroundColor: "rgba(255,255,255,0.18)", borderTopLeftRadius: 4, borderTopRightRadius: 4 },
   goalLane: { flex: 1, alignItems: "center", justifyContent: "flex-start", padding: "4%" },
   goalDivider: { borderLeftWidth: 2, borderLeftColor: "rgba(255,255,255,0.6)", borderStyle: "dashed" },

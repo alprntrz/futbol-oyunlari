@@ -43,6 +43,26 @@ export interface Coin {
 }
 export type Input = "" | "left" | "right" | "up" | "down";
 
+/**
+ * Power-ups, found on the pitch (never bought): 0 boots = a burst of speed straight through
+ * everything; 1 magnet = coins fly to you; 2 armband = forgives one crash; 3 double = 2× points.
+ */
+export type PowerKind = 0 | 1 | 2 | 3;
+export const POWER_S = [5, 9, 0, 10];
+export interface Pickup {
+  z: number;
+  lane: number;
+  kind: PowerKind;
+  taken: number;
+}
+/** a power-up roughly every this many metres (not before the first goal's run-in) */
+const POWER_GAP = 170;
+/** boots: extra speed on top of the run's own, and a little grace once they run out */
+const BOOST = 1.6;
+const BOOST_GRACE = 0.8;
+/** magnet reach (m) */
+const MAGNET_R = 7;
+
 /** a goal across the three lanes: the right answer's lane (-1, 0, 1), and how it went (0 not yet, 1 scored, -1 saved) */
 export interface Goal {
   z: number;
@@ -85,9 +105,18 @@ export interface RunState {
   coinsTaken: number;
   /** a coin was just picked up, a jump / roll / switch happened, a bump: for sounds and haptics */
   events: number;
-  lastEvent: "" | "coin" | "bump" | "dead" | "jump" | "roll" | "lane" | "goal" | "save";
+  lastEvent: "" | "coin" | "bump" | "dead" | "jump" | "roll" | "lane" | "goal" | "save" | "power" | "saved";
   goals: Goal[];
   nextGoal: number;
+  pickups: Pickup[];
+  nextPower: number;
+  /** seconds left of boots, magnet, double points; armband = how many crashes it still forgives */
+  boots: number;
+  magnet: number;
+  double: number;
+  armband: number;
+  /** after a forgiven crash or the boots: a moment of passing through */
+  ghost: number;
   /** right-answer lanes, one per question (the screen lays the options out to match) */
   answers: number[];
   goalsScored: number;
@@ -138,6 +167,13 @@ export function newRun(seed: number, answers: number[] = []): RunState {
     shake: 0,
     goals: [],
     nextGoal: GOAL_FIRST,
+    pickups: [],
+    nextPower: 120,
+    boots: 0,
+    magnet: 0,
+    double: 0,
+    armband: 0,
+    ghost: 0,
     answers,
     goalsScored: 0,
     saves: 0,
@@ -153,6 +189,12 @@ export function newRun(seed: number, answers: number[] = []): RunState {
 export const scoreOf = (s: RunState) => {
   "worklet";
   return Math.floor(s.score);
+};
+
+/** points multiplier right now (goals × double points) */
+export const multOf = (s: RunState) => {
+  "worklet";
+  return s.mult * (s.double > 0 ? 2 : 1);
 };
 
 /** the next goal still to come, if any */
@@ -208,6 +250,13 @@ function layRow(s: RunState, z: number) {
     s.obstacles.push({ z, lane: lanes[1], kind, moveTo: lanes[1] });
     coinLine(s, z - 6, kind === 0 ? lanes[1] : free, 6, kind === 0 ? z : 0);
   }
+  // now and then a power-up in the open lane just after the row
+  if (z > s.nextPower && Math.abs(z - s.nextGoal) > 90) {
+    const r2 = rnd(s);
+    const kind: PowerKind = r2 < 0.3 ? 1 : r2 < 0.55 ? 3 : r2 < 0.8 ? 2 : 0;
+    s.pickups.push({ z: z + 9, lane: free, kind, taken: 0 });
+    s.nextPower = z + POWER_GAP + rnd(s) * 120;
+  }
 }
 
 /** a defender who drifts across starts moving when the runner is this close */
@@ -226,6 +275,13 @@ function bump(s: RunState, _where: "side" | "wall") {
   s.shake = 0.25;
   emit(s, "bump");
   if (s.stumble < STUMBLE_S) {
+    if (s.armband > 0) {
+      s.armband = 0;
+      s.ghost = 1.2;
+      s.stumble = 99;
+      emit(s, "saved");
+      return;
+    }
     die(s, "caught");
     return;
   }
@@ -252,8 +308,16 @@ export function step(s: RunState, input: Input, dt: number) {
     return;
   }
   s.speed = Math.min(SPEED_MAX, s.speed + ACCEL * dt * (1 + s.speed / SPEED_MAX));
-  s.z += s.speed * dt;
-  s.score += s.speed * dt * s.mult;
+  const v = s.boots > 0 ? s.speed * BOOST : s.speed;
+  s.z += v * dt;
+  s.score += v * dt * multOf(s);
+  if (s.boots > 0) {
+    s.boots = Math.max(0, s.boots - dt);
+    if (s.boots === 0) s.ghost = BOOST_GRACE;
+  }
+  s.magnet = Math.max(0, s.magnet - dt);
+  s.double = Math.max(0, s.double - dt);
+  s.ghost = Math.max(0, s.ghost - dt);
   s.stumble += dt;
   s.shake = Math.max(0, s.shake - dt);
 
@@ -311,7 +375,7 @@ export function step(s: RunState, input: Input, dt: number) {
     if (lane === g.correct) {
       g.result = 1;
       s.goalsScored++;
-      s.score += GOAL_POINTS * s.mult;
+      s.score += GOAL_POINTS * multOf(s);
       s.mult = Math.min(MULT_MAX, s.mult + 1);
       emit(s, "goal");
     } else {
@@ -323,19 +387,35 @@ export function step(s: RunState, input: Input, dt: number) {
   }
   if (s.obstacles.length && s.obstacles[0].z < s.z - 8) s.obstacles = s.obstacles.filter((o) => o.z > s.z - 8);
   if (s.coins.length && s.coins[0].z < s.z - 8) s.coins = s.coins.filter((c) => c.z > s.z - 8);
+  if (s.pickups.length && s.pickups[0].z < s.z - 8) s.pickups = s.pickups.filter((p) => p.z > s.z - 8);
+
+  // power-ups
+  for (const p of s.pickups) {
+    if (p.taken || Math.abs(p.z - s.z) > 1 || Math.abs(p.lane * LANE - s.x) > 1.2 || s.y > 1.6) continue;
+    p.taken = 1;
+    if (p.kind === 0) s.boots = POWER_S[0];
+    else if (p.kind === 1) s.magnet = POWER_S[1];
+    else if (p.kind === 2) s.armband = 1;
+    else s.double = POWER_S[3];
+    emit(s, "power");
+  }
 
   // coins
   for (const c of s.coins) {
-    if (c.taken || Math.abs(c.z - s.z) > 0.9) continue;
-    if (Math.abs(c.lane * LANE - s.x) < 1.1 && Math.abs(c.y - s.y) < 1.2) {
+    if (c.taken) continue;
+    // the magnet pulls every coin in reach, in any lane
+    const pulled = s.magnet > 0 && c.z - s.z < MAGNET_R && c.z - s.z > -0.5;
+    if (!pulled && Math.abs(c.z - s.z) > 0.9) continue;
+    if (pulled || (Math.abs(c.lane * LANE - s.x) < 1.1 && Math.abs(c.y - s.y) < 1.2)) {
       c.taken = 1;
       s.coinsTaken++;
-      s.score += 10 * s.mult;
+      s.score += 10 * multOf(s);
       emit(s, "coin");
     }
   }
 
-  // obstacles
+  // obstacles (the boots and a moment after a forgiven crash pass straight through)
+  if (s.boots > 0 || s.ghost > 0) return;
   for (const o of s.obstacles) {
     const dz = o.z - s.z;
     if (dz > HIT_Z || dz < -HIT_Z) continue;
@@ -349,6 +429,14 @@ export function step(s: RunState, input: Input, dt: number) {
       s.lane = s.from;
       bump(s, "side");
       continue;
+    }
+    // the armband forgives one crash: a moment to pass through, the run goes on
+    if (s.armband > 0) {
+      s.armband = 0;
+      s.ghost = 1.2;
+      s.shake = 0.3;
+      emit(s, "saved");
+      return;
     }
     die(s, "front");
     return;
