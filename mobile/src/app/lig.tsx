@@ -21,6 +21,12 @@ export const LEAGUE_COLOR: Record<string, string> = {
   diamond: "#7C3AED",
 };
 
+/**
+ * Below this many players a group shows my own progress instead of the table: a near-empty
+ * ranking reads as "nobody plays here". Groups only split at 30, so it fills as players come.
+ */
+const SHOW_TABLE_FROM = 10;
+
 /** "2 days" / "5 hours" until the week ends */
 function useLeft(ends: number) {
   const { t } = useI18n();
@@ -116,6 +122,18 @@ export function LeagueBody() {
             <Icon name="flag.checkered" size={30} color={color} fallback="🏁" />
             <Text style={[T.body, { textAlign: "center" }]}>{t("lgNotJoined")}</Text>
           </View>
+        ) : n < SHOW_TABLE_FROM ? (
+          // a small group: my week, not a short table
+          <Animated.View entering={FadeIn} style={styles.filling}>
+            <Text style={T.caption}>{t("lgMyWeek")}</Text>
+            <Text style={[styles.myXp, { color }]}>{data.rows.find((r) => r.me)?.xp ?? 0} XP</Text>
+            <Text style={[T.headline, { textAlign: "center" }]}>{t("lgFilling")}</Text>
+            <Text style={[T.body, { textAlign: "center" }]}>
+              {data.tier < data.leagues.length - 1
+                ? t("lgFillingUp").replace("{league}", t(`lg_${data.leagues[data.tier + 1]}` as Parameters<typeof t>[0]))
+                : t("lgFillingTop")}
+            </Text>
+          </Animated.View>
         ) : (
           <View style={styles.list}>
             {data.rows.map((r, i) => {
@@ -194,6 +212,8 @@ const styles = StyleSheet.create({
   leftText: { fontWeight: "700", fontSize: 13, color: C.text2 },
   result: { marginTop: 12, borderRadius: 14, padding: 12 },
   resultText: { fontFamily: F.display, fontSize: 17, color: C.text, textAlign: "center" },
+  filling: { marginTop: 16, backgroundColor: C.card, borderRadius: 20, padding: 20, alignItems: "center", gap: 8 },
+  myXp: { fontFamily: F.black, fontSize: 44, lineHeight: 46 },
   empty: { alignItems: "center", gap: 10, marginTop: 30, paddingHorizontal: 20 },
   list: { marginTop: 14, backgroundColor: C.card, borderRadius: 20, overflow: "hidden", paddingVertical: 4 },
   row: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 9 },
