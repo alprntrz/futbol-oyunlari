@@ -8,11 +8,18 @@ import type { CoachId, Lobby, Personality } from "@/lib/taktik/types";
 import { loadNick, randomNick } from "./nick";
 
 /**
- * The one Taktik Tahtası game on this phone (offline, against 7 house managers).
+ * The one Taktik Tahtası game on this phone (against 7 house managers, played like an online lobby).
  * The engine mutates the lobby in place; `version` ticks after every change so
- * screens re-render, and the lobby is saved so a game survives closing the app.
+ * screens re-render. There's no "continue later": like an online lobby, a manager
+ * who leaves has `REJOIN_MS` to come back (the game screen stamps `seen` while it's
+ * open); after that the game is gone and the next one starts fresh.
  */
 const KEY = "taktik-v1";
+const SEEN_KEY = "taktik-seen-v1";
+/** how long a manager who left can still get back into the lobby */
+export const REJOIN_MS = 60_000;
+/** last moment the game screen was open (ms) */
+let seen = 0;
 const PERSONALITIES: Personality[] = ["loyal", "econ", "roller", "opportunist", "loyal", "econ", "opportunist"];
 
 let lobby: Lobby | null = null;
@@ -35,6 +42,11 @@ export function loadTaktik() {
   return (loaded ??= AsyncStorage.getItem(KEY)
     .then((raw) => {
       if (raw) lobby = JSON.parse(raw) as Lobby;
+    })
+    .then(() => AsyncStorage.getItem(SEEN_KEY))
+    .then((v) => {
+      seen = Number(v) || 0;
+      expireTaktik();
     })
     .catch(() => {})
     .then(() => {
@@ -66,6 +78,7 @@ export async function startTaktik(coach: CoachId) {
   const seed = Math.floor(Math.random() * 2 ** 31);
   const bots = PERSONALITIES.map((personality) => ({ name: randomNick(), personality }));
   lobby = newLobby(seed, [{ name, coach }], bots);
+  markTaktikSeen();
   emit();
 }
 
@@ -84,6 +97,26 @@ export function kickOff() {
   emit();
 }
 
+/** The game screen is open: keep the seat (called every few seconds and when the screen goes away). */
+export function markTaktikSeen() {
+  seen = Date.now();
+  AsyncStorage.setItem(SEEN_KEY, String(seen)).catch(() => {});
+}
+
+/** A live game this manager left: how long is left to get back in (0: none, or too late). */
+export function rejoinLeft(): number {
+  if (!lobby || lobby.over || lobby.managers[0].place !== null) return 0;
+  return Math.max(0, REJOIN_MS - (Date.now() - seen));
+}
+
+/** Away for longer than REJOIN_MS: the seat is lost, the game goes. Returns true if it went. */
+export function expireTaktik(): boolean {
+  if (!lobby || lobby.over || lobby.managers[0].place !== null) return false;
+  if (Date.now() - seen < REJOIN_MS) return false;
+  quitTaktik();
+  return true;
+}
+
 export function quitTaktik() {
   lobby = null;
   emit();
@@ -94,4 +127,5 @@ export function resetTaktik() {
   lobby = null;
   loaded = null;
   AsyncStorage.removeItem(KEY).catch(() => {});
+  AsyncStorage.removeItem(SEEN_KEY).catch(() => {});
 }

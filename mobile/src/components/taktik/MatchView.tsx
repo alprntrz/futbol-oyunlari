@@ -9,7 +9,6 @@ import type { Lobby, MatchResult } from "@/lib/taktik/types";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { play } from "~/lib/sound";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Text } from "../Text";
@@ -60,7 +59,6 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   useEffect(() => {
     if (lastGoals === 0) return;
     haptic.press();
-    play("pop");
   }, [lastGoals]);
 
   // full time: the result stays a moment, then it's back to the board by itself (a tap goes sooner)

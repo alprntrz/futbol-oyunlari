@@ -1,6 +1,6 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
+import { Alert, AppState, Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
 import Animated, { Easing, FadeIn, FadeInDown, FadeOut, SlideInRight, SlideOutRight, useAnimatedStyle, useSharedValue, withRepeat, withTiming, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -29,7 +29,7 @@ import { Button, Icon, Tap } from "~/components/ui";
 import { TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { act, kickOff, quitTaktik, useTaktik } from "~/lib/taktik";
+import { act, expireTaktik, kickOff, loadTaktik, markTaktikSeen, quitTaktik, useTaktik } from "~/lib/taktik";
 import { C, F, GAME, R, shadow, T } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
@@ -108,6 +108,23 @@ export default function TaktikGame() {
     const id = setTimeout(() => setIncomeSeen(roundKey), 3500);
     return () => clearTimeout(id);
   }, [incomeNote, roundKey]);
+  // the seat in the lobby: stamped while the screen is open, and when it goes away or the app goes to the background
+  // (back within a minute: same game; later: it's gone, see lib/taktik.ts)
+  useEffect(() => {
+    // back to the app after more than a minute away: the seat is gone
+    const check = () => {
+      if (expireTaktik()) router.replace("/taktik");
+      else markTaktikSeen();
+    };
+    loadTaktik().then(check);
+    const id = setInterval(markTaktikSeen, 5000);
+    const sub = AppState.addEventListener("change", (state) => (state === "active" ? check() : markTaktikSeen()));
+    return () => {
+      clearInterval(id);
+      sub.remove();
+      markTaktikSeen();
+    };
+  }, []);
   // a plain "+XP" toast: the reward screen is a second modal on top of the end card and froze the screen
   useXpAward(out && !match && !!me?.place, `ttk-${lobby?.seed}`, "tt", me?.place ? XP.ttPlace[me.place - 1] : 0, {
     label: me?.place === 1 ? t("ttkWinner") : t("ttkPlace").replace("{n}", String(me?.place ?? "")),
@@ -279,6 +296,15 @@ export default function TaktikGame() {
     setMatch(true);
   };
 
+  // leaving a live lobby: ask first (a minute to come back, then the seat is gone)
+  const leave = () => {
+    if (out) return router.back();
+    Alert.alert(t("ttkLeaveTitle"), t("ttkLeaveBody"), [
+      { text: t("ttkLeaveStay"), style: "cancel" },
+      { text: t("ttkLeaveGo"), style: "destructive", onPress: () => router.back() },
+    ]);
+  };
+
   const standings = lobby.managers.slice().sort((a, b) => (a.place ?? 0) - (b.place ?? 0) || b.hp - a.hp);
   const xpNeed = xpToNext(me);
 
@@ -308,12 +334,13 @@ export default function TaktikGame() {
 
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
-      <Stack.Screen options={{ headerShown: false }} />
+      {/* no swipe back: leaving the lobby goes through the question */}
+      <Stack.Screen options={{ headerShown: false, gestureEnabled: out }} />
       <FocusStatusBar style="dark" />
       {/* top: back, the round, the clock, health / gold / streak */}
       <View style={[styles.top, { paddingTop: insets.top + 2 }]}>
         <View style={styles.topRow}>
-          <Tap onPress={() => router.back()} style={styles.back} accessibilityLabel="‹">
+          <Tap onPress={leave} style={styles.back} accessibilityLabel="‹">
             <Icon name="chevron.left" size={17} color={C.text} fallback="‹" />
           </Tap>
           <Text style={styles.stage} numberOfLines={1}>
