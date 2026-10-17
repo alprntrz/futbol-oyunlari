@@ -3,6 +3,10 @@
  * days (CLAUDE.md: "adding or removing matches reshuffles future days") fails here. If it's on
  * purpose, print the new values with the snippet in the failure message and update them.
  */
+// dayNumber reads the phone's local date: pin the zone most players are in, so CI (UTC) and a
+// laptop in Istanbul compute the same days
+process.env.TZ = "Europe/Istanbul";
+
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { test } from "node:test";
@@ -23,7 +27,6 @@ test("daily Tic-Tac-Toe grids are unchanged", () => {
 });
 
 test("daily Missing 11 matches are unchanged", () => {
-  // noon UTC, so the day is the same in every time zone the CI might use
   const all = DAYS.map((day) => dailyMatch(new Date(day * 86_400_000 + 12 * 3_600_000)).match.id);
   assert.equal(hash(all.join("\n") + "\n"), "43be966b5834d50b", "daily matches changed (matches added/removed reshuffle future days)");
 });
