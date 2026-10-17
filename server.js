@@ -55,14 +55,14 @@ function tierGap(since) {
   return waited < TIER_WIDEN_MS ? 0 : waited < 2 * TIER_WIDEN_MS ? 1 : 99;
 }
 /**
- * Criteria newer apps added ("mate-…" played with, "coach-…" managed by, "arab-…" Saudi / Egyptian clubs): the caps
+ * Criteria newer apps added ("mate-…" played with, "coach-…" managed by, "arab-…" Saudi / Egyptian clubs, "hon-…" honour counts and birth decades): the caps
  * a phone needs to draw a Tic-Tac-Toe grid. Older apps send no caps.
  */
 const gridNeeds = (grid) =>
-  [...(grid?.rows ?? []), ...(grid?.cols ?? [])].map((id) => (typeof id === "string" ? id.split("-")[0] : "")).filter((k) => k === "mate" || k === "coach" || k === "arab");
+  [...(grid?.rows ?? []), ...(grid?.cols ?? [])].map((id) => (typeof id === "string" ? id.split("-")[0] : "")).filter((k) => k === "mate" || k === "coach" || k === "arab" || k === "hon");
 const canDraw = (s, grid) => gridNeeds(grid).every((k) => !!s?.data.caps?.includes(k));
 /** knows every criterion kind the app can deal (so the host may use them all) */
-const knowsMates = (s) => ["mate", "coach"].every((k) => !!s?.data.caps?.includes(k));
+const knowsMates = (s) => ["mate", "coach", "hon"].every((k) => !!s?.data.caps?.includes(k));
 /** set once the socket server is up (module-level helpers look sockets up through it) */
 let ioServer = null;
 const htAllKnowMates = (room) => room.players.every((p) => knowsMates(ioServer?.sockets.sockets.get(p.id)));

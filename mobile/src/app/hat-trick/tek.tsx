@@ -7,7 +7,7 @@ import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 import type { GridPlayer } from "@/data/players";
 import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
-import { generateGrid, GRID_PLAYERS, searchPlayers, seededRandom, withLink, type Criterion } from "@/lib/tiki";
+import { generateGrid, GRID_PLAYERS, searchPlayers, seededRandom, withHonour, withLink, type Criterion } from "@/lib/tiki";
 
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
@@ -53,7 +53,7 @@ export default function HatTrickSolo() {
     const rand = seededRandom(seed ?? day * 7919 + 17);
     // today's grid keeps the old rule (same grid as before the update); extra grids get club pairs
     if (seed === null) return generateGrid(rand);
-    return withLink(generateGrid(rand, { clubPairs: true }), rand);
+    return withHonour(withLink(generateGrid(rand, { clubPairs: true }), rand), rand, 0.45);
   }, [day, seed]);
   const [run, setRun] = useState<Run | null | undefined>(undefined);
   const [limit, setLimit] = useState<"3" | "none">("3");

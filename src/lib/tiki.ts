@@ -1,4 +1,6 @@
 import { PLAYERS, type GridPlayer } from "@/data/players";
+import { BORN } from "@/data/born";
+import { HONOURS, type HonourId } from "@/data/honours";
 import { ARAB_LINKS, ARAB_PLAYERS } from "@/data/players-arab";
 import { COACHES } from "@/data/coaches";
 import { TEAMMATES } from "@/data/teammates";
@@ -139,6 +141,91 @@ export const ARAB_CRITERIA: Criterion[] = [
 export const GRID_PLAYERS: GridPlayer[] = [...PLAYERS.map((p) => (ARAB_LINKS[p.name] ? { ...p, clubs: [...p.clubs, ...ARAB_LINKS[p.name]] } : p)), ...ARAB_PLAYERS];
 
 /**
+ * Honours with counts and birth decades ("2+ Champions League titles", "Played in a Champions
+ * League final", "World Cup top scorer", "Born in the 1990s"…): src/data/honours.ts
+ * (scripts/tiki-scrape-honours.mjs + tiki-scrape-finals.mjs → tiki-build-honours.mjs) and
+ * src/data/born.ts. Not in ALL_CRITERIA (seeded daily grids stay as they were); `withHonour`
+ * swaps one into a dealt grid. Ids "hon-…": the server deals them only to apps with caps "hon".
+ */
+const HONOUR_LOOK: Record<HonourId, { tr: string; en: string; icon: string; league?: string }> = {
+  ucl2: { tr: "2+ Şampiyonlar Ligi", en: "2+ Champions League titles", icon: "⭐" },
+  uclFinal: { tr: "ŞL finalinde oynadı", en: "Played in a UCL final", icon: "🏟️" },
+  uclTop: { tr: "ŞL gol kralı", en: "Champions League top scorer", icon: "👟" },
+  wcTop: { tr: "Dünya Kupası gol kralı", en: "World Cup top scorer", icon: "👟" },
+  euroTop: { tr: "Avrupa Şampiyonası gol kralı", en: "Euros top scorer", icon: "👟" },
+  en3: { tr: "3+ Premier Lig şampiyonluğu", en: "3+ Premier League titles", icon: "🏅", league: "en" },
+  es3: { tr: "3+ La Liga şampiyonluğu", en: "3+ La Liga titles", icon: "🏅", league: "es" },
+  it3: { tr: "3+ Serie A şampiyonluğu", en: "3+ Serie A titles", icon: "🏅", league: "it" },
+  de3: { tr: "3+ Bundesliga şampiyonluğu", en: "3+ Bundesliga titles", icon: "🏅", league: "de" },
+  fr3: { tr: "3+ Ligue 1 şampiyonluğu", en: "3+ Ligue 1 titles", icon: "🏅" },
+  pt3: { tr: "3+ Portekiz ligi şampiyonluğu", en: "3+ Portuguese league titles", icon: "🏅", league: "pt" },
+  tr3: { tr: "3+ Süper Lig şampiyonluğu", en: "3+ Süper Lig titles", icon: "🏅", league: "tr" },
+};
+const DAY0 = Date.UTC(1900, 0, 1);
+/** birth year by player name (PLAYERS order in born.ts) */
+const BORN_YEAR = new Map<string, number>();
+PLAYERS.forEach((p, i) => {
+  const code = BORN.slice(i * 3, i * 3 + 3);
+  if (code && code !== "000") BORN_YEAR.set(p.name, new Date(DAY0 + parseInt(code, 36) * 86400000).getUTCFullYear());
+});
+const DECADES = [1970, 1980, 1990, 2000];
+export const HONOUR_CRITERIA: Criterion[] = [
+  ...(Object.keys(HONOUR_LOOK) as HonourId[])
+    .filter((k) => (HONOURS[k]?.length ?? 0) >= 6)
+    .map((k) => {
+      const names = new Set(HONOURS[k]);
+      const look = HONOUR_LOOK[k];
+      return { kind: "badge" as const, id: `hon-${k}`, tr: look.tr, en: look.en, icon: look.icon, test: (p: GridPlayer) => names.has(p.name) };
+    }),
+  ...DECADES.map((d) => ({
+    kind: "badge" as const,
+    id: `hon-born${d}`,
+    tr: d === 2000 ? "2000'lerde doğdu" : `${String(d).slice(2)}'lerde doğdu`,
+    en: `Born in the ${d === 2000 ? "2000" : String(d).slice(2)}s`,
+    icon: "🎂",
+    test: (p: GridPlayer) => {
+      const y = BORN_YEAR.get(p.name);
+      return y !== undefined && y >= d && y < d + 10;
+    },
+  })),
+];
+/** the league a title criterion belongs to (its league grids prefer it) */
+const HONOUR_LEAGUE = new Map(Object.entries(HONOUR_LOOK).map(([k, v]) => [`hon-${k}`, v.league]));
+
+/**
+ * Swap one country / honour line of a dealt grid for an honour or birth-decade criterion
+ * (`chance` of the time), keeping every square answerable. Club lines stay. A league grid
+ * (`league`) prefers that league's title criterion.
+ */
+export function withHonour(grid: Grid, rand: () => number = Math.random, chance = 0.5, league?: string): Grid {
+  if (!HONOUR_CRITERIA.length || rand() >= chance) return grid;
+  if ([...grid.rows, ...grid.cols].some((c) => c.id.startsWith("hon-"))) return grid;
+  // league titles only in their own league's grid (or the all-clubs grid); the rest anywhere
+  const pool = HONOUR_CRITERIA.filter((c) => {
+    const lg = HONOUR_LEAGUE.get(c.id);
+    return !lg || !league || league === "all" || lg === league;
+  });
+  const own = pool.filter((c) => !!league && HONOUR_LEAGUE.get(c.id) === league);
+  // the league's own titles first, then the other honours, birth decades last (a third of the time first)
+  const born = (c: Criterion) => c.id.startsWith("hon-born");
+  const rest = shuffle(pool.filter((c) => !own.includes(c)), rand);
+  const order = [...shuffle(own, rand), ...(rand() < 0.33 ? [...rest.filter(born), ...rest.filter((c) => !born(c))] : [...rest.filter((c) => !born(c)), ...rest.filter(born)])];
+  const lines = shuffle(["r0", "r1", "r2", "c0", "c1", "c2"], rand);
+  for (const hon of order.slice(0, 16)) {
+    for (const line of lines) {
+      const i = Number(line[1]);
+      const kept = line[0] === "r" ? grid.rows : grid.cols;
+      const cross = line[0] === "r" ? grid.cols : grid.rows;
+      if (kept[i].kind === "club") continue;
+      if (!cross.every((c) => cellSolvable(hon, c))) continue;
+      const next = kept.map((c, k) => (k === i ? hon : c));
+      return line[0] === "r" ? { rows: next, cols: grid.cols } : { rows: grid.rows, cols: next };
+    }
+  }
+  return grid;
+}
+
+/**
  * "Played with X": club teammates of a star (src/data/teammates.ts). Not in
  * ALL_CRITERIA, so seeded grids (daily) and other games stay as they were;
  * `withLink` swaps one into a dealt grid. Ids are "mate-…".
@@ -162,7 +249,7 @@ const LINKS: { c: Criterion; global: boolean; clubs: string[] }[] = [
 const LINK_CRITERIA = LINKS.map((l) => l.c);
 const isLink = (c: Criterion) => c.kind === "mate" || c.kind === "coach";
 
-const BY_ID = new Map([...ALL_CRITERIA, ...ARAB_CRITERIA, ...LINK_CRITERIA].map((c) => [c.id, c]));
+const BY_ID = new Map([...ALL_CRITERIA, ...ARAB_CRITERIA, ...HONOUR_CRITERIA, ...LINK_CRITERIA].map((c) => [c.id, c]));
 /** Any criterion by id, "played with" ones included (online grids travel as ids). */
 export const criterionById = (id: string): Criterion | undefined => BY_ID.get(id);
 

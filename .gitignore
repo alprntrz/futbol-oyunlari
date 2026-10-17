@@ -74,3 +74,7 @@ scripts/.cache/raw-wikidata.json
 /docs/design/taktik-match-art/*.png
 !/docs/design/taktik-match-art/preview-screens.png
 /docs/design/forma-art/jersey-*.png
+
+# Transfermarkt achievements pages + parsed honours (scripts/tiki-scrape-honours.mjs)
+scripts/.cache/tm-erfolge/
+scripts/.cache/raw-honours.json

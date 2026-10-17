@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
 import { leagueById, leagueGrid, type LeagueId } from "@/lib/leagues";
-import { generateGrid, withLink, type Grid } from "@/lib/tiki";
+import { generateGrid, withHonour, withLink, type Grid } from "@/lib/tiki";
 
 const KEY = "ht-league";
 let current: LeagueId = "all";
@@ -42,5 +42,7 @@ export const dealGrid = (league: LeagueId | string | undefined, mates = true): G
   const local = league && league !== "all" ? leagueGrid(league as LeagueId) : null;
   const grid = local ?? generateGrid(Math.random, { clubPairs: true });
   // the all-clubs grid only deals world-class names; a league grid its own (local ones too)
-  return mates ? withLink(grid, Math.random, 0.5, local ? leagueById(league).clubs : undefined) : grid;
+  if (!mates) return grid;
+  // and often an honour line ("2+ Champions League titles", "Born in the 1990s"…), the league's own titles first
+  return withHonour(withLink(grid, Math.random, 0.5, local ? leagueById(league).clubs : undefined), Math.random, 0.45, local ? (league as string) : undefined);
 };
