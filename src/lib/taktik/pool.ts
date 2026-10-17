@@ -72,7 +72,7 @@ export const CATALOG: Card[] = (() => {
     const name = PLAYERS[idx].name;
     const value = VALUES[name];
     // legends cost 5; a peak market value sets the rest; older players fall back to fame (never 5)
-    cost[idx] = LEGENDS.has(name) ? 5 : value !== undefined ? costOfValue(value) : (Math.max(1, Math.min(4, rank < TIER_CUTS[1] ? 4 : rank < TIER_CUTS[2] ? 3 : rank < TIER_CUTS[3] ? 2 : 1)) as Cost);
+    cost[idx] = LEGENDS.has(name) ? 5 : value !== undefined ? costOfValue(value) : ((rank < 150 ? 4 : rank < TIER_CUTS[2] ? 3 : rank < TIER_CUTS[3] ? 2 : 1) as Cost);
   });
   return PLAYERS.map((p, i) => {
     const code = TAKTIK_CLUB[i];
