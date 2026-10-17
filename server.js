@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
 const { pushLive } = require("./server-live");
+const { attachTaktik, ttRooms } = require("./server-taktik");
 const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
 
 const dev = process.env.NODE_ENV !== "production";
@@ -687,6 +688,9 @@ app.prepare().then(() => {
     map.delete(code);
   };
 
+  // Pitch Chess online lobbies (server-taktik.js): handlers added per socket below
+  const taktikSocket = attachTaktik(io, { cleanNick, houseNick: qzNick, cleanLook });
+
   io.on("connection", (socket) => {
     // Every handler is guarded: a missing or odd payload is answered with nothing, never
     // a thrown error, and a socket that floods events (over 60 in 5 s) is dropped.
@@ -716,7 +720,8 @@ app.prepare().then(() => {
     // with Join. Only between friends (friend codes), at most one every 3 s.
     socket.on("fr:invite", ({ to, game, room }, cb) => {
       const uid = socket.data.uid;
-      if (!uid || game !== "ht" || typeof room !== "string" || !htRooms.has(room.toUpperCase())) return cb?.({ ok: false });
+      const open = game === "ht" ? htRooms.has(String(room).toUpperCase()) : game === "tt" ? ttRooms.get(String(room).toUpperCase())?.phase === "lobby" : false;
+      if (!uid || typeof room !== "string" || !open) return cb?.({ ok: false });
       if (Date.now() - (socket.data.lastInvite ?? 0) < 3000) return cb?.({ ok: false, error: "slow" });
       const friend = friendIdByCode(uid, to);
       if (!friend) return cb?.({ ok: false, error: "not_friend" });
@@ -727,6 +732,8 @@ app.prepare().then(() => {
       for (const s of targets) s.emit("fr:invited", { from, game, room: room.toUpperCase() });
       cb?.({ ok: true });
     });
+
+    taktikSocket(socket);
 
     // app features this phone knows (older apps send none): "mate" / "coach" = "played with" / "managed by" grid criteria
     socket.data.caps = Array.isArray(socket.handshake.auth?.caps) ? socket.handshake.auth.caps.filter((c) => typeof c === "string").slice(0, 8) : [];
