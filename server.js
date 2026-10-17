@@ -645,9 +645,14 @@ app.prepare().then(() => {
     cors: { origin: "*" },
     maxHttpBufferSize: 64 * 1024,
     connectionStateRecovery: { maxDisconnectionDuration: REJOIN_MS, skipMiddlewares: true },
+    // notice a phone that vanished (no clean close through the proxy) within ~20 s, not 45
+    pingInterval: 10_000,
+    pingTimeout: 10_000,
   });
   // socket id + game → the timer that will count a dropped player as gone
   const awayTimers = new Map();
+  // socket id → socket.data of a phone that dropped out of a live match (for a takeover, below)
+  const awayData = new Map();
   ioServer = io;
   // a signed-in user is "online" for friends while any of their sockets is open
   const socketsOf = (uid) => [...io.sockets.sockets.values()].filter((s) => uid && s.data.uid === uid);
@@ -736,11 +741,13 @@ app.prepare().then(() => {
       if (!code || !live() || reason === "client namespace disconnect" || reason === "server namespace disconnect") return drop();
       const key = socket.id + game;
       clearTimeout(awayTimers.get(key));
+      awayData.set(socket.id, socket.data);
       io.to(game + ":" + code).emit("peer:away", { game, away: true, ms: REJOIN_MS });
       awayTimers.set(
         key,
         setTimeout(() => {
           awayTimers.delete(key);
+          if (![...awayTimers.keys()].some((k) => k.startsWith(socket.id))) awayData.delete(socket.id);
           drop();
         }, REJOIN_MS)
       );
@@ -1217,19 +1224,48 @@ app.prepare().then(() => {
       dropLater("dz", () => !!room && room.started && !room.over && room.players.length === 2, dzLeave)(reason);
     });
 
-    // Back within REJOIN_MS: same socket id, rooms and data; cancel the drop, tell the other
-    // player, and send this phone the match as it is now
-    if (socket.recovered) {
-      const rooms = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic] };
-      for (const [game, [map, view]] of Object.entries(rooms)) {
-        const key = socket.id + game;
-        if (!awayTimers.has(key)) continue;
-        clearTimeout(awayTimers.get(key));
-        awayTimers.delete(key);
-        const room = map.get(socket.data[game + "Code"]);
-        if (!room) continue;
+    // Coming back to a live match. Either Socket.IO recovered the session (same socket id, rooms and
+    // data), or (the usual case behind Fly's proxy) the phone is back before the server noticed the
+    // old connection die, so it arrives as a new socket: then it names its old socket id (`prev`) and
+    // proves it with the random key it sent on that one (`rk`, never shown to anyone else), and takes
+    // its seats over. Either way the drop is cancelled, the other player hears it's back, and both get
+    // the match as it is now.
+    const rk = typeof socket.handshake.auth?.rk === "string" && /^[A-Za-z0-9]{16,40}$/.test(socket.handshake.auth.rk) ? socket.handshake.auth.rk : null;
+    socket.data.rk ??= rk;
+    const views = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic] };
+    const welcomeBack = (prevId, data) => {
+      let back = false;
+      for (const [game, [map, view]] of Object.entries(views)) {
+        const room = map.get(data[game + "Code"]);
+        const seat = room?.players.find((p) => p.id === prevId);
+        if (!seat) continue;
+        clearTimeout(awayTimers.get(prevId + game));
+        awayTimers.delete(prevId + game);
+        if (prevId !== socket.id) {
+          seat.id = socket.id;
+          socket.data[game + "Code"] = room.code;
+          socket.join(game + ":" + room.code);
+        }
         socket.to(game + ":" + room.code).emit("peer:away", { game, away: false });
-        socket.emit(game + ":update", view(room));
+        io.to(game + ":" + room.code).emit(game + ":update", view(room));
+        back = true;
+      }
+      awayData.delete(prevId);
+      if (back) socket.emit("seat:back");
+    };
+    const prev = socket.handshake.auth?.prev;
+    if (socket.recovered) welcomeBack(socket.id, socket.data);
+    else if (rk && typeof prev === "string" && prev !== socket.id) {
+      const old = io.sockets.sockets.get(prev);
+      const data = old ? old.data : awayData.get(prev);
+      if (data && data.rk === rk) {
+        if (data.la) socket.data.la = data.la;
+        welcomeBack(prev, data);
+        if (old) {
+          // the old connection is a ghost now: it must not leave the rooms it handed over
+          old.data.htCode = old.data.ppCode = old.data.dzCode = null;
+          old.disconnect(true);
+        }
       }
     }
 

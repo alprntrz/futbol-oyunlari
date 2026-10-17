@@ -164,6 +164,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Dropped connections: server.js turns on Socket.IO connection state recovery (`REJOIN_MS` = 60 s): a phone back within that
   keeps its socket id, rooms and socket.data and gets the missed events. A live ht / pp / dz seat that drops (`dropLater`) waits
   REJOIN_MS (the other player gets `peer:away`) before the old leave logic (loss) runs; leaving on purpose drops at once.
+  Behind Fly's proxy a phone is usually back before the server notices the old socket die, so recovery fails: the app then
+  sends its old id (`prev`) and a per-run random key (`rk`, lib/socket.ts; only the server sees it) and `welcomeBack` hands the
+  seats to the new socket (`seat:back`). Ping 10 s / timeout 10 s.
   `components/ConnectionBanner.tsx` shows reconnecting / too late / opponent away in the three online match screens.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run

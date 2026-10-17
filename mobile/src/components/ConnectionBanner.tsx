@@ -28,15 +28,20 @@ export function ConnectionBanner({ game }: { game: Game }) {
   useEffect(() => {
     const socket = getSocket();
     let dropped = false;
+    let lostTimer: ReturnType<typeof setTimeout> | undefined;
     const onDisconnect = () => {
       dropped = true;
       setOffline(true);
     };
     const onConnect = () => {
       setOffline(false);
-      // back, but not as the same socket: the match went on without us
-      if (dropped && !socket.recovered) setLost(true);
+      // back on a new connection: the server hands our seat over ("seat:back") unless we were too late
+      if (dropped && !socket.recovered) lostTimer = setTimeout(() => setLost(true), 2500);
       dropped = false;
+    };
+    const onBack = () => {
+      clearTimeout(lostTimer);
+      setLost(false);
     };
     const onAway = (p: { game: Game; away: boolean; ms?: number }) => {
       if (p.game !== game) return;
@@ -45,7 +50,10 @@ export function ConnectionBanner({ game }: { game: Game }) {
     socket.on("disconnect", onDisconnect);
     socket.on("connect", onConnect);
     socket.on("peer:away", onAway);
+    socket.on("seat:back", onBack);
     return () => {
+      clearTimeout(lostTimer);
+      socket.off("seat:back", onBack);
       socket.off("disconnect", onDisconnect);
       socket.off("connect", onConnect);
       socket.off("peer:away", onAway);
