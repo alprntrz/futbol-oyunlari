@@ -20,8 +20,8 @@ ve görselleriyle; uygulamanın futbol bilgisi kimliğine bağlı.
 2. **Koş:** Hız saniyeler geçtikçe artar (2 dakikada yaklaşık 2 katı).
 3. **Kaç:** Engeller üç şeritte gelir; doğru hareketle geçilir, çarpınca koşu biter.
 4. **Topla:** Şeritlerde altın paralar; arada güçlendirmeler.
-5. **Kale anı:** Her ~25 saniyede bir ceza sahası gelir; ekranın üstünde kısa bir soru
-   (3 şık, 6 saniye). Doğru şeridi seçip kaleye girersen GOL: bonus puan + çarpan +1.
+5. **Kale anı:** İlk kale 260 m'de, sonra her ~420–540 m'de; kale görününce ekranın üstünde
+   soru çıkar, şıklar kalenin üç bölmesinde yazar (sorular `quizQuestions(…, "players", "easy")`). Doğru şeridi seçip kaleye girersen GOL: bonus puan + çarpan +1.
    Yanlış şerit "kaleci kurtardı": çarpan sıfırlanır, koşu devam eder (ölüm yok).
 6. **Bitiş:** Çarpınca kısa "faul" yavaşlaması, sonra sonuç kartı: mesafe, gol, altın,
    en iyi skor, XP. Tek dokunuşla yeniden başla.

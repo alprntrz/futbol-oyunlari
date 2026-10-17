@@ -1,10 +1,11 @@
 import { Stack, router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, StyleSheet, useWindowDimensions, View, type GestureResponderEvent } from "react-native";
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, type SharedValue } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeOut, ZoomIn, runOnJS, useAnimatedReaction, useAnimatedStyle, useFrameCallback, useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { LANE, newRun, obstacleX, scoreOf, step, type Input, type RunState } from "@/lib/kosu/engine";
+import { LANE, newRun, nextGoalOf, obstacleX, scoreOf, step, type Input, type RunState } from "@/lib/kosu/engine";
+import { quizQuestions } from "@/lib/quiz";
 
 import { CLUB_KITS } from "~/components/HatTrickBoard";
 import { Jersey } from "~/components/Jersey";
@@ -40,7 +41,7 @@ const BOARD_GAP = 9;
  */
 export default function RushGame() {
   "use no memo";
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const { width: W, height: H } = useWindowDimensions();
   const [club] = useFavClub();
@@ -54,6 +55,13 @@ export default function RushGame() {
   const [coins, setCoins] = useState(0);
   const [final, setFinal] = useState<{ score: number; coins: number; metres: number } | null>(null);
   const [runNo, setRunNo] = useState(0);
+  /** this run's goal questions: text and the three options laid out by lane (-1, 0, 1 → 0, 1, 2) */
+  const [questions, setQuestions] = useState<{ text: string; lanes: string[] }[]>([]);
+  /** the goal now on screen (index into questions), whether its question shows, and the last goal's result */
+  const [goalQ, setGoalQ] = useState(-1);
+  const [ask, setAsk] = useState(false);
+  const [flash, setFlash] = useState<{ id: number; goal: boolean; mult: number } | null>(null);
+  const [mult, setMult] = useState(1);
 
   // the screen's projection, in numbers the worklets can use
   const fx = FX * W;
@@ -81,7 +89,28 @@ export default function RushGame() {
   });
 
   // sounds and haptics for what just happened, the HUD ten times a second, and the end
+  // a goal or a save (counted apart: a coin in the same frame mustn't hide it)
+  const onGoal = (goal: boolean, m: number) => {
+    setFlash({ id: Date.now(), goal, mult: m });
+    setMult(m);
+    setAsk(false);
+    if (goal) {
+      haptic.success();
+      play("correct");
+    } else {
+      haptic.warning();
+      play("wrong");
+    }
+  };
+  useAnimatedReaction(
+    () => state.value.goalsScored * 1000 + state.value.saves,
+    (v, prev) => {
+      if (prev === null || v === prev || v === 0) return;
+      runOnJS(onGoal)(Math.floor(v / 1000) > Math.floor(prev / 1000), state.value.mult);
+    }
+  );
   const onEvent = (e: RunState["lastEvent"]) => {
+    if (e === "goal" || e === "save") return;
     if (e === "coin") haptic.tap();
     else if (e === "bump") haptic.warning();
     else if (e === "dead") {
@@ -103,6 +132,24 @@ export default function RushGame() {
     }
   );
   const [newBest, setNewBest] = useState(false);
+  // the next goal: which question, and show it once the goal is in sight
+  useAnimatedReaction(
+    () => {
+      const g = nextGoalOf(state.value);
+      return g ? g.q * 2 + (g.z - state.value.z < 95 ? 1 : 0) : -1;
+    },
+    (v, prev) => {
+      if (v === prev) return;
+      runOnJS(setGoalQ)(v < 0 ? -1 : Math.floor(v / 2));
+      runOnJS(setAsk)(v >= 0 && v % 2 === 1);
+    }
+  );
+  useEffect(() => {
+    if (!flash) return;
+    const id = setTimeout(() => setFlash(null), 1300);
+    return () => clearTimeout(id);
+  }, [flash]);
+
   const end = (sc: number, c: number, m: number) => {
     setFinal({ score: sc, coins: c, metres: m });
     setNewBest(recordRun(sc));
@@ -118,7 +165,19 @@ export default function RushGame() {
   useXpAward(phase === "over" && !!final, final ? `run-${runNo}-${final.score}` : null, "bonus", final ? Math.min(40, 5 + Math.floor(final.score / 60)) : 0, { practice: true, label: "Dribbling Rush" });
 
   const start = () => {
-    state.set(newRun(Math.floor(Math.random() * 2 ** 31)));
+    // goal questions for this run (easy quiz, three options): the right one in a random lane
+    const pick = (l: { tr: string; en: string }) => (locale === "tr" ? l.tr : l.en);
+    const qs = quizQuestions(30, "players", "easy").map((q) => {
+      const lane = Math.floor(Math.random() * 3);
+      const wrong = q.options.filter((_, i) => i !== q.answer).slice(0, 2);
+      const lanes = [0, 1, 2].map((i) => (i === lane ? pick(q.options[q.answer]) : pick(wrong[i < lane ? i : i - 1])));
+      return { text: pick(q.text), lanes, answer: lane - 1 };
+    });
+    setQuestions(qs);
+    setMult(1);
+    setFlash(null);
+    setAsk(false);
+    state.set(newRun(Math.floor(Math.random() * 2 ** 31), qs.map((q) => q.answer)));
     input.set("");
     running.set(true);
     setFinal(null);
@@ -169,6 +228,7 @@ export default function RushGame() {
         {Array.from({ length: BOARDS }, (_, i) => (
           <BoardSprite key={`b${i}`} i={i} state={state} W={W} fx={fx} horizon={horizon} />
         ))}
+        <GoalSprite state={state} W={W} fx={fx} horizon={horizon} lanes={goalQ >= 0 ? (questions[goalQ]?.lanes ?? null) : null} />
         <Runner state={state} W={W} fx={fx} horizon={horizon} kit={kit} />
       </Animated.View>
 
@@ -181,11 +241,30 @@ export default function RushGame() {
         <View style={styles.pill}>
           <Text style={styles.pillText}>{score}</Text>
         </View>
+        {mult > 1 && (
+          <View style={[styles.pill, { backgroundColor: C.green }]}>
+            <Text style={[styles.pillText, { color: "white" }]}>×{mult}</Text>
+          </View>
+        )}
         <View style={[styles.pill, { backgroundColor: "#FEF3C7" }]}>
           <Image source={TAKTIK.ui.coin} style={{ width: 20, height: 20 }} />
           <Text style={styles.pillText}>{coins}</Text>
         </View>
       </View>
+
+      {/* the goal's question, while it's coming up */}
+      {phase === "run" && ask && goalQ >= 0 && questions[goalQ] && (
+        <Animated.View entering={FadeInDown.duration(200)} exiting={FadeOut.duration(150)} style={[styles.question, { top: insets.top + 56 }]} pointerEvents="none">
+          <Text style={styles.qLabel}>{t("rushGoalAsk")}</Text>
+          <Text style={styles.qText}>{questions[goalQ].text}</Text>
+        </Animated.View>
+      )}
+      {flash && (
+        <Animated.View key={flash.id} entering={ZoomIn.duration(220)} exiting={FadeOut.duration(200)} style={styles.flash} pointerEvents="none">
+          <Text style={[styles.flashText, { color: flash.goal ? C.green : C.red }]}>{flash.goal ? t("rushGoal") : t("rushSaved")}</Text>
+          {flash.goal && flash.mult > 1 && <Text style={styles.flashMult}>×{flash.mult}</Text>}
+        </Animated.View>
+      )}
 
       {phase === "ready" && (
         <View style={styles.center} pointerEvents="none">
@@ -316,6 +395,34 @@ function BoardSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
   return <Animated.View style={[styles.board, style]} />;
 }
 
+/** the goal across all three lanes, an answer over each lane (the right one leads to a goal) */
+function GoalSprite({ state, W, fx, horizon, lanes }: View3D & { lanes: string[] | null }) {
+  const frame = useAnimatedStyle(() => {
+    const s = state.value;
+    const g = nextGoalOf(s);
+    const p = g ? project(s, 0, 0, g.z, W, fx, horizon) : null;
+    if (!g || !p || p.dz > 110) return { opacity: 0 };
+    const w = (3 * LANE + 0.6) * p.k;
+    const h = 2.7 * p.k;
+    return { opacity: Math.min(1, (110 - p.dz) / 15), zIndex: Math.round(2000 - p.dz * 10), left: p.sx - w / 2, top: p.sy - h, width: w, height: h, borderWidth: Math.max(2, 0.14 * p.k) };
+  });
+  return (
+    <Animated.View style={[styles.goal, frame]} pointerEvents="none">
+      {[0, 1, 2].map((i) => (
+        <View key={i} style={[styles.goalLane, i > 0 && styles.goalDivider]}>
+          {lanes && (
+            <View style={styles.goalLabel}>
+              <Text style={styles.goalLabelText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.5}>
+                {lanes[i]}
+              </Text>
+            </View>
+          )}
+        </View>
+      ))}
+    </Animated.View>
+  );
+}
+
 function CoinSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
   const style = useAnimatedStyle(() => {
     const s = state.value;
@@ -422,4 +529,15 @@ const styles = StyleSheet.create({
   overlay: { backgroundColor: "rgba(0,0,0,0.35)", alignItems: "center", justifyContent: "center", padding: 24 },
   card: { backgroundColor: C.card, borderRadius: R.card, padding: 20, alignItems: "center", alignSelf: "stretch", ...shadow },
   score: { fontFamily: F.black, fontSize: 56, color: C.greenDark },
+  goal: { position: "absolute", flexDirection: "row", borderColor: "white", borderBottomWidth: 0, backgroundColor: "rgba(255,255,255,0.18)", borderTopLeftRadius: 4, borderTopRightRadius: 4 },
+  goalLane: { flex: 1, alignItems: "center", justifyContent: "flex-start", padding: "4%" },
+  goalDivider: { borderLeftWidth: 2, borderLeftColor: "rgba(255,255,255,0.6)", borderStyle: "dashed" },
+  goalLabel: { width: "100%", backgroundColor: "white", borderRadius: 8, paddingVertical: 4, paddingHorizontal: 4, ...shadow },
+  goalLabelText: { fontFamily: F.display, fontSize: 15, color: C.text, textAlign: "center" },
+  question: { position: "absolute", left: 16, right: 16, backgroundColor: C.card, borderRadius: R.card, padding: 14, alignItems: "center", gap: 2, ...shadow },
+  qLabel: { fontWeight: "800", fontSize: 12, color: C.greenMid, letterSpacing: 0.5 },
+  qText: { fontFamily: F.display, fontSize: 21, color: C.text, textAlign: "center" },
+  flash: { position: "absolute", left: 0, right: 0, top: "34%", alignItems: "center" },
+  flashText: { fontFamily: F.black, fontSize: 52, textShadowColor: "rgba(0,0,0,0.25)", textShadowRadius: 8, textShadowOffset: { width: 0, height: 2 } },
+  flashMult: { fontFamily: F.black, fontSize: 30, color: C.text, backgroundColor: "#FACC15", borderRadius: 12, overflow: "hidden", paddingHorizontal: 12 },
 });

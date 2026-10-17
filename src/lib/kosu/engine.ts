@@ -43,6 +43,22 @@ export interface Coin {
 }
 export type Input = "" | "left" | "right" | "up" | "down";
 
+/** a goal across the three lanes: the right answer's lane (-1, 0, 1), and how it went (0 not yet, 1 scored, -1 saved) */
+export interface Goal {
+  z: number;
+  correct: number;
+  result: number;
+  /** which question (index into the list the screen made) */
+  q: number;
+}
+/** first goal this far in, then every GOAL_GAP metres or so; the stretch before a goal is kept clear */
+const GOAL_FIRST = 260;
+const GOAL_GAP = 420;
+const GOAL_CLEAR = 75;
+/** the multiplier goes up with every goal, back to 1 on a save */
+export const MULT_MAX = 5;
+const GOAL_POINTS = 100;
+
 export interface RunState {
   rng: number;
   t: number;
@@ -69,7 +85,16 @@ export interface RunState {
   coinsTaken: number;
   /** a coin was just picked up, a jump / roll / switch happened, a bump: for sounds and haptics */
   events: number;
-  lastEvent: "" | "coin" | "bump" | "dead" | "jump" | "roll" | "lane";
+  lastEvent: "" | "coin" | "bump" | "dead" | "jump" | "roll" | "lane" | "goal" | "save";
+  goals: Goal[];
+  nextGoal: number;
+  /** right-answer lanes, one per question (the screen lays the options out to match) */
+  answers: number[];
+  goalsScored: number;
+  saves: number;
+  mult: number;
+  /** points so far (metres and coins times the multiplier, goal bonuses) */
+  score: number;
   /** camera x and y, eased */
   camX: number;
   camY: number;
@@ -86,7 +111,7 @@ function rnd(s: RunState): number {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
 
-export function newRun(seed: number): RunState {
+export function newRun(seed: number, answers: number[] = []): RunState {
   "worklet";
   const s: RunState = {
     rng: seed >>> 0,
@@ -111,17 +136,31 @@ export function newRun(seed: number): RunState {
     camX: 0,
     camY: 0,
     shake: 0,
+    goals: [],
+    nextGoal: GOAL_FIRST,
+    answers,
+    goalsScored: 0,
+    saves: 0,
+    mult: 1,
+    score: 0,
   };
   // a free run-up with a coin line before the first obstacles
   for (let i = 0; i < 8; i++) s.coins.push({ z: 12 + i * 2.2, lane: 0, y: 0, taken: 0 });
   return s;
 }
 
-/** score: metres run plus coins */
+/** score: metres and coins times the multiplier, plus goal bonuses */
 export const scoreOf = (s: RunState) => {
   "worklet";
-  return Math.floor(s.z) + s.coinsTaken * 10;
+  return Math.floor(s.score);
 };
+
+/** the next goal still to come, if any */
+export function nextGoalOf(s: RunState): Goal | null {
+  "worklet";
+  for (const g of s.goals) if (!g.result) return g;
+  return null;
+}
 
 function emit(s: RunState, e: RunState["lastEvent"]) {
   "worklet";
@@ -214,6 +253,7 @@ export function step(s: RunState, input: Input, dt: number) {
   }
   s.speed = Math.min(SPEED_MAX, s.speed + ACCEL * dt * (1 + s.speed / SPEED_MAX));
   s.z += s.speed * dt;
+  s.score += s.speed * dt * s.mult;
   s.stumble += dt;
   s.shake = Math.max(0, s.shake - dt);
 
@@ -249,9 +289,37 @@ export function step(s: RunState, input: Input, dt: number) {
 
   // lay out what's ahead, drop what's behind
   while (s.next < s.z + AHEAD) {
+    // a goal coming up: keep the run-in clear, put the goal across the lanes, carry on behind it
+    if (s.answers.length && s.next > s.nextGoal - GOAL_CLEAR) {
+      const q = s.goals.length;
+      s.goals.push({ z: s.nextGoal, correct: s.answers[q % s.answers.length], result: 0, q });
+      coinLine(s, s.nextGoal - 40, 0, 6, 0);
+      s.next = s.nextGoal + 40;
+      s.nextGoal += GOAL_GAP + rnd(s) * 120;
+      continue;
+    }
     layRow(s, s.next);
     const gap = 30 - Math.min(14, s.z / 180) + rnd(s) * 8;
     s.next += gap;
+  }
+  if (s.goals.length > 3 && s.goals[0].z < s.z - 20) s.goals = s.goals.filter((g) => g.z > s.z - 20);
+
+  // through a goal: the lane you're in is your answer
+  for (const g of s.goals) {
+    if (g.result || s.z < g.z) continue;
+    const lane = Math.max(-1, Math.min(1, Math.round(s.x / LANE)));
+    if (lane === g.correct) {
+      g.result = 1;
+      s.goalsScored++;
+      s.score += GOAL_POINTS * s.mult;
+      s.mult = Math.min(MULT_MAX, s.mult + 1);
+      emit(s, "goal");
+    } else {
+      g.result = -1;
+      s.saves++;
+      s.mult = 1;
+      emit(s, "save");
+    }
   }
   if (s.obstacles.length && s.obstacles[0].z < s.z - 8) s.obstacles = s.obstacles.filter((o) => o.z > s.z - 8);
   if (s.coins.length && s.coins[0].z < s.z - 8) s.coins = s.coins.filter((c) => c.z > s.z - 8);
@@ -262,6 +330,7 @@ export function step(s: RunState, input: Input, dt: number) {
     if (Math.abs(c.lane * LANE - s.x) < 1.1 && Math.abs(c.y - s.y) < 1.2) {
       c.taken = 1;
       s.coinsTaken++;
+      s.score += 10 * s.mult;
       emit(s, "coin");
     }
   }
