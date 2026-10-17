@@ -13,9 +13,13 @@ import { Text } from "../Text";
  * last five seconds and kicks off by itself at zero. Mount it with a key per
  * round so every round starts from full time.
  */
-export function PlanClock({ seconds, running, onEnd, compact, wide }: { seconds: number; running: boolean; onEnd: () => void; compact?: boolean; wide?: boolean }) {
+export function PlanClock({ seconds, endsAt, running, onEnd, compact, wide }: { seconds: number; endsAt?: number; running: boolean; onEnd: () => void; compact?: boolean; wide?: boolean }) {
+  // `endsAt` (this phone's clock): joining part-way, online, where the server keeps the time; `seconds` is then the full set-up time
   const { t } = useI18n();
-  const [left, setLeft] = useState(seconds);
+  const [start] = useState(() => (endsAt ? Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)) : seconds));
+  // (the first online round also covers the managers' intro, so it can run longer than `seconds`)
+  const total = Math.max(seconds, start);
+  const [left, setLeft] = useState(start);
 
   useEffect(() => {
     if (!running || left <= 0) return;
@@ -40,7 +44,7 @@ export function PlanClock({ seconds, running, onEnd, compact, wide }: { seconds:
           <Text style={styles.wideUnit}> {t("ttkSec")}</Text>
         </Text>
         <View style={styles.wideTrack}>
-          <View style={[styles.wideFill, { width: `${(left / seconds) * 100}%` }, hurry && { backgroundColor: C.red }]} />
+          <View style={[styles.wideFill, { width: `${(Math.min(left, total) / total) * 100}%` }, hurry && { backgroundColor: C.red }]} />
         </View>
       </View>
     );
@@ -53,7 +57,7 @@ export function PlanClock({ seconds, running, onEnd, compact, wide }: { seconds:
             {left} {t("ttkSec")}
           </Text>
           <View style={styles.compactTrack}>
-            <View style={[styles.compactFill, { width: `${(left / seconds) * 100}%` }, hurry && { backgroundColor: C.red }]} />
+            <View style={[styles.compactFill, { width: `${(Math.min(left, total) / total) * 100}%` }, hurry && { backgroundColor: C.red }]} />
           </View>
         </View>
       </View>
@@ -68,7 +72,7 @@ export function PlanClock({ seconds, running, onEnd, compact, wide }: { seconds:
         {hurry && <Text style={[styles.text, { color: C.red }]}>{left}</Text>}
       </View>
       <View style={styles.track}>
-        <View style={[styles.fill, { width: `${(left / seconds) * 100}%` }, hurry && { backgroundColor: C.red }]} />
+        <View style={[styles.fill, { width: `${(Math.min(left, total) / total) * 100}%` }, hurry && { backgroundColor: C.red }]} />
       </View>
     </View>
   );

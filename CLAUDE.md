@@ -109,7 +109,12 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
   Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via
   `play()` in `mobile/src/lib/sound.ts` (expo-audio; respects the silent switch; toggle in Settings).
-- Taktik Tahtası / Pitch Chess (auto battler, offline vs 7 house managers; docs/design/taktik-tahtasi.md): engine in
+- Taktik Tahtası / Pitch Chess online (`tt:*`, server-taktik.js): Start opens a lobby (`app/taktik/lobi.tsx`, host + up to 4 friends
+  invited with `fr:invite` game "tt"); alone it plays solo on the phone. Online the server runs the engine (loads `src/lib/taktik`
+  .ts through its own "@/" resolver), the clock, matches and gold; phones send moves `tt:act` = `src/lib/taktik/ops.ts` (`applyOp`,
+  shared by phone and server, arguments checked there) and get `tt:state`. `mobile/src/lib/taktik.ts` holds solo or online state
+  (`play(op)`, guesses deterministic moves at once). A dropped manager has 60 s (`TT_REJOIN_MS`), then a house manager takes the seat.
+- Taktik Tahtası / Pitch Chess (auto battler, solo vs 7 house managers or the online lobby above; docs/design/taktik-tahtasi.md): engine in
   `src/lib/taktik/` (pure; `rules.ts` numbers, `pool.ts` cards from every player, `traits.ts`, `sim.ts` deterministic match,
   `engine.ts`, `bot.ts`), per-player main club / position `src/data/taktik.ts` ← `scripts/taktik-build.mjs` (from
   raw-seasons + `scripts/taktik-scrape-positions.mjs`). Balance: `node --import ./scripts/lib/alias.mjs mobile/scripts/taktik-sim.mts`.

@@ -17,11 +17,17 @@ import { Text } from "../Text";
 import { Tap } from "../ui";
 
 /** house managers' avatars: picked from each name, stepping on so no two share one */
-export function avatarsOf(managers: Manager[], meId: number) {
+export function avatarsOf(managers: Manager[], meId: number, known: Map<number, string> = new Map()) {
   const used = new Set<number>();
   const out = new Map<number, string>();
   for (const m of managers) {
     if (m.id === meId) continue;
+    // friends in an online lobby wear their own avatar
+    const own = known.get(m.id);
+    if (own) {
+      out.set(m.id, own);
+      continue;
+    }
     let h = 0;
     for (const ch of m.name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
     let k = h % AVATARS.length;
@@ -45,13 +51,13 @@ const DONE_AT = FLIP_AT + 8 * 60 + FLIP_MS + 1100;
  * filling up, then every card turns over to the manager's style card. Tap to
  * skip; it closes by itself.
  */
-export function LobbyIntro({ managers, meId, onDone }: { managers: Manager[]; meId: number; onDone: () => void }) {
+export function LobbyIntro({ managers, meId, known, onDone }: { managers: Manager[]; meId: number; known?: Map<number, string>; onDone: () => void }) {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const cardW = Math.min(170, (width - 32 - 3 * 8) / 4);
   const [flipped, setFlipped] = useState(false);
-  const [avatars] = useState(() => avatarsOf(managers, meId));
+  const [avatars] = useState(() => avatarsOf(managers, meId, known));
 
   useEffect(() => {
     const a = setTimeout(() => {

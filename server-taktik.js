@@ -37,9 +37,9 @@ export async function resolve(spec, ctx, next) {
 
 /** the engine, once loaded (a few hundred ms at start-up) */
 let E = null;
-const engineReady = Promise.all(["lib/taktik/engine.ts", "lib/taktik/bot.ts", "lib/taktik/rules.ts"].map((f) => import(pathToFileURL(SRC + f).href)))
-  .then(([engine, bot, rules]) => {
-    E = { ...engine, ...bot, ...rules };
+const engineReady = Promise.all(["lib/taktik/engine.ts", "lib/taktik/bot.ts", "lib/taktik/rules.ts", "lib/taktik/ops.ts"].map((f) => import(pathToFileURL(SRC + f).href)))
+  .then(([engine, bot, rules, ops]) => {
+    E = { ...engine, ...bot, ...rules, ...ops };
   })
   .catch((e) => console.error("taktik engine:", e?.message));
 
@@ -65,7 +65,6 @@ function ttCode() {
   return code;
 }
 
-const isInt = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
 const isPid = (v) => typeof v === "string" && v.length >= 8 && v.length <= 64;
 
 /** what everyone sees; `you` is added per phone */
@@ -180,36 +179,6 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
     for (const room of ttRooms.values()) for (const s of room.seats) if (s.sid && !s.gone && !io.sockets.sockets.has(s.sid)) away(room, s);
   }, 10_000).unref();
 
-  /** the moves a phone may make, all on its own manager during set-up */
-  const OPS = {
-    buy: (l, m, a) => {
-      if (!isInt(a.i, 0, 9) || (a.guess !== undefined && (typeof a.guess !== "string" || a.guess.length > 60))) return false;
-      const r = E.buy(l, m, a.i, a.guess);
-      if (r === "ok") E.fillField(m);
-      return r;
-    },
-    sell: (l, m, a) => {
-      if (typeof a.uid !== "string" || !m.units.some((u) => u.uid === a.uid)) return false;
-      E.sell(l, m, a.uid);
-      return true;
-    },
-    move: (l, m, a) => typeof a.uid === "string" && (a.slot === null || isInt(a.slot, 0, E.SLOTS.length - 1)) && E.move(m, a.uid, a.slot),
-    reroll: (l, m) => E.reroll(l, m),
-    xp: (l, m) => E.buyXp(m),
-    equip: (l, m, a) => isInt(a.index, 0, 30) && typeof a.uid === "string" && E.equip(m, a.index, a.uid),
-    augment: (l, m, a) => {
-      if (!m.offer || !isInt(a.i, 0, m.offer.length - 1)) return false;
-      E.chooseAugment(l, m, a.i);
-      E.fillField(m);
-      return true;
-    },
-    augSwap: (l, m, a) => !!m.offer && isInt(a.i, 0, m.offer.length - 1) && E.rerollAugment(l, m, a.i),
-    arrange: (l, m) => {
-      E.autoArrange(m);
-      return true;
-    },
-  };
-
   return (socket) => {
     const look = (p) => cleanLook({ avatar: p.avatar, frame: p.frame }, Number.isInteger(p.tier) ? p.tier : 0);
 
@@ -277,14 +246,14 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
       plan(room, TT_INTRO_MS);
     });
 
+    // a move on your own manager during set-up: the same list the phone runs (src/lib/taktik/ops.ts), arguments checked there
     socket.on("tt:act", (p, cb) => {
       const at = seatOf(socket);
-      const op = OPS[p.op];
-      if (!at || !op || at.room.phase !== "plan" || at.seat.gone) return cb?.({ ok: false });
+      if (!at || typeof p.op !== "string" || at.room.phase !== "plan" || at.seat.gone) return cb?.({ ok: false });
       const l = at.room.lobby;
       const m = l.managers[at.seat.id];
       if (!m || m.place !== null) return cb?.({ ok: false });
-      const r = op(l, m, p.args && typeof p.args === "object" ? p.args : {});
+      const r = E.applyOp(l, m, p);
       cb?.({ ok: r === true || r === "ok", r: typeof r === "string" ? r : undefined });
       send(at.room);
     });

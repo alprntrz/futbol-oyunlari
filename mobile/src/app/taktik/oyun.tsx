@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { XP } from "@/lib/levels";
 import { ALL_CRITERIA } from "@/lib/tiki";
-import { alive, autoArrange, bench, buy, buyXp, chooseAugment, fillField, rerollAugment, equip, fieldCap, fielded, move, namesPlayer, priceOf, reroll, sell, sellValue, xpToNext } from "@/lib/taktik/engine";
+import { alive, bench, fieldCap, fielded, namesPlayer, priceOf, sellValue, xpToNext } from "@/lib/taktik/engine";
 import { INCOME, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
 import { effectsOf, STYLES, type EffectKey, type TraitState } from "@/lib/taktik/traits";
@@ -29,7 +29,7 @@ import { Button, Icon, Tap } from "~/components/ui";
 import { TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { act, expireTaktik, kickOff, loadTaktik, markTaktikSeen, quitTaktik, useTaktik } from "~/lib/taktik";
+import { expireTaktik, kickOff, leaveRoom, loadTaktik, markTaktikSeen, play, quitTaktik, useTaktik } from "~/lib/taktik";
 import { C, F, GAME, R, shadow, T } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
@@ -50,7 +50,9 @@ export default function TaktikGame() {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const { lobby, version } = useTaktik();
+  const { lobby, version, online, meId } = useTaktik();
+  /** online friends' own avatars, by manager id */
+  const known = new Map((online?.seats ?? []).filter((s) => s.avatar).map((s) => [s.id, s.avatar!]));
   const [sel, setSel] = useState<Sel>(null);
   const [note, setNote] = useState<string | null>(null);
   const [match, setMatch] = useState(false);
@@ -76,7 +78,10 @@ export default function TaktikGame() {
   const [introSeen, setIntroSeen] = useState(() => introShown);
   const scroller = useRef<ScrollView>(null);
   // first game: a walkthrough that lights up each part of the screen in turn
-  const tour = useTour("taktik-v1", [
+  // the walkthrough can't hold a server's clock: online it only runs from "?"
+  const tour = useTour(
+    "taktik-v1",
+    [
     { target: "shop", title: t("ttkTour1T"), body: t("ttkTour1") },
     { target: "gold", title: t("ttkTour2T"), body: t("ttkTour2").replace("{income}", String(INCOME)) },
     { target: "pitch", title: t("ttkTour3T"), body: t("ttkTour3") },
@@ -87,10 +92,12 @@ export default function TaktikGame() {
     { target: "hp", title: t("ttkTour8T"), body: t("ttkTour8"), before: () => scroller.current?.scrollTo({ y: 0, animated: true }) },
     { target: "table", title: t("ttkTour9T"), body: t("ttkTour9") },
     { target: "kick", title: t("ttkTour10T"), body: t("ttkTour10") },
-  ]);
+    ],
+    !online
+  );
 
-  const me: Manager | undefined = lobby?.managers[0];
-  const out = !!me && (me.place !== null || !!lobby?.over);
+  const me: Manager | undefined = lobby?.managers[meId];
+  const out = !!me && (me.place !== null || !!lobby?.over || online?.phase === "over");
   // a new round: say where the gold came from (salary, interest, streak), like the reference game's round card
   const roundKey = lobby ? `${lobby.stage}-${lobby.round}` : "";
   const [incomeSeen, setIncomeSeen] = useState("");
@@ -149,7 +156,7 @@ export default function TaktikGame() {
   const tiersSeen = useRef<Map<string, number> | null>(null);
   const [fxToast, setFxToast] = useState<{ id: number; text: string } | null>(null);
   useEffect(() => {
-    const m = lobby?.managers[0];
+    const m = lobby?.managers[meId];
     if (!m) return;
     const traits = sheet({ name: m.name, units: m.units, coach: m.coach, augments: m.augments }).traits;
     const before = tiersSeen.current;
@@ -166,6 +173,27 @@ export default function TaktikGame() {
     const id = setTimeout(() => setFxToast(null), 2600);
     return () => clearTimeout(id);
   }, [fxToast]);
+  // online: the server kicks off for everyone; the match plays here when a new round's results come in
+  const planGold = useRef<number | null>(null);
+  const playedSeen = useRef<number | null>(null);
+  useEffect(() => {
+    if (!online || !lobby) return;
+    const m = lobby.managers[online.you];
+    if (online.phase === "plan" && m) planGold.current = m.gold;
+    // joined (or came back) mid-game: nothing to replay
+    if (playedSeen.current === null) {
+      playedSeen.current = lobby.played;
+      return;
+    }
+    if (online.phase !== "match" || lobby.played <= playedSeen.current) return;
+    playedSeen.current = lobby.played;
+    setSel(null);
+    setScout(null);
+    goldAtKick.current = planGold.current;
+    haptic.press();
+    setMatch(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version]);
   // a plain "+XP" toast: the reward screen is a second modal on top of the end card and froze the screen
   useXpAward(out && !match && !!me?.place, `ttk-${lobby?.seed}`, "tt", me?.place ? XP.ttPlace[me.place - 1] : 0, {
     label: me?.place === 1 ? t("ttkWinner") : t("ttkPlace").replace("{n}", String(me?.place ?? "")),
@@ -185,9 +213,7 @@ export default function TaktikGame() {
     haptic.success();
     setAugPick(i);
     setTimeout(() => {
-      act((l) => chooseAugment(l, me, i));
-      // a card that brings players (Academy, Star signing) walks them onto the pitch too
-      act(() => fillField(me));
+      play({ op: "augment", i });
       setAugPick(null);
     }, 650);
   };
@@ -224,19 +250,19 @@ export default function TaktikGame() {
     haptic.tap();
     const u = me.units.find((x) => x.uid === uid)!;
     if (sel?.kind === "item") {
-      if (!act(() => equip(me, sel.index, uid))) flash(t("ttkFieldFull"));
+      if (!play({ op: "equip", index: sel.index, uid })) flash(t("ttkFieldFull"));
       setSel(null);
       return;
     }
     if (sel?.kind === "unit" && sel.uid !== uid && selectedUnit) {
       // swap / place the selected one where this one stands
       if (u.slot !== null) {
-        act(() => move(me, selectedUnit.uid, u.slot));
+        play({ op: "move", uid: selectedUnit.uid, slot: u.slot });
         setSel(null);
         return;
       }
       if (selectedUnit.slot !== null) {
-        act(() => move(me, uid, selectedUnit.slot));
+        play({ op: "move", uid, slot: selectedUnit.slot });
         setSel(null);
         return;
       }
@@ -246,14 +272,14 @@ export default function TaktikGame() {
 
   const tapSlot = (slot: number) => {
     if (sel?.kind !== "unit") return;
-    if (!act(() => move(me, sel.uid, slot))) flash(t("ttkFieldFull"));
+    if (!play({ op: "move", uid: sel.uid, slot })) flash(t("ttkFieldFull"));
     else haptic.tap();
     setSel(null);
   };
 
   const tapBench = () => {
     if (sel?.kind !== "unit") return;
-    if (!act(() => move(me, sel.uid, null))) flash(t("ttkBenchFull"));
+    if (!play({ op: "move", uid: sel.uid, slot: null })) flash(t("ttkBenchFull"));
     setSel(null);
   };
 
@@ -265,14 +291,11 @@ export default function TaktikGame() {
       setScoutMsg(null);
       return;
     }
-    const r = act((l) => buy(l, me, i));
+    // (it walks straight onto the pitch while there's room, see lib/taktik/ops.ts)
+    const r = play({ op: "buy", i });
     if (r === "gold") flash(t("ttkNoGold"));
     else if (r === "full") flash(t("ttkBenchFull"));
-    else {
-      // straight onto the pitch while there's room (the manager's own placements stay)
-      act(() => fillField(me));
-      haptic.success();
-    }
+    else if (r) haptic.success();
   };
 
   const scoutCard = scout !== null ? me.shop[scout] : null;
@@ -284,8 +307,7 @@ export default function TaktikGame() {
       haptic.error();
       return;
     }
-    const r = act((l) => buy(l, me, scout, guess));
-    if (r === "ok") act(() => fillField(me));
+    const r = play({ op: "buy", i: scout, guess });
     if (r === "ok") {
       haptic.success();
       flash(t("ttkScoutRight").replace("{name}", scoutPlayer.name));
@@ -294,7 +316,7 @@ export default function TaktikGame() {
   };
   const buyScoutFull = () => {
     if (scout === null) return;
-    const r = act((l) => buy(l, me, scout));
+    const r = play({ op: "buy", i: scout });
     if (r === "ok") setScout(null);
     else setScoutMsg(r === "gold" ? t("ttkNoGold") : t("ttkBenchFull"));
   };
@@ -334,7 +356,15 @@ export default function TaktikGame() {
     if (out) return router.back();
     Alert.alert(t("ttkLeaveTitle"), t("ttkLeaveBody"), [
       { text: t("ttkLeaveStay"), style: "cancel" },
-      { text: t("ttkLeaveGo"), style: "destructive", onPress: () => router.back() },
+      {
+        text: t("ttkLeaveGo"),
+        style: "destructive",
+        onPress: () => {
+          // online: the server keeps the seat a minute (then a house manager takes it)
+          if (online) leaveRoom();
+          router.back();
+        },
+      },
     ]);
   };
 
@@ -361,7 +391,7 @@ export default function TaktikGame() {
     return { x: p.x, y: p.y, sz: shirtW * p.k };
   };
   const shirtW = Math.min(64, pitchBox.w * 0.15, pitchBox.h * 0.13);
-  const looks = avatarsOf(lobby.managers, me.id);
+  const looks = avatarsOf(lobby.managers, me.id, known);
   const benchW = (width - 24 - 7 * 6) / 8;
   const shopW = (width - 24 - 4 * 8) / 5;
 
@@ -420,7 +450,19 @@ export default function TaktikGame() {
         </View>
         {/* the set-up clock, big: at zero everyone kicks off at once; nothing pauses it but the first-time walkthrough */}
         <View ref={tour.ref("kick")} collapsable={false} style={{ marginTop: 4 }}>
-          <PlanClock key={`clock-${lobby.seed}-${roundKey}`} wide seconds={planSeconds(lobby.stage)} running={!match && !out && !showIntro && tour.step === null} onEnd={startMatch} />
+          {online ? (
+            // online the server keeps the time and kicks off for everyone (the clock here only shows it)
+            <PlanClock
+              key={`clock-${lobby.seed}-${roundKey}-${online.phase}`}
+              wide
+              seconds={planSeconds(lobby.stage)}
+              endsAt={online.planEnds}
+              running={online.phase === "plan"}
+              onEnd={() => setSel(null)}
+            />
+          ) : (
+            <PlanClock key={`clock-${lobby.seed}-${roundKey}`} wide seconds={planSeconds(lobby.stage)} running={!match && !out && !showIntro && tour.step === null} onEnd={startMatch} />
+          )}
         </View>
       </View>
 
@@ -548,7 +590,7 @@ export default function TaktikGame() {
               title={t("ttkBestLineup")}
               left={<Image source={TAKTIK.ui.wand} style={{ width: 16, height: 17 }} />}
               onPress={() => {
-                act(() => autoArrange(me));
+                play({ op: "arrange" });
                 setSel(null);
                 haptic.success();
               }}
@@ -575,7 +617,7 @@ export default function TaktikGame() {
                 kind="secondary"
                 title={`XP · ${XP_COST}`}
                 right={<Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />}
-                onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))}
+                onPress={() => (play({ op: "xp" }) ? haptic.tap() : flash(t("ttkNoGold")))}
                 style={{ paddingHorizontal: 10 }}
               />
             </View>
@@ -627,7 +669,7 @@ export default function TaktikGame() {
                 title={`${t("ttkReroll")} · ${REROLL_COST}`}
                 left={<Image source={TAKTIK.ui.reroll} style={{ width: 18, height: 17 }} />}
                 right={<Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />}
-                onPress={() => (act((l) => reroll(l, me)) ? haptic.tap() : flash(t("ttkNoGold")))}
+                onPress={() => (play({ op: "reroll" }) ? haptic.tap() : flash(t("ttkNoGold")))}
               />
             </View>
           </View>
@@ -684,7 +726,7 @@ export default function TaktikGame() {
             title={t("ttkSell").replace("{g}", String(sellValue(selectedUnit)))}
             left={<Image source={TAKTIK.ui.coin} style={{ width: 22, height: 22 }} />}
             onPress={() => {
-              act((l) => sell(l, me, selectedUnit.uid));
+              play({ op: "sell", uid: selectedUnit.uid });
               haptic.success();
               setSel(null);
             }}
@@ -785,7 +827,7 @@ export default function TaktikGame() {
                   icon="arrow.triangle.2.circlepath"
                   title={t("ttkAugSwap")}
                   disabled={augPick !== null || !me.offerRerolls}
-                  onPress={() => (act((l) => rerollAugment(l, me, i)) ? haptic.tap() : flash(t("ttkAugNoSwaps")))}
+                  onPress={() => (play({ op: "augSwap", i }) ? haptic.tap() : flash(t("ttkAugNoSwaps")))}
                 />
               </Animated.View>
             ))}
@@ -809,6 +851,8 @@ export default function TaktikGame() {
                   <Text style={[styles.drawerName, m.id === me.id && { color: C.greenMid }]} numberOfLines={1}>
                     {m.id === me.id ? t("you") : m.name}
                   </Text>
+                  {/* an online friend whose phone dropped out (a minute to come back) */}
+                  {online?.seats.some((x) => x.id === m.id && x.away && !x.gone) && <Text style={[T.caption, { color: C.amber }]}>{t("ttkAway")}</Text>}
                   <View style={[styles.mgrBar, { width: "100%" }]}>
                     <View style={[styles.mgrFill, { width: `${Math.max(0, m.hp)}%`, backgroundColor: m.hp > 50 ? C.green : m.hp > 25 ? C.amber : C.red }]} />
                   </View>
@@ -880,6 +924,7 @@ export default function TaktikGame() {
         <LobbyIntro
           managers={lobby.managers}
           meId={me.id}
+          known={known}
           onDone={() => {
             introShown = lobby.seed;
             setIntroSeen(lobby.seed);
