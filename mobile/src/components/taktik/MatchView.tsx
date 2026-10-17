@@ -21,7 +21,7 @@ import { TacticsChips } from "./TacticsCard";
 /** one slice of the match; slow enough to follow the ball on the pitch */
 const TICK_MS = 850;
 const KICKOFF_MS = 1600;
-const RESULT_MS = 2800;
+const RESULT_MS = 1600;
 const minute = (slice: number) => Math.round(((slice + 0.6) * 90) / SLICES);
 
 /**

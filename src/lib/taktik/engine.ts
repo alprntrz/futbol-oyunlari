@@ -15,6 +15,7 @@ import {
   SCOUT_CHANCE,
   SCOUT_DISCOUNT,
   SCOUT_PER_STAGE,
+  PREMIUM_FIVE,
   SHOP_ODDS,
   SHOP_SIZE,
   SLOTS,
@@ -134,6 +135,12 @@ export function refreshShop(l: Lobby, m: Manager) {
     const pid = drawCard(l, m.level);
     return pid === null ? null : { pid };
   });
+  // from stage 2 one card in each shop is a star: a 4 (or now and then a legend, 5)
+  if (l.stage >= 2) {
+    const want: Cost = rand(l) < PREMIUM_FIVE[Math.min(l.stage, PREMIUM_FIVE.length - 1)] ? 5 : 4;
+    const options = l.players.filter((p) => p.cost === want && l.copies[p.pid] > 0);
+    if (options.length) m.shop[Math.floor(rand(l) * SHOP_SIZE)] = { pid: pick(l, options).pid };
+  }
   if (m.scoutsThisStage < SCOUT_PER_STAGE && rand(l) < SCOUT_CHANCE) {
     const idx = m.shop.map((c, i) => (c ? i : -1)).filter((i) => i >= 0);
     if (idx.length) {

@@ -44,6 +44,8 @@ export const STAR_MULT: Record<Star, number> = { 1: 1, 2: 1.8, 3: 3.2 };
 /** share of a player's power that goes to attack in each zone (the rest defends; the keeper keeps) */
 export const ZONE_ATK: Record<Pos, number> = { GK: 0, DEF: 0.15, MID: 0.5, FWD: 0.85 };
 
+/** chance (by stage) that a shop's guaranteed star card is a legend (5) rather than a 4 */
+export const PREMIUM_FIVE = [0, 0, 0.12, 0.2, 0.28, 0.35, 0.4];
 /** shop odds (%) for cost 1..5, per club level */
 export const SHOP_ODDS: number[][] = [
   [100, 0, 0, 0, 0],

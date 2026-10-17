@@ -248,14 +248,14 @@ export default function TaktikGame() {
     return t(`ttkHonour_${x.id as "wc"}`);
   };
   const traitDesc = (x: TraitState) =>
-    x.kind === "club" ? t("ttkClubTrait") : x.kind === "country" ? t(STYLES[x.id] ? (`ttkStyle_${x.id}` as "ttkStyle_brazil") : "ttkStyle_other") : traitLabel(x);
+    x.kind === "club" ? t("ttkClubTrait") : x.kind === "country" ? t(STYLES[x.id] ? (`ttkStyle_${x.id}` as "ttkStyle_brazil") : "ttkStyle_other") : x.id === "legend" ? t("ttkLegendTrait") : traitLabel(x);
   const traitIcon = (x: TraitState) => {
     if (x.kind === "club") {
       const c = clubCriterion(x.id);
       return c ? <ClubShirt c={c} size={13} /> : null;
     }
     if (x.kind === "country") return <Flag id={x.id} width={17} />;
-    return <Text style={{ fontSize: 14 }}>{({ wc: "🏆", ucl: "⭐", ballon: "🥇", euro: "🌍" } as Record<string, string>)[x.id]}</Text>;
+    return <Text style={{ fontSize: 14 }}>{({ wc: "🏆", ucl: "⭐", ballon: "🥇", euro: "🌍", legend: "👑" } as Record<string, string>)[x.id]}</Text>;
   };
 
   // back from the match: gold it paid flies from the middle of the screen into the counter

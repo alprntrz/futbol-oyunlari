@@ -3,6 +3,8 @@ import { PLAYERS } from "@/data/players";
 import { TAKTIK_CLUB, TAKTIK_CLUB_CODE, TAKTIK_CLUB_IDS, TAKTIK_POS } from "@/data/taktik";
 
 import { FORMATIONS } from "../formations";
+import { LEGENDS } from "./legends";
+import { VALUES } from "@/data/taktik-values";
 import { COPIES, POOL_SIZE, type Cost, type Pos } from "./rules";
 import type { PoolPlayer } from "./types";
 
@@ -48,8 +50,10 @@ const fame = (i: number) => {
   return (p.badges?.length ?? 0) * 4 + Math.min(APPS.get(p.name) ?? 0, 12) + p.clubs.length * 0.8;
 };
 
-/** cost tiers by fame rank: top 80 legends, then 320, 1200, 4000, the rest */
+/** cost tiers by fame rank, for players with no market value (before ~2004) */
 const TIER_CUTS = [80, 400, 1600, 5600];
+/** cost from a peak Transfermarkt value (€m): 4 from 50, 3 from 18, 2 from 6; 5 is only for legends */
+const costOfValue = (m: number): Cost => (m >= 50 ? 4 : m >= 18 ? 3 : m >= 6 ? 2 : 1);
 
 export interface Card {
   name: string;
@@ -65,12 +69,15 @@ export const CATALOG: Card[] = (() => {
   const order = PLAYERS.map((_, i) => i).sort((a, b) => fame(b) - fame(a) || a - b);
   const cost = new Array<Cost>(PLAYERS.length);
   order.forEach((idx, rank) => {
-    cost[idx] = (rank < TIER_CUTS[0] ? 5 : rank < TIER_CUTS[1] ? 4 : rank < TIER_CUTS[2] ? 3 : rank < TIER_CUTS[3] ? 2 : 1) as Cost;
+    const name = PLAYERS[idx].name;
+    const value = VALUES[name];
+    // legends cost 5; a peak market value sets the rest; older players fall back to fame (never 5)
+    cost[idx] = LEGENDS.has(name) ? 5 : value !== undefined ? costOfValue(value) : (Math.max(1, Math.min(4, rank < TIER_CUTS[1] ? 4 : rank < TIER_CUTS[2] ? 3 : rank < TIER_CUTS[3] ? 2 : 1)) as Cost);
   });
   return PLAYERS.map((p, i) => {
     const code = TAKTIK_CLUB[i];
     const club = code && code !== "?" ? TAKTIK_CLUB_IDS[TAKTIK_CLUB_CODE.indexOf(code)] : (p.clubs[0] ?? null);
-    return { name: p.name, cost: cost[i], pos: positionOf(i, p.name), club, country: p.country, badges: p.badges ?? [] };
+    return { name: p.name, cost: cost[i], pos: positionOf(i, p.name), club, country: p.country, badges: LEGENDS.has(p.name) ? [...(p.badges ?? []), "legend"] : (p.badges ?? []) };
   });
 })();
 
@@ -97,7 +104,8 @@ export function dealPool(rand: () => number): { players: PoolPlayer[]; copies: n
   const players: PoolPlayer[] = [];
   const used = new Set<string>();
   for (const cost of [1, 2, 3, 4, 5] as Cost[]) {
-    const fits = shuffle(CATALOG.filter((c) => c.cost === cost && !used.has(c.name) && ((c.club && clubs.has(c.club)) || countries.has(c.country))));
+    // legends come from anywhere, so the Legends synergy can always be built
+    const fits = shuffle(CATALOG.filter((c) => c.cost === cost && !used.has(c.name) && (cost === 5 || (c.club && clubs.has(c.club)) || countries.has(c.country))));
     // both a club and a country in the pool: the best for synergies, take those first
     const both = fits.filter((c) => c.club && clubs.has(c.club) && countries.has(c.country));
     const rest = fits.filter((c) => !both.includes(c));

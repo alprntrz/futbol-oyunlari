@@ -111,7 +111,10 @@ export const STYLES: Record<string, (tier: number, m: Mods) => void> = {
 const PORTUGAL_STAR = [0, 0.2, 0.35, 0.55];
 const GENERIC_NATION = [0, 0.05, 0.09, 0.15];
 
-export const HONOUR_STEPS: Record<string, number[]> = { wc: [2, 4], ucl: [2, 4], ballon: [1], euro: [2, 3] };
+export const HONOUR_STEPS: Record<string, number[]> = { wc: [2, 4], ucl: [2, 4], ballon: [1], euro: [2, 3], legend: [4] };
+/** Legends (four on the pitch): the whole side lifts and every legend plays far above himself */
+export const LEGEND_TEAM = 0.25;
+export const LEGEND_UNIT = 0.3;
 
 const tierOf = (count: number, steps: number[]) => steps.filter((s) => count >= s).length;
 
@@ -164,6 +167,11 @@ export function evaluate(units: Unit[], power: (u: Unit) => number, boost: { clu
     if (honour === "ucl") m.bigGame *= 1 + [0, 0.1, 0.25][tier];
     if (honour === "ballon") m.genius += n;
     if (honour === "euro") m.def *= 1 + [0, 0.1, 0.2][tier];
+    if (honour === "legend") {
+      m.atk *= 1 + LEGEND_TEAM;
+      m.def *= 1 + LEGEND_TEAM;
+      for (const u of units) if (u.badges.includes("legend")) m.unit[u.uid] = (m.unit[u.uid] ?? 1) * (1 + LEGEND_UNIT);
+    }
   }
 
   // active first, then closest to the next step
