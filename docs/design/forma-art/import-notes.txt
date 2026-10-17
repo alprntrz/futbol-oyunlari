@@ -1,0 +1,12 @@
+Teslim: 4 adet 1024x1024 RGBA PNG; yaklaşık %8 şeffaf kenar boşluğu.
+Yerleşik Imagegen ile üretildi. Beyaz kumaşta kıvrım, gölge ve parlaklık korunmuştur.
+
+Renk ayırma notu:
+Yaka, kol ağızları ve polo patı görsel olarak siyah olsa da bütün pikseller tam #000000 değildir.
+Özellikle polo yakasında koyu ara tonlar, tüm formların kenarlarında antialias pikselleri vardır.
+Maske çıkarırken salt RGB==(0,0,0) karşılaştırması yerine alfa ve koyuluk eşiği kullanılmalıdır.
+Örneğin opak piksellerde max(R,G,B)<50, siyah trim için başlangıç eşiği olabilir;
+kenarlarda alfa ve yumuşak geçiş ayrıca korunmalıdır. Bu eşik uygulamanın ithal betiğinde
+test edilmemiştir; manifest.json sayımları yalnızca kaynak görsellerin incelemesidir.
+
+Dosyalar kaynak görsellerdir; uygulama kodu veya içe aktarma betiği değiştirilmedi.

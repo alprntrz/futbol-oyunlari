@@ -73,3 +73,4 @@ scripts/.cache/raw-wikidata.json
 /docs/design/taktik-pitch-art/
 /docs/design/taktik-match-art/*.png
 !/docs/design/taktik-match-art/preview-screens.png
+/docs/design/forma-art/jersey-*.png
