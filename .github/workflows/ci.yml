@@ -3,6 +3,9 @@ name: CI
 on:
   push:
   pull_request:
+  # weekly too, so a newly published advisory for a dependency shows up without a push
+  schedule:
+    - cron: "0 6 * * 1"
 
 jobs:
   check:
@@ -17,6 +20,8 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm run build
+      # the server and web site's own packages (what runs on Fly): a high or critical advisory fails the check
+      - run: npm audit --omit=dev --audit-level=high
 
   mobile:
     runs-on: ubuntu-latest
@@ -33,3 +38,6 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npx expo lint
+      # report only: today's findings sit in Expo's build tooling (metro, cli, config plugins), fixed by Expo updates
+      - run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
