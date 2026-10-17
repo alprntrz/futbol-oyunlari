@@ -6,7 +6,7 @@ import type { AugmentId } from "@/lib/taktik/types";
 
 import { TAKTIK } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
-import { F } from "~/lib/theme";
+import { C, F } from "~/lib/theme";
 
 import { Text } from "../Text";
 import { Tap } from "../ui";
@@ -132,7 +132,7 @@ export function TacticsChips({ ids, dark, align = "flex-start" }: { ids: Augment
                 {EMOJI[id]}
               </Text>
             )}
-            <Text allowFontScaling={false} style={[chip.text, { color: dark ? "white" : "#0E1A14" }]} numberOfLines={1}>
+            <Text allowFontScaling={false} style={[chip.text, { color: dark ? "white" : C.text }]} numberOfLines={1}>
               {t(`ttkAs_${id}`)}
             </Text>
           </View>

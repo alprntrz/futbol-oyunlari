@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   art: { flex: 1, alignItems: "center", justifyContent: "center" },
   name: { fontFamily: F.display, color: C.text, paddingHorizontal: 3 },
   foot: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", alignSelf: "stretch", paddingHorizontal: 4, paddingBottom: 4, gap: 2 },
-  pos: { backgroundColor: C.greenDark, borderRadius: 4, paddingHorizontal: 4, paddingVertical: 1 },
+  pos: { backgroundColor: C.greenDark, borderRadius: 6, paddingHorizontal: 5, paddingVertical: 1 },
   posText: { color: "white", fontSize: 10, fontWeight: "800" },
   items: { position: "absolute", top: 13, right: 2, gap: 1 },
   scouted: { position: "absolute", top: 13, left: 2, width: 14, height: 14, borderRadius: 7, backgroundColor: "#7C3AED", alignItems: "center", justifyContent: "center" },

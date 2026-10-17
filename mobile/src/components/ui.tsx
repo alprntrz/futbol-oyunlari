@@ -84,6 +84,9 @@ export function Button({
   onPress,
   kind = "primary",
   icon,
+  left,
+  right,
+  small,
   disabled,
   style,
 }: {
@@ -91,12 +94,17 @@ export function Button({
   onPress: () => void;
   kind?: "primary" | "secondary" | "danger" | "ghost" | "gold";
   icon?: SymbolName;
+  /** an image (or anything) before / after the title, e.g. a coin next to a price */
+  left?: React.ReactNode;
+  right?: React.ReactNode;
+  /** the compact size for toolbars and rows: lower face, thinner edge */
+  small?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
   const bg = { primary: C.green, secondary: C.card, danger: C.redSoft, ghost: "transparent", gold: "#FACC15" }[kind];
   const fg = { primary: "white", secondary: C.text, danger: C.red, ghost: C.text2, gold: "#3B2A05" }[kind];
-  const depth = kind === "ghost" ? 0 : DEPTH;
+  const depth = kind === "ghost" ? 0 : small ? 3 : DEPTH;
   // padding and height belong to the face; layout (margins, flex, width) to the outer edge
   const { padding, paddingHorizontal, paddingVertical, paddingLeft, paddingRight, paddingTop, paddingBottom, minHeight, ...outer } = StyleSheet.flatten(style) ?? {};
   const inner = Object.fromEntries(
@@ -115,7 +123,7 @@ export function Button({
       }}
       // pressed: the face drops onto the edge (edge padding moves from below to above, behind the face)
       style={({ pressed }) => [
-        { borderRadius: R.button, backgroundColor: EDGE[kind] },
+        { borderRadius: small ? 12 : R.button, backgroundColor: EDGE[kind] },
         pressed && !disabled ? { paddingTop: depth, backgroundColor: "transparent" } : { paddingBottom: depth },
         disabled && { opacity: 0.45 },
         outer,
@@ -125,13 +133,16 @@ export function Button({
         <View
           style={[
             styles.button,
+            small && styles.buttonSmall,
             inner,
             { backgroundColor: bg },
             kind === "secondary" && { borderWidth: 1, borderColor: C.border },
           ]}
         >
-          {icon ? <Icon name={icon} size={17} color={fg} /> : null}
-          <Text style={[styles.buttonText, { color: fg }]}>{title}</Text>
+          {icon ? <Icon name={icon} size={small ? 14 : 17} color={fg} /> : null}
+          {left}
+          <Text style={[styles.buttonText, small && styles.buttonTextSmall, { color: fg }]}>{title}</Text>
+          {right}
         </View>
       )}
     </Pressable>
@@ -231,6 +242,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3 },
+  buttonSmall: { minHeight: 36, paddingHorizontal: 12, gap: 6, borderRadius: 12 },
+  buttonTextSmall: { fontSize: 17 },
   row: { flexDirection: "row", alignItems: "center", paddingLeft: 14, gap: 14 },
   badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   rowImage: { width: 44, height: 44, marginHorizontal: -2 },

@@ -10,10 +10,10 @@ import type { Lobby, MatchResult } from "@/lib/taktik/types";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { play } from "~/lib/sound";
-import { C, F, T } from "~/lib/theme";
+import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Text } from "../Text";
-import { Icon, Tap } from "../ui";
+import { Button, Icon } from "../ui";
 import { ItemIcon, surname } from "./Card";
 import { MatchPitch, PITCH_RATIO, SIDE } from "./MatchPitch";
 import { TacticsChips } from "./TacticsCard";
@@ -213,10 +213,9 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
         </View>
 
         {!done && (
-          <Tap onPress={() => setShown(SLICES)} style={[styles.grayBtn, { alignSelf: "center", marginTop: 6 }]}>
-            <Text style={styles.grayBtnText}>{t("ttkSkip")}</Text>
-            <Icon name="forward.fill" size={14} color={C.text} fallback="⏩" />
-          </Tap>
+          <View style={styles.skip}>
+            <Button small kind="secondary" icon="forward.fill" title={t("ttkSkip")} onPress={() => setShown(SLICES)} />
+          </View>
         )}
       </View>
     </Modal>
@@ -226,16 +225,16 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.bg, paddingHorizontal: 12 },
   board: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
-  namePill: { flex: 1, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 8, alignItems: "center" },
+  namePill: { flex: 1, borderRadius: R.inner, paddingVertical: 6, paddingHorizontal: 8, alignItems: "center", borderBottomWidth: 3, borderBottomColor: "rgba(0,0,0,0.22)" },
   nameText: { fontFamily: F.display, fontSize: 17, color: "white" },
   score: { fontFamily: F.black, fontSize: 34, lineHeight: 36, color: C.text, fontVariant: ["tabular-nums"] },
-  clock: { backgroundColor: "#FACC15", borderRadius: 6, paddingHorizontal: 8, marginTop: -2 },
+  clock: { backgroundColor: "#FACC15", borderRadius: R.chip, paddingHorizontal: 9, marginTop: -2 },
   clockText: { fontFamily: F.display, fontSize: 13, color: "#3B2A05" },
-  kickoff: { position: "absolute", alignSelf: "center", top: "42%", backgroundColor: "white", borderRadius: 12, paddingHorizontal: 18, paddingVertical: 10, alignItems: "center", borderWidth: 1, borderColor: C.border },
+  kickoff: { position: "absolute", alignSelf: "center", top: "42%", backgroundColor: C.card, borderRadius: R.card, paddingHorizontal: 22, paddingVertical: 12, alignItems: "center", ...shadow },
   kickoffTitle: { fontFamily: F.black, fontSize: 26, color: C.text },
   kickoffSub: { fontFamily: F.display, fontSize: 14, color: C.text2 },
-  result: { position: "absolute", alignSelf: "center", bottom: "6%", backgroundColor: "white", borderRadius: 14, padding: 14, alignItems: "center", gap: 3, borderWidth: 1, borderColor: C.border },
-  resultTitle: { fontFamily: F.black, fontSize: 34, lineHeight: 36, textTransform: "uppercase" },
+  result: { position: "absolute", alignSelf: "center", bottom: "6%", backgroundColor: C.card, borderRadius: R.card, padding: 16, alignItems: "center", gap: 3, ...shadow },
+  resultTitle: { fontFamily: F.black, fontSize: 36, lineHeight: 38 },
   resultScore: { fontFamily: F.black, fontSize: 26, color: C.text },
   motm: { fontFamily: F.display, fontSize: 15, color: C.text, marginTop: 2 },
   drops: { alignItems: "center", gap: 4 },
@@ -246,14 +245,13 @@ const styles = StyleSheet.create({
   otherWin: { color: C.text, fontWeight: "800" },
   otherScore: { fontFamily: F.display, fontSize: 14, color: C.text, minWidth: 40, textAlign: "center" },
   lastSlot: { height: 40, justifyContent: "center", marginTop: 6 },
-  event: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 7, paddingHorizontal: 14, borderRadius: 8, maxWidth: "100%", backgroundColor: C.card },
+  event: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 7, paddingHorizontal: 14, borderRadius: R.chip, maxWidth: "100%", backgroundColor: C.card, ...shadow },
   goal: { backgroundColor: C.green },
   min: { fontFamily: F.display, fontSize: 14, color: C.text3 },
   eventText: { fontFamily: F.display, fontSize: 16, color: C.text, flexShrink: 1 },
   sideDot: { width: 9, height: 9, borderRadius: 5 },
   cards: { flexDirection: "row", gap: 10, marginTop: 4 },
   cardCol: { flex: 1, gap: 4, borderLeftWidth: 3, paddingLeft: 8 },
-  cardHead: { fontFamily: F.black, fontSize: 13, color: C.text, textTransform: "uppercase" },
-  grayBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#E2E7E3", borderRadius: 8, paddingHorizontal: 18, paddingVertical: 9, marginTop: 6 },
-  grayBtnText: { fontFamily: F.display, fontSize: 17, color: C.text },
+  skip: { alignSelf: "center", height: 40, marginTop: 8 },
+  cardHead: { fontFamily: F.display, fontSize: 16, color: C.text },
 });

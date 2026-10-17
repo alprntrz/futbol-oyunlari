@@ -30,7 +30,7 @@ import { TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { act, kickOff, quitTaktik, useTaktik } from "~/lib/taktik";
-import { C, F, T } from "~/lib/theme";
+import { C, F, GAME, R, shadow, T } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
 type Sel = { kind: "unit"; uid: string } | { kind: "item"; index: number } | null;
@@ -314,7 +314,7 @@ export default function TaktikGame() {
       <View style={[styles.top, { paddingTop: insets.top + 2 }]}>
         <View style={styles.topRow}>
           <Tap onPress={() => router.back()} style={styles.back} accessibilityLabel="‹">
-            <Icon name="arrow.left" size={20} color={C.text} fallback="‹" />
+            <Icon name="chevron.left" size={17} color={C.text} fallback="‹" />
           </Tap>
           <Text style={styles.stage} numberOfLines={1}>
             {t("ttkRound").replace("{s}", String(lobby.stage)).replace("{r}", String(lobby.round + 1))}
@@ -343,7 +343,7 @@ export default function TaktikGame() {
               style={styles.stat}
               accessibilityLabel={t(me.streak > 0 ? "ttkWinStreak" : "ttkLossStreak").replace("{n}", String(Math.abs(me.streak))).replace("{g}", String(streakGold(Math.abs(me.streak))))}
             >
-              {me.streak > 0 ? <Image source={TAKTIK.ui.flame} style={styles.statIcon} /> : <Text style={{ fontSize: 15 }}>🧊</Text>}
+              {me.streak > 0 ? <Image source={TAKTIK.ui.flame} style={styles.statIcon} /> : <Icon name="snowflake" size={18} color={C.blue} fallback="🧊" />}
               <Text style={styles.statText}>{Math.abs(me.streak)}</Text>
             </Tap>
           )}
@@ -355,7 +355,7 @@ export default function TaktikGame() {
             </Tap>
           </View>
           <Tap onPress={tour.start} style={styles.help} accessibilityLabel={t("ttkHowTo")}>
-            <Icon name="questionmark" size={13} color={C.text2} fallback="?" />
+            <Icon name="questionmark" size={15} color={C.text} fallback="?" />
           </Tap>
         </View>
         {/* the set-up clock, big: at zero everyone kicks off at once; nothing pauses it but the first-time walkthrough */}
@@ -466,7 +466,8 @@ export default function TaktikGame() {
             })}
           {boardWarn && (
             <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.warn} pointerEvents="none">
-              <Text style={styles.warnText}>⚠️ {boardWarn}</Text>
+              <Icon name="exclamationmark.triangle.fill" size={13} color={C.amber} fallback="⚠️" />
+              <Text style={styles.warnText}>{boardWarn}</Text>
             </Animated.View>
           )}
           {/* the near edge: how many are on it, and one tap for the best side */}
@@ -474,18 +475,17 @@ export default function TaktikGame() {
             <View style={styles.pill}>
               <Text style={styles.pillText}>{t("ttkOnPitch").replace("{n}", String(onPitch.length)).replace("{m}", String(cap))}</Text>
             </View>
-            <Tap
+            <Button
+              small
+              kind="secondary"
+              title={t("ttkBestLineup")}
+              left={<Image source={TAKTIK.ui.wand} style={{ width: 16, height: 17 }} />}
               onPress={() => {
                 act(() => autoArrange(me));
                 setSel(null);
                 haptic.success();
               }}
-              style={styles.pill}
-              accessibilityLabel={t("ttkBestLineup")}
-            >
-              <Image source={TAKTIK.ui.wand} style={{ width: 15, height: 16 }} />
-              <Text style={styles.pillText}>{t("ttkBestLineup")}</Text>
-            </Tap>
+            />
           </View>
         </Pressable>
       </View>
@@ -497,16 +497,20 @@ export default function TaktikGame() {
             <Text style={styles.head}>{t("ttkSubs")}</Text>
             <Text style={styles.headSub}>{bench(me).length}/8</Text>
             <View style={{ flex: 1 }} />
-            <Text style={[styles.head, { fontSize: 17 }]}>{t("ttkLevel").replace("{n}", String(me.level))}</Text>
+            <Text style={styles.level}>{t("ttkLevel").replace("{n}", String(me.level))}</Text>
             <View style={styles.levelTrack}>
               <View style={[styles.levelFill, { width: `${xpNeed ? (me.xp / xpNeed) * 100 : 100}%` }]} />
             </View>
             <Text style={styles.headSub}>{xpNeed ? `${me.xp}/${xpNeed}` : "MAX"}</Text>
             <View ref={tour.ref("xp")} collapsable={false}>
-              <Tap onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={[styles.grayBtn, { paddingVertical: 6, paddingHorizontal: 9 }]} accessibilityLabel={`${t("ttkBuyXp")} ${XP_COST}`}>
-                <Text style={[styles.grayBtnText, { fontSize: 15 }]}>XP · {XP_COST}</Text>
-                <Image source={TAKTIK.ui.coin} style={{ width: 15, height: 15 }} />
-              </Tap>
+              <Button
+                small
+                kind="secondary"
+                title={`XP · ${XP_COST}`}
+                right={<Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />}
+                onPress={() => (act(() => buyXp(me)) ? haptic.tap() : flash(t("ttkNoGold")))}
+                style={{ paddingHorizontal: 10 }}
+              />
             </View>
           </View>
           <View style={{ flexDirection: "row", gap: 6 }}>
@@ -550,13 +554,14 @@ export default function TaktikGame() {
               </Animated.Text>
             ) : null}
             <View ref={tour.ref("reroll")} collapsable={false}>
-              <Tap onPress={() => (act((l) => reroll(l, me)) ? haptic.tap() : flash(t("ttkNoGold")))} style={styles.grayBtn} accessibilityLabel={`${t("ttkReroll")} ${REROLL_COST}`}>
-                <Image source={TAKTIK.ui.reroll} style={{ width: 18, height: 17 }} />
-                <Text style={styles.grayBtnText}>
-                  {t("ttkReroll")} · {REROLL_COST}
-                </Text>
-                <Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />
-              </Tap>
+              <Button
+                small
+                kind="secondary"
+                title={`${t("ttkReroll")} · ${REROLL_COST}`}
+                left={<Image source={TAKTIK.ui.reroll} style={{ width: 18, height: 17 }} />}
+                right={<Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />}
+                onPress={() => (act((l) => reroll(l, me)) ? haptic.tap() : flash(t("ttkNoGold")))}
+              />
             </View>
           </View>
           <View style={styles.shop}>
@@ -570,7 +575,7 @@ export default function TaktikGame() {
                 <Tap
                   key={i}
                   onPress={() => tapShop(i, card)}
-                  style={[styles.shopCard, { width: shopW }, card.scout && styles.scoutCard, me.gold < p.cost && { opacity: 0.45 }]}
+                  style={[styles.shopCard, { width: shopW, borderBottomColor: card.scout ? "#A78BFA" : COST_COLOR[p.cost] }, card.scout && styles.scoutCard, me.gold < p.cost && { opacity: 0.45 }]}
                   accessibilityLabel={card.scout ? t("ttkScoutTitle") : `${p.name}, ${p.cost}`}
                 >
                   <View style={styles.shopPrice}>
@@ -578,7 +583,7 @@ export default function TaktikGame() {
                     <Text style={styles.shopPriceText}>{p.cost}</Text>
                   </View>
                   {card.scout ? <Image source={TAKTIK.ui.scout} style={{ width: shopW * 0.6, height: shopW * 0.68 }} resizeMode="contain" /> : <Shirt club={p.club} size={shopW * 0.7} />}
-                  <Text style={[styles.shopName, card.scout && { color: "#5B21B6" }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                  <Text style={[styles.shopName, card.scout && { color: GAME.qz.ink }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                     {card.scout ? t("ttkScoutShort") : surname(p.name)}
                   </Text>
                   {card.scout ? (
@@ -593,7 +598,6 @@ export default function TaktikGame() {
                       <Text style={styles.shopPos}>{t(`ttkPos_${p.pos}`)}</Text>
                     </View>
                   )}
-                  <View style={[styles.costBar, { backgroundColor: card.scout ? "#A78BFA" : COST_COLOR[p.cost] }]} />
                   {starUp && <StarUpGlow />}
                   {owned > 0 && (
                     <View style={styles.owned}>
@@ -608,17 +612,17 @@ export default function TaktikGame() {
 
         {/* a picked player can be sold here */}
         {selectedUnit && (
-          <Tap
+          <Button
+            kind="danger"
+            title={t("ttkSell").replace("{g}", String(sellValue(selectedUnit)))}
+            left={<Image source={TAKTIK.ui.coin} style={{ width: 22, height: 22 }} />}
             onPress={() => {
               act((l) => sell(l, me, selectedUnit.uid));
               haptic.success();
               setSel(null);
             }}
-            style={[styles.chunky, styles.sell]}
-          >
-            <Image source={TAKTIK.ui.coin} style={{ width: 24, height: 24 }} />
-            <Text style={styles.sellText}>{t("ttkSell").replace("{g}", String(sellValue(selectedUnit)))}</Text>
-          </Tap>
+            style={{ marginHorizontal: 12 }}
+          />
         )}
       </View>
 
@@ -650,8 +654,9 @@ export default function TaktikGame() {
                 <Flag id={scoutPlayer.country} width={36} />
                 {clubCriterion(scoutPlayer.club) && <ClubShirt c={clubCriterion(scoutPlayer.club)!} size={26} />}
                 <PosTag pos={scoutPlayer.pos} />
-                <View style={[styles.price, { position: "relative", backgroundColor: COST_COLOR[scoutPlayer.cost] }]}>
-                  <Text style={styles.priceText}>🪙 {scoutPlayer.cost}</Text>
+                <View style={[styles.price, { backgroundColor: COST_COLOR[scoutPlayer.cost] }]}>
+                  <Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />
+                  <Text style={styles.priceText}>{scoutPlayer.cost}</Text>
                 </View>
               </View>
             </View>
@@ -693,15 +698,14 @@ export default function TaktikGame() {
                   state={augPick === null ? "idle" : augPick === i ? "picked" : "faded"}
                   onPress={augPick === null ? () => pickAugment(i) : undefined}
                 />
-                <Tap
-                  onPress={() => (act((l) => rerollAugment(l, me, i)) ? haptic.tap() : flash(t("ttkAugNoSwaps")))}
+                <Button
+                  small
+                  kind="secondary"
+                  icon="arrow.triangle.2.circlepath"
+                  title={t("ttkAugSwap")}
                   disabled={augPick !== null || !me.offerRerolls}
-                  style={[styles.augSwap, (!me.offerRerolls || augPick !== null) && { opacity: 0.35 }]}
-                  accessibilityLabel={t("ttkAugSwap")}
-                >
-                  <Icon name="arrow.triangle.2.circlepath" size={13} color="white" fallback="↻" />
-                  <Text style={styles.augSwapText}>{t("ttkAugSwap")}</Text>
-                </Tap>
+                  onPress={() => (act((l) => rerollAugment(l, me, i)) ? haptic.tap() : flash(t("ttkAugNoSwaps")))}
+                />
               </Animated.View>
             ))}
           </View>
@@ -725,7 +729,7 @@ export default function TaktikGame() {
                     {m.id === me.id ? t("you") : m.name}
                   </Text>
                   <View style={[styles.mgrBar, { width: "100%" }]}>
-                    <View style={[styles.mgrFill, { width: `${Math.max(0, m.hp)}%`, backgroundColor: m.hp > 50 ? C.green : m.hp > 25 ? "#F59E0B" : C.red }]} />
+                    <View style={[styles.mgrFill, { width: `${Math.max(0, m.hp)}%`, backgroundColor: m.hp > 50 ? C.green : m.hp > 25 ? C.amber : C.red }]} />
                   </View>
                 </View>
                 <Text style={styles.drawerHp}>{Math.max(0, m.hp)}</Text>
@@ -824,9 +828,9 @@ function Shirt({ club, size, number }: { club: string | null; size: number; numb
 const styles = StyleSheet.create({
   top: { backgroundColor: C.bg, paddingHorizontal: 10, paddingBottom: 4 },
   topRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  back: { width: 30, height: 34, alignItems: "center", justifyContent: "center" },
-  help: { width: 26, height: 26, borderRadius: 13, backgroundColor: C.key, alignItems: "center", justifyContent: "center" },
-  stage: { fontFamily: F.black, fontSize: 21, color: C.text },
+  back: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.card, alignItems: "center", justifyContent: "center", ...shadow },
+  help: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.card, alignItems: "center", justifyContent: "center", ...shadow },
+  stage: { fontFamily: F.display, fontSize: 22, color: C.text },
   vline: { width: 1, height: 26, backgroundColor: C.border },
   stat: { flexDirection: "row", alignItems: "center", gap: 3 },
   statIcon: { width: 22, height: 22, resizeMode: "contain" },
@@ -836,18 +840,18 @@ const styles = StyleSheet.create({
   mgrBar: { width: 26, height: 3, borderRadius: 2, backgroundColor: C.key, overflow: "hidden" },
   mgrFill: { height: 3, borderRadius: 2 },
   traits: { flexDirection: "row", flexWrap: "wrap", gap: 5, paddingHorizontal: 12, paddingVertical: 6, alignItems: "center" },
-  trait: { flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1, borderColor: C.border },
+  trait: { flexDirection: "row", alignItems: "center", gap: 4, minHeight: 28, backgroundColor: C.card, borderRadius: R.chip, paddingHorizontal: 9, borderWidth: 1, borderColor: C.border },
   traitOn: { backgroundColor: C.green, borderColor: C.green },
-  traitText: { fontFamily: F.display, fontSize: 13, color: C.text },
-  item: { width: 28, height: 26, borderRadius: 13, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
-  itemOn: { backgroundColor: "#FEF3C7", borderColor: "#FACC15" },
+  traitText: { fontFamily: F.display, fontSize: 14, color: C.text },
+  item: { width: 34, height: 28, borderRadius: R.chip, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
+  itemOn: { backgroundColor: C.amberSoft, borderColor: C.amber },
   hint: { color: C.text3, fontSize: 12, textAlign: "center" },
-  plus: { position: "absolute", borderRadius: 8, borderWidth: 1.5, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.75)", backgroundColor: "rgba(0,0,0,0.06)", alignItems: "center", justifyContent: "center" },
-  plusLit: { borderColor: "#FACC15", backgroundColor: "rgba(250,204,21,0.22)" },
+  plus: { position: "absolute", borderRadius: 10, borderWidth: 1.5, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.75)", backgroundColor: "rgba(0,0,0,0.06)", alignItems: "center", justifyContent: "center" },
+  plusLit: { borderColor: C.amber, backgroundColor: "rgba(245,158,11,0.2)" },
   plusText: { fontSize: 24, fontWeight: "300", color: "rgba(255,255,255,0.9)" },
   onPitch: { position: "absolute", alignItems: "center" },
-  tag: { marginTop: -4, minWidth: "70%", maxWidth: "100%", backgroundColor: "white", borderRadius: 4, paddingHorizontal: 6, paddingTop: 2, paddingBottom: 1, alignItems: "center", borderBottomWidth: 3 },
-  tagPicked: { backgroundColor: "#FEF3C7" },
+  tag: { marginTop: -4, minWidth: "70%", maxWidth: "100%", backgroundColor: C.card, borderRadius: 6, paddingHorizontal: 6, paddingTop: 2, paddingBottom: 1, alignItems: "center", borderBottomWidth: 3 },
+  tagPicked: { backgroundColor: C.amberSoft },
   tagName: { fontFamily: F.display, fontSize: 14, lineHeight: 16, color: C.text },
   tagPos: { fontSize: 9, fontWeight: "800", color: C.text3, letterSpacing: 0.5 },
   tagLine: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 3 },
@@ -855,74 +859,66 @@ const styles = StyleSheet.create({
   litChip: { backgroundColor: "white", borderRadius: 999, paddingHorizontal: 3, paddingVertical: 1, borderWidth: 1.5, borderColor: "#22C55E", shadowColor: "#22C55E", shadowOpacity: 0.9, shadowRadius: 5, shadowOffset: { width: 0, height: 0 } },
   glow: { position: "absolute", alignSelf: "center", backgroundColor: "rgba(250,250,140,0.35)", shadowColor: "#FDE047", shadowOpacity: 0.9, shadowRadius: 10, shadowOffset: { width: 0, height: 0 } },
   tagItems: { position: "absolute", top: 0, right: 4, gap: 1 },
-  pills: { position: "absolute", left: 8, right: 8, bottom: 6, flexDirection: "row", justifyContent: "space-between" },
-  pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(255,255,255,0.92)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 },
-  pillText: { fontFamily: F.display, fontSize: 13, color: C.text },
+  pills: { position: "absolute", left: 8, right: 8, bottom: 8, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
+  pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(255,255,255,0.92)", borderRadius: R.chip, paddingHorizontal: 12, minHeight: 32 },
+  pillText: { fontFamily: F.display, fontSize: 15, color: C.text },
   footer: { backgroundColor: C.bg, paddingTop: 10, gap: 8 },
-  mgrBtn: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: C.key, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 5 },
-  mgrBtnText: { fontFamily: F.display, fontSize: 15, color: C.text },
+  mgrBtn: { flexDirection: "row", alignItems: "center", gap: 5, height: 36, backgroundColor: C.card, borderRadius: R.chip, paddingHorizontal: 12, ...shadow },
+  mgrBtnText: { fontFamily: F.display, fontSize: 17, color: C.text },
   drawerShade: { backgroundColor: "rgba(0,0,0,0.3)" },
-  drawer: { position: "absolute", right: 0, top: 0, bottom: 0, width: 240, backgroundColor: C.card, paddingHorizontal: 14, gap: 4, shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 16 },
-  drawerTitle: { fontFamily: F.black, fontSize: 22, color: C.text, marginBottom: 6, textTransform: "uppercase" },
+  drawer: { position: "absolute", right: 0, top: 0, bottom: 0, width: 250, backgroundColor: C.card, borderTopLeftRadius: R.card, borderBottomLeftRadius: R.card, paddingHorizontal: 16, gap: 4, shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 16 },
+  drawerTitle: { ...T.heading, marginBottom: 6 },
   drawerRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: C.divider },
   drawerName: { fontFamily: F.display, fontSize: 17, color: C.text },
   drawerHp: { fontFamily: F.display, fontSize: 16, color: C.text2, minWidth: 30, textAlign: "right" },
   headRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 },
-  head: { fontFamily: F.black, fontSize: 21, color: C.text, textTransform: "uppercase" },
+  head: T.heading,
+  level: { fontFamily: F.display, fontSize: 18, color: C.text },
   headSub: { fontSize: 13, fontWeight: "600", color: C.text2 },
-  sub: { alignItems: "center", justifyContent: "center", backgroundColor: "#E8ECE9", borderRadius: 6, borderBottomWidth: 3 },
-  subPicked: { backgroundColor: "#FEF3C7" },
-  subEmpty: { alignItems: "center", justifyContent: "center", borderRadius: 6, borderWidth: 1.5, borderStyle: "dashed", borderColor: C.border },
+  sub: { alignItems: "center", justifyContent: "center", backgroundColor: C.card, borderRadius: 10, borderWidth: 1, borderColor: C.border, borderBottomWidth: 3 },
+  subPicked: { backgroundColor: C.amberSoft, borderColor: C.amber },
+  subEmpty: { alignItems: "center", justifyContent: "center", borderRadius: 10, borderWidth: 1.5, borderStyle: "dashed", borderColor: C.border },
   subName: { fontFamily: F.display, fontSize: 13, color: C.text, paddingHorizontal: 2 },
   subPos: { fontSize: 9, fontWeight: "800", color: C.text3 },
   levelLine: { flexDirection: "row", alignItems: "center", gap: 6 },
   levelTrack: { width: 54, height: 6, borderRadius: 3, backgroundColor: C.key, overflow: "hidden" },
-  levelFill: { height: 6, borderRadius: 3, backgroundColor: "#F43F5E" },
-  grayBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#E2E7E3", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9 },
-  grayBtnText: { fontFamily: F.display, fontSize: 17, color: C.text },
+  levelFill: { height: 6, borderRadius: 3, backgroundColor: C.green },
   rule: { height: 1, backgroundColor: C.border, marginHorizontal: 12 },
   note: { position: "absolute", left: 0, right: 0, top: -16, textAlign: "center", color: C.greenMid, fontWeight: "800", fontSize: 12 },
   shop: { flexDirection: "row", gap: 8 },
-  shopCard: { alignItems: "center", backgroundColor: "#E8ECE9", borderRadius: 8, paddingTop: 6, paddingBottom: 8, overflow: "hidden" },
-  shopGone: { backgroundColor: "transparent", borderWidth: 1.5, borderStyle: "dashed", borderColor: C.border },
-  scoutCard: { backgroundColor: "#EDE9FE" },
+  shopCard: { alignItems: "center", backgroundColor: C.card, borderRadius: R.inner, borderWidth: 1, borderColor: C.border, borderBottomWidth: 4, paddingTop: 6, paddingBottom: 7, overflow: "hidden" },
+  shopGone: { backgroundColor: "transparent", borderWidth: 1.5, borderBottomWidth: 1.5, borderStyle: "dashed", borderColor: C.border },
+  scoutCard: { backgroundColor: GAME.qz.bg },
   shopPrice: { flexDirection: "row", alignItems: "center", gap: 3 },
   shopPriceText: { fontFamily: F.black, fontSize: 18, color: C.text },
   shopName: { fontFamily: F.display, fontSize: 16, color: C.text, marginTop: 2, paddingHorizontal: 3 },
   shopPos: { fontSize: 10, fontWeight: "800", color: C.text3, letterSpacing: 0.5 },
-  costBar: { position: "absolute", left: 0, right: 0, bottom: 0, height: 3 },
-  starUpText: { fontSize: 10, fontWeight: "900", color: "#B45309", paddingHorizontal: 3 },
-  starUpGlow: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0, borderRadius: 8, borderWidth: 2.5, borderColor: "#F5B70A", backgroundColor: "rgba(245,183,10,0.12)" },
-  warn: { position: "absolute", top: 8, alignSelf: "center", backgroundColor: "#FEF3C7", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5, borderWidth: 1, borderColor: "#F59E0B" },
-  warnText: { fontWeight: "800", fontSize: 12, color: "#92400E" },
-  owned: { position: "absolute", top: 4, right: 4, backgroundColor: C.text, borderRadius: 6, paddingHorizontal: 4 },
+  starUpText: { fontSize: 10, fontWeight: "900", color: GAME.my.ink, paddingHorizontal: 3 },
+  starUpGlow: { position: "absolute", left: -1, right: -1, top: -1, bottom: -4, borderRadius: R.inner, borderWidth: 2.5, borderColor: C.amber, backgroundColor: "rgba(245,158,11,0.1)" },
+  warn: { position: "absolute", top: 8, alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.amberSoft, borderRadius: R.chip, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: C.amber },
+  warnText: { fontWeight: "800", fontSize: 13, color: GAME.my.ink },
+  owned: { position: "absolute", top: 30, right: 4, backgroundColor: C.text, borderRadius: R.chip, paddingHorizontal: 5 },
   ownedText: { fontSize: 9, fontWeight: "900", color: "white" },
   cluesBig: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 4 },
-  price: { flexDirection: "row", alignItems: "center", gap: 3, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 },
-  priceText: { fontWeight: "800", fontSize: 12, color: "white" },
-  // Duolingo-style chunky button: a darker bottom edge instead of a shadow
-  chunky: { minHeight: 52, borderRadius: 10, borderBottomWidth: 4, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, paddingHorizontal: 10 },
-  sell: { marginHorizontal: 12, backgroundColor: "#F43F5E", borderBottomColor: "#BE123C" },
-  sellText: { fontFamily: F.black, fontSize: 24, color: "white" },
+  price: { flexDirection: "row", alignItems: "center", gap: 4, borderRadius: R.chip, paddingLeft: 4, paddingRight: 10, paddingVertical: 3 },
+  priceText: { fontFamily: F.display, fontSize: 17, color: "white" },
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)" },
-  infoCard: { margin: 24, marginTop: "60%", backgroundColor: C.card, borderRadius: 18, padding: 16, gap: 8 },
+  infoCard: { margin: 24, marginTop: "60%", backgroundColor: C.card, borderRadius: R.card, padding: 18, gap: 8, ...shadow },
   sheet: { backgroundColor: C.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, gap: 10 },
-  input: { backgroundColor: C.card, borderRadius: 14, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, height: 50, fontSize: 18, color: C.text },
-  offer: { backgroundColor: C.bg, borderRadius: 22, padding: 18, gap: 10 },
-  finalRow: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: C.card, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
+  input: { backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14, height: 50, fontSize: 18, color: C.text },
+  offer: { backgroundColor: C.bg, borderRadius: R.card, padding: 18, gap: 10 },
+  finalRow: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: C.card, borderRadius: R.inner, paddingHorizontal: 12, paddingVertical: 8 },
   finalMe: { borderWidth: 2, borderColor: C.green },
   finalPlace: { width: 22, fontFamily: F.display, fontSize: 20, color: C.text2, textAlign: "center" },
   finalTraits: { flexDirection: "row", gap: 4 },
-  finalTrait: { flexDirection: "row", alignItems: "center", gap: 2, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 6, paddingVertical: 3 },
+  finalTrait: { flexDirection: "row", alignItems: "center", gap: 2, backgroundColor: C.greenSoft, borderRadius: R.chip, paddingHorizontal: 6, paddingVertical: 3 },
   finalTraitText: { fontFamily: F.display, fontSize: 13, color: C.greenDark },
   augScreen: { flex: 1, backgroundColor: "rgba(3,15,9,0.86)", justifyContent: "center", paddingHorizontal: 12 },
   augHead: { flexDirection: "row", alignItems: "center", gap: 10, justifyContent: "center" },
   augLine: { flex: 1, height: 1, backgroundColor: "rgba(253,230,138,0.5)" },
-  augTitle: { fontFamily: F.display, fontSize: 26, color: "#FDE68A" },
+  augTitle: { fontFamily: F.display, fontSize: 28, color: "#FDE68A" },
   augHint: { color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: "600", textAlign: "center", marginTop: 4 },
   augRow: { flexDirection: "row", justifyContent: "center", gap: 10, marginTop: 22 },
-  augSwap: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(255,255,255,0.14)", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
-  augSwapText: { fontFamily: F.display, fontSize: 15, color: "white" },
 });
 
 /** a market card that would make a two-star player: a soft gold pulse */
