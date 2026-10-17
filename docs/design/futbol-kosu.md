@@ -1,4 +1,4 @@
-# Futbol Koşusu (çalışma adı): tasarım dokümanı
+# Dribbling Rush: tasarım dokümanı
 
 Topu süren bir futbolcuyla sahada sonsuz ileri koşu. Üç şerit, zıpla / kay / şerit
 değiştir, engellerden kaç, altın topla; arada kaleye gel, kısa bir futbol sorusunu bil,
@@ -108,7 +108,6 @@ Güçlendirmeler satın alınmaz, yükseltilmez; sadece koşu içinde bulunur.
 
 ## 10. Açık sorular
 
-- Oyunun adı: "Futbol Koşusu" / "Dribbling Rush" / "Kontra Atak" (öneri: **Kontra Atak**, EN
-  "Counter Attack"). Mağazada ve oyun listesinde kısa ve kendi adımız olmalı.
+- Oyunun adı: **Dribbling Rush** (2026-10-17'de seçildi; TR ve EN aynı). Kod adı `kosu` (klasörler, XP kaynağı "run").
 - Karakter forması: kullanıcının favori kulübü mü, avatar rengi mi?
 - Online: ileride "aynı parkurda arkadaşınla yarış" (aynı seed, skor karşılaştırma) eklenebilir.

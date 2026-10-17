@@ -1,4 +1,4 @@
-# Futbol Koşusu: görsel brief (ChatGPT)
+# Dribbling Rush: görsel brief (ChatGPT)
 
 Tasarım: `futbol-kosu.md`. Oyun 2.5D: saha perspektifle ileri akar, karakter ve nesneler
 ayrı şeffaf sprite'lar olarak üstüne konur ve mesafeye göre ölçeklenir. Bu yüzden her
