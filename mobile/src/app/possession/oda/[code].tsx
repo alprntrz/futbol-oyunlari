@@ -5,6 +5,7 @@ import { XP } from "@/lib/levels";
 
 import { PossessionBoard } from "~/components/PossessionBoard";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { Text } from "~/components/Text";
 import { WaitingRoom } from "~/components/WaitingRoom";
 import { Button, Card, Icon, Page } from "~/components/ui";
@@ -177,46 +178,49 @@ export default function PossessionRoom() {
       : `${who}: ${t(f.reason === "wrong" ? "ttWrong" : "ppTimeout")}`;
 
   return (
-    <Page>
-      {/* a friend room shows its code (to share); a random match the game's name */}
-      <Stack.Screen options={{ title: params.random ? t("ppName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
-      {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
-      <PossessionBoard
-        board={board}
-        owners={room.owners}
-        usedNames={room.used}
-        turn={room.turn}
-        clocks={{ X: secs("X"), O: secs("O") }}
-        labels={labels}
-        canMove={myTurn && !peerLeft}
-        winner={room.winner}
-        winnerText={room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? t("htYouWin") : t("htYouLose")}
-        status={myTurn ? t("ppYourTurn") : t("htTheirTurn")}
-        flash={flash}
-        celebrate={room.winner === me?.mark}
-        onMove={(hex, player) => {
-          if (!me) return;
-          getSocket().emit(
-            "pp:move",
-            player ? { name: player.name, claims: claimsFor(hex, (c) => c.test(player), board, room.owners, me.mark) } : { name: null }
-          );
-        }}
-        footer={
-          room.winner ? (
-            isHost ? (
-              <Button
-                title={t("htRematch")}
-                icon="arrow.clockwise"
-                onPress={() => getSocket().emit("pp:rematch", { board: boardToIds(generateBoard()) })}
-                style={{ marginTop: 16 }}
-              />
-            ) : (
-              <Text style={[T.body, { textAlign: "center", marginTop: 16 }]}>{t("htWaitRematch")}</Text>
-            )
-          ) : null
-        }
-      />
-      <EmoteLayer e={emotes} top={4} />
-    </Page>
+    <>
+      <Page>
+        {/* a friend room shows its code (to share); a random match the game's name */}
+        <Stack.Screen options={{ title: params.random ? t("ppName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+        {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
+        <PossessionBoard
+          board={board}
+          owners={room.owners}
+          usedNames={room.used}
+          turn={room.turn}
+          clocks={{ X: secs("X"), O: secs("O") }}
+          labels={labels}
+          canMove={myTurn && !peerLeft}
+          winner={room.winner}
+          winnerText={room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? t("htYouWin") : t("htYouLose")}
+          status={myTurn ? t("ppYourTurn") : t("htTheirTurn")}
+          flash={flash}
+          celebrate={room.winner === me?.mark}
+          onMove={(hex, player) => {
+            if (!me) return;
+            getSocket().emit(
+              "pp:move",
+              player ? { name: player.name, claims: claimsFor(hex, (c) => c.test(player), board, room.owners, me.mark) } : { name: null }
+            );
+          }}
+          footer={
+            room.winner ? (
+              isHost ? (
+                <Button
+                  title={t("htRematch")}
+                  icon="arrow.clockwise"
+                  onPress={() => getSocket().emit("pp:rematch", { board: boardToIds(generateBoard()) })}
+                  style={{ marginTop: 16 }}
+                />
+              ) : (
+                <Text style={[T.body, { textAlign: "center", marginTop: 16 }]}>{t("htWaitRematch")}</Text>
+              )
+            ) : null
+          }
+        />
+        <EmoteLayer e={emotes} top={4} />
+      </Page>
+      <ConnectionBanner game="pp" />
+    </>
   );
 }

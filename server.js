@@ -120,6 +120,8 @@ function publicRoom(room) {
 // The host's phone builds the grid and sends criterion ids; both phones
 // validate guesses against the same bundled player list. The server owns the
 // turn, the 45 s clock and the result.
+/** How long a dropped phone has to come back to a live online match. */
+const REJOIN_MS = Number(process.env.REJOIN_MS) || 60_000;
 const HT_TURN_MS = 45_000;
 /** a match is a series: first to this many game wins takes it */
 const HT_TARGET = 3;
@@ -635,7 +637,17 @@ app.prepare().then(() => {
     handle(req, res);
   });
   // small payload cap: the biggest message is a 20-question quiz (a few KB)
-  const io = new Server(server, { cors: { origin: "*" }, maxHttpBufferSize: 64 * 1024 });
+  // A phone that drops out (tunnel, app in the background) and comes back within REJOIN_MS gets
+  // its old socket id, rooms and socket.data back plus the events it missed (Socket.IO connection
+  // state recovery); live Tic-Tac-Toe / Possession / Card Duel matches wait that long before the
+  // seat counts as left (`dropLater` below).
+  const io = new Server(server, {
+    cors: { origin: "*" },
+    maxHttpBufferSize: 64 * 1024,
+    connectionStateRecovery: { maxDisconnectionDuration: REJOIN_MS, skipMiddlewares: true },
+  });
+  // socket id + game → the timer that will count a dropped player as gone
+  const awayTimers = new Map();
   ioServer = io;
   // a signed-in user is "online" for friends while any of their sockets is open
   const socketsOf = (uid) => [...io.sockets.sockets.values()].filter((s) => uid && s.data.uid === uid);
@@ -715,6 +727,24 @@ app.prepare().then(() => {
       });
     // signed-in app players send their session token: their online results are rated
     socket.data.uid = userIdFromToken(socket.handshake.auth?.token);
+
+    // Losing the connection in a live match: the other player hears "away" and the seat waits
+    // REJOIN_MS for this phone to come back (recovered socket, below) before `drop` runs. Leaving on
+    // purpose (the app closing its socket) or outside a live match drops at once.
+    const dropLater = (game, live, drop) => (reason) => {
+      const code = socket.data[game + "Code"];
+      if (!code || !live() || reason === "client namespace disconnect" || reason === "server namespace disconnect") return drop();
+      const key = socket.id + game;
+      clearTimeout(awayTimers.get(key));
+      io.to(game + ":" + code).emit("peer:away", { game, away: true, ms: REJOIN_MS });
+      awayTimers.set(
+        key,
+        setTimeout(() => {
+          awayTimers.delete(key);
+          drop();
+        }, REJOIN_MS)
+      );
+    };
     // Invite a friend into a room you opened: the friend's open app shows a banner
     // with Join. Only between friends (friend codes), at most one every 3 s.
     socket.on("fr:invite", ({ to, game, room }, cb) => {
@@ -960,7 +990,7 @@ app.prepare().then(() => {
       ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
     });
 
-    socket.on("disconnect", () => {
+    const ppDrop = () => {
       ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
       const room = ppRooms.get(socket.data.ppCode);
       if (!room) return;
@@ -975,6 +1005,11 @@ app.prepare().then(() => {
         room.turnStart = null;
         io.to("pp:" + room.code).emit("pp:peer-left", ppPublic(room));
       }
+    };
+    socket.on("disconnect", (reason) => {
+      ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
+      const room = ppRooms.get(socket.data.ppCode);
+      dropLater("pp", () => !!room && room.started && !room.winner && room.players.length === 2, ppDrop)(reason);
     });
 
     // ── Live Activity: the token of this phone's activity for the match it's in, and whether the app is open
@@ -1176,7 +1211,27 @@ app.prepare().then(() => {
       if (room) socket.emit("dz:update", dzPublic(room));
     });
     socket.on("dz:leave", dzLeave);
-    socket.on("disconnect", dzLeave);
+    socket.on("disconnect", (reason) => {
+      dzQueue = dzQueue.filter((w) => w.socket.id !== socket.id);
+      const room = dzRooms.get(socket.data.dzCode);
+      dropLater("dz", () => !!room && room.started && !room.over && room.players.length === 2, dzLeave)(reason);
+    });
+
+    // Back within REJOIN_MS: same socket id, rooms and data; cancel the drop, tell the other
+    // player, and send this phone the match as it is now
+    if (socket.recovered) {
+      const rooms = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic] };
+      for (const [game, [map, view]] of Object.entries(rooms)) {
+        const key = socket.id + game;
+        if (!awayTimers.has(key)) continue;
+        clearTimeout(awayTimers.get(key));
+        awayTimers.delete(key);
+        const room = map.get(socket.data[game + "Code"]);
+        if (!room) continue;
+        socket.to(game + ":" + room.code).emit("peer:away", { game, away: false });
+        socket.emit(game + ":update", view(room));
+      }
+    }
 
     // ── Hat-trick ──
 
@@ -1407,7 +1462,7 @@ app.prepare().then(() => {
       htEmit(room);
     });
 
-    socket.on("disconnect", () => {
+    const htDrop = () => {
       htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
       const room = htRooms.get(socket.data.htCode);
       if (!room) return;
@@ -1427,6 +1482,11 @@ app.prepare().then(() => {
         room.deadline = null;
         io.to("ht:" + room.code).emit("ht:peer-left", htPublic(room));
       }
+    };
+    socket.on("disconnect", (reason) => {
+      htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
+      const room = htRooms.get(socket.data.htCode);
+      dropLater("ht", () => !!room && room.started && room.players.length === 2 && !htSeries(room).over, htDrop)(reason);
     });
 
     // ── Quiz ──

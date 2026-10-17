@@ -161,6 +161,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   Rating: `lib/rating.ts` (`RatingAsk`, root layout) calls expo-store-review's system sheet (stars in the app) after the first
   finished game once Victory / reward screens close, then at most every 60 days; no own "Do you like it?" step (Apple 5.6.1).
   `isGameAward` (lib/xp.ts) = a finished game, Dribbling Rush's "bonus" + "run-" keys included (play streak uses it too).
+- Dropped connections: server.js turns on Socket.IO connection state recovery (`REJOIN_MS` = 60 s): a phone back within that
+  keeps its socket id, rooms and socket.data and gets the missed events. A live ht / pp / dz seat that drops (`dropLater`) waits
+  REJOIN_MS (the other player gets `peer:away`) before the old leave logic (loss) runs; leaving on purpose drops at once.
+  `components/ConnectionBanner.tsx` shows reconnecting / too late / opponent away in the three online match screens.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

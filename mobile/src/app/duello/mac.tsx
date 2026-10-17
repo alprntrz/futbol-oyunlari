@@ -8,6 +8,7 @@ import { dayNumber } from "@/lib/daily";
 import { cardById, dailyRand, houseHand, PICK_SECONDS, questionKey, ROUNDS, statText, type Question } from "@/lib/duel";
 import { XP } from "@/lib/levels";
 
+import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { FocusStatusBar } from "~/components/StadiumHeader";
 import { DuelCardView } from "~/components/duel/DuelCardView";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
@@ -74,7 +75,12 @@ function Local({ mode, hand, nick, themeId }: { mode: Mode; hand: number[]; nick
 function Online({ code, hand }: { code: string; hand: number[] }) {
   const m = useOnlineDuel(code);
   useLivePush("dz", code);
-  return <Board m={m} hand={hand} opponent={m.opponent} xpKey={`dz-room-${code}-${m.game}`} online onAgain={m.peerLeft ? undefined : m.again} />;
+  return (
+    <>
+      <Board m={m} hand={hand} opponent={m.opponent} xpKey={`dz-room-${code}-${m.game}`} online onAgain={m.peerLeft ? undefined : m.again} />
+      <ConnectionBanner game="dz" />
+    </>
+  );
 }
 
 const BG = "#0E3B22";

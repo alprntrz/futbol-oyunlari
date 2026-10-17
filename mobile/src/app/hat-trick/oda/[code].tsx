@@ -8,6 +8,7 @@ import { GameActions } from "~/components/GameActions";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
+import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
@@ -256,61 +257,64 @@ export default function HatTrickRoom() {
   const draw = !room.drawOffer || !me ? null : room.drawOffer === me.mark ? "sent" : "received";
 
   return (
-    <Page>
-      {/* a friend room shows its code (to share); a random match the game's name */}
-      <Stack.Screen options={{ title: params.random ? t("tikiTakaName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
-      {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
-      <HatTrickBoard
-        steals={room.steals}
-        usedNames={room.used}
-        grid={grid}
-        board={room.board}
-        turn={room.turn}
-        winner={room.winner}
-        timeLeft={timeLeft}
-        labels={labels}
-        canMove={myTurn && !peerLeft}
-        status={myTurn ? t("htYourTurn") : t("htTheirTurn")}
-        flash={flash}
-        celebrate={iWon && series.over}
-        winnerText={winnerText}
-        winnerSub={winnerSub}
-        series={series}
-        turnSeconds={(room.turnMs ?? TURN_SECONDS * 1000) / 1000}
-        comeback={room.comeback ?? null}
-        onMove={(cell, name) => getSocket().emit("ht:move", { cell, name })}
-        footer={
-          room.winner && !series.over ? null : room.winner ? (
-            <View style={{ marginTop: 18, gap: 10 }}>
-              {isHost ? (
-                <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) })} />
-              ) : (
-                <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
-              )}
-              {params.random && <Button title={t("htNewGame")} kind="secondary" icon="play.fill" onPress={() => router.replace("/hat-trick/rastgele")} />}
-            </View>
-          ) : (
-            <GameActions
-              draw={draw}
-              disabled={peerLeft}
-              onOfferDraw={() => getSocket().emit("ht:draw-offer")}
-              onReplyDraw={(accept) => getSocket().emit("ht:draw-reply", { accept })}
-              onForfeit={() => getSocket().emit("ht:forfeit")}
-              onSkip={() => getSocket().emit("ht:skip")}
-              canSkip={myTurn}
-            />
-          )
-        }
-      />
-      <SeriesEnd
-        over={series.over}
-        won={iWon}
-        mine={me ? series[me.mark] : 0}
-        theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
-        onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) }) : null}
-      />
-      <EmoteLayer e={emotes} top={4} />
-    </Page>
+    <>
+      <Page>
+        {/* a friend room shows its code (to share); a random match the game's name */}
+        <Stack.Screen options={{ title: params.random ? t("tikiTakaName") : code, headerRight: () => <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" /> }} />
+        {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
+        <HatTrickBoard
+          steals={room.steals}
+          usedNames={room.used}
+          grid={grid}
+          board={room.board}
+          turn={room.turn}
+          winner={room.winner}
+          timeLeft={timeLeft}
+          labels={labels}
+          canMove={myTurn && !peerLeft}
+          status={myTurn ? t("htYourTurn") : t("htTheirTurn")}
+          flash={flash}
+          celebrate={iWon && series.over}
+          winnerText={winnerText}
+          winnerSub={winnerSub}
+          series={series}
+          turnSeconds={(room.turnMs ?? TURN_SECONDS * 1000) / 1000}
+          comeback={room.comeback ?? null}
+          onMove={(cell, name) => getSocket().emit("ht:move", { cell, name })}
+          footer={
+            room.winner && !series.over ? null : room.winner ? (
+              <View style={{ marginTop: 18, gap: 10 }}>
+                {isHost ? (
+                  <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) })} />
+                ) : (
+                  <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
+                )}
+                {params.random && <Button title={t("htNewGame")} kind="secondary" icon="play.fill" onPress={() => router.replace("/hat-trick/rastgele")} />}
+              </View>
+            ) : (
+              <GameActions
+                draw={draw}
+                disabled={peerLeft}
+                onOfferDraw={() => getSocket().emit("ht:draw-offer")}
+                onReplyDraw={(accept) => getSocket().emit("ht:draw-reply", { accept })}
+                onForfeit={() => getSocket().emit("ht:forfeit")}
+                onSkip={() => getSocket().emit("ht:skip")}
+                canSkip={myTurn}
+              />
+            )
+          }
+        />
+        <SeriesEnd
+          over={series.over}
+          won={iWon}
+          mine={me ? series[me.mark] : 0}
+          theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
+          onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) }) : null}
+        />
+        <EmoteLayer e={emotes} top={4} />
+      </Page>
+      <ConnectionBanner game="ht" />
+    </>
   );
 }
 
