@@ -3,7 +3,7 @@ import { useSyncExternalStore } from "react";
 
 import { dayNumber } from "@/lib/daily";
 
-import { onXpAward } from "./xp";
+import { isGameAward, onXpAward } from "./xp";
 
 /**
  * Play streak: days in a row with at least one finished game (any game pays XP
@@ -31,7 +31,7 @@ function load() {
 }
 
 onXpAward((a) => {
-  if (a.game === "bonus" || a.key === "server") return;
+  if (!isGameAward(a)) return;
   load().then(() => {
     const today = dayNumber();
     if (state.last === today) return;

@@ -170,6 +170,11 @@ export function onRewardOpen(fn: (open: boolean) => void) {
   };
 }
 
+/** A finished game, not a reward, quest or server sync (Dribbling Rush pays as "bonus" with "run-" keys). */
+export function isGameAward(a: XpAward) {
+  return a.key !== "server" && (a.game !== "bonus" || a.key.startsWith("run-"));
+}
+
 /** Hear about every award (the "+XP" toast). Returns the unsubscribe. */
 export function onXpAward(fn: (a: XpAward) => void) {
   listeners.add(fn);

@@ -12,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import { InviteBanner } from "~/components/InviteBanner";
+import { RatingAsk } from "~/lib/rating";
 import { RemindersSync } from "~/lib/reminders";
 import { RewardScreen } from "~/components/RewardScreen";
 import { XpToast } from "~/components/XpToast";
@@ -70,6 +71,7 @@ export default function RootLayout() {
       <XpToast />
       <InviteBanner />
       <RemindersSync />
+      <RatingAsk />
     </I18nProvider>
   );
 }

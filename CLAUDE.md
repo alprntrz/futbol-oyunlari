@@ -158,6 +158,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   notifications only (expo-notifications, no push token): 19:00 for the next 7 days, skipped on a played day, re-planned by
   `RemindersSync` (root layout); asked once on Home (`ReminderAsk`) after a finished game, toggle in Settings. `app/onboarding.tsx`:
   one screen, shown to new installs only (no XP and no `onboarded-v1`), "Solve your first grid" opens today's grid.
+  Rating: `lib/rating.ts` (`RatingAsk`, root layout) calls expo-store-review's system sheet (stars in the app) after the first
+  finished game once Victory / reward screens close, then at most every 60 days; no own "Do you like it?" step (Apple 5.6.1).
+  `isGameAward` (lib/xp.ts) = a finished game, Dribbling Rush's "bonus" + "run-" keys included (play streak uses it too).
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`
