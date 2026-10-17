@@ -1,5 +1,7 @@
-import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import { MaterialSymbols_600SemiBold_Filled } from "@expo-google-fonts/material-symbols/600SemiBold_Filled";
+import { SymbolView, type AndroidSymbol, type SymbolViewProps } from "expo-symbols";
+import semiBold from "expo-symbols/androidWeights/semiBold";
+import { Image, Platform, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -10,14 +12,102 @@ import { Text } from "./Text";
 
 type SymbolName = SymbolViewProps["name"];
 
-/** SF Symbol on iOS with an emoji/text fallback elsewhere. */
+/**
+ * The Material Symbol drawn on Android for each SF Symbol the app uses (expo-symbols draws
+ * Material Symbols there). A name missing here falls back to the emoji / text.
+ */
+const MATERIAL: Record<string, AndroidSymbol> = {
+  "10.circle.fill": "filter_9_plus",
+  "20.circle.fill": "filter_9_plus",
+  "antenna.radiowaves.left.and.right": "sensors",
+  "arrow.clockwise": "refresh",
+  "arrow.down": "arrow_downward",
+  "arrow.left.arrow.right": "swap_horiz",
+  "arrow.right": "arrow_forward",
+  "arrow.right.circle.fill": "arrow_circle_right",
+  "arrow.triangle.2.circlepath": "sync",
+  "arrow.up": "arrow_upward",
+  "arrow.up.right": "north_east",
+  "arrow.uturn.left": "undo",
+  calendar: "event",
+  checkmark: "check",
+  "checkmark.circle.fill": "check_circle",
+  "checkmark.seal.fill": "verified",
+  "chevron.left": "chevron_left",
+  "chevron.right": "chevron_right",
+  clock: "schedule",
+  "clock.arrow.circlepath": "history",
+  "crown.fill": "workspace_premium",
+  "delete.left": "backspace",
+  "equal.circle": "drag_handle",
+  "exclamationmark.triangle.fill": "warning",
+  "face.smiling": "sentiment_satisfied",
+  "figure.run": "directions_run",
+  "flag.checkered": "sports_score",
+  "flag.fill": "flag",
+  "flame.circle.fill": "local_fire_department",
+  "flame.fill": "local_fire_department",
+  "forward.fill": "fast_forward",
+  "gift.fill": "redeem",
+  "hand.raised.fill": "front_hand",
+  "hand.tap.fill": "touch_app",
+  "hand.thumbsup.fill": "thumb_up",
+  "hexagon.fill": "hexagon",
+  "house.fill": "home",
+  iphone: "smartphone",
+  lightbulb: "lightbulb",
+  "lightbulb.fill": "lightbulb",
+  "lock.fill": "lock",
+  "lock.shield.fill": "encrypted",
+  magnifyingglass: "search",
+  "paperplane.fill": "send",
+  pencil: "edit",
+  "person.2.fill": "group",
+  "person.3.fill": "groups",
+  "person.crop.circle": "account_circle",
+  "person.fill": "person",
+  photo: "image",
+  "play.circle.fill": "play_circle",
+  "play.fill": "play_arrow",
+  plus: "add",
+  questionmark: "question_mark",
+  "questionmark.circle": "help",
+  "rectangle.portrait.and.arrow.right": "logout",
+  "rectangle.stack.fill": "stack",
+  "shield.fill": "shield",
+  "shoe.fill": "steps",
+  shuffle: "shuffle",
+  snowflake: "ac_unit",
+  soccerball: "sports_soccer",
+  sparkles: "auto_awesome",
+  "sportscourt.fill": "stadium",
+  "square.and.arrow.up": "ios_share",
+  "square.grid.2x2.fill": "grid_view",
+  "square.grid.3x3.fill": "apps",
+  "square.stack.fill": "layers",
+  "star.fill": "star",
+  "stopwatch.fill": "timer",
+  target: "target",
+  "textformat.abc": "abc",
+  "trophy.fill": "emoji_events",
+  "tshirt.fill": "apparel",
+  xmark: "close",
+  "xmark.circle.fill": "cancel",
+  "xmark.shield.fill": "gpp_bad",
+};
+
+/** the filled Material Symbols, for the SF Symbols that are filled ("….fill"), like iOS draws them */
+const FILLED = { name: "MaterialSymbols_600SemiBold_Filled", font: MaterialSymbols_600SemiBold_Filled };
+
+/** SF Symbol on iOS, the matching Material Symbol on Android, else the emoji/text fallback. */
 export function Icon({ name, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {
+  const android = typeof name === "string" ? MATERIAL[name] : undefined;
   return (
     <SymbolView
-      name={name}
+      name={typeof name === "string" ? (android ? { ios: name, android } : name) : name}
       size={size}
       tintColor={color}
-      weight="semibold"
+      weight={{ ios: "semibold", android: typeof name === "string" && name.includes(".fill") ? FILLED : semiBold }}
       fallback={<Text style={{ fontSize: size * 0.9, color }}>{fallback ?? "•"}</Text>}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
@@ -49,7 +139,8 @@ export function Card({ children, style }: { children: React.ReactNode; style?: S
 export function Page({ children, scroll = true, topInset = false }: { children: React.ReactNode; scroll?: boolean; topInset?: boolean }) {
   const insets = useSafeAreaInsets();
   // a scrolling page gets the status bar (and the tab bar) inset from iOS itself ("automatic"); only a fixed one adds it by hand
-  const pad = { paddingHorizontal: 16, paddingTop: topInset && !scroll ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
+  // (Android has no automatic inset: a tab page there pads below the status bar itself)
+  const pad = { paddingHorizontal: 16, paddingTop: topInset && (!scroll || Platform.OS === "android") ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
   if (!scroll) return <View style={[{ flex: 1, backgroundColor: C.bg }, pad]}>{children}</View>;
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>

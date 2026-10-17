@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as SecureStore from "expo-secure-store";
 import { useSyncExternalStore } from "react";
+import { Platform } from "react-native";
 
 import { loadAvatar, saveAvatar, type AvatarId } from "./avatar";
 import { loadNick, loadPlayerId, saveNick } from "./nick";
@@ -79,6 +80,11 @@ const TOKEN_KEY = "session";
 const PENDING_KEY = "xp-pending";
 const API = `${SOCKET_URL}/api/account`;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+/**
+ * Android: Google signs the id token for the project's Web client (its audience), so the app
+ * passes that id; the Android client (package + signing SHA-1) only has to exist in the project.
+ */
+const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 
 let token: string | null = null;
 let account: Account | null | undefined = undefined; // undefined = not loaded yet
@@ -198,7 +204,7 @@ export async function signInWithApple(): Promise<Account | null> {
 
 /** The native Google module is missing in Expo Go and until the client id is set. */
 function googleModule() {
-  if (!GOOGLE_IOS_CLIENT_ID) return null;
+  if (!(Platform.OS === "android" ? GOOGLE_WEB_CLIENT_ID : GOOGLE_IOS_CLIENT_ID)) return null;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require("@react-native-google-signin/google-signin") as typeof import("@react-native-google-signin/google-signin");
@@ -213,7 +219,7 @@ export const googleSignInAvailable = () => googleModule() !== null;
 export async function signInWithGoogle(): Promise<Account | null> {
   const g = googleModule();
   if (!g) throw new Error("google unavailable");
-  g.GoogleSignin.configure({ iosClientId: GOOGLE_IOS_CLIENT_ID, scopes: [] });
+  g.GoogleSignin.configure(Platform.OS === "android" ? { webClientId: GOOGLE_WEB_CLIENT_ID, scopes: [] } : { iosClientId: GOOGLE_IOS_CLIENT_ID, scopes: [] });
   const res = await g.GoogleSignin.signIn();
   if (res.type !== "success" || !res.data.idToken) return null;
   return finishSignIn("google", res.data.idToken);

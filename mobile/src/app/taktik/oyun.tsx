@@ -1,6 +1,6 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, AppState, Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
+import { Alert, AppState, BackHandler, Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
 import Animated, { Easing, FadeIn, FadeInDown, FadeOut, SlideInRight, SlideOutRight, useAnimatedStyle, useSharedValue, withRepeat, withTiming, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -194,6 +194,15 @@ export default function TaktikGame() {
     setMatch(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
+  // Android's back button / gesture asks the same question as the back arrow (only while the game is live)
+  const leaveRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      leaveRef.current();
+      return true;
+    });
+    return () => sub.remove();
+  }, []);
   // a plain "+XP" toast: the reward screen is a second modal on top of the end card and froze the screen
   useXpAward(out && !match && !!me?.place, `ttk-${lobby?.seed}`, "tt", me?.place ? XP.ttPlace[me.place - 1] : 0, {
     label: me?.place === 1 ? t("ttkWinner") : t("ttkPlace").replace("{n}", String(me?.place ?? "")),
@@ -354,6 +363,8 @@ export default function TaktikGame() {
   // leaving a live lobby: ask first (a minute to come back, then the seat is gone)
   const leave = () => {
     if (out) return router.back();
+    // a tactics card pick or a scout report is open: back just closes the report (the pick has to be made)
+    if (scout !== null) return setScout(null);
     Alert.alert(t("ttkLeaveTitle"), t("ttkLeaveBody"), [
       { text: t("ttkLeaveStay"), style: "cancel" },
       {
@@ -367,6 +378,10 @@ export default function TaktikGame() {
       },
     ]);
   };
+
+  // the back handler calls this render's leave (no hook here: this is after the early return; the screen is "use no memo")
+  // eslint-disable-next-line react-hooks/refs
+  leaveRef.current = leave;
 
   const standings = lobby.managers.slice().sort((a, b) => (a.place ?? 0) - (b.place ?? 0) || b.hp - a.hp);
   const xpNeed = xpToNext(me);

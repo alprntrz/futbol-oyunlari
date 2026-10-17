@@ -147,6 +147,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   the mover's phone computes claimed hexes). Football Bingo is offline (daily
   seeded card, `mobile/src/lib/bingo.ts`; `/bingo?practice=1` deals unsaved random cards, XP under the practice cap). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
+- Android (started 2026-10-17): `Icon` (ui.tsx) maps every SF Symbol to a Material Symbol (`MATERIAL`; filled font for
+  ".fill" names) — add new icons there too; tabs pass `md` icons (Android tints tab icons); `Page topInset` pads under the
+  status bar on Android; Pitch Chess handles the hardware back (`BackHandler`). Google sign-in on Android needs
+  `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (the project's Web client; also in the server's GOOGLE_CLIENT_IDS) plus an Android
+  OAuth client (package + signing SHA-1). No Apple sign-in / Live Activities there. Emulator: `~/Library/Android/sdk`, AVD Pixel8.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

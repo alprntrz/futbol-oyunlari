@@ -23,10 +23,11 @@ export default function Games() {
     { title: t("dzName"), desc: t("dzShort"), who: t("play1v1"), image: ROZET.duel, ...GAME.dz, href: "/duello" },
     { title: t("qzName"), desc: t("qzShort"), who: t("playUpTo5"), image: BRAND.icon.quiz, ...GAME.qz, href: "/bilgi" },
     { title: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, ...GAME.pp, href: "/possession" },
+    // (a lobby with friends, or alone against house managers)
+    { title: t("ttkName"), desc: t("ttkShort"), who: t("playUpTo8"), image: TAKTIK.hero, ...GAME.tt, href: "/taktik" },
   ];
   // Kombine (match-3, /kombine) is shelved for a later version: code and routes stay, no entry here
   const solo: Game[] = [
-    { title: t("ttkName"), desc: t("ttkShort"), who: t("playSolo"), image: TAKTIK.hero, ...GAME.tt, href: "/taktik" },
     { title: t("myName"), desc: t("myShort"), who: t("playSolo"), image: BRAND.icon.mystery, ...GAME.my, href: "/gizli" },
     { title: t("missingXI"), desc: t("xiShort"), who: t("playSolo"), image: BRAND.icon.practice, ...GAME.xi, href: "/eksik-11" },
     { title: t("bingoName"), desc: t("bingoShort"), who: t("playSolo"), image: BRAND.icon.bingo, ...GAME.bingo, href: "/bingo" },
