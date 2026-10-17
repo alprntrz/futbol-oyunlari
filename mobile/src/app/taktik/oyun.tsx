@@ -49,7 +49,12 @@ export default function TaktikGame() {
   "use no memo";
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
+  /**
+   * A short screen (16:9 Android phones, iPhone SE): smaller clock, one row of chips, lower bench
+   * and market cards, so the pitch keeps its room. Tall phones (19.5:9 and up) keep the roomy layout.
+   */
+  const dense = height / width < 1.95;
   const { lobby, version, online, meId } = useTaktik();
   /** online friends' own avatars, by manager id */
   const known = new Map((online?.seats ?? []).filter((s) => s.avatar).map((s) => [s.id, s.avatar!]));
@@ -246,8 +251,8 @@ export default function TaktikGame() {
     ...traits
       .filter((x) => x.tier === 0 && x.count >= x.steps[0] - 1)
       .sort((a, b) => b.count / b.steps[0] - a.count / a.steps[0] || b.count - a.count)
-      .slice(0, 3),
-  ];
+      .slice(0, dense ? 1 : 3),
+  ].slice(0, dense ? Math.max(3, active.length) : undefined);
   /** a heads-up on the board: spots left empty, or no real back line */
   const emptySpots = cap - onPitch.length;
   const backLine = onPitch.filter((u) => SLOTS[u.slot!] === "DEF").length;
@@ -470,20 +475,21 @@ export default function TaktikGame() {
             <PlanClock
               key={`clock-${lobby.seed}-${roundKey}-${online.phase}`}
               wide
+              dense={dense}
               seconds={planSeconds(lobby.stage)}
               endsAt={online.planEnds}
               running={online.phase === "plan"}
               onEnd={() => setSel(null)}
             />
           ) : (
-            <PlanClock key={`clock-${lobby.seed}-${roundKey}`} wide seconds={planSeconds(lobby.stage)} running={!match && !out && !showIntro && tour.step === null} onEnd={startMatch} />
+            <PlanClock key={`clock-${lobby.seed}-${roundKey}`} wide dense={dense} seconds={planSeconds(lobby.stage)} running={!match && !out && !showIntro && tour.step === null} onEnd={startMatch} />
           )}
         </View>
       </View>
 
       {/* the tactics cards in play and the synergies: what your side is getting right now */}
       <View ref={tour.ref("traits")} collapsable={false}>
-        <View style={styles.traits}>
+        <View style={[styles.traits, dense && { paddingVertical: 3 }]}>
           {me.augments.length > 0 && <TacticsChips ids={me.augments} />}
           {(allTraits ? traits : shownTraits).map((x) => (
             <Tap key={`${x.kind}-${x.id}`} onPress={() => setInfo(x)} style={[styles.trait, x.tier > 0 && styles.traitOn]} accessibilityLabel={traitLabel(x)}>
@@ -617,7 +623,7 @@ export default function TaktikGame() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + 4 }]}>
         {/* subs: all eight in one row; the club level and Buy XP in its header */}
         <View ref={tour.ref("bench")} collapsable={false} style={{ paddingHorizontal: 12 }}>
-          <View style={styles.headRow}>
+          <View style={[styles.headRow, dense && { marginBottom: 2 }]}>
             <Text style={styles.head}>{t("ttkSubs")}</Text>
             <Text style={styles.headSub}>{bench(me).length}/8</Text>
             <View style={{ flex: 1 }} />
@@ -642,14 +648,14 @@ export default function TaktikGame() {
               const u = bench(me)[i];
               if (!u)
                 return (
-                  <Pressable key={`e${i}`} onPress={tapBench} style={[styles.subEmpty, { width: benchW, height: benchW * 1.4 }, sel?.kind === "unit" && styles.plusLit]}>
+                  <Pressable key={`e${i}`} onPress={tapBench} style={[styles.subEmpty, { width: benchW, height: benchW * (dense ? 1.12 : 1.4) }, sel?.kind === "unit" && styles.plusLit]}>
                     <Text style={[styles.plusText, { color: C.text3 }]}>+</Text>
                   </Pressable>
                 );
               const picked = sel?.kind === "unit" && sel.uid === u.uid;
               return (
-                <Tap key={u.uid} onPress={() => tapUnit(u.uid)} style={[styles.sub, { width: benchW, height: benchW * 1.4, borderBottomColor: COST_COLOR[u.cost] }, picked && styles.subPicked]} accessibilityLabel={u.name}>
-                  <Shirt club={u.club} size={benchW * 0.68} />
+                <Tap key={u.uid} onPress={() => tapUnit(u.uid)} style={[styles.sub, { width: benchW, height: benchW * (dense ? 1.12 : 1.4), borderBottomColor: COST_COLOR[u.cost] }, picked && styles.subPicked]} accessibilityLabel={u.name}>
+                  <Shirt club={u.club} size={benchW * (dense ? 0.52 : 0.68)} />
                   <Text style={styles.subName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
                     {surname(u.name)}
                   </Text>
@@ -667,7 +673,7 @@ export default function TaktikGame() {
 
         {/* the transfer market: price on top, a big shirt, the name and position */}
         <View ref={tour.ref("shop")} collapsable={false} style={{ paddingHorizontal: 12, gap: 8 }}>
-          <View style={styles.headRow}>
+          <View style={[styles.headRow, dense && { marginBottom: 2 }]}>
             <Text style={styles.head} numberOfLines={1}>
               {t("ttkMarket")}
             </Text>
@@ -706,7 +712,7 @@ export default function TaktikGame() {
                     <Image source={TAKTIK.ui.coin} style={{ width: 16, height: 16 }} />
                     <Text style={styles.shopPriceText}>{p.cost}</Text>
                   </View>
-                  {card.scout ? <Image source={TAKTIK.ui.scout} style={{ width: shopW * 0.6, height: shopW * 0.68 }} resizeMode="contain" /> : <Shirt club={p.club} size={shopW * 0.7} />}
+                  {card.scout ? <Image source={TAKTIK.ui.scout} style={{ width: shopW * (dense ? 0.46 : 0.6), height: shopW * (dense ? 0.52 : 0.68) }} resizeMode="contain" /> : <Shirt club={p.club} size={shopW * (dense ? 0.52 : 0.7)} />}
                   <Text style={[styles.shopName, card.scout && { color: GAME.qz.ink }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                     {card.scout ? t("ttkScoutShort") : surname(p.name)}
                   </Text>

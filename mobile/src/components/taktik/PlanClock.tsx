@@ -13,7 +13,7 @@ import { Text } from "../Text";
  * last five seconds and kicks off by itself at zero. Mount it with a key per
  * round so every round starts from full time.
  */
-export function PlanClock({ seconds, endsAt, running, onEnd, compact, wide }: { seconds: number; endsAt?: number; running: boolean; onEnd: () => void; compact?: boolean; wide?: boolean }) {
+export function PlanClock({ seconds, endsAt, running, onEnd, compact, wide, dense }: { seconds: number; endsAt?: number; running: boolean; onEnd: () => void; compact?: boolean; wide?: boolean; dense?: boolean }) {
   // `endsAt` (this phone's clock): joining part-way, online, where the server keeps the time; `seconds` is then the full set-up time
   const { t } = useI18n();
   const [start] = useState(() => (endsAt ? Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)) : seconds));
@@ -38,8 +38,8 @@ export function PlanClock({ seconds, endsAt, running, onEnd, compact, wide }: { 
   if (wide)
     return (
       <View style={styles.wide} accessibilityLabel={t("ttkPlanLeft").replace("{s}", String(left))}>
-        <Image source={TAKTIK.ui.stopwatch} style={{ width: 28, height: 31 }} />
-        <Text allowFontScaling={false} style={[styles.wideText, hurry && { color: C.red }]}>
+        <Image source={TAKTIK.ui.stopwatch} style={dense ? { width: 20, height: 22 } : { width: 28, height: 31 }} />
+        <Text allowFontScaling={false} style={[styles.wideText, dense && styles.wideDense, hurry && { color: C.red }]}>
           {left}
           <Text style={styles.wideUnit}> {t("ttkSec")}</Text>
         </Text>
@@ -80,6 +80,7 @@ export function PlanClock({ seconds, endsAt, running, onEnd, compact, wide }: { 
 
 const styles = StyleSheet.create({
   wide: { flexDirection: "row", alignItems: "center", gap: 10 },
+  wideDense: { fontSize: 24, lineHeight: 26, minWidth: 58 },
   wideText: { fontFamily: F.black, fontSize: 32, lineHeight: 34, color: C.text, minWidth: 74, fontVariant: ["tabular-nums"] },
   wideUnit: { fontFamily: F.display, fontSize: 18, color: C.text2 },
   wideTrack: { flex: 1, height: 10, borderRadius: 5, backgroundColor: C.key, overflow: "hidden" },
