@@ -242,7 +242,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3 },
-  buttonSmall: { minHeight: 36, paddingHorizontal: 12, gap: 6, borderRadius: 12 },
+  // small buttons sit in toolbars and under cards: they never stretch (in a column without a set height flexGrow would run to the bottom of the screen)
+  buttonSmall: { flexGrow: 0, minHeight: 36, paddingHorizontal: 12, gap: 6, borderRadius: 12 },
   buttonTextSmall: { fontSize: 17 },
   row: { flexDirection: "row", alignItems: "center", paddingLeft: 14, gap: 14 },
   badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },

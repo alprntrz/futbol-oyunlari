@@ -252,6 +252,6 @@ const styles = StyleSheet.create({
   sideDot: { width: 9, height: 9, borderRadius: 5 },
   cards: { flexDirection: "row", gap: 10, marginTop: 4 },
   cardCol: { flex: 1, gap: 4, borderLeftWidth: 3, paddingLeft: 8 },
-  skip: { alignSelf: "center", height: 40, marginTop: 8 },
+  skip: { alignSelf: "center", marginTop: 8 },
   cardHead: { fontFamily: F.display, fontSize: 16, color: C.text },
 });
