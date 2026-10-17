@@ -15,6 +15,7 @@ import { Button, Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { recordRun, useFavClub } from "~/lib/kosu";
+import { questEvent } from "~/lib/quests";
 import { TAKTIK } from "~/lib/brand";
 import { play } from "~/lib/sound";
 import { C, F, R, shadow } from "~/lib/theme";
@@ -107,7 +108,7 @@ export default function RushGame() {
     setAsk(false);
     if (goal) {
       haptic.success();
-      play("correct");
+      play("goal");
     } else {
       haptic.warning();
       play("wrong");
@@ -124,7 +125,7 @@ export default function RushGame() {
     if (e === "goal" || e === "save") return;
     if (e === "power") {
       haptic.success();
-      play("coin");
+      play("power");
       const look = POWER_LOOK[kind];
       setToast({ id: Date.now(), text: t(look.name), color: look.color });
       return;
@@ -138,7 +139,7 @@ export default function RushGame() {
     else if (e === "bump") haptic.warning();
     else if (e === "dead") {
       haptic.error();
-      play("wrong");
+      play("whistle");
     }
   };
   useAnimatedReaction(
@@ -199,15 +200,20 @@ export default function RushGame() {
     return () => clearTimeout(id);
   }, [flash]);
 
-  const end = (sc: number, c: number, m: number) => {
+  const end = (sc: number, c: number, m: number, goals: number) => {
     setFinal({ score: sc, coins: c, metres: m });
-    setNewBest(recordRun(sc));
+    const best = recordRun(sc);
+    setNewBest(best);
+    if (best) setTimeout(() => play("levelup"), 950);
+    // daily quests: goals in this run (best counts), metres add up
+    questEvent("rush_goals", goals);
+    questEvent("rush_metres", m);
     setTimeout(() => setPhase("over"), 900);
   };
   useAnimatedReaction(
     () => state.value.dead,
     (d, prev) => {
-      if (d && !prev) runOnJS(end)(scoreOf(state.value), state.value.coinsTaken, Math.floor(state.value.z));
+      if (d && !prev) runOnJS(end)(scoreOf(state.value), state.value.coinsTaken, Math.floor(state.value.z), state.value.goalsScored);
     }
   );
 

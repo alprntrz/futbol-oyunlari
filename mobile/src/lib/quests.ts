@@ -10,7 +10,7 @@ import { awardXp, onXpAward } from "./xp";
  * Daily quests: three a day, the same for everyone (seeded by the day), each pays
  * XP once when done; all three done pays a bonus. Progress lives on the phone.
  */
-export type QuestEvent = "xi_finish" | "xi_players" | "ht_series" | "ht_win" | "qz_correct" | "mystery_solve" | "bingo_play" | "combo" | "xp";
+export type QuestEvent = "xi_finish" | "xi_players" | "ht_series" | "ht_win" | "qz_correct" | "mystery_solve" | "bingo_play" | "combo" | "xp" | "rush_goals" | "rush_metres";
 
 export interface QuestDef {
   id: string;
@@ -33,6 +33,9 @@ const POOL: QuestDef[] = [
   { id: "bg1", event: "bingo_play", target: 1, text: "qBingo", reward: 30 },
   { id: "cb4", event: "combo", target: 4, mode: "max", text: "qCombo", reward: 40 },
   { id: "xp100", event: "xp", target: 100, text: "qXp", reward: 30 },
+  // Dribbling Rush: goals in one run (best counts), metres added up over the day
+  { id: "ru3", event: "rush_goals", target: 3, mode: "max", text: "qRushGoals", reward: 40 },
+  { id: "ru1k", event: "rush_metres", target: 1000, text: "qRushMetres", reward: 30 },
 ];
 export const ALL_DONE_BONUS = 50;
 
@@ -45,7 +48,7 @@ export function questsFor(day: number): QuestDef[] {
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
   // three different games (the XP and combo quests count as their own)
-  const game = (q: QuestDef) => (q.event.startsWith("xi") ? "xi" : q.event.startsWith("ht") ? "ht" : q.event);
+  const game = (q: QuestDef) => (q.event.startsWith("xi") ? "xi" : q.event.startsWith("ht") ? "ht" : q.event.startsWith("rush") ? "rush" : q.event);
   const picked: QuestDef[] = [];
   for (const q of pool) if (picked.length < 3 && !picked.some((p) => game(p) === game(q))) picked.push(q);
   return picked;

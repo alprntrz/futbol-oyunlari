@@ -13,6 +13,9 @@ const SOURCES = {
   lose: require("../../assets/sounds/lose.wav"),
   levelup: require("../../assets/sounds/levelup.wav"),
   start: require("../../assets/sounds/start.wav"),
+  whistle: require("../../assets/sounds/whistle.wav"),
+  goal: require("../../assets/sounds/goal.wav"),
+  power: require("../../assets/sounds/power.wav"),
 } as const;
 export type SoundName = keyof typeof SOURCES;
 
