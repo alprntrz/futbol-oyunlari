@@ -50,11 +50,13 @@ function shuffle<T>(xs: T[], rand: () => number): T[] {
  * only has three), the rest countries or honours; otherwise three clubs against
  * three countries / honours.
  */
-export function leagueGrid(id: LeagueId, rand: () => number = Math.random): Grid | null {
+export function leagueGrid(id: LeagueId, rand: () => number = Math.random, allow?: (c: Criterion) => boolean): Grid | null {
   const league = leagueById(id);
   if (!league.clubs.length) return null;
   const clubs = [...ALL_CRITERIA, ...ARAB_CRITERIA].filter((c) => c.kind === "club" && league.clubs.includes(c.id));
-  const others = [...ALL_CRITERIA, ...ARAB_CRITERIA].filter((c) => c.kind !== "club" && (!c.id.startsWith("arab-") || c.id === league.country));
+  const others = [...ALL_CRITERIA, ...ARAB_CRITERIA].filter((c) => c.kind !== "club" && (!c.id.startsWith("arab-") || c.id === league.country) && (!allow || allow(c)));
+  // too few clubs and nothing else switched on: the caller falls back to the all-clubs grid
+  if (!others.length && clubs.length < 6) return null;
   const pairs = rand() < 0.7;
   for (let attempt = 0; attempt < 800; attempt++) {
     const order = shuffle(clubs, rand);

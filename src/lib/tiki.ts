@@ -197,11 +197,12 @@ const HONOUR_LEAGUE = new Map(Object.entries(HONOUR_LOOK).map(([k, v]) => [`hon-
  * (`chance` of the time), keeping every square answerable. Club lines stay. A league grid
  * (`league`) prefers that league's title criterion.
  */
-export function withHonour(grid: Grid, rand: () => number = Math.random, chance = 0.5, league?: string): Grid {
+export function withHonour(grid: Grid, rand: () => number = Math.random, chance = 0.5, league?: string, allow?: (c: Criterion) => boolean): Grid {
   if (!HONOUR_CRITERIA.length || rand() >= chance) return grid;
   if ([...grid.rows, ...grid.cols].some((c) => c.id.startsWith("hon-"))) return grid;
   // league titles only in their own league's grid (or the all-clubs grid); the rest anywhere
   const pool = HONOUR_CRITERIA.filter((c) => {
+    if (allow && !allow(c)) return false;
     const lg = HONOUR_LEAGUE.get(c.id);
     return !lg || !league || league === "all" || lg === league;
   });
@@ -259,10 +260,10 @@ export const criterionById = (id: string): Criterion | undefined => BY_ID.get(id
  * grid. `leagueClubs`: a league grid gets the names who were at that league's
  * clubs (local ones too); without it only world-class names are dealt.
  */
-export function withLink(grid: Grid, rand: () => number = Math.random, chance = 0.5, leagueClubs?: string[]): Grid {
+export function withLink(grid: Grid, rand: () => number = Math.random, chance = 0.5, leagueClubs?: string[], allow?: (c: Criterion) => boolean): Grid {
   if (!LINKS.length || rand() >= chance) return grid;
   if ([...grid.rows, ...grid.cols].some(isLink)) return grid;
-  const pool = LINKS.filter((l) => (leagueClubs?.length ? l.clubs.some((c) => leagueClubs.includes(c)) : l.global)).map((l) => l.c);
+  const pool = LINKS.filter((l) => (leagueClubs?.length ? l.clubs.some((c) => leagueClubs.includes(c)) : l.global) && (!allow || allow(l.c))).map((l) => l.c);
   const lines = shuffle(["r0", "r1", "r2", "c0", "c1", "c2"], rand);
   for (const link of shuffle(pool, rand).slice(0, 12)) {
     for (const line of lines) {
@@ -349,11 +350,14 @@ function shuffle<T>(a: T[], rand: () => number = Math.random): T[] { const r = [
  * criteria total, and no country×country cells (a player has one nationality).
  */
 /** `rand` lets callers seed the grid (e.g. one shared daily grid). */
-export function generateGrid(rand: () => number = Math.random, opts: { clubPairs?: boolean } = {}): Grid {
+export function generateGrid(rand: () => number = Math.random, opts: { clubPairs?: boolean; allow?: (c: Criterion) => boolean } = {}): Grid {
   // dealt grids: most of the time at least one club × club square (seeded daily grids keep the old rule)
   const wantPair = !!opts.clubPairs && rand() < 0.7;
+  // the player's categories (clubs always): a clubs-only board can't mix kinds
+  const pool = opts.allow ? ALL_CRITERIA.filter((c) => c.kind === "club" || opts.allow!(c)) : ALL_CRITERIA;
+  const oneKind = new Set(pool.map((c) => c.kind)).size < 2;
   for (let attempt = 0; attempt < 400; attempt++) {
-    const shuffled = shuffle(ALL_CRITERIA, rand);
+    const shuffled = shuffle(pool, rand);
     const rows = shuffled.slice(0, 3);
     const cands = shuffled
       .slice(3)
@@ -363,13 +367,30 @@ export function generateGrid(rand: () => number = Math.random, opts: { clubPairs
     if ([...rows, ...cols].filter((x) => x.kind === "badge").length > 2) continue;
     // avoid the whole board being one kind (nicer variety)
     const kinds = new Set([...rows, ...cols].map((x) => x.kind));
-    if (kinds.size < 2) continue;
+    if (kinds.size < 2 && !oneKind) continue;
     if (wantPair && attempt < 300 && !(rows.some((c) => c.kind === "club") && cols.some((c) => c.kind === "club"))) continue;
     return { rows, cols };
   }
   const by = (id: string) => ALL_CRITERIA.find((c) => c.id === id)!;
   return { rows: [by("realmadrid"), by("barcelona"), by("brazil")], cols: [by("milan"), by("inter"), by("chelsea")] };
 }
+
+/**
+ * Grid categories a player can switch off (Tic-Tac-Toe hub → Categories); clubs always stay.
+ * trophies = World Cup / UCL / Ballon d'Or / Euros and the honour counts, top scorers;
+ * wildcard = birth decades; teammates = "played with"; managers = "managed by".
+ */
+export type GridCategory = "countries" | "trophies" | "teammates" | "managers" | "wildcard";
+export const GRID_CATEGORIES: GridCategory[] = ["countries", "trophies", "teammates", "managers", "wildcard"];
+export function categoryOf(c: Criterion): GridCategory | "clubs" {
+  if (c.kind === "club") return "clubs";
+  if (c.kind === "country") return "countries";
+  if (c.kind === "mate") return "teammates";
+  if (c.kind === "coach") return "managers";
+  return c.id.startsWith("hon-born") ? "wildcard" : "trophies";
+}
+/** a criterion filter for the categories switched on (undefined: all on) */
+export const allowOf = (on: GridCategory[]) => (on.length >= GRID_CATEGORIES.length ? undefined : (c: Criterion) => { const k = categoryOf(c); return k === "clubs" || on.includes(k); });
 
 /** Small deterministic PRNG (mulberry32) for seeded grids. */
 export function seededRandom(seed: number): () => number {

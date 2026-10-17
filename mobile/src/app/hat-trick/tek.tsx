@@ -15,6 +15,7 @@ import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { categoryFilter } from "~/lib/league";
 import { C, F, R, shadow, T } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
@@ -53,7 +54,9 @@ export default function HatTrickSolo() {
     const rand = seededRandom(seed ?? day * 7919 + 17);
     // today's grid keeps the old rule (same grid as before the update); extra grids get club pairs
     if (seed === null) return generateGrid(rand);
-    return withHonour(withLink(generateGrid(rand, { clubPairs: true }), rand), rand, 0.45);
+    // extra grids follow the player's categories (hub → Categories)
+    const allow = categoryFilter();
+    return withHonour(withLink(generateGrid(rand, { clubPairs: true, allow }), rand, 0.5, undefined, allow), rand, 0.45, undefined, allow);
   }, [day, seed]);
   const [run, setRun] = useState<Run | null | undefined>(undefined);
   const [limit, setLimit] = useState<"3" | "none">("3");

@@ -1,7 +1,7 @@
 import type { SymbolViewProps } from "expo-symbols";
 import { Stack } from "expo-router";
 import { useState } from "react";
-import { Image, Modal, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType } from "react-native";
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Switch, View, type ImageSourcePropType } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
 
@@ -184,6 +184,66 @@ export function ChoiceSheet<T extends string>({
               {o.value === value && <Icon name="checkmark.circle.fill" size={22} color={C.greenMid} fallback="✓" />}
             </Tap>
           ))}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
+/** A sheet of on/off rows (Tic-Tac-Toe categories); a `locked` row stays on. */
+export function ToggleSheet<T extends string>({
+  visible,
+  title,
+  hint,
+  options,
+  value,
+  onChange,
+  onClose,
+}: {
+  visible: boolean;
+  title: string;
+  hint?: string;
+  options: { value: T; label: string; hint?: string; locked?: boolean }[];
+  value: T[];
+  onChange: (v: T[]) => void;
+  onClose: () => void;
+}) {
+  const insets = useSafeAreaInsets();
+  return (
+    <Modal statusBarTranslucent navigationBarTranslucent visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <Pressable style={sheet.backdrop} onPress={onClose} />
+      <View style={[sheet.body, { paddingBottom: insets.bottom + 16 }]}>
+        <View style={sheet.grabber} />
+        <Text style={[T.title, { marginBottom: 4 }]}>{title}</Text>
+        {hint && <Text style={[T.caption, { marginBottom: 6 }]}>{hint}</Text>}
+        <ScrollView style={{ maxHeight: 480 }}>
+          {options.map((o, i) => {
+            const on = o.locked || value.includes(o.value);
+            const toggle = (next: boolean) => {
+              if (o.locked) return;
+              haptic.tap();
+              onChange(next ? [...value, o.value] : value.filter((v) => v !== o.value));
+            };
+            // the whole row toggles (the switch too)
+            return (
+              <Tap key={o.value} silent onPress={() => toggle(!on)} disabled={o.locked} style={[sheet.row, i > 0 && sheet.divider]} accessibilityRole="switch" accessibilityState={{ checked: on, disabled: !!o.locked }} accessibilityLabel={o.label}>
+                <View style={{ flex: 1 }}>
+                  <Text style={sheet.label}>{o.label}</Text>
+                  {o.hint && <Text style={T.caption}>{o.hint}</Text>}
+                </View>
+                <Switch
+                  value={on}
+                  disabled={o.locked}
+                  trackColor={{ true: C.green, false: C.key }}
+                  thumbColor="white"
+                  ios_backgroundColor={C.key}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
+                  onValueChange={toggle}
+                />
+              </Tap>
+            );
+          })}
         </ScrollView>
       </View>
     </Modal>
