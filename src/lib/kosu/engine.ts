@@ -1,0 +1,287 @@
+/**
+ * Dribbling Rush (docs/design/futbol-kosu.md): an endless three-lane runner. Pure and
+ * deterministic (seeded); every function is a worklet so the phone runs the whole loop on
+ * the UI thread (mobile/src/app/kosu/oyun.tsx). The state is one plain object mutated in place.
+ *
+ * World units are metres: x across (lanes at -LANE, 0, +LANE), y up, z forward.
+ */
+
+export const LANE = 2.4;
+/** run speed at the start and the ceiling (m/s), and how fast it climbs */
+export const SPEED0 = 11;
+export const SPEED_MAX = 27;
+const ACCEL = 0.11;
+/** jump: up-speed and gravity (≈ 0.62 s in the air, 1.5 m high); a swipe down in the air slams down */
+const JUMP_V = 9.6;
+const GRAVITY = -31;
+const SLAM_V = -26;
+/** a roll lasts this long (s) */
+const SLIDE_S = 0.62;
+/** lane switch: the runner closes this share of the gap per second (snappy, like the reference feel) */
+const LANE_SNAP = 16;
+/** a second side bump within this time ends the run */
+const STUMBLE_S = 2.6;
+/** obstacles and coins are laid out this far ahead */
+const AHEAD = 90;
+/** collision half-depth (m) */
+const HIT_Z = 0.55;
+
+/** 0 slide tackle (jump), 1 wall of players (roll), 2 standing defender (switch lane), 3 cones (jump) */
+export type ObstacleKind = 0 | 1 | 2 | 3;
+export interface Obstacle {
+  z: number;
+  lane: number;
+  kind: ObstacleKind;
+  /** a standing defender can drift to the next lane: target lane and when */
+  moveTo: number;
+}
+export interface Coin {
+  z: number;
+  lane: number;
+  y: number;
+  taken: number;
+}
+export type Input = "" | "left" | "right" | "up" | "down";
+
+export interface RunState {
+  rng: number;
+  t: number;
+  /** distance run (the runner's z) */
+  z: number;
+  speed: number;
+  /** lane the runner is heading for (-1, 0, 1), where it was, and its x now */
+  lane: number;
+  from: number;
+  x: number;
+  y: number;
+  vy: number;
+  /** roll time left */
+  slide: number;
+  /** time since the last side bump (big = none) */
+  stumble: number;
+  /** a forward fall / caught: when it happened (0 = running) */
+  dead: number;
+  deadKind: "front" | "caught" | "";
+  obstacles: Obstacle[];
+  coins: Coin[];
+  /** next z to lay a row at */
+  next: number;
+  coinsTaken: number;
+  /** a coin was just picked up, a jump / roll / switch happened, a bump: for sounds and haptics */
+  events: number;
+  lastEvent: "" | "coin" | "bump" | "dead" | "jump" | "roll" | "lane";
+  /** camera x and y, eased */
+  camX: number;
+  camY: number;
+  /** screen shake left (s) */
+  shake: number;
+}
+
+function rnd(s: RunState): number {
+  "worklet";
+  s.rng = (s.rng + 0x6d2b79f5) >>> 0;
+  let t = s.rng;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+export function newRun(seed: number): RunState {
+  "worklet";
+  const s: RunState = {
+    rng: seed >>> 0,
+    t: 0,
+    z: 0,
+    speed: SPEED0,
+    lane: 0,
+    from: 0,
+    x: 0,
+    y: 0,
+    vy: 0,
+    slide: 0,
+    stumble: 99,
+    dead: 0,
+    deadKind: "",
+    obstacles: [],
+    coins: [],
+    next: 34,
+    coinsTaken: 0,
+    events: 0,
+    lastEvent: "",
+    camX: 0,
+    camY: 0,
+    shake: 0,
+  };
+  // a free run-up with a coin line before the first obstacles
+  for (let i = 0; i < 8; i++) s.coins.push({ z: 12 + i * 2.2, lane: 0, y: 0, taken: 0 });
+  return s;
+}
+
+/** score: metres run plus coins */
+export const scoreOf = (s: RunState) => {
+  "worklet";
+  return Math.floor(s.z) + s.coinsTaken * 10;
+};
+
+function emit(s: RunState, e: RunState["lastEvent"]) {
+  "worklet";
+  s.events++;
+  s.lastEvent = e;
+}
+
+/** a coin line along a lane; over a jumpable obstacle it arcs */
+function coinLine(s: RunState, z0: number, lane: number, n: number, arcAt: number) {
+  "worklet";
+  for (let i = 0; i < n; i++) {
+    const z = z0 + i * 2.2;
+    const d = arcAt ? Math.abs(z - arcAt) : 99;
+    const y = d < 4 ? 1.5 * Math.cos((d / 4) * (Math.PI / 2)) : 0;
+    s.coins.push({ z, lane, y, taken: 0 });
+  }
+}
+
+/**
+ * One row of obstacles at z: one or two lanes blocked, always one lane you can run, jump or
+ * roll through; as the run gets faster rows come closer together and walls get commoner.
+ */
+function layRow(s: RunState, z: number) {
+  "worklet";
+  const level = Math.min(1, s.z / 2500);
+  const r = rnd(s);
+  const free = Math.floor(rnd(s) * 3) - 1;
+  const lanes = [-1, 0, 1].filter((l) => l !== free);
+  if (r < 0.28) {
+    // one jump / roll obstacle across all three lanes: you must act
+    const kind: ObstacleKind = rnd(s) < 0.5 + level * 0.2 ? 1 : rnd(s) < 0.5 ? 0 : 3;
+    for (const l of [-1, 0, 1]) s.obstacles.push({ z, lane: l, kind, moveTo: l });
+    coinLine(s, z - 6, free, 6, kind === 1 ? 0 : z);
+  } else if (r < 0.62) {
+    // two standing defenders: run the free lane (one may step across at higher speed)
+    for (const l of lanes) {
+      const drift = level > 0.25 && rnd(s) < 0.25 ? free : l;
+      s.obstacles.push({ z, lane: l, kind: 2, moveTo: drift });
+    }
+    coinLine(s, z - 8, free, 7, 0);
+  } else {
+    // mixed: a defender in one lane, a tackle or wall in another, the third open
+    const kind: ObstacleKind = rnd(s) < 0.5 ? 0 : 1;
+    s.obstacles.push({ z, lane: lanes[0], kind: 2, moveTo: lanes[0] });
+    s.obstacles.push({ z, lane: lanes[1], kind, moveTo: lanes[1] });
+    coinLine(s, z - 6, kind === 0 ? lanes[1] : free, 6, kind === 0 ? z : 0);
+  }
+}
+
+/** a defender who drifts across starts moving when the runner is this close */
+const DRIFT_AT = 26;
+
+/** lane x of an obstacle now (a drifting defender slides across as you close in) */
+export function obstacleX(o: Obstacle, runnerZ: number): number {
+  "worklet";
+  if (o.moveTo === o.lane) return o.lane * LANE;
+  const k = Math.max(0, Math.min(1, (DRIFT_AT - (o.z - runnerZ)) / 10));
+  return (o.lane + (o.moveTo - o.lane) * k) * LANE;
+}
+
+function bump(s: RunState, _where: "side" | "wall") {
+  "worklet";
+  s.shake = 0.25;
+  emit(s, "bump");
+  if (s.stumble < STUMBLE_S) {
+    die(s, "caught");
+    return;
+  }
+  s.stumble = 0;
+}
+
+function die(s: RunState, kind: "front" | "caught") {
+  "worklet";
+  s.dead = s.t;
+  s.deadKind = kind;
+  s.shake = 0.45;
+  emit(s, "dead");
+}
+
+/** Advance the run by dt seconds with this input ("" = none). */
+export function step(s: RunState, input: Input, dt: number) {
+  "worklet";
+  s.t += dt;
+  if (s.dead) {
+    // a short slide to a stop after the foul
+    s.speed = Math.max(0, s.speed - 40 * dt);
+    s.z += s.speed * dt;
+    s.shake = Math.max(0, s.shake - dt);
+    return;
+  }
+  s.speed = Math.min(SPEED_MAX, s.speed + ACCEL * dt * (1 + s.speed / SPEED_MAX));
+  s.z += s.speed * dt;
+  s.stumble += dt;
+  s.shake = Math.max(0, s.shake - dt);
+
+  // input
+  const grounded = s.y <= 0.001;
+  if (input === "left" || input === "right") {
+    const to = Math.max(-1, Math.min(1, s.lane + (input === "left" ? -1 : 1)));
+    if (to !== s.lane) {
+      s.from = s.lane;
+      s.lane = to;
+      emit(s, "lane");
+    } else bump(s, "wall");
+  } else if (input === "up" && grounded) {
+    s.vy = JUMP_V;
+    s.slide = 0;
+    emit(s, "jump");
+  } else if (input === "down") {
+    if (!grounded) s.vy = SLAM_V;
+    s.slide = SLIDE_S;
+    emit(s, "roll");
+  }
+
+  // movement
+  s.x += (s.lane * LANE - s.x) * Math.min(1, dt * LANE_SNAP);
+  if (!grounded || s.vy > 0) {
+    s.vy += GRAVITY * dt;
+    s.y = Math.max(0, s.y + s.vy * dt);
+    if (s.y === 0) s.vy = 0;
+  }
+  if (s.slide > 0 && s.y === 0) s.slide = Math.max(0, s.slide - dt);
+  s.camX += (s.x * 0.85 - s.camX) * Math.min(1, dt * 7);
+  s.camY += (s.y * 0.35 - s.camY) * Math.min(1, dt * 6);
+
+  // lay out what's ahead, drop what's behind
+  while (s.next < s.z + AHEAD) {
+    layRow(s, s.next);
+    const gap = 30 - Math.min(14, s.z / 180) + rnd(s) * 8;
+    s.next += gap;
+  }
+  if (s.obstacles.length && s.obstacles[0].z < s.z - 8) s.obstacles = s.obstacles.filter((o) => o.z > s.z - 8);
+  if (s.coins.length && s.coins[0].z < s.z - 8) s.coins = s.coins.filter((c) => c.z > s.z - 8);
+
+  // coins
+  for (const c of s.coins) {
+    if (c.taken || Math.abs(c.z - s.z) > 0.9) continue;
+    if (Math.abs(c.lane * LANE - s.x) < 1.1 && Math.abs(c.y - s.y) < 1.2) {
+      c.taken = 1;
+      s.coinsTaken++;
+      emit(s, "coin");
+    }
+  }
+
+  // obstacles
+  for (const o of s.obstacles) {
+    const dz = o.z - s.z;
+    if (dz > HIT_Z || dz < -HIT_Z) continue;
+    const ox = obstacleX(o, s.z);
+    const dx = Math.abs(ox - s.x);
+    if (dx > LANE * 0.62) continue;
+    const clears = (o.kind === 0 || o.kind === 3) ? s.y > 0.55 : o.kind === 1 ? s.slide > 0 : false;
+    if (clears) continue;
+    // mostly beside it while switching lanes: a side bump, bounce back to where you came from
+    if (dx > LANE * 0.32 && s.lane !== s.from) {
+      s.lane = s.from;
+      bump(s, "side");
+      continue;
+    }
+    die(s, "front");
+    return;
+  }
+}

@@ -28,6 +28,7 @@ export default function Games() {
   ];
   // Kombine (match-3, /kombine) is shelved for a later version: code and routes stay, no entry here
   const solo: Game[] = [
+    { title: "Dribbling Rush", desc: t("rushShort"), who: t("playSolo"), image: BRAND.icon.race, ...GAME.rush, href: "/kosu" },
     { title: t("myName"), desc: t("myShort"), who: t("playSolo"), image: BRAND.icon.mystery, ...GAME.my, href: "/gizli" },
     { title: t("missingXI"), desc: t("xiShort"), who: t("playSolo"), image: BRAND.icon.practice, ...GAME.xi, href: "/eksik-11" },
     { title: t("bingoName"), desc: t("bingoShort"), who: t("playSolo"), image: BRAND.icon.bingo, ...GAME.bingo, href: "/bingo" },

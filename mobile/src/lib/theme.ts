@@ -53,6 +53,7 @@ export const GAME = {
   my: { bg: "#FEF3C7", ink: "#92400E" },
   xi: { bg: "#E0F2FE", ink: "#075985" },
   bingo: { bg: "#ECFCCB", ink: "#3F6212" },
+  rush: { bg: "#FFEDD5", ink: "#9A3412" },
 } as const;
 
 export const R = { card: 22, inner: 12, button: 14, chip: 999 };
