@@ -65,6 +65,8 @@ export default function TaktikGame() {
   const [pitchBox, setPitchBox] = useState({ w: 0, h: 0 });
   /** the managers' panel is open */
   const [mgrOpen, setMgrOpen] = useState(false);
+  /** every synergy, not just the live and nearly-live ones */
+  const [allTraits, setAllTraits] = useState(false);
   /** coins flying into the gold counter after a match: how many are still in the air */
   const [coins, setCoins] = useState<{ id: number; total: number; left: number; to: { x: number; y: number } } | null>(null);
   const goldRef = useRef<View | null>(null);
@@ -142,9 +144,17 @@ export default function TaktikGame() {
   const cap = fieldCap(me);
   const onPitch = fielded(me);
   const sh = sheet({ name: me.name, units: me.units, coach: me.coach, augments: me.augments });
-  const traits = sh.traits.filter((x) => x.count >= 1 && (x.tier > 0 || x.count >= x.steps[0] - 1));
+  const traits = sh.traits.filter((x) => x.count >= 1);
   /** completed synergies: their players light up on the pitch */
   const active = sh.traits.filter((x) => x.tier > 0);
+  /** in the row: the live synergies, then the three closest to switching on (by share filled); the rest behind "+n" */
+  const shownTraits = [
+    ...active,
+    ...traits
+      .filter((x) => x.tier === 0 && x.count >= x.steps[0] - 1)
+      .sort((a, b) => b.count / b.steps[0] - a.count / a.steps[0] || b.count - a.count)
+      .slice(0, 3),
+  ];
 
 
   const tapUnit = (uid: string) => {
@@ -353,7 +363,7 @@ export default function TaktikGame() {
       <View ref={tour.ref("traits")} collapsable={false}>
         <View style={styles.traits}>
           {me.augments.length > 0 && <TacticsChips ids={me.augments} />}
-          {traits.map((x) => (
+          {(allTraits ? traits : shownTraits).map((x) => (
             <Tap key={`${x.kind}-${x.id}`} onPress={() => setInfo(x)} style={[styles.trait, x.tier > 0 && styles.traitOn]} accessibilityLabel={traitLabel(x)}>
               {traitIcon(x)}
               <Text style={[styles.traitText, x.tier > 0 && { color: "white" }]}>
@@ -366,6 +376,16 @@ export default function TaktikGame() {
               <ItemIcon id={it} size={18} />
             </Tap>
           ))}
+          {/* the rest (more than one player short) behind a tap */}
+          {(() => {
+            const hidden = traits.length - shownTraits.length;
+            if (!hidden && !allTraits) return null;
+            return (
+              <Tap onPress={() => setAllTraits((v) => !v)} style={[styles.trait, { borderStyle: "dashed" }]} accessibilityLabel={t(allTraits ? "ttkTraitsLess" : "ttkTraitsMore")}>
+                <Text style={[styles.traitText, { color: C.text2 }]}>{allTraits ? t("ttkTraitsLess") : `+${hidden}`}</Text>
+              </Tap>
+            );
+          })()}
           {traits.length === 0 && me.augments.length === 0 && me.items.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
         </View>
         {sel?.kind === "item" && <Text style={[styles.hint, { marginBottom: 4 }]}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
