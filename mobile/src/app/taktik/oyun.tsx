@@ -1,7 +1,7 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
-import Animated, { FadeIn, FadeInDown, FadeOut, SlideInRight, SlideOutRight, ZoomIn } from "react-native-reanimated";
+import Animated, { Easing, FadeIn, FadeInDown, FadeOut, SlideInRight, SlideOutRight, useAnimatedStyle, useSharedValue, withRepeat, withTiming, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { XP } from "@/lib/levels";
@@ -155,6 +155,11 @@ export default function TaktikGame() {
       .sort((a, b) => b.count / b.steps[0] - a.count / a.steps[0] || b.count - a.count)
       .slice(0, 3),
   ];
+  /** a heads-up on the board: spots left empty, or no real back line */
+  const emptySpots = cap - onPitch.length;
+  const backLine = onPitch.filter((u) => SLOTS[u.slot!] === "DEF").length;
+  const boardWarn =
+    emptySpots > 0 ? t("ttkEmptySpots").replace("{n}", String(emptySpots)) : onPitch.length >= 4 && (backLine === 0 || sh.def < sh.atk * 0.5) ? t("ttkWeakDefence") : null;
 
 
   const tapUnit = (uid: string) => {
@@ -459,6 +464,11 @@ export default function TaktikGame() {
                 </Tap>
               );
             })}
+          {boardWarn && (
+            <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.warn} pointerEvents="none">
+              <Text style={styles.warnText}>⚠️ {boardWarn}</Text>
+            </Animated.View>
+          )}
           {/* the near edge: how many are on it, and one tap for the best side */}
           <View style={styles.pills} pointerEvents="box-none">
             <View style={styles.pill}>
@@ -554,6 +564,8 @@ export default function TaktikGame() {
               if (!card) return <View key={i} style={[styles.shopCard, styles.shopGone, { width: shopW }]} />;
               const p = lobby.players[card.pid];
               const owned = me.units.filter((u) => u.pid === p.pid && u.star === 1).length;
+              /** a third copy makes him two-star */
+              const starUp = !card.scout && owned === 2;
               return (
                 <Tap
                   key={i}
@@ -571,6 +583,10 @@ export default function TaktikGame() {
                   </Text>
                   {card.scout ? (
                     <Text style={styles.shopPos}> </Text>
+                  ) : starUp ? (
+                    <Text style={styles.starUpText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                      {t("ttkStarUp")}
+                    </Text>
                   ) : (
                     <View style={styles.tagLine}>
                       <Flag id={p.country} width={14} />
@@ -578,6 +594,7 @@ export default function TaktikGame() {
                     </View>
                   )}
                   <View style={[styles.costBar, { backgroundColor: card.scout ? "#A78BFA" : COST_COLOR[p.cost] }]} />
+                  {starUp && <StarUpGlow />}
                   {owned > 0 && (
                     <View style={styles.owned}>
                       <Text style={styles.ownedText}>{owned}/3</Text>
@@ -874,6 +891,10 @@ const styles = StyleSheet.create({
   shopName: { fontFamily: F.display, fontSize: 16, color: C.text, marginTop: 2, paddingHorizontal: 3 },
   shopPos: { fontSize: 10, fontWeight: "800", color: C.text3, letterSpacing: 0.5 },
   costBar: { position: "absolute", left: 0, right: 0, bottom: 0, height: 3 },
+  starUpText: { fontSize: 10, fontWeight: "900", color: "#B45309", paddingHorizontal: 3 },
+  starUpGlow: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0, borderRadius: 8, borderWidth: 2.5, borderColor: "#F5B70A", backgroundColor: "rgba(245,183,10,0.12)" },
+  warn: { position: "absolute", top: 8, alignSelf: "center", backgroundColor: "#FEF3C7", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5, borderWidth: 1, borderColor: "#F59E0B" },
+  warnText: { fontWeight: "800", fontSize: 12, color: "#92400E" },
   owned: { position: "absolute", top: 4, right: 4, backgroundColor: C.text, borderRadius: 6, paddingHorizontal: 4 },
   ownedText: { fontSize: 9, fontWeight: "900", color: "white" },
   cluesBig: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 4 },
@@ -903,3 +924,13 @@ const styles = StyleSheet.create({
   augSwap: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(255,255,255,0.14)", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
   augSwapText: { fontFamily: F.display, fontSize: 15, color: "white" },
 });
+
+/** a market card that would make a two-star player: a soft gold pulse */
+function StarUpGlow() {
+  const o = useSharedValue(0.45);
+  useEffect(() => {
+    o.set(withRepeat(withTiming(1, { duration: 700, easing: Easing.inOut(Easing.quad) }), -1, true));
+  }, [o]);
+  const style = useAnimatedStyle(() => ({ opacity: o.get() }));
+  return <Animated.View style={[styles.starUpGlow, style]} pointerEvents="none" />;
+}

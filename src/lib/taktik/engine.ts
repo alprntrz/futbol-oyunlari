@@ -28,6 +28,7 @@ import {
   XP_PER_ROUND,
   damage,
   streakGold,
+  zoneFit,
   type Cost,
   type Pos,
   type RoundKind,
@@ -291,7 +292,7 @@ const ZONE_SLOTS = (zone: Pos) => SLOTS.map((z, i) => (z === zone ? i : -1)).fil
 const NEAR: Record<Pos, Pos[]> = { GK: [], DEF: ["MID", "FWD"], MID: ["DEF", "FWD"], FWD: ["MID", "DEF"] };
 
 /**
- * Put the best team on the pitch: a keeper in goal, then the strongest players in
+ * Put the best team on the pitch: a keeper in goal, a back line, then the strongest players in
  * their own zones (club mates count a little extra), up to the club level's limit.
  */
 export function autoArrange(m: Manager) {
@@ -309,7 +310,20 @@ export function autoArrange(m: Manager) {
     placed++;
   }
   const outfield = m.units.filter((u) => u.slot === null && u.pos !== "GK").sort((a, b) => value(b) - value(a));
+  // a back line first: about a third of the outfield spots go to defenders (real
+  // ones first, then whoever loses least out of position), so the team never
+  // plays without a defence
+  const defTarget = Math.min(4, Math.ceil(Math.max(0, cap - 1) / 3));
+  const backs = [...outfield].sort((a, b) => value(b) * zoneFit(b.pos, "DEF") - value(a) * zoneFit(a.pos, "DEF"));
+  for (const u of backs.slice(0, defTarget)) {
+    const slot = ZONE_SLOTS("DEF").find((i) => free.has(i));
+    if (slot === undefined || placed >= cap) break;
+    u.slot = slot;
+    free.delete(slot);
+    placed++;
+  }
   for (const u of outfield) {
+    if (u.slot !== null) continue;
     if (placed >= cap) break;
     const zones: Pos[] = [u.pos, ...NEAR[u.pos]];
     const slot = zones.flatMap(ZONE_SLOTS).find((i) => free.has(i));
