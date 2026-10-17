@@ -96,7 +96,7 @@ export function QuickPlay() {
         <Button title={`${t("qpPlay")}: ${current.name}`} kind="gold" icon="play.fill" onPress={() => setAsking(true)} />
       </Animated.View>
 
-      <Modal visible={asking} transparent animationType="slide" onRequestClose={() => setAsking(false)}>
+      <Modal statusBarTranslucent navigationBarTranslucent visible={asking} transparent animationType="slide" onRequestClose={() => setAsking(false)}>
         <Pressable style={styles.backdrop} onPress={() => setAsking(false)} accessibilityLabel={t("close")} />
         <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
           <View style={styles.grabber} />

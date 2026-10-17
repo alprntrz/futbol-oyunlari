@@ -371,7 +371,7 @@ export function HatTrickBoard({
 
       <AnswersSheet grid={grid} cell={review} placed={review !== null ? board[review] : null} onClose={() => setReview(null)} />
 
-      <Modal visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
+      <Modal statusBarTranslucent navigationBarTranslucent visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={() => setOpenCell(null)} />
           <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
@@ -505,7 +505,7 @@ function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: numbe
   const shown = [...all.filter((p) => p.name === placed?.name), ...all.filter((p) => p.name !== placed?.name)].slice(0, 8);
 
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={onClose}>
+    <Modal statusBarTranslucent navigationBarTranslucent visible transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={onClose} />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.grabber} />

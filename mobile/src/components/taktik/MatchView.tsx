@@ -90,7 +90,7 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   const pitchW = Math.max(200, Math.min(width - 24, area / PITCH_RATIO));
 
   return (
-    <Modal visible animationType="fade" onRequestClose={onClose}>
+    <Modal statusBarTranslucent navigationBarTranslucent visible animationType="fade" onRequestClose={onClose}>
       <StatusBar style="dark" />
       <View style={[styles.screen, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 8 }]}>
         {/* scoreboard: my name, the score and the minute, theirs */}

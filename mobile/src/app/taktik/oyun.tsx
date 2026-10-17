@@ -750,7 +750,7 @@ export default function TaktikGame() {
         )}
       </View>
 
-      <Modal visible={!!info} transparent animationType="fade" onRequestClose={() => setInfo(null)}>
+      <Modal statusBarTranslucent navigationBarTranslucent visible={!!info} transparent animationType="fade" onRequestClose={() => setInfo(null)}>
         <Pressable style={styles.backdrop} onPress={() => setInfo(null)}>
           {info && (
             <Animated.View entering={ZoomIn.duration(180)} style={styles.infoCard}>
@@ -780,7 +780,7 @@ export default function TaktikGame() {
       </Modal>
 
       {/* scout report */}
-      <Modal visible={scout !== null} transparent animationType="slide" onRequestClose={() => setScout(null)}>
+      <Modal statusBarTranslucent navigationBarTranslucent visible={scout !== null} transparent animationType="slide" onRequestClose={() => setScout(null)}>
         <Pressable style={styles.backdrop} onPress={() => setScout(null)} />
         {scoutPlayer && (
           <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
@@ -819,7 +819,7 @@ export default function TaktikGame() {
       </Modal>
 
       {/* tactics card offer: three tall cards, a swap under each, the pick lights up and is taken */}
-      <Modal visible={!!me.offer && !match && !out} transparent animationType="fade">
+      <Modal statusBarTranslucent navigationBarTranslucent visible={!!me.offer && !match && !out} transparent animationType="fade">
         <View style={styles.augScreen}>
           <View style={styles.augHead}>
             <View style={styles.augLine} />

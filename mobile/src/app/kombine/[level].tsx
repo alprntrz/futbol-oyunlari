@@ -91,7 +91,7 @@ function KombineMatch({ index }: { index: number }) {
 
       <Text style={[T.caption, { textAlign: "center", marginTop: 12 }]}>{t("kbHint")}</Text>
 
-      <Modal visible={!!result} transparent animationType="fade" onRequestClose={() => router.back()}>
+      <Modal statusBarTranslucent navigationBarTranslucent visible={!!result} transparent animationType="fade" onRequestClose={() => router.back()}>
         <View style={styles.backdrop}>
           <Animated.View entering={ZoomIn.duration(220)}>
             <Card style={styles.result}>

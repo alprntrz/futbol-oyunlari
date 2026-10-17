@@ -168,7 +168,7 @@ export function ChoiceSheet<T extends string>({
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal statusBarTranslucent navigationBarTranslucent visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={sheet.backdrop} onPress={onClose} />
       <View style={[sheet.body, { paddingBottom: insets.bottom + 16 }]}>
         <View style={sheet.grabber} />

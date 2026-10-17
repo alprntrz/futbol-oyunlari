@@ -63,7 +63,7 @@ export function PlayerSearchSheet({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={close}>
+    <Modal statusBarTranslucent navigationBarTranslucent visible={visible} transparent animationType="slide" onRequestClose={close}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={close} />
         <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
