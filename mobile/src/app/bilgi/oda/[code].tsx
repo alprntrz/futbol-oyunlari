@@ -235,7 +235,7 @@ export default function QuizRoom() {
   useEffect(() => {
     if (room?.phase !== "question" || picked !== null || secLeft < 1 || secLeft > 5 || secLeft === lastTick.current) return;
     lastTick.current = secLeft;
-    play("tick");
+    haptic.tap();
   }, [secLeft, room?.phase, picked]);
   useEffect(() => {
     if (!ticking) return;

@@ -95,7 +95,6 @@ function Pill({ award }: { award: Shown }) {
   const flash = useSharedValue(0);
 
   useEffect(() => {
-    play("whoosh");
     // the number counts up while the gems land
     const steps = 18;
     let n = 0;

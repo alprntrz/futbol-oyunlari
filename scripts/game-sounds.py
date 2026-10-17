@@ -91,9 +91,6 @@ def save(name, samples, gain=0.9):
     print(name, f"{len(samples) / SR:.2f}s")
 
 
-# button press: short wooden pop
-save("tap", mix((0, tone(520, 0.07, partials=MARIMBA, decay=0.02, glide=0.4)), (0, noise(0.03, 0.15, 0.5, 0.2))), 0.55)
-
 # a reward card lands: bubbly pop going up
 save("pop", tone(660, 0.12, partials=((1, 1.0), (2, 0.3)), decay=0.04, glide=0.9), 0.7)
 
@@ -111,9 +108,6 @@ save("whoosh", noise(0.32, 0.6, 0.02, 0.35, attack=0.12, decay=0.12), 0.45)
 
 # title stamp: low thump plus a little click
 save("stamp", mix((0, tone(110, 0.25, decay=0.06, glide=-0.5)), (0, noise(0.05, 0.3, 0.6, 0.3))), 0.85)
-
-# clock running out
-save("tick", tone(1400, 0.05, partials=((1, 1.0), (2.7, 0.2)), decay=0.012), 0.45)
 
 # victory fanfare: brassy arpeggio, held chord, sparkle on top
 arp = [("C5", 0.0), ("E5", 0.11), ("G5", 0.22)]

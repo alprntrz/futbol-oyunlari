@@ -10,7 +10,6 @@ import { AVATARS } from "~/lib/avatar";
 import { TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { play } from "~/lib/sound";
 import { F } from "~/lib/theme";
 
 import { Avatar } from "../Avatar";
@@ -55,7 +54,6 @@ export function LobbyIntro({ managers, meId, onDone }: { managers: Manager[]; me
   const [avatars] = useState(() => avatarsOf(managers, meId));
 
   useEffect(() => {
-    play("whoosh");
     const a = setTimeout(() => {
       setFlipped(true);
       haptic.tap();
