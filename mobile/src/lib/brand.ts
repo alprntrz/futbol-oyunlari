@@ -203,6 +203,8 @@ export const KOSU = {
     defender: require("../../assets/brand/kosu/obs-defender.png"),
     referee: require("../../assets/brand/kosu/obs-referee.png"),
     cones: require("../../assets/brand/kosu/obs-cones.png"),
+    wall: require("../../assets/brand/kosu/obs-wall.png"),
+    sprinkler: require("../../assets/brand/kosu/obs-sprinkler.png"),
   },
   pick: [require("../../assets/brand/kosu/pick-boots.png"), require("../../assets/brand/kosu/pick-magnet.png"), require("../../assets/brand/kosu/pick-armband.png"), require("../../assets/brand/kosu/pick-2x.png")],
   coin: require("../../assets/brand/kosu/pick-coin.png"),

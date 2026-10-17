@@ -23,7 +23,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 RUNNER = ["runner-run-1", "runner-run-2", "runner-run-3", "runner-run-4", "runner-jump", "runner-slide", "runner-fall", "runner-goal"]
 SPRITES = {
-    "obs-tackle": 320, "obs-wall": 320, "obs-defender": 320, "obs-referee": 320, "obs-cones": 320, "obs-board": 360,
+    "obs-tackle": 320, "obs-wall": 320, "obs-defender": 320, "obs-referee": 320, "obs-cones": 320, "obs-board": 360, "obs-sprinkler": 320,
     "pick-coin": 160, "pick-boots": 200, "pick-magnet": 200, "pick-armband": 200, "pick-2x": 200,
     "goal": 480, "keeper": 320, "ball": 160, "hero": 512, "hud-distance": 96, "hud-goal": 96,
 }

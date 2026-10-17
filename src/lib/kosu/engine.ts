@@ -26,15 +26,24 @@ const AHEAD = 90;
 /** collision half-depth (m) */
 const HIT_Z = 0.55;
 
-/** 0 slide tackle (jump), 1 wall of players (roll), 2 standing defender (switch lane), 3 cones (jump) */
-export type ObstacleKind = 0 | 1 | 2 | 3;
+/**
+ * 0 slide tackle (jump), 1 board (roll), 2 standing defender (switch lane), 3 cones (jump),
+ * 4 a wall of four players (switch lane: too tall to jump, too low to roll), 5 a sprinkler
+ * (not a foul: running through it soaks you and slows you down a moment; jump it)
+ */
+export type ObstacleKind = 0 | 1 | 2 | 3 | 4 | 5;
 export interface Obstacle {
   z: number;
   lane: number;
   kind: ObstacleKind;
   /** a standing defender can drift to the next lane: target lane and when */
   moveTo: number;
+  /** a sprinkler already soaked you */
+  hit?: number;
 }
+/** soaked by a sprinkler: this long, at this share of the speed */
+const WET_S = 1.1;
+const WET_SPEED = 0.62;
 export interface Coin {
   z: number;
   lane: number;
@@ -105,7 +114,7 @@ export interface RunState {
   coinsTaken: number;
   /** a coin was just picked up, a jump / roll / switch happened, a bump: for sounds and haptics */
   events: number;
-  lastEvent: "" | "coin" | "bump" | "dead" | "jump" | "roll" | "lane" | "goal" | "save" | "power" | "saved";
+  lastEvent: "" | "coin" | "bump" | "dead" | "jump" | "roll" | "lane" | "goal" | "save" | "power" | "saved" | "splash";
   goals: Goal[];
   nextGoal: number;
   pickups: Pickup[];
@@ -117,6 +126,8 @@ export interface RunState {
   armband: number;
   /** after a forgiven crash or the boots: a moment of passing through */
   ghost: number;
+  /** soaked by a sprinkler: seconds left of running slower */
+  wet: number;
   /** right-answer lanes, one per question (the screen lays the options out to match) */
   answers: number[];
   goalsScored: number;
@@ -174,6 +185,7 @@ export function newRun(seed: number, answers: number[] = []): RunState {
     double: 0,
     armband: 0,
     ghost: 0,
+    wet: 0,
     answers,
     goalsScored: 0,
     saves: 0,
@@ -237,8 +249,12 @@ function layRow(s: RunState, z: number) {
     for (const l of [-1, 0, 1]) s.obstacles.push({ z, lane: l, kind, moveTo: l });
     coinLine(s, z - 6, free, 6, kind === 1 ? 0 : z);
   } else if (r < 0.62) {
-    // two standing defenders: run the free lane (one may step across at higher speed)
+    // two standing defenders: run the free lane (one may step across at higher speed); now and then a wall of four instead
     for (const l of lanes) {
+      if (rnd(s) < 0.22 + level * 0.15) {
+        s.obstacles.push({ z, lane: l, kind: 4, moveTo: l });
+        continue;
+      }
       const drift = level > 0.25 && rnd(s) < 0.25 ? free : l;
       s.obstacles.push({ z, lane: l, kind: 2, moveTo: drift });
     }
@@ -250,6 +266,8 @@ function layRow(s: RunState, z: number) {
     s.obstacles.push({ z, lane: lanes[1], kind, moveTo: lanes[1] });
     coinLine(s, z - 6, kind === 0 ? lanes[1] : free, 6, kind === 0 ? z : 0);
   }
+  // now and then a sprinkler in the open lane between rows: jump it or get soaked
+  if (z > 120 && rnd(s) < 0.18) s.obstacles.push({ z: z + 14, lane: free, kind: 5, moveTo: free });
   // now and then a power-up in the open lane just after the row
   if (z > s.nextPower && Math.abs(z - s.nextGoal) > 90) {
     const r2 = rnd(s);
@@ -308,7 +326,8 @@ export function step(s: RunState, input: Input, dt: number) {
     return;
   }
   s.speed = Math.min(SPEED_MAX, s.speed + ACCEL * dt * (1 + s.speed / SPEED_MAX));
-  const v = s.boots > 0 ? s.speed * BOOST : s.speed;
+  const v = (s.boots > 0 ? s.speed * BOOST : s.speed) * (s.wet > 0 ? WET_SPEED : 1);
+  s.wet = Math.max(0, s.wet - dt);
   s.z += v * dt;
   s.score += v * dt * multOf(s);
   if (s.boots > 0) {
@@ -422,8 +441,18 @@ export function step(s: RunState, input: Input, dt: number) {
     const ox = obstacleX(o, s.z);
     const dx = Math.abs(ox - s.x);
     if (dx > LANE * 0.62) continue;
-    const clears = (o.kind === 0 || o.kind === 3) ? s.y > 0.55 : o.kind === 1 ? s.slide > 0 : false;
+    const clears = o.kind === 0 || o.kind === 3 || o.kind === 5 ? s.y > 0.55 : o.kind === 1 ? s.slide > 0 : false;
     if (clears) continue;
+    // a sprinkler only soaks you
+    if (o.kind === 5) {
+      if (!o.hit && dx < LANE * 0.45) {
+        o.hit = 1;
+        s.wet = WET_S;
+        s.shake = 0.15;
+        emit(s, "splash");
+      }
+      continue;
+    }
     // mostly beside it while switching lanes: a side bump, bounce back to where you came from
     if (dx > LANE * 0.32 && s.lane !== s.from) {
       s.lane = s.from;

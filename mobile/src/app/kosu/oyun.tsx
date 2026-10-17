@@ -134,6 +134,11 @@ export default function RushGame() {
       setToast({ id: Date.now(), text: t("rushArmbandUsed"), color: "#CA8A04" });
       return;
     }
+    if (e === "splash") {
+      haptic.warning();
+      setToast({ id: Date.now(), text: t("rushSplash"), color: "#0284C7" });
+      return;
+    }
     if (e === "coin") haptic.tap();
     else if (e === "bump") haptic.warning();
     else if (e === "dead") {
@@ -426,14 +431,21 @@ const OB_ART = [
   { src: KOSU.obs.defender, w: 1.75, h: 1.95 },
   { src: KOSU.obs.cones, w: 1.7, h: 1.2 },
   { src: KOSU.obs.referee, w: 0.98, h: 1.95 },
+  { src: KOSU.obs.wall, w: 2.3, h: 1.62 },
+  { src: KOSU.obs.sprinkler, w: 2.1, h: 1.6 },
 ];
+/** the art for an obstacle: a defender drifting across shows as the referee */
+const lookOf = (o: { kind: number; lane: number; moveTo: number }) => {
+  "worklet";
+  return o.kind === 2 && o.moveTo !== o.lane ? 4 : o.kind === 4 ? 5 : o.kind === 5 ? 6 : o.kind;
+};
 
 function ObstacleSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
   const [look, setLook] = useState(0);
   useAnimatedReaction(
     () => {
       const o = state.value.obstacles[i];
-      return o ? (o.kind === 2 && o.moveTo !== o.lane ? 4 : o.kind) : -1;
+      return o ? lookOf(o) : -1;
     },
     (k, prev) => {
       if (k !== prev && k >= 0) runOnJS(setLook)(k);
@@ -445,7 +457,7 @@ function ObstacleSprite({ i, state, W, fx, horizon }: View3D & { i: number }) {
     if (!o || o.z < s.z - 1.2) return { opacity: 0 };
     const p = project(s, obstacleX(o, s.z), 0, o.z, W, fx, horizon);
     if (!p || p.dz > 95) return { opacity: 0 };
-    const a = OB_ART[o.kind === 2 && o.moveTo !== o.lane ? 4 : o.kind];
+    const a = OB_ART[lookOf(o)];
     const w = a.w * p.k;
     const h = a.h * p.k;
     return { opacity: Math.min(1, (95 - p.dz) / 15), zIndex: Math.round(2000 - p.dz * 10), width: w, height: h, left: p.sx - w / 2, top: p.sy - h };
@@ -604,7 +616,7 @@ function Runner({ state, W, fx, horizon, kit }: View3D & { kit: { body: string }
   const aura = useAnimatedStyle(() => {
     const s = state.value;
     const g = project(s, s.x, s.y, s.z, W, fx, horizon)!;
-    const on = s.boots > 0 || s.armband > 0;
+    const on = s.boots > 0 || s.armband > 0 || s.wet > 0;
     const d = C * 0.85;
     return {
       opacity: on ? 0.55 + Math.sin(s.t * 12) * 0.15 : 0,
@@ -613,7 +625,7 @@ function Runner({ state, W, fx, horizon, kit }: View3D & { kit: { body: string }
       width: d,
       height: d,
       borderRadius: d / 2,
-      borderColor: s.boots > 0 ? "#F97316" : "#FACC15",
+      borderColor: s.boots > 0 ? "#F97316" : s.wet > 0 ? "#38BDF8" : "#FACC15",
       zIndex: Math.round(2000 - CAM_BACK * 10) - 1,
     };
   });
