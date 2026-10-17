@@ -19,6 +19,8 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run lint
+      # rules of the pure game modules, engines, daily puzzles unchanged, server privacy helpers
+      - run: npm test
       - run: npm run build
       # the server and web site's own packages (what runs on Fly): a high or critical advisory fails the check
       - run: npm audit --omit=dev --audit-level=high

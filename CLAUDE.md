@@ -12,8 +12,9 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
   use `npm run build && npm start`.
 - `npx tsc --noEmit` and `npm run lint` must stay at 0 errors (lint has 9 known
   warnings, explained in README → Doğrulama). CI runs both plus `npm run build`.
-- No automated tests: verify UI changes in a browser (play a round; reload to check
-  saved progress; two tabs for the online race).
+- `npm test` (node:test, `tests/*.test.mts`, CI runs it): pure game rules, the engines, and a snapshot that the
+  daily puzzles (grid, Missing 11 match, Card Duel) did not reshuffle; update its hashes only on purpose. UI changes
+  are still verified by hand (simulator / browser).
 - Node 22.18+ (`.nvmrc` = 24): the data scripts import `.ts` files directly.
 
 ## Mobile app (`mobile/`), released as Tiktako

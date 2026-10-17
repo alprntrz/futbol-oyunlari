@@ -115,7 +115,7 @@ export function themeForDay(day: number): Theme {
 }
 
 /** a theme is fair if a full hand fits the budget with room to choose */
-function draftable(t: Theme) {
+export function draftable(t: Theme) {
   const pool = CARDS.filter(t.test);
   return pool.length >= 40 && pool.filter((c) => c.tier === 1).length >= 10;
 }
@@ -158,7 +158,19 @@ export function houseHand(theme: Theme, rand: () => number = Math.random): numbe
     }
     if (hand.length === HAND_SIZE) return hand;
   }
-  return shuffle(pool, rand).slice(0, HAND_SIZE).map((c) => c.id);
+  // a theme short of some tier: the dearest cards that still leave room to fill the hand cheaply,
+  // never over budget (the house must play by the same rules)
+  const cheapest = Math.min(...pool.map((c) => c.tier));
+  const hand: number[] = [];
+  let cost = 0;
+  for (const c of shuffle(pool, rand).sort((x, y) => y.tier - x.tier)) {
+    if (hand.length === HAND_SIZE) break;
+    if (cost + c.tier + (HAND_SIZE - hand.length - 1) * cheapest <= BUDGET) {
+      hand.push(c.id);
+      cost += c.tier;
+    }
+  }
+  return hand;
 }
 
 // ── Questions and rounds
