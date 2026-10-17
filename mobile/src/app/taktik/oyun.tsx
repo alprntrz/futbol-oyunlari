@@ -17,6 +17,7 @@ import { Flag } from "~/components/Flag";
 import { CLUB_KITS, ClubShirt } from "~/components/HatTrickBoard";
 import { COST_COLOR, ItemIcon, PosTag, clubCriterion, surname } from "~/components/taktik/Card";
 import { Jersey } from "~/components/Jersey";
+import { CoinFly } from "~/components/taktik/CoinFly";
 import { avatarsOf, LobbyIntro } from "~/components/taktik/LobbyIntro";
 import { Avatar } from "~/components/Avatar";
 import { PlanClock } from "~/components/taktik/PlanClock";
@@ -62,6 +63,9 @@ export default function TaktikGame() {
   /** height left for the board between the top bar and the shop (the pitch fits into it) */
   /** the pitch's measured size (it takes whatever height is left) */
   const [pitchBox, setPitchBox] = useState({ w: 0, h: 0 });
+  /** coins flying into the gold counter after a match: how many are still in the air */
+  const [coins, setCoins] = useState<{ id: number; total: number; left: number; to: { x: number; y: number } } | null>(null);
+  const goldRef = useRef<View | null>(null);
   /** the lobby intro was seen for this game (seed) */
   const [introSeen, setIntroSeen] = useState(() => introShown);
   const scroller = useRef<ScrollView>(null);
@@ -137,6 +141,8 @@ export default function TaktikGame() {
   const onPitch = fielded(me);
   const sh = sheet({ name: me.name, units: me.units, coach: me.coach, augments: me.augments });
   const traits = sh.traits.filter((x) => x.count >= 1 && (x.tier > 0 || x.count >= x.steps[0] - 1));
+  /** completed synergies: their players light up on the pitch */
+  const active = sh.traits.filter((x) => x.tier > 0);
 
 
   const tapUnit = (uid: string) => {
@@ -240,6 +246,15 @@ export default function TaktikGame() {
     return <Text style={{ fontSize: 14 }}>{({ wc: "🏆", ucl: "⭐", ballon: "🥇", euro: "🌍" } as Record<string, string>)[x.id]}</Text>;
   };
 
+  // back from the match: gold it paid flies from the middle of the screen into the counter
+  const closeMatch = () => {
+    setMatch(false);
+    const gold = lobby.last.find((r) => r.home === me.id && r.away === -1)?.drops?.gold ?? 0;
+    if (!gold) return;
+    // once the match screen has faded away
+    setTimeout(() => goldRef.current?.measureInWindow((x, y, w, h) => setCoins({ id: Date.now(), total: Math.min(gold, 8), left: Math.min(gold, 8), to: { x: x + 11, y: y + h / 2 } })), 450);
+  };
+
   const startMatch = () => {
     setSel(null);
     haptic.press();
@@ -302,9 +317,17 @@ export default function TaktikGame() {
             <Image source={TAKTIK.ui.heart} style={styles.statIcon} />
             <Text style={styles.statText}>{Math.max(0, me.hp)}</Text>
           </View>
-          <View ref={tour.ref("gold")} collapsable={false} style={styles.stat}>
+          <View
+            ref={(v) => {
+              tour.ref("gold")(v);
+              goldRef.current = v;
+            }}
+            collapsable={false}
+            style={styles.stat}
+          >
             <Image source={TAKTIK.ui.coin} style={styles.statIcon} />
-            <Text style={styles.statText}>{me.gold}</Text>
+            {/* coins still flying in aren't counted yet */}
+            <Text style={styles.statText}>{me.gold - (coins?.left ?? 0)}</Text>
           </View>
           {/* a streak of 2+ pays extra gold each round: show it */}
           {Math.abs(me.streak) >= 2 && (
@@ -386,14 +409,34 @@ export default function TaktikGame() {
                 );
               return (
                 <Tap key={slot} onPress={() => tapUnit(u.uid)} style={[styles.onPitch, { left: p.x - p.sz, top: p.y - p.sz * 0.8, width: p.sz * 2 }, picked && { transform: [{ translateY: -4 }] }]} accessibilityLabel={u.name}>
+                  {/* the completed synergies he's part of, lit up over his shirt */}
+                  {(() => {
+                    const lit = active.filter((x) => (x.kind === "club" ? u.club === x.id : x.kind === "country" ? u.country === x.id : u.badges.includes(x.id)));
+                    if (!lit.length) return null;
+                    return (
+                      <View style={[styles.lit, { top: -15 }]} pointerEvents="none">
+                        {lit.slice(0, 3).map((x) => (
+                          <View key={`${x.kind}-${x.id}`} style={styles.litChip}>
+                            {traitIcon(x)}
+                          </View>
+                        ))}
+                      </View>
+                    );
+                  })()}
+                  {active.some((x) => (x.kind === "club" ? u.club === x.id : x.kind === "country" ? u.country === x.id : u.badges.includes(x.id))) && (
+                    <View style={[styles.glow, { width: p.sz * 1.15, height: p.sz * 1.15, borderRadius: p.sz * 0.6, top: p.sz * -0.05 }]} pointerEvents="none" />
+                  )}
                   <Shirt club={u.club} size={p.sz} number={NUMBER[slot]} />
                   <View style={[styles.tag, picked && styles.tagPicked, { borderBottomColor: COST_COLOR[u.cost] }]}>
                     <Text style={styles.tagName} numberOfLines={1}>
                       {surname(u.name)}
                     </Text>
-                    <Text style={styles.tagPos}>
-                      {"★".repeat(u.star)} {t(`ttkPos_${u.pos}`)}
-                    </Text>
+                    <View style={styles.tagLine}>
+                      <Flag id={u.country} width={13} />
+                      <Text style={styles.tagPos}>
+                        {"★".repeat(u.star)} {t(`ttkPos_${u.pos}`)}
+                      </Text>
+                    </View>
                   </View>
                   {u.items.length > 0 && (
                     <View style={styles.tagItems}>
@@ -450,7 +493,10 @@ export default function TaktikGame() {
                     <Text style={styles.subName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                       {surname(u.name)}
                     </Text>
-                    <Text style={styles.subPos}>{t(`ttkPos_${u.pos}`)}</Text>
+                    <View style={styles.tagLine}>
+                      <Flag id={u.country} width={12} />
+                      <Text style={styles.subPos}>{t(`ttkPos_${u.pos}`)}</Text>
+                    </View>
                   </Tap>
                 );
               })}
@@ -481,7 +527,10 @@ export default function TaktikGame() {
         {/* the transfer market: price on top, a big shirt, the name and position */}
         <View ref={tour.ref("shop")} collapsable={false} style={{ paddingHorizontal: 12, gap: 8 }}>
           <View style={styles.headRow}>
-            <Text style={[styles.head, { flex: 1 }]}>{t("ttkMarket")}</Text>
+            <Text style={styles.head} numberOfLines={1}>
+              {t("ttkMarket")}
+            </Text>
+            <View style={{ flex: 1 }} />
             {note ?? incomeNote ? (
               <Animated.Text entering={FadeIn} style={styles.note} numberOfLines={1}>
                 {note ?? incomeNote}
@@ -517,7 +566,14 @@ export default function TaktikGame() {
                   <Text style={[styles.shopName, card.scout && { color: "#5B21B6" }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                     {card.scout ? t("ttkScoutShort") : surname(p.name)}
                   </Text>
-                  <Text style={styles.shopPos}>{card.scout ? " " : t(`ttkPos_${p.pos}`)}</Text>
+                  {card.scout ? (
+                    <Text style={styles.shopPos}> </Text>
+                  ) : (
+                    <View style={styles.tagLine}>
+                      <Flag id={p.country} width={14} />
+                      <Text style={styles.shopPos}>{t(`ttkPos_${p.pos}`)}</Text>
+                    </View>
+                  )}
                   <View style={[styles.costBar, { backgroundColor: card.scout ? "#A78BFA" : COST_COLOR[p.cost] }]} />
                   {owned > 0 && (
                     <View style={styles.owned}>
@@ -632,7 +688,9 @@ export default function TaktikGame() {
         </View>
       </Modal>
 
-      {match && <MatchView lobby={lobby} meId={me.id} onClose={() => setMatch(false)} />}
+      {match && <MatchView lobby={lobby} meId={me.id} onClose={closeMatch} />}
+      {/* gold won in the match flies into the counter */}
+      {coins && <CoinFly key={coins.id} count={coins.total} to={coins.to} onLand={() => setCoins((c) => (c && c.left > 1 ? { ...c, left: c.left - 1 } : null))} />}
 
       {/* out of the game */}
       {out && !match && (
@@ -745,6 +803,10 @@ const styles = StyleSheet.create({
   tagPicked: { backgroundColor: "#FEF3C7" },
   tagName: { fontFamily: F.display, fontSize: 14, lineHeight: 16, color: C.text },
   tagPos: { fontSize: 9, fontWeight: "800", color: C.text3, letterSpacing: 0.5 },
+  tagLine: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 3 },
+  lit: { position: "absolute", flexDirection: "row", gap: 2, alignSelf: "center", zIndex: 3 },
+  litChip: { backgroundColor: "white", borderRadius: 999, paddingHorizontal: 3, paddingVertical: 1, borderWidth: 1.5, borderColor: "#22C55E", shadowColor: "#22C55E", shadowOpacity: 0.9, shadowRadius: 5, shadowOffset: { width: 0, height: 0 } },
+  glow: { position: "absolute", alignSelf: "center", backgroundColor: "rgba(250,250,140,0.35)", shadowColor: "#FDE047", shadowOpacity: 0.9, shadowRadius: 10, shadowOffset: { width: 0, height: 0 } },
   tagItems: { position: "absolute", top: 0, right: 4, gap: 1 },
   pills: { position: "absolute", left: 8, right: 8, bottom: 6, flexDirection: "row", justifyContent: "space-between" },
   pill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(255,255,255,0.92)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 },
@@ -766,7 +828,7 @@ const styles = StyleSheet.create({
   grayBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#E2E7E3", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9 },
   grayBtnText: { fontFamily: F.display, fontSize: 17, color: C.text },
   rule: { height: 1, backgroundColor: C.border, marginHorizontal: 12 },
-  note: { color: C.greenMid, fontWeight: "800", fontSize: 12, flexShrink: 1 },
+  note: { position: "absolute", left: 0, right: 0, top: -16, textAlign: "center", color: C.greenMid, fontWeight: "800", fontSize: 12 },
   shop: { flexDirection: "row", gap: 8 },
   shopCard: { alignItems: "center", backgroundColor: "#E8ECE9", borderRadius: 8, paddingTop: 6, paddingBottom: 8, overflow: "hidden" },
   shopGone: { backgroundColor: "transparent", borderWidth: 1.5, borderStyle: "dashed", borderColor: C.border },

@@ -21,6 +21,7 @@ import { TacticsChips } from "./TacticsCard";
 /** one slice of the match; slow enough to follow the ball on the pitch */
 const TICK_MS = 850;
 const KICKOFF_MS = 1600;
+const RESULT_MS = 2800;
 const minute = (slice: number) => Math.round(((slice + 0.6) * 90) / SLICES);
 
 /**
@@ -61,6 +62,14 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
     haptic.press();
     play("pop");
   }, [lastGoals]);
+
+  // full time: the result stays a moment, then it's back to the board by itself (a tap goes sooner)
+  useEffect(() => {
+    if (!done) return;
+    const id = setTimeout(onClose, RESULT_MS);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
   if (!mine) return null;
   const name = (id: number, fallback: string) => (id === -1 ? t("ttkFriendly") : (lobby.managers[id]?.name ?? fallback));
@@ -130,7 +139,7 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
               )}
               {/* full time: the result over the lower half */}
               {done && (
-                <Animated.View entering={FadeIn.duration(260)} style={[styles.result, { width: pitchW * 0.84 }]}>
+                <Animated.View entering={FadeIn.duration(260)} style={[styles.result, { width: pitchW * 0.84 }]} onTouchEnd={onClose}>
                   {pens && (
                     <Text style={[T.caption, { fontWeight: "700" }]}>
                       {t("ttkPens")} {pens[0]} – {pens[1]}
@@ -171,9 +180,6 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
                       ))}
                     </View>
                   )}
-                  <Tap onPress={onClose} style={styles.grayBtn}>
-                    <Text style={styles.grayBtnText}>{t("ttkContinue")}</Text>
-                  </Tap>
                 </Animated.View>
               )}
             </View>
