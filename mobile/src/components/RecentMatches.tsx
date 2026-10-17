@@ -38,7 +38,7 @@ export function RecentMatches() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={T.headline} numberOfLines={1}>
-                  {m.opponent}
+                  {m.opponent || t("opponent")}
                 </Text>
                 <Text style={T.caption}>
                   {game[m.game]} · {date(m.at)}

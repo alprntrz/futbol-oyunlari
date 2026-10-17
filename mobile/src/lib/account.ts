@@ -4,6 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { useSyncExternalStore } from "react";
 import { Platform } from "react-native";
 
+import { stopProgress, syncProgress } from "./progress";
 import { loadAvatar, saveAvatar, type AvatarId } from "./avatar";
 import { loadNick, loadPlayerId, saveNick } from "./nick";
 import { setSessionToken, SOCKET_URL } from "./socket";
@@ -113,7 +114,14 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   return (await res.json()) as T;
 }
 
+/** Game progress on the account (lib/progress.ts). */
+const progressApi = {
+  get: () => api<{ progress: Record<string, string> }>("/progress"),
+  put: (progress: Record<string, string>) => api("/progress", { method: "PUT", body: JSON.stringify({ progress }) }),
+};
+
 async function forget() {
+  stopProgress();
   token = null;
   await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => {});
   await AsyncStorage.removeItem(PENDING_KEY).catch(() => {});
@@ -164,6 +172,7 @@ export async function initAccount() {
     const { user } = await api<{ user: Account }>("/me");
     setAccount(user);
     applyServerTotals(user.xp, user.byGame);
+    syncProgress(progressApi);
   } catch {
     // offline: stay signed in, sync later
     if (account === undefined) setAccount(null);
@@ -186,6 +195,7 @@ async function finishSignIn(provider: "apple" | "google", idToken: string, autho
   }
   setAccount(res.user);
   applyServerTotals(res.user.xp, res.user.byGame);
+  syncProgress(progressApi);
   return res.user;
 }
 

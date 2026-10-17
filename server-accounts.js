@@ -3,7 +3,7 @@
  * the player's XP kept on the server so it follows them to a new phone.
  *
  * Privacy (keep site/privacy.html true): we store the provider + its opaque user
- * id, nickname, avatar id, avatar frame and XP. No e-mail, no name, no IP. Deleting the account
+ * id, nickname, avatar id, avatar frame, XP and the game progress blob (PROGRESS_KEYS). No e-mail, no name, no IP. Deleting the account
  * removes every row and revokes the Apple token.
  *
  * Storage: node:sqlite in ACCOUNTS_DB (default data/accounts.db; on Fly /data).
@@ -83,6 +83,12 @@ db.exec(`
 if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "friend_code")) db.exec("ALTER TABLE users ADD COLUMN friend_code TEXT");
 // avatar frame the player picked ('' = the best their rank has opened)
 if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "frame")) db.exec("ALTER TABLE users ADD COLUMN frame TEXT NOT NULL DEFAULT ''");
+// the phone's progress (match history without opponents, streak, trophies, Daily XI stats, reward
+// calendar, quests, frame pick, Dribbling Rush best): a small JSON blob so it follows the player
+// to a new phone (mobile/src/lib/progress.ts). Never the profile photo or the block list.
+if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "progress")) db.exec("ALTER TABLE users ADD COLUMN progress TEXT NOT NULL DEFAULT ''");
+const PROGRESS_KEYS = new Set(["history-v1", "play-streak-v1", "ht-trophies", "missing11-stats", "daily-rewards-v1", "frame-v1", "quests-v1", "rush-best", "rush-club"]);
+const PROGRESS_MAX = 24 * 1024;
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS users_friend_code ON users (friend_code)");
 
 // jose is ESM-only on some installs; load it lazily
@@ -535,6 +541,23 @@ async function handleAccountApi(req, res, cleanNick) {
         gained = DAILY_BONUS;
       }
       return send(res, 200, { gained, user: publicUser(user) }), true;
+    }
+
+    if (url === "/api/account/progress" && req.method === "GET") {
+      let progress = {};
+      try {
+        progress = user.progress ? JSON.parse(user.progress) : {};
+      } catch {}
+      return send(res, 200, { progress }), true;
+    }
+    if (url === "/api/account/progress" && req.method === "PUT") {
+      const b = await readJson(req);
+      const progress = {};
+      for (const [k, v] of Object.entries(b.progress ?? {})) if (PROGRESS_KEYS.has(k) && typeof v === "string" && v.length <= 8 * 1024) progress[k] = v;
+      const raw = JSON.stringify(progress);
+      if (raw.length > PROGRESS_MAX) return send(res, 413, { error: "too large" }), true;
+      db.prepare("UPDATE users SET progress = ? WHERE id = ?").run(raw, user.id);
+      return send(res, 200, { ok: true }), true;
     }
 
     if (url === "/api/account/profile" && req.method === "PUT") {

@@ -179,6 +179,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - OTA (expo-updates, channel "production", runtimeVersion = app version): JS/asset-only fixes ship with `npm run ota -- "msg"` in
   mobile/ (scripts/ota.mjs injects eas.json's production EXPO_PUBLIC_* env; never run a bare `eas update`). Only builds made after
   expo-updates was added (1.1, build 23+) receive them; native changes still need a store build.
+- Progress sync (signed-in): `lib/progress.ts` merges the account's blob (server-accounts.js `users.progress`, GET/PUT
+  /api/account/progress, whitelist `PROGRESS_KEYS`, history uploaded without opponents) into AsyncStorage at sign-in / start and
+  restarts once if anything came back; uploads a few seconds later and on background. Add a key in both lists (never photo,
+  blocks or the install id) and say so on the privacy page.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`
