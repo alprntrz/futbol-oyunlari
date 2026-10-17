@@ -13,6 +13,8 @@ import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
 
 const MEDAL = ["#FACC15", "#CBD5E1", "#D97706"];
+/** with fewer players than this on a board, only the podium shows (plus your own place): a short list reads as empty */
+const FULL_BOARD_FROM = 10;
 
 /** Overall (XP) and per-game skill ratings across all signed-in players. */
 export function LeaderboardsBody() {
@@ -42,7 +44,9 @@ export function LeaderboardsBody() {
     };
   }, [board, attempt]);
 
-  const meOffList = data?.me && !data.top.some((r) => r.me) ? data.me : null;
+  const small = !!data && data.top.length < FULL_BOARD_FROM;
+  const shownTop = data ? (small ? data.top.slice(0, 3) : data.top) : [];
+  const meOffList = data?.me && !shownTop.some((r) => r.me) ? data.me : null;
 
   return (
     <>
@@ -77,13 +81,15 @@ export function LeaderboardsBody() {
         <Text style={[T.body, styles.empty]}>{t("leaderboardEmpty")}</Text>
       ) : (
         <Card style={{ marginTop: 14, paddingVertical: 4 }}>
-          {data.top.map((r, i) => (
+          {shownTop.map((r, i) => (
             <Animated.View key={`${board}-${r.rank}`} entering={softIn(i, 30)}>
               <Row row={r} board={board} divider={i > 0} />
             </Animated.View>
           ))}
         </Card>
       )}
+
+      {small && data && data.top.length > 0 && <Text style={[T.caption, { marginTop: 8, textAlign: "center" }]}>{t("boardFilling")}</Text>}
 
       {meOffList && (
         <>
