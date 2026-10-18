@@ -13,14 +13,8 @@ const { attachTaktik, ttRooms } = require("./server-taktik");
 const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
 const { refForSocket, addReport, shownNick, cleanBlocks } = require("./server-refs");
 const { handleAppApi } = require("./server-app");
+const { REJOIN_MS, refById, seatRef, seatNick, cleanNick, cleanTier, tierGap, takePairs, codeFor, qzNick, critId, nameOf } = require("./server-core");
 
-// socket id → that player's ref (server-refs.js), so room views can carry it for report / block
-const refById = new Map();
-/** A seat as other phones see it: its ref (house players get a made-up one) and the nickname, hidden if reported enough. */
-const seatRef = (p) => p.ref ?? refById.get(p.id) ?? null;
-const seatNick = (p) => shownNick(seatRef(p), p.nick);
-/** Either of two queued players blocked the other. */
-const blockedPair = (a, b) => !!(a.socket.data.blocks?.has(b.socket.data.ref) || b.socket.data.blocks?.has(a.socket.data.ref));
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -37,41 +31,7 @@ const handle = SOCKETS_ONLY
 /** code -> room */
 const rooms = new Map();
 
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-/**
- * Nicknames are shown to strangers: strip control characters and swap anything
- * offensive (Turkish and English, matched after folding accents and leetspeak)
- * for a neutral name. App Store guideline 1.2 asks for this kind of filtering.
- */
-const NICK_BLOCK = ["amk", "aq", "orospu", "orosbu", "pic", "piç", "sik", "sikis", "sikik", "yarak", "yarrak", "got", "göt", "ibne", "kahpe", "pezevenk", "amcik", "amcık", "siktir", "fuck", "shit", "bitch", "cunt", "dick", "pussy", "nigger", "nigga", "fag", "whore", "slut", "rape", "nazi", "hitler"];
-function cleanNick(nick) {
-  // control, zero-width and text-direction characters (a name could otherwise hide or flip text)
-  const raw = String(nick || "").replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/g, "").trim().slice(0, 20);
-  const folded = raw
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/ı/g, "i")
-    .replace(/0/g, "o").replace(/1/g, "i").replace(/3/g, "e").replace(/4/g, "a").replace(/5/g, "s").replace(/7/g, "t").replace(/@/g, "a").replace(/\$/g, "s")
-    .replace(/[^a-z]/g, "");
-  const words = raw.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ı/g, "i").split(/[^a-z]+/);
-  // very short words only as whole words ("aq" in "aqua", "pic" in "picasso" are fine), the rest anywhere
-  const bad = NICK_BLOCK.some((w) => {
-    const f = w.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ı/g, "i");
-    return f.length <= 3 ? words.includes(f) : folded.includes(f);
-  });
-  return bad ? "player" + Math.floor(100 + Math.random() * 900) : raw;
-}
 
-// Random opponents by rank (tier = rank index of the app's level, 0 = Amateur):
-// same rank first, one rank either side after TIER_WIDEN_MS of waiting, anyone
-// after twice that. The app's own house-player fallback kicks in after 3–6 s (mobile/src/lib/matchmaking.ts).
-const TIER_WIDEN_MS = 1000;
-const cleanTier = (t) => (Number.isInteger(t) && t >= 0 && t < 10 ? t : 0);
-function tierGap(since) {
-  const waited = Date.now() - since;
-  return waited < TIER_WIDEN_MS ? 0 : waited < 2 * TIER_WIDEN_MS ? 1 : 99;
-}
 /**
  * Criteria newer apps added ("mate-…" played with, "coach-…" managed by, "arab-…" Saudi / Egyptian clubs, "hon-…" honour counts and birth decades): the caps
  * a phone needs to draw a Tic-Tac-Toe grid. Older apps send no caps.
@@ -85,34 +45,8 @@ const knowsMates = (s) => ["mate", "coach", "hon"].every((k) => !!s?.data.caps?.
 let ioServer = null;
 const htAllKnowMates = (room) => room.players.every((p) => knowsMates(ioServer?.sockets.sockets.get(p.id)));
 
-/** Pairs whoever in a queue can meet now, oldest first: { pairs: [older, newer][], rest }. */
-function takePairs(queue, same = () => true) {
-  const waiting = queue.filter((w) => w.socket.connected).sort((a, b) => a.since - b.since);
-  const taken = new Set();
-  const pairs = [];
-  for (const a of waiting) {
-    if (taken.has(a)) continue;
-    let best = null;
-    for (const b of waiting) {
-      if (b === a || taken.has(b) || !same(a, b) || blockedPair(a, b)) continue;
-      const gap = Math.abs(a.tier - b.tier);
-      if (gap <= Math.max(tierGap(a.since), tierGap(b.since)) && (!best || gap < Math.abs(a.tier - best.tier))) best = b;
-    }
-    if (best) {
-      taken.add(a).add(best);
-      pairs.push([a, best]);
-    }
-  }
-  return { pairs, rest: waiting.filter((w) => !taken.has(w)) };
-}
 
-function makeCode() {
-  let code = "";
-  for (let i = 0; i < 5; i++) {
-    code += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
-  }
-  return rooms.has(code) ? makeCode() : code;
-}
+const makeCode = () => codeFor(rooms);
 
 function publicRoom(room) {
   return {
@@ -138,8 +72,6 @@ function publicRoom(room) {
 // The host's phone builds the grid and sends criterion ids; both phones
 // validate guesses against the same bundled player list. The server owns the
 // turn, the 45 s clock and the result.
-/** How long a dropped phone has to come back to a live online match. */
-const REJOIN_MS = Number(process.env.REJOIN_MS) || 60_000;
 const HT_TURN_MS = 45_000;
 /** a match is a series: first to this many game wins takes it */
 const HT_TARGET = 3;
@@ -255,10 +187,7 @@ function htTurnMs(room) {
   return HT_TURN_MS + (mover && mover.id === room.comeback ? HT_COMEBACK_MS : 0);
 }
 
-function htCode() {
-  const code = makeCode();
-  return htRooms.has(code) ? htCode() : code;
-}
+const htCode = () => codeFor(htRooms);
 
 
 // ── Quiz (Bilgi Yarışı) rooms ─────────────────────────────────────────────
@@ -279,16 +208,6 @@ const qzRooms = new Map();
 const qzOpen = {};
 const qzLevelOf = (d) => (d === "easy" || d === "hard" ? d : "normal");
 
-const QZ_NAMES = ["lucas", "mateo", "jonas", "luca", "liam", "noah", "oliver", "james", "jack", "harry", "ethan", "leo", "hugo", "louis", "jules", "theo", "enzo", "paul", "felix", "max", "finn", "lukas", "niklas", "matteo", "lorenzo", "marco", "giulia", "sofia", "alejandro", "diego", "pablo", "javi", "lucia", "carlos", "joao", "rafa", "tiago", "bruno", "pedro", "gabriel", "thiago", "nico", "santi", "martina", "valentina", "sven", "lars", "erik", "mats", "anders", "piotr", "kuba", "marek", "ivan", "luka", "nikola", "dmitri", "andrei", "yuki", "kenji", "minjun", "jisoo", "wei", "arjun", "rohan", "omar", "youssef", "karim", "amir", "kofi", "kwame", "chidi", "emma", "chloe", "mia", "ana", "nina", "sara", "eva"];
-const QZ_TAILS = ["", "", "", "7", "9", "10", "11", "22", "23", "99", "88", "04", "12", "_fc", "_10", "_gol", "fc", "_99", "77", "14"];
-function qzNick() {
-  const pick = (xs) => xs[Math.floor(Math.random() * xs.length)];
-  const name = pick(QZ_NAMES);
-  const cased = Math.random() < 0.4 ? name[0].toUpperCase() + name.slice(1) : name;
-  const tail = pick(QZ_TAILS);
-  const sep = tail && !tail.startsWith("_") && Math.random() < 0.25 ? "." : "";
-  return cased + sep + tail;
-}
 
 /** Same rule as quizPoints in src/lib/quiz.ts: 10 when instant, 5 at the buzzer. */
 function qzPoints(ms, limit) {
@@ -467,10 +386,7 @@ function wmNewRoom(code, players) {
   return { code, hidden: WM.wmDeal().name, log: [], hearts: { X: WM.WM_HEARTS, O: WM.WM_HEARTS }, turn: "X", turns: 0, winner: null, endReason: null, started: false, deadline: 0, turnMs: 0, timer: null, players };
 }
 
-function wmCode() {
-  const code = makeCode();
-  return wmRooms.has(code) ? wmCode() : code;
-}
+const wmCode = () => codeFor(wmRooms);
 
 function rdPublic(room) {
   return {
@@ -496,10 +412,7 @@ function rdNewRoom(code, players) {
   return { code, clubs: RD.dealRondo(), round: 0, score: { X: 0, O: 0 }, turn: "X", names: [], roundEnd: null, winner: null, flash: null, jokers: { X: { time: 1 }, O: { time: 1 } }, started: false, deadline: 0, turnMs: 0, timer: null, players };
 }
 
-function rdCode() {
-  const code = makeCode();
-  return rdRooms.has(code) ? rdCode() : code;
-}
+const rdCode = () => codeFor(rdRooms);
 
 function ppResult(owners) {
   if (!owners.every(Boolean)) return null;
@@ -541,10 +454,7 @@ function ppNewRoom(code, board, players) {
   };
 }
 
-function ppCode() {
-  const code = makeCode();
-  return ppRooms.has(code) ? ppCode() : code;
-}
+const ppCode = () => codeFor(ppRooms);
 
 /** Possession hexes that touch (same rule as NEIGHBOURS in mobile/src/lib/possession.ts) */
 const PP_ROWS = [4, 5, 4, 5, 4, 5, 4];
@@ -558,11 +468,8 @@ const PP_NEIGHBOURS = (() => {
 })();
 
 // Grids and boards come from a phone and go to the other phone: short criterion ids only
-const critId = (x) => typeof x === "string" && x.length > 0 && x.length <= 48;
 const htGridOk = (g) => !!g && Array.isArray(g.rows) && Array.isArray(g.cols) && g.rows.length === 3 && g.cols.length === 3 && [...g.rows, ...g.cols].every(critId);
 const ppBoardOk = (b) => Array.isArray(b) && b.length === PP_HEXES && b.every(critId);
-/** a footballer's name as sent by a phone */
-const nameOf = (v) => (typeof v === "string" ? v.trim().slice(0, 60) : "");
 
 // ── Card Duel (Kart Düellosu; rules in src/lib/duel.ts, docs/design/kart-duellosu.md) ──
 // Each phone sends its 7-card hand (card ids). The server deals the questions, keeps
@@ -617,10 +524,7 @@ function dzNewRoom(code, players) {
   return { code, players, started: false, questions: dzQuestions(), round: 0, picks: [null, null], results: [], deadline: 0, timer: null, over: false, rated: false };
 }
 
-function dzCode() {
-  const code = makeCode();
-  return dzRooms.has(code) ? dzCode() : code;
-}
+const dzCode = () => codeFor(dzRooms);
 
 /** What phones see: the questions so far, the played cards, never an unplayed pick. */
 function dzPublic(room) {
