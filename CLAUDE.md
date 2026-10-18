@@ -33,7 +33,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`, incl. `ht:queue` matchmaking:
   server owns turn, 45 s clock and result; the host's phone deals the grid as
   criterion ids; a queue match gets `HT_INTRO_MS` before X's clock for the VS screen,
-  after 20 s an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
+  after 3–6 s (`houseAfterMs`, lib/matchmaking.ts) an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
   `ht:forfeit` end games early; a match is a series, first to `HT_TARGET` = 3 game wins,
   wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
@@ -48,7 +48,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
   data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
   until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5
-  by speed). Random rooms (`qz:queue`) start after 15 s and fill up with house players.
+  by speed). Random rooms (`qz:queue`) start after 8 s (`QZ_FILL_MS`) and fill up with house players.
   Levels/standings: phones send a random install id (`pid`, `loadPlayerId` in `mobile/src/lib/nick.ts`);
   at full time the server adds XP (points + 10 + podium bonus) to `data/quiz-stats.json` (gitignored;
   `QZ_STATS_FILE` overrides) and emits `qz:progress`; `qz:profile` / `qz:standings` read it. House
@@ -187,7 +187,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Rondo (`rd:*`, rules `src/lib/rondo.ts`): a club comes up, the two take turns naming someone who played there (15 s, first turn
   20 s); out of time loses the round, first to 2. The server deals the clubs (`RONDO_CLUBS`: 60+ well-known players) and judges every
   name (`judgeRondo`; loads rondo.ts through server-taktik's "@/" resolver); a wrong name goes back only to the mover (`rd:wrong`).
-  Queue falls back to the house player after 20 s (`useRondoHouse` in `lib/rondoMatch.ts`, same shape as `useRondoOnline`); Elo board
+  Queue falls back to the house player after 3–6 s (`useRondoHouse` in `lib/rondoMatch.ts`, same shape as `useRondoOnline`); Elo board
   "rd", XP source "rd". Screens `app/rondo/`, board `components/RondoBoard.tsx`. Art: `docs/design/rondo-brief.md` →
   `python3 scripts/rondo-assets.py docs/design/rondo-art/originals` → `mobile/assets/brand/rondo/` (`RONDO` in brand.ts).
 - Jokers (fair by design: the same for both players each game / match, never bought, never saved): Tic-Tac-Toe online +

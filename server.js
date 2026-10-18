@@ -58,8 +58,8 @@ function cleanNick(nick) {
 
 // Random opponents by rank (tier = rank index of the app's level, 0 = Amateur):
 // same rank first, one rank either side after TIER_WIDEN_MS of waiting, anyone
-// after twice that. The app's own house-bot fallback still kicks in at 20 s.
-const TIER_WIDEN_MS = 6000;
+// after twice that. The app's own house-player fallback kicks in after 3–6 s (mobile/src/lib/matchmaking.ts).
+const TIER_WIDEN_MS = 1000;
 const cleanTier = (t) => (Number.isInteger(t) && t >= 0 && t < 10 ? t : 0);
 function tierGap(since) {
   const waited = Date.now() - since;
@@ -265,7 +265,7 @@ const QZ_REVEAL_MS = 3000;
 /** the phones animate the old options out and the new ones in before the clock runs */
 const QZ_GAP_MS = 900;
 /** an open random room starts this long after it was opened */
-const QZ_FILL_MS = 15_000;
+const QZ_FILL_MS = 8_000;
 /** code -> quiz room */
 const qzRooms = new Map();
 /** open random rooms, "difficulty:tier" -> code: players meet others on the same quiz level and rank */
@@ -2184,7 +2184,7 @@ app.prepare().then(() => {
       qzOpen[`${level}:${myTier}`] = room.code;
       // a few others "find" the room while it waits
       const joins = 2 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < joins; i++) room.botTimers.push(setTimeout(() => qzAddBot(room), 2500 + Math.random() * (QZ_FILL_MS - 4000)));
+      for (let i = 0; i < joins; i++) room.botTimers.push(setTimeout(() => qzAddBot(room), 1500 + Math.random() * (QZ_FILL_MS - 3000)));
       room.timer = setTimeout(() => {
         if (room.phase !== "lobby") return;
         while (room.players.length < 2) qzAddBot(room);

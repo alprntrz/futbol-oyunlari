@@ -8,6 +8,7 @@ import { MatchSearch } from "~/components/MatchSearch";
 import { Page } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { houseAfterMs } from "~/lib/matchmaking";
 import { GAME_ICON, useSearchActivity } from "~/lib/liveActivity";
 import { houseLook, loadMyLook } from "~/lib/cosmetics";
 import { loadNick, randomNick } from "~/lib/nick";
@@ -15,8 +16,6 @@ import { getSocket } from "~/lib/socket";
 import { F } from "~/lib/theme";
 import { loadTier } from "~/lib/xp";
 
-/** Nobody found by then: play the house bot, which looks and plays like any other opponent. */
-const BOT_AFTER_MS = 20_000;
 
 /** the opponent's rank comes from the server; a house player shows yours */
 type Look = { avatar: string | null; frame: string | null };
@@ -36,7 +35,7 @@ export default function RondoRandom() {
     const id = setTimeout(() => {
       getSocket().emit("rd:unqueue");
       loadTier().then((tier) => setMatched({ kind: "bot", opponent: randomNick(), tier, ...houseLook(tier) }));
-    }, BOT_AFTER_MS);
+    }, houseAfterMs());
     return () => clearTimeout(id);
   }, [matched]);
 

@@ -9,14 +9,13 @@ import { Page } from "~/components/ui";
 import { useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { houseAfterMs } from "~/lib/matchmaking";
 import { houseLook, loadMyLook } from "~/lib/cosmetics";
 import { loadNick, randomNick } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { F } from "~/lib/theme";
 import { loadTier } from "~/lib/xp";
 
-/** Nobody found by then: play the house player, who looks and plays like anyone else. */
-const BOT_AFTER_MS = 20_000;
 
 type Look = { avatar: string | null; frame: string | null };
 type Matched = ({ kind: "room"; code: string; opponent: string; tier: number | null } | { kind: "bot"; opponent: string; tier: number | null }) & Look;
@@ -33,7 +32,7 @@ export default function DuelRandom() {
     const id = setTimeout(() => {
       getSocket().emit("dz:unqueue");
       loadTier().then((tier) => setMatched({ kind: "bot", opponent: randomNick(), tier, ...houseLook(tier) }));
-    }, BOT_AFTER_MS);
+    }, houseAfterMs());
     return () => clearTimeout(id);
   }, [matched]);
 
