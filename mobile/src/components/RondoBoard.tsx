@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -18,6 +19,7 @@ import Animated, {
 import { RONDO_MAX_ROUNDS, RONDO_TARGET } from "@/lib/rondo";
 import { searchPlayers } from "@/lib/tiki";
 
+import { RONDO } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import type { RondoMatch } from "~/lib/rondoMatch";
@@ -133,15 +135,26 @@ export function RondoBoard({
 
       {/* whose turn + clock */}
       <View style={styles.turnRow}>
-        <Text style={[styles.turn, { color: m.myTurn ? C.greenMid : C.coral }]}>
-          {m.over
-            ? ""
-            : m.roundEnd
-              ? " "
-              : m.myTurn
-                ? t("rdYourTurn")
-                : t("rdTheirTurn")}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          {m.myTurn && !m.roundEnd && !m.over && (
+            <Image
+              source={RONDO.turn}
+              style={{ width: 26, height: 20 }}
+              resizeMode="contain"
+            />
+          )}
+          <Text
+            style={[styles.turn, { color: m.myTurn ? C.greenMid : C.coral }]}
+          >
+            {m.over
+              ? ""
+              : m.roundEnd
+                ? " "
+                : m.myTurn
+                  ? t("rdYourTurn")
+                  : t("rdTheirTurn")}
+          </Text>
+        </View>
         {!m.roundEnd && !m.over && m.deadline > 0 && (
           <Text style={[styles.secs, secs <= 5 && { color: C.red }]}>
             {secs}s

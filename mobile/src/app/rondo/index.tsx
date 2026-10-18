@@ -12,7 +12,7 @@ export default function RondoHome() {
   return (
     <GameHub
       title="Rondo"
-      image={RONDO.icon}
+      image={RONDO.hero}
       bg={GAME.rd.bg}
       tagline={t("rdShort")}
       primary={{ label: t("playFind"), icon: "play.fill", fallback: "▶", onPress: () => router.push("/rondo/rastgele") }}

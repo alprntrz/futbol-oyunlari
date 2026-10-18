@@ -216,5 +216,12 @@ export const KOSU = {
   hudGoal: require("../../assets/brand/kosu/hud-goal.png"),
 };
 
-/** Rondo: for now the toy ball of Pitch Chess (an own icon can follow the art brief) */
-export const RONDO = { icon: TAKTIK.ui.ball };
+/** Rondo (docs/design/rondo-brief.md → scripts/rondo-assets.py) */
+export const RONDO = {
+  /** ball in a ring of green / coral arrows: Games tab, Settings */
+  icon: require("../../assets/brand/rondo/rondo-icon.png"),
+  /** toy passing circle from above: the game's hub */
+  hero: require("../../assets/brand/rondo/rondo-hero.png"),
+  /** two speech bubbles and a ball: "your turn" in the match */
+  turn: require("../../assets/brand/rondo/rondo-turn.png"),
+};
