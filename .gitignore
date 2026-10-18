@@ -81,6 +81,7 @@ scripts/.cache/raw-honours.json
 # Dribbling Rush full-size art (22 MB); the app copies live in mobile/assets/brand/kosu (scripts/kosu-assets.py)
 /docs/design/kosu-art/originals/
 /docs/design/rondo-art/originals/
+/docs/design/kimim-art/originals/
 /docs/design/kosu-art/preview-80px.png
 /docs/design/kosu-art/preview-character.png
 /docs/design/kosu-art/preview-run.gif
