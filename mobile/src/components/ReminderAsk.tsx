@@ -5,7 +5,7 @@ import type { TKey } from "@/lib/strings";
 
 import { useI18n } from "~/lib/i18n";
 import { usePlayStreak } from "~/lib/playStreak";
-import { dismissReminderAsk, setRemindersOn, useReminders } from "~/lib/reminders";
+import { dismissReminderAsk, remindersAvailable, setRemindersOn, useReminders } from "~/lib/reminders";
 import { C, T } from "~/lib/theme";
 
 import { Text } from "./Text";
@@ -19,7 +19,7 @@ export function ReminderAsk() {
   const { t } = useI18n();
   const { asked } = useReminders();
   const { playedToday } = usePlayStreak();
-  if (asked || !playedToday) return null;
+  if (asked || !playedToday || !remindersAvailable) return null;
 
   const yes = async () => {
     const on = await setRemindersOn(true);

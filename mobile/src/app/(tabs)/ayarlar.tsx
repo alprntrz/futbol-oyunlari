@@ -15,7 +15,7 @@ import { useI18n } from "~/lib/i18n";
 import { PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
 import { deleteMyData, restartApp } from "~/lib/privacy";
 import { remindersDenied } from "~/components/ReminderAsk";
-import { setRemindersOn, useReminders } from "~/lib/reminders";
+import { remindersAvailable, setRemindersOn, useReminders } from "~/lib/reminders";
 import { play, setSoundsOn, soundsOn } from "~/lib/sound";
 import { C, T } from "~/lib/theme";
 
@@ -110,19 +110,23 @@ export default function SettingsTab() {
         ]}
       />
 
-      <SectionLabel>{t("settingsReminders")}</SectionLabel>
-      <Segmented
-        value={reminders.on ? "on" : "off"}
-        onChange={async (v) => {
-          const on = await setRemindersOn(v === "on");
-          if (v === "on" && !on) remindersDenied(t);
-        }}
-        options={[
-          { value: "on", label: t("soundOn") },
-          { value: "off", label: t("soundOff") },
-        ]}
-      />
-      <Text style={[T.caption, { marginTop: 6 }]}>{t("settingsRemindersNote")}</Text>
+      {remindersAvailable && (
+        <>
+          <SectionLabel>{t("settingsReminders")}</SectionLabel>
+          <Segmented
+            value={reminders.on ? "on" : "off"}
+            onChange={async (v) => {
+              const on = await setRemindersOn(v === "on");
+              if (v === "on" && !on) remindersDenied(t);
+            }}
+            options={[
+              { value: "on", label: t("soundOn") },
+              { value: "off", label: t("soundOff") },
+            ]}
+          />
+          <Text style={[T.caption, { marginTop: 6 }]}>{t("settingsRemindersNote")}</Text>
+        </>
+      )}
 
       <SectionLabel>{t("howToPlay")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
