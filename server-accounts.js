@@ -480,6 +480,8 @@ const PLUS_FOREVER = Date.UTC(2100, 0, 1);
 /** user id → last REST check (ms); a phone can't make us hammer RevenueCat */
 const plusChecked = new Map();
 const PLUS_CHECK_GAP = 30_000;
+/** a phone's "check now" (right after buying / restoring) waits less, but still can't loop */
+const PLUS_FORCE_GAP = 5_000;
 
 /** Ask RevenueCat when this user's Plus ends (0 = none). Throws when RevenueCat can't be reached. */
 async function fetchPlusUntil(userId) {
@@ -498,12 +500,15 @@ async function fetchPlusUntil(userId) {
   return Number.isFinite(until) ? until : 0;
 }
 
-/** Refresh the stored Plus end for a user from RevenueCat; returns the user row (updated) or null. */
-async function refreshPlus(userId, force = false) {
+/**
+ * Refresh the stored Plus end for a user from RevenueCat; returns the user row (updated) or null.
+ * `gap`: skip the REST call when this user was checked less than this long ago (0 = always ask; the webhook).
+ */
+async function refreshPlus(userId, gap = PLUS_CHECK_GAP) {
   const user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
   if (!user) return null;
   const last = plusChecked.get(userId) ?? 0;
-  if (!force && Date.now() - last < PLUS_CHECK_GAP) return user;
+  if (Date.now() - last < gap) return user;
   plusChecked.set(userId, Date.now());
   const until = await fetchPlusUntil(userId);
   if (until !== user.plus_until) {
@@ -530,7 +535,7 @@ async function handleRcWebhook(req, res) {
   const ids = [body?.event?.app_user_id, body?.event?.original_app_user_id, ...(Array.isArray(body?.event?.aliases) ? body.event.aliases : [])].filter(
     (id) => typeof id === "string" && !id.startsWith("$RCAnonymousID:")
   );
-  for (const id of new Set(ids)) await refreshPlus(id, true).catch((e) => console.error(`rc webhook ${id.slice(0, 8)}: ${e.message}`));
+  for (const id of new Set(ids)) await refreshPlus(id, 0).catch((e) => console.error(`rc webhook ${id.slice(0, 8)}: ${e.message}`));
   return send(res, 200, { ok: true }), true;
 }
 
@@ -622,7 +627,7 @@ async function handleAccountApi(req, res, cleanNick) {
     if (url === "/api/account/plus/sync" && req.method === "POST") {
       if (!RC_SECRET) return send(res, 503, { error: "unavailable", plus: isPlus(user), plusUntil: user.plus_until || 0 }), true;
       try {
-        const fresh = (await refreshPlus(user.id, !!(await readJson(req).catch(() => ({}))).force)) ?? user;
+        const fresh = (await refreshPlus(user.id, (await readJson(req).catch(() => ({}))).force ? PLUS_FORCE_GAP : PLUS_CHECK_GAP)) ?? user;
         return send(res, 200, { plus: isPlus(fresh), plusUntil: fresh.plus_until || 0, user: publicUser(fresh) }), true;
       } catch (e) {
         console.error(`plus sync ${user.id.slice(0, 8)}: ${e.message}`);
