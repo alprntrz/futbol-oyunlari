@@ -44,6 +44,9 @@ Durum: [x] kodda hazır · [ ] senin yapman gereken
       ayrı depo `alprntrz/alprntrz.github.io` (alan adının kökü; kök sayfa Tiktako sitesine yönlendirir). Mağaza sayfalarındaki
       geliştirici / pazarlama sitesi `alprntrz.github.io` altında kalmalı ki AdMob dosyayı bulsun. AdMob uygulamayı mağazaya
       bağladıktan sonra "app-ads.txt" sekmesinde doğrulamayı kontrol et.
+
+## 3. RevenueCat + mağaza ürünleri
+
 - [ ] App Store Connect → Abonelikler: grup "Tiktako Plus"; ürünler `tiktako_plus_monthly` (1 ay), `tiktako_plus_yearly`
       (1 yıl, **7 gün ücretsiz deneme** tanıtım teklifi); tüketilmeyen ürün `tiktako_plus_lifetime`. Fiyat: "fiyat
       tablosundan" bölgesel eşitleme (önerilen taban: aylık 3,99 $, yıllık 24,99 $, ömür boyu 59,99 $; Türkiye için
