@@ -1116,13 +1116,18 @@ app.prepare().then(() => {
         { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
         { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
       ]);
-      room.started = true;
       ppRooms.set(room.code, room);
       ppJoinRoom(waiting.socket, room);
       ppJoinRoom(other.socket, room);
-      ppStartTurn(room);
-      const look = (p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null });
+      const look = (p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null });
       io.to("pp:" + room.code).emit("pp:matched", { code: room.code, players: room.players.map(look) });
+      // the phones show the VS intro first; X's clock starts after it
+      setTimeout(() => {
+        if (!ppRooms.has(room.code) || room.started || room.players.length < 2) return;
+        room.started = true;
+        ppStartTurn(room);
+        ppEmit(room);
+      }, HT_INTRO_MS);
     };
 
     socket.on("pp:queue", ({ nick, board, tier, avatar, frame }) => {

@@ -144,7 +144,8 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.
   The match screen opts out of React Compiler memoization because the engine mutates `game`.
-  Possession Play uses `pp:*` (same pattern, two chess clocks;
+  Possession Play uses `pp:*` (same pattern, two chess clocks; random queue → house player after 3–6 s (`app/possession/bot.tsx`,
+  `housePpMove` in lib/possession.ts), a queue match starts X's clock after `HT_INTRO_MS` for the VS intro;
   the mover's phone computes claimed hexes). Football Bingo is offline (daily
   seeded card, `mobile/src/lib/bingo.ts`; `/bingo?practice=1` deals unsaved random cards, XP under the practice cap). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
