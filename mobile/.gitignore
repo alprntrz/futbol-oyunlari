@@ -42,3 +42,6 @@ example
 /ios
 /android
 store.contact.json
+
+# Google Play service account key (eas submit -p android); secret, never commit
+google-play-key.json

@@ -14,71 +14,95 @@ Web sitesi: https://alprntrz.github.io/futbol-oyunlari/ · Gizlilik politikası:
 **Uygulama adı (30):** Tiktako: Futbol Oyunları
 
 **Kısa açıklama (80):**
-Futbolcuyla XOX, ilk 11, bilgi yarışı ve Taktik Tahtası. Arkadaşınla oyna.
+Futbolcuyla XOX, Rondo, Ben Kimim?, bilgi yarışı ve fazlası. Arkadaşınla oyna.
 
 **Tam açıklama (4000):**
 Futbolu izlemek bir şey, bilmek başka. Tiktako futbol bilgini kısa, hızlı ve rekabetçi oyunlara çeviriyor.
 
 TIC-TAC-TOE
-Futbolcuyla XOX. Satır ve sütundaki kulübe, ülkeye ya da kupaya uyan futbolcuyu bul, kareyi kap. 3 oyun alan seriyi kazanır. Arkadaşınla aynı telefonda, kodla online ya da rastgele bir rakiple oyna. Lig seç: Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga, Portekiz, Suudi Pro Ligi, Mısır Ligi.
+Futbolcuyla XOX. Satır ve sütundaki kulübe, ülkeye ya da kupaya uyan futbolcuyu bul, kareyi kap. 3 oyun alan seriyi kazanır. Her oyunda iki joker: +15 saniye ve bir ipucu. Lig seç: Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga, Portekiz, Suudi Arabistan ve Mısır ligleri.
 
-TAKTİK TAHTASI
-Transfer pazarından kadronu kur, aynı kulüp ya da ülkeden oyuncularla sinerji topla, 7 menajere karşı ayakta kalan son kişi ol. 4 arkadaşını aynı lobiye davet et.
+RONDO
+Bir kulüp çıkar; sırayla o kulüpte oynamış bir futbolcu say. Süren biterse turu kaybedersin. 2 turu alan kazanır.
+
+BEN KİMİM?
+İkinize aynı gizli futbolcu verilir. Sırayla evet/hayır sorusu sorun ya da tahmin edin; ilk bilen kazanır.
 
 KART DÜELLOSU
-Bütçeyle 7 futbolcu kartı seç, 7 istatistik turunda rakibinle kapış. Yüksek olan kazanır.
+Günün temasında bütçene göre 7 futbolcu kartı seç, sonra 7 istatistik turunda rakibinle kapış: maç, gol, milli maç, kupa...
 
-EKSİK 11
-Tarihi bir maçın ilk 11'ini tamamla. Her gün yeni bir maç, sınırsız pratik ya da takımını seç. Derbiler, Avrupa geceleri, milli maçlar.
+TAKTİK TAHTASI
+Transfer pazarından kadronu kur, aynı kulüpten ya da milli takımdan oyuncularla sinerji yakala ve 7 menajere karşı son ayakta kalan ol. 4 arkadaşını aynı odaya davet et.
 
 BİLGİ YARIŞI
-5 kişiye kadar online yarış. 10 soru, 15 saniye, 4 şık. Hızlı ve doğru olan kazanır. Seviye atla, haftalık ligde yüksel.
+5 kişiye kadar online yarış: 10 soru, 4 şık. Hızlı ve doğru olan kazanır. Kolay, normal ya da zor seç; haftalık puan durumunda yüksel.
 
-GİZLİ OYUNCU, FUTBOL BINGO, POSSESSION PLAY
-Futbolcuyu ipuçlarından bul, kartı en az futbolcuyla doldur ya da altıgen sahada rakibinin bölgesini çal.
+POSSESSION PLAY
+Altıgen sahada rakibinin bölgesini çal; iki satranç saatiyle oynanır.
+
+TEK BAŞINA
+Eksik 11 (her gün tarihi bir maçın ilk 11'i), Gizli Oyuncu, Futbol Bingo ve Dribbling Rush.
+
+ARKADAŞLAR VE LİG
+Rastgele rakip birkaç saniyede bulunur. Google ile giriş yaparsan: arkadaş ekle ve odana davet et, haftalık ligde yüksel, her online oyunun sıralamasında yerini gör, ilerlemen telefon değiştirince de seninle gelsin. Seviye ve rütbe, günlük görevler, rozetler ve avatar çerçeveleri.
+
+ADİL OYUN
+Jokerler iki oyuncu için de aynı. Satın alınacak hiçbir şey yok.
 
 GİZLİLİK
-Hesap isteğe bağlı, reklam yok, takip yok. Misafir olarak oyna ya da Google ile giriş yapıp ilerlemeni sakla; istediğin an Ayarlar'dan hesabını ve tüm verilerini silebilirsin.
+Hesap isteğe bağlı; reklam ve takip yok. Bir oyuncuyu şikayet edebilir ya da engelleyebilirsin. İstediğin an Ayarlar'dan hesabını ve tüm verilerini silebilirsin.
 
 ### English (en-US)
 
 **App name (30):** Tiktako: Football Games
 
 **Short description (80):**
-Tic-tac-toe with footballers, starting XIs, a quiz and Pitch Chess. Play friends
+Tic-tac-toe with footballers, Rondo, Who Am I?, a quiz and more. Play friends.
 
 **Full description (4000):**
 Watching football is one thing. Knowing it is another. Tiktako turns football knowledge into short, fast, competitive games.
 
 TIC-TAC-TOE
-Noughts and crosses with footballers. Name a player who fits the club, country or trophy in the row and column to take the square. First to 3 games wins the series. Play a friend on one phone, online with a code, or a random opponent. Pick a league: Süper Lig, Premier League, La Liga, Serie A, Bundesliga, Portugal, Saudi Pro League, Egyptian league.
+Noughts and crosses with footballers. Name a player who fits the club, country or trophy in the row and column to take the square. First to 3 games wins the series. Two jokers every game: +15 seconds and a hint. Pick a league: Premier League, La Liga, Serie A, Bundesliga, Portuguese, Turkish, Saudi and Egyptian leagues.
 
-PITCH CHESS
-Build your squad from the transfer market, stack synergies with players from the same club or country, and be the last of 8 managers standing. Invite up to 4 friends into your lobby.
+RONDO
+A club comes up; take turns naming someone who played there. Run out of time and you lose the round. First to 2 rounds wins.
+
+WHO AM I?
+You both get the same hidden footballer. Take turns asking yes/no questions or guessing; the first to name the player wins.
 
 CARD DUEL
-Draft 7 footballer cards on a budget, then beat your rival over 7 stat rounds. Higher wins.
+Draft 7 player cards on a budget under the day's theme, then beat your rival in 7 stat rounds: appearances, goals, caps, trophies...
 
-MISSING 11
-Fill in the starting XI of a classic match. A new match every day, unlimited practice, or pick your team. Derbies, European nights, international finals.
+PITCH CHESS
+Build a squad from the transfer market, chase synergies from the same club or country, and be the last of 8 managers standing. Invite up to 4 friends to the same room.
 
 FOOTBALL QUIZ
-Online quiz for up to 5 players. 10 questions, 15 seconds, 4 options. Fast and right wins. Level up and climb the weekly league.
+Online quiz for up to 5 players: 10 questions, 4 options. Fast and right wins. Pick easy, normal or hard and climb the weekly standings.
 
-MYSTERY PLAYER, FOOTBALL BINGO, POSSESSION PLAY
-Name the footballer from clues, fill the card with the fewest players, or steal your rival's ground on a hex pitch.
+POSSESSION PLAY
+Steal your rival's ground on a hex pitch, played on two chess clocks.
+
+SOLO
+Missing 11 (a classic match's starting XI every day), Mystery Player, Football Bingo and Dribbling Rush.
+
+FRIENDS AND LEAGUES
+A random opponent is found in seconds. Sign in with Google to add friends and invite them to your room, climb the weekly league, see your place on each online game's leaderboard, and keep your progress when you change phones. Levels and ranks, daily quests, badges and avatar frames.
+
+FAIR PLAY
+Jokers are the same for both players. There is nothing to buy.
 
 PRIVACY
-Account optional, no ads, no tracking. Play as a guest, or sign in with Google to keep your progress; you can delete your account and all your data from Settings at any time.
+Account optional; no ads, no tracking. You can report or block any player, and delete your account and all your data from Settings at any time.
 
 ### العربية (ar)
 
 **اسم التطبيق (30):** Tiktako: ألعاب كرة القدم
 
 **وصف قصير (80):**
-إكس-أو بأسماء اللاعبين، التشكيلات، مسابقة وشطرنج الملعب. العب مع أصدقائك.
+إكس-أو بأسماء اللاعبين، روندو، من أنا؟، مسابقة والمزيد. العب مع أصدقائك.
 
-**الوصف الكامل:** نفس نص App Store العربي في `docs/release/metadata.md` (قسم ar-SA)، مع استبدال "Apple أو Google" بـ "Google".
+**الوصف الكامل:** App Store'un Arapça metni (`mobile/store.config.json` → `ar-SA`), "Apple أو Google" yerine "Google" yazılarak.
 
 ## Grafikler
 
@@ -90,7 +114,7 @@ Account optional, no ads, no tracking. Play as a guest, or sign in with Google t
 
 **Gizlilik politikası:** https://alprntrz.github.io/futbol-oyunlari/privacy.html
 
-**Reklamlar:** Uygulamada reklam yok.
+**Reklamlar:** Uygulamada reklam yok (1.1; 1.2'de reklam gelince "Evet").
 
 **Uygulama erişimi:** Tüm işlevler kısıtlama olmadan kullanılabilir (giriş isteğe bağlı; misafir olarak her oyun oynanır).
 
@@ -118,7 +142,12 @@ Toplanan veri türleri (hiçbiri üçüncü taraflarla **paylaşılmıyor**; hi�
 | Kişisel bilgiler → Diğer bilgiler | Takma ad, seçilen hazır avatar ve çerçeve | Online oynayınca | Uygulama işlevselliği |
 | Uygulama etkinliği → Uygulama içi işlemler | XP, seviye, oyun başına puan (Elo), maç ve galibiyet sayısı, haftalık lig | İsteğe bağlı | Uygulama işlevselliği, Hesap yönetimi |
 
-Toplanmayanlar: ad soyad, e-posta, telefon, adres, konum, fotoğraflar (profil fotoğrafı telefondan çıkmaz), kişiler, mesajlar, cihaz kimliği (IMEI/reklam kimliği), tarama geçmişi, çökme/teşhis verisi.
+| Uygulama bilgileri ve performansı → Kilitlenme günlükleri | Anonim hata raporu (hata mesajı, kodda yeri, sürüm, platform; takma ad ya da kimlik yok) | Otomatik, bir ekran çökünce | Uygulama işlevselliği (hata ayıklama) |
+| Kişisel bilgiler → Diğer bilgiler | Şikayet kaydı (zaman, iki anonim tanıtıcı, görülen takma ad, sebep) | Şikayet edince | Güvenlik, uyumluluk |
+
+Toplanmayanlar: ad soyad, e-posta, telefon, adres, konum, fotoğraflar (profil fotoğrafı telefondan çıkmaz), kişiler, mesajlar, cihaz kimliği (IMEI/reklam kimliği), tarama geçmişi.
+
+Not (1.1): reklam ve satın alma bu sürümde yok; 1.2'de bu form AdMob ve RevenueCat için güncellenecek (monetization.md).
 
 Not: IP adresi bağlantı sırasında sunucuya teknik olarak ulaşır ama kaydedilmez (gizlilik sayfası böyle diyor).
 

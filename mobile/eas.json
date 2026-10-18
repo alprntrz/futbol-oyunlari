@@ -20,7 +20,10 @@
         "EXPO_PUBLIC_RC_IOS_KEY": "",
         "EXPO_PUBLIC_RC_ANDROID_KEY": ""
       },
-      "channel": "preview"
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
       "autoIncrement": true,
@@ -48,6 +51,11 @@
       "ios": {
         "ascAppId": "6821740252",
         "metadataPath": "./store.config.js"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-play-key.json",
+        "track": "internal",
+        "releaseStatus": "draft"
       }
     }
   }
