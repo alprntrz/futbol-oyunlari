@@ -52,6 +52,8 @@ interface QzRoom {
   total: number;
   question: { text: L; context: L | null; options: L[] } | null;
   answer: number | null;
+  /** each option's number at the reveal ("who scored more?") */
+  values?: L[] | null;
   remainingMs: number;
   /** random room still filling: ms until it starts anyway (null otherwise; older servers send none) */
   startsInMs?: number | null;
@@ -521,9 +523,14 @@ export default function QuizRoom() {
                   style={[styles.option, { backgroundColor: bg }, bg !== "white" && { borderColor: bg }]}
                   accessibilityLabel={tx(o)}
                 >
-                  <Text style={[styles.optionText, onColour && { color: "white" }]} numberOfLines={2}>
+                  <Text style={[styles.optionText, onColour && { color: "white" }, reveal && !!room.values && { paddingRight: 30 }]} numberOfLines={2}>
                     {tx(o)}
                   </Text>
+                  {reveal && room.values?.[i] && (
+                    <Animated.Text entering={FadeIn.duration(200)} style={[styles.optionValue, onColour && { color: "white" }]}>
+                      {tx(room.values[i])}
+                    </Animated.Text>
+                  )}
                 </Tap>
                 {mine === i && me && (
                   <Animated.View entering={ZoomIn.duration(180)} style={styles.myPick}>
@@ -662,6 +669,7 @@ const styles = StyleSheet.create({
 
   option: { borderRadius: 999, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, minHeight: 52, paddingHorizontal: 44, paddingVertical: 10, alignItems: "center", justifyContent: "center" },
   optionText: { fontSize: 16, fontWeight: "800", color: C.text, textAlign: "center" },
+  optionValue: { position: "absolute", right: 14, fontFamily: F.black, fontSize: 17, color: C.text2 },
   myPick: { position: "absolute", left: -6, top: -8 },
   theirPicks: { position: "absolute", right: -6, top: -8, flexDirection: "row" },
   pointsUp: { position: "absolute", right: 34, top: -26 },

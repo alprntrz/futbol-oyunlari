@@ -105,3 +105,16 @@ test("rondo: clubs are dealt without repeats, answers are judged, the house play
     }
   }
 });
+
+test("quiz 'who has more': the right option has the top number, by a real gap", () => {
+  let seen = 0;
+  for (const level of ["easy", "normal", "hard"] as const) {
+    for (const q of quizQuestions(40, "players", level, seededRandom(level.length * 13)).filter((x) => x.values)) {
+      seen++;
+      const nums = q.values!.map((v) => parseInt(v.en, 10));
+      const top = nums[q.answer];
+      assert.ok(nums.every((n, i) => i === q.answer || n < top), `${q.text.en}: ${q.values!.map((v) => v.en)}`);
+    }
+  }
+  assert.ok(seen > 0);
+});

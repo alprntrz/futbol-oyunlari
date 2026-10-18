@@ -286,6 +286,8 @@ function qzValidQuestions(qs) {
         Array.isArray(q.options) &&
         q.options.length === 4 &&
         q.options.every((o) => qzText(o, 80)) &&
+        // "who has more" questions carry each option's number, shown at the reveal
+        (q.values == null || (Array.isArray(q.values) && q.values.length === 4 && q.values.every((v) => qzText(v, 24)))) &&
         Number.isInteger(q.answer) &&
         q.answer >= 0 &&
         q.answer < 4
@@ -316,6 +318,8 @@ function qzPublic(room, viewer) {
     total: room.questions.length,
     question: showQ ? { text: q.text, context: q.context ?? null, options: q.options } : null,
     answer: room.phase === "reveal" ? q.answer : null,
+    // the numbers would give the answer away: only with it
+    values: room.phase === "reveal" && q?.values ? q.values : null,
     remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : 0,
     // a random room still filling up: how long until it starts anyway (the search screen's countdown ring)
     startsInMs: room.random && room.phase === "lobby" && room.fillAt ? Math.max(0, room.fillAt - Date.now()) : null,
