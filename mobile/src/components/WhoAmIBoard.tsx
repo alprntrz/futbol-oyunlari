@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { Locale, TKey } from "@/lib/strings";
 import { WM_CLUBS, WM_COUNTRIES, WM_DECADES, WM_HONOURS, WM_LEAGUES, WM_MAX_TURNS, WM_POSITIONS, type WmKind, type WmQuestion } from "@/lib/whoami";
 
+import { KIMIM } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import type { WmMatch } from "~/lib/whoamiMatch";
@@ -92,10 +93,11 @@ export function WhoAmIBoard({ m, footer }: { m: WmMatch; footer?: React.ReactNod
       { text: t("htForfeit"), style: "destructive", onPress: m.forfeit },
     ]);
 
-  const hearts = (n: number, color: string) => (
-    <View style={{ flexDirection: "row", gap: 2 }}>
+  // lives: heart-shaped balls, a lost one faded
+  const hearts = (n: number, right = false) => (
+    <View style={{ flexDirection: "row", gap: 3, justifyContent: right ? "flex-end" : "flex-start" }} accessibilityLabel={`${n}/3`}>
       {[0, 1, 2].map((i) => (
-        <Icon key={i} name={i < n ? "heart.fill" : "heart"} size={15} color={i < n ? color : C.border} />
+        <Image key={i} source={KIMIM.life} style={[styles.life, i >= n && { opacity: 0.18 }]} resizeMode="contain" />
       ))}
     </View>
   );
@@ -116,13 +118,13 @@ export function WhoAmIBoard({ m, footer }: { m: WmMatch; footer?: React.ReactNod
       <View style={styles.sides}>
         <View style={styles.side}>
           <Text style={[styles.sideName, { color: C.greenDark }]}>{t("you")}</Text>
-          {hearts(m.hearts.me, C.green)}
+          {hearts(m.hearts.me)}
         </View>
         <View style={[styles.side, { alignItems: "flex-end" }]}>
           <Text style={[styles.sideName, { color: C.coral }]} numberOfLines={1}>
             {m.opponent?.nick || t("opponent")}
           </Text>
-          {hearts(m.hearts.them, C.coral)}
+          {hearts(m.hearts.them, true)}
         </View>
       </View>
       {!m.over && (
@@ -236,6 +238,7 @@ const styles = StyleSheet.create({
   sides: { flexDirection: "row", gap: 12, marginBottom: 8 },
   side: { flex: 1, gap: 4 },
   sideName: { fontFamily: F.display, fontSize: 20 },
+  life: { width: 22, height: 19 },
   turnRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginTop: 6 },
   turn: { fontFamily: F.display, fontSize: 20 },
   secs: { fontFamily: F.black, fontSize: 22, color: C.text },

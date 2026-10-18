@@ -200,7 +200,8 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   question from a fixed menu (club, country, league, position, honour, birth decade; `wmCleanQuestion` / `wmAnswer`) or a guess.
   The server picks the player, answers, and sends the name only once it's over. Both see every answer; a wrong guess costs 1 of
   3 lives, 25 s a move, 24 moves then a draw. House player `useWmHouse` (lib/whoamiMatch.ts, `wmHouseMove` narrows the fits);
-  screens `app/kimim/`, board `components/WhoAmIBoard.tsx`; Elo board / XP "wm". Mystery Player (`gizli.tsx`) stays the solo one.
+  screens `app/kimim/`, board `components/WhoAmIBoard.tsx`; Elo board / XP "wm". Art: `docs/design/kimim-brief.md` →
+  `python3 scripts/kimim-assets.py docs/design/kimim-art/originals` → `mobile/assets/brand/kimim/` (`KIMIM` in brand.ts). Mystery Player (`gizli.tsx`) stays the solo one.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

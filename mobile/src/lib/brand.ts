@@ -225,3 +225,13 @@ export const RONDO = {
   /** two speech bubbles and a ball: "your turn" in the match */
   turn: require("../../assets/brand/rondo/rondo-turn.png"),
 };
+
+/** Who Am I? (docs/design/kimim-brief.md → scripts/kimim-assets.py) */
+export const KIMIM = {
+  /** a shirt with a question mark between two speech bubbles: Games tab, Settings */
+  icon: require("../../assets/brand/kimim/kimim-icon.png"),
+  /** two toy players at a table over a hidden shirt: the game's hub */
+  hero: require("../../assets/brand/kimim/kimim-hero.png"),
+  /** a heart-shaped ball: a life in the match */
+  life: require("../../assets/brand/kimim/kimim-lives.png"),
+};

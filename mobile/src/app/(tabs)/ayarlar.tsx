@@ -7,7 +7,7 @@ import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, Possess
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { deleteAccount, signOut, useAccount } from "~/lib/account";
-import { BRAND, ROZET, TAKTIK, RONDO } from "~/lib/brand";
+import { BRAND, ROZET, TAKTIK, KIMIM, RONDO } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
 import { PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
@@ -27,7 +27,7 @@ export default function SettingsTab() {
     { key: "quiz", title: t("qzName"), image: BRAND.icon.quiz, steps: <QuizSteps /> },
     { key: "pp", title: t("ppName"), image: BRAND.icon.possession, steps: <PossessionSteps /> },
     { key: "rd", title: "Rondo", image: RONDO.icon, steps: <RondoSteps /> },
-    { key: "wm", title: t("wmName"), image: BRAND.icon.mystery, steps: <WhoAmISteps /> },
+    { key: "wm", title: t("wmName"), image: KIMIM.icon, steps: <WhoAmISteps /> },
     { key: "taktik", title: t("ttkName"), image: TAKTIK.hero, steps: <TaktikSteps /> },
     { key: "mystery", title: t("myName"), image: BRAND.icon.mystery, steps: <MysterySteps /> },
     { key: "xi", title: t("missingXI"), image: BRAND.icon.practice, steps: <MissingXISteps /> },
