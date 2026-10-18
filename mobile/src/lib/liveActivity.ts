@@ -116,7 +116,7 @@ export function useMatchActivity(props: MatchActivityProps | null, deepLink?: st
 }
 
 /** SF Symbols per game, shown in the compact Dynamic Island */
-export const GAME_ICON = { ht: "square.grid.3x3.fill", pp: "hexagon.fill", dz: "rectangle.stack.fill", rd: "arrow.triangle.2.circlepath" } as const;
+export const GAME_ICON = { ht: "square.grid.3x3.fill", pp: "hexagon.fill", dz: "rectangle.stack.fill", rd: "arrow.triangle.2.circlepath", wm: "person.fill.questionmark" } as const;
 
 /** A two-player online game as the Live Activity sees it. */
 export interface Duel {

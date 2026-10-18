@@ -25,7 +25,7 @@ export function OnlineLobby({
   joinPayload,
 }: {
   /** socket event prefix: "ht" (Hat-trick), "pp" (Possession Play), "qz" (Quiz) or "dz" (Card Duel) */
-  game: "ht" | "pp" | "qz" | "dz" | "rd";
+  game: "ht" | "pp" | "qz" | "dz" | "rd" | "wm";
   title: string;
   createPayload: () => object;
   /** extra fields a join needs (Card Duel: the joiner's hand) */

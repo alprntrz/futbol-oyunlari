@@ -196,6 +196,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   per match (`qz:joker`, the server picks the two wrong options for that player only); Rondo one +10 s per match (`rd:joker`).
 - Rating change: `recordResult` returns uid → { rating, delta }; server.js `tellElo` emits `elo` to each rated player's socket
   (ht / pp / dz / qz / rd); `components/EloToast.tsx` (root layout) shows "+18 · Tic-Tac-Toe 1034" after the victory screens close.
+- Who Am I? (`wm:*`, rules `src/lib/whoami.ts`): one hidden player (`WM_POOL`, 400 well-known) for both; turns of a yes / no
+  question from a fixed menu (club, country, league, position, honour, birth decade; `wmCleanQuestion` / `wmAnswer`) or a guess.
+  The server picks the player, answers, and sends the name only once it's over. Both see every answer; a wrong guess costs 1 of
+  3 lives, 25 s a move, 24 moves then a draw. House player `useWmHouse` (lib/whoamiMatch.ts, `wmHouseMove` narrows the fits);
+  screens `app/kimim/`, board `components/WhoAmIBoard.tsx`; Elo board / XP "wm". Mystery Player (`gizli.tsx`) stays the solo one.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

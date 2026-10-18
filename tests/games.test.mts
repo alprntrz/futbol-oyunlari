@@ -118,3 +118,35 @@ test("quiz 'who has more': the right option has the top number, by a real gap", 
   }
   assert.ok(seen > 0);
 });
+
+test("who am I: the rules answer questions right, the house player finds the hidden player", async () => {
+  const { WM_POOL, WM_MAX_TURNS, wmAnswer, wmCleanQuestion, wmDeal, wmHouseMove, wmIsRight } = await import("@/lib/whoami");
+  assert.ok(WM_POOL.length >= 200);
+  const messi = WM_POOL.find((p) => p.name === "Lionel Messi")!;
+  assert.ok(messi, "Messi is in the pool");
+  assert.equal(wmAnswer(messi, { kind: "club", id: "barcelona" }), true);
+  assert.equal(wmAnswer(messi, { kind: "country", id: "argentina" }), true);
+  assert.equal(wmAnswer(messi, { kind: "league", id: "es" }), true);
+  assert.equal(wmAnswer(messi, { kind: "born", id: "1980" }), true);
+  assert.equal(wmAnswer(messi, { kind: "club", id: "realmadrid" }), false);
+  assert.ok(wmIsRight("messi", messi));
+  assert.equal(wmCleanQuestion({ kind: "club", id: "nope" }), null);
+  assert.equal(wmCleanQuestion({ kind: "pos", id: "F" })?.id, "F");
+  // the house player, alone, names the hidden player within the turns
+  let solved = 0;
+  for (let g = 0; g < 50; g++) {
+    const r = seededRandom(g + 3);
+    const hidden = wmDeal(r);
+    const log: { q: Parameters<typeof wmAnswer>[1]; yes: boolean }[] = [];
+    const wrong: string[] = [];
+    for (let t = 0; t < WM_MAX_TURNS; t++) {
+      const m = wmHouseMove(log, wrong, r);
+      if (m.kind === "ask") log.push({ q: m.q, yes: wmAnswer(hidden, m.q) });
+      else if (wmIsRight(m.name, hidden)) {
+        solved++;
+        break;
+      } else wrong.push(m.name);
+    }
+  }
+  assert.ok(solved >= 45, `solved ${solved}/50`);
+});

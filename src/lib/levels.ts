@@ -55,6 +55,10 @@ export const XP = {
   /** Rondo (online or the house player) */
   rdWin: 25,
   rdLoss: 8,
+  /** Who Am I? (online or the house player) */
+  wmWin: 25,
+  wmDraw: 12,
+  wmLoss: 8,
   dzDraw: 15,
   dzLoss: 10,
   dzDaily: 20,

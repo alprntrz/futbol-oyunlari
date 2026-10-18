@@ -33,7 +33,8 @@ export function PlayerSearchSheet({
   captionColor?: string;
   used: Set<string>;
   accept: (p: GridPlayer) => boolean;
-  onSubmit: (p: GridPlayer | null) => void;
+  /** null for a wrong answer; `typed` is what was in the box */
+  onSubmit: (p: GridPlayer | null, typed: string) => void;
   onClose: () => void;
 }) {
   const { t } = useI18n();
@@ -60,7 +61,7 @@ export function PlayerSearchSheet({
     const candidates = picked ? [picked] : matchPlayers(text);
     const player = candidates.find((p) => !used.has(p.name) && accept(p)) ?? null;
     setInput("");
-    onSubmit(player);
+    onSubmit(player, text);
   };
 
   return (

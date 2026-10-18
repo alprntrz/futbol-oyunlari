@@ -41,3 +41,11 @@ export function playerInfo(p: GridPlayer, today = new Date()): PlayerInfo {
   const age = yearsBetween(born, today);
   return { pos, age: age > 14 && age < 100 ? age : null, life: null };
 }
+
+/** Birth year, or null when unknown. */
+export function bornYear(p: GridPlayer): number | null {
+  const i = indexOf.get(p);
+  if (i === undefined) return null;
+  const code = BORN.slice(i * 3, i * 3 + 3);
+  return code && code !== "000" ? dateOf(parseInt(code, 36)).getUTCFullYear() : null;
+}

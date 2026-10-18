@@ -25,7 +25,7 @@ const APPLE_AUD = (process.env.APPLE_AUDIENCES || "com.alprntrz.tiktako").split(
 const GOOGLE_AUD = (process.env.GOOGLE_CLIENT_IDS || "").split(",").map((s) => s.trim()).filter(Boolean);
 const DAILY_BONUS = 20;
 // "bonus": daily reward calendar and quests (not a game, kept apart in by_game)
-const GAMES = new Set(["xi", "ht", "qz", "mystery", "bingo", "pp", "tt", "dz", "rd", "bonus"]);
+const GAMES = new Set(["xi", "ht", "qz", "mystery", "bingo", "pp", "tt", "dz", "rd", "wm", "bonus"]);
 // preset ids (mobile/src/lib/avatar.ts); c1..c12 are the colour ids of early v1.1 builds
 const AVATARS = new Set([
   ...["striker", "keeper", "captain", "playmaker", "coach", "fan", "referee", "ball"],
@@ -229,7 +229,7 @@ function inviteCard(userId) {
 
 // ── Skill ratings (Elo) for the online modes: signed-in players only, no bots
 
-const RATED = new Set(["ht", "qz", "pp", "dz", "rd"]);
+const RATED = new Set(["ht", "qz", "pp", "dz", "rd", "wm"]);
 const START = 1000;
 
 function getRating(userId, game) {

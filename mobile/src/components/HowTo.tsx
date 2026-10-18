@@ -180,6 +180,11 @@ export function RondoSteps() {
   return <NumberedRules items={[t("rdRule1"), t("rdRule2"), t("rdRule3")]} note={t("jkRuleRd")} />;
 }
 
+export function WhoAmISteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("wmRule1"), t("wmRule2"), t("wmRule3")]} />;
+}
+
 export function BingoSteps() {
   const { t } = useI18n();
   return <NumberedRules items={[t("bingoRule1"), t("bingoRule2")]} />;

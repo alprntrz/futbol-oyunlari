@@ -22,7 +22,7 @@ export function RecentMatches() {
   );
   if (list.length === 0) return null;
 
-  const game = { ht: t("tikiTakaName"), pp: t("ppName"), dz: t("dzName"), rd: "Rondo" };
+  const game = { ht: t("tikiTakaName"), pp: t("ppName"), dz: t("dzName"), rd: "Rondo", wm: t("wmName") };
   const date = (at: number) => new Date(at).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "short" });
 
   return (

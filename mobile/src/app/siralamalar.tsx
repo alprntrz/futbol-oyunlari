@@ -62,6 +62,7 @@ export function LeaderboardsBody() {
           { value: "pp", label: t("boardPp") },
           { value: "dz", label: t("boardDz") },
           { value: "rd", label: "Rondo" },
+          { value: "wm", label: t("wmName") },
         ]}
       />
       <Text style={[T.caption, { marginTop: 10 }]}>{board === "xp" ? t("boardXpNote") : t("boardRatingNote")}</Text>

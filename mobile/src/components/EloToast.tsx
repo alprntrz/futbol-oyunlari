@@ -56,7 +56,7 @@ export function EloToast() {
   if (!shown) return null;
   const up = shown.delta > 0;
   const color = up ? C.greenMid : shown.delta < 0 ? C.red : C.text2;
-  const names: Record<string, string> = { ht: t("boardHt"), qz: t("boardQz"), pp: t("boardPp"), dz: t("boardDz"), rd: "Rondo" };
+  const names: Record<string, string> = { ht: t("boardHt"), qz: t("boardQz"), pp: t("boardPp"), dz: t("boardDz"), rd: "Rondo", wm: t("wmName") };
   return (
     <Animated.View key={shown.id} entering={FadeInDown.duration(220)} exiting={FadeOutDown.duration(200)} pointerEvents="none" style={[styles.wrap, { bottom: insets.bottom + 96 }]}>
       <View style={styles.pill} accessibilityLiveRegion="polite">

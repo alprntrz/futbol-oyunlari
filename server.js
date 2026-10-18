@@ -428,6 +428,43 @@ import(require("node:url").pathToFileURL(path.join(__dirname, "src", "lib", "ron
 /** pause between rounds (the phones show who took it) */
 const RD_ROUND_GAP_MS = 3_000;
 
+// ── Who Am I? (src/lib/whoami.ts): one hidden player for both, turns of a yes / no question or a
+// guess; the server picks the player, answers every question and keeps the name until the end.
+const wmRooms = new Map();
+let wmQueue = [];
+let WM = null;
+import(require("node:url").pathToFileURL(path.join(__dirname, "src", "lib", "whoami.ts")).href)
+  .then((m) => (WM = m))
+  .catch((e) => console.error("whoami rules:", e?.message));
+
+function wmPublic(room) {
+  return {
+    code: room.code,
+    started: room.started,
+    turn: room.turn,
+    turns: room.turns,
+    maxTurns: WM?.WM_MAX_TURNS ?? 24,
+    remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : 0,
+    turnMs: room.turnMs,
+    hearts: room.hearts,
+    log: room.log,
+    winner: room.winner,
+    endReason: room.endReason,
+    // the answer only once the game is over
+    hidden: room.winner ? room.hidden : null,
+    players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
+  };
+}
+
+function wmNewRoom(code, players) {
+  return { code, hidden: WM.wmDeal().name, log: [], hearts: { X: WM.WM_HEARTS, O: WM.WM_HEARTS }, turn: "X", turns: 0, winner: null, endReason: null, started: false, deadline: 0, turnMs: 0, timer: null, players };
+}
+
+function wmCode() {
+  const code = makeCode();
+  return wmRooms.has(code) ? wmCode() : code;
+}
+
 function rdPublic(room) {
   return {
     code: room.code,
@@ -757,13 +794,16 @@ app.prepare().then(() => {
     const rd = takePairs(rdQueue);
     rdQueue = rd.rest;
     for (const [a, b] of rd.pairs) a.pair(a, b);
+    const wm = takePairs(wmQueue);
+    wmQueue = wm.rest;
+    for (const [a, b] of wm.pairs) a.pair(a, b);
   };
   setInterval(matchQueues, 1000).unref();
 
   // Rooms nobody is connected to any more are cleared once a minute, timers included
   const alive = (id) => io.sockets.sockets.has(id);
   setInterval(() => {
-    for (const map of [rooms, htRooms, ppRooms, dzRooms, rdRooms]) {
+    for (const map of [rooms, htRooms, ppRooms, dzRooms, rdRooms, wmRooms]) {
       for (const [code, room] of map) {
         if (room.players.some((p) => alive(p.id))) continue;
         clearTimeout(room.timer);
@@ -855,7 +895,7 @@ app.prepare().then(() => {
     socket.on("fr:invite", ({ to, game, room }, cb) => {
       const uid = socket.data.uid;
       const open =
-        game === "ht" ? htRooms.has(String(room).toUpperCase()) : game === "tt" ? ttRooms.get(String(room).toUpperCase())?.phase === "lobby" : game === "rd" ? rdRooms.get(String(room).toUpperCase())?.started === false : false;
+        game === "ht" ? htRooms.has(String(room).toUpperCase()) : game === "tt" ? ttRooms.get(String(room).toUpperCase())?.phase === "lobby" : game === "rd" ? rdRooms.get(String(room).toUpperCase())?.started === false : game === "wm" ? wmRooms.get(String(room).toUpperCase())?.started === false : false;
       if (!uid || typeof room !== "string" || !open) return cb?.({ ok: false });
       if (Date.now() - (socket.data.lastInvite ?? 0) < 3000) return cb?.({ ok: false, error: "slow" });
       const friend = friendIdByCode(uid, to);
@@ -1283,6 +1323,154 @@ app.prepare().then(() => {
       dropLater("rd", () => !!room && room.started && !room.winner && room.players.length === 2, rdDrop)(reason);
     });
 
+    // ── Who Am I? ──
+    const wmEmit = (room) => io.to("wm:" + room.code).emit("wm:update", wmPublic(room));
+    const wmEnd = (room, winner, reason) => {
+      clearTimeout(room.timer);
+      room.deadline = 0;
+      room.winner = winner;
+      room.endReason = reason;
+      rateDuel("wm", room, winner);
+      wmEmit(room);
+    };
+    // next turn, or a draw once the turns run out
+    const wmNext = (room) => {
+      room.turns++;
+      if (room.turns >= WM.WM_MAX_TURNS) return wmEnd(room, "draw", "turns");
+      room.turn = room.turn === "X" ? "O" : "X";
+      wmStartTurn(room);
+      wmEmit(room);
+    };
+    const wmStartTurn = (room) => {
+      clearTimeout(room.timer);
+      room.turnMs = WM.WM_TURN_MS;
+      room.deadline = Date.now() + WM.WM_TURN_MS;
+      // out of time: the turn passes (no heart lost)
+      room.timer = setTimeout(() => {
+        if (!wmRooms.has(room.code) || room.winner) return;
+        room.log.push({ mark: room.turn, timeout: true });
+        wmNext(room);
+      }, WM.WM_TURN_MS);
+    };
+    const wmBegin = (room) => {
+      room.started = true;
+      room.turn = "X";
+      wmStartTurn(room);
+      wmEmit(room);
+    };
+    const wmJoinRoom = (s, room) => {
+      s.data.wmCode = room.code;
+      s.join("wm:" + room.code);
+    };
+    const wmMine = () => {
+      const room = wmRooms.get(socket.data.wmCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      return room && me && room.started && !room.winner && room.players.length === 2 && room.turn === me.mark ? { room, me } : null;
+    };
+
+    socket.on("wm:create", ({ nick }, cb) => {
+      if (!WM) return cb?.({ ok: false, error: "not_ready" });
+      dropLoneRoom(wmRooms, socket.data.wmCode, socket);
+      const room = wmNewRoom(wmCode(), [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }]);
+      wmRooms.set(room.code, room);
+      wmJoinRoom(socket, room);
+      cb?.({ ok: true, room: wmPublic(room) });
+    });
+    socket.on("wm:join", ({ code, nick }, cb) => {
+      const room = wmRooms.get(String(code || "").toUpperCase());
+      if (!room) return cb?.({ ok: false, error: "not_found" });
+      if (!room.players.some((p) => p.id === socket.id)) {
+        if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
+        room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: room.players[0]?.mark === "X" ? "O" : "X" });
+      }
+      wmJoinRoom(socket, room);
+      wmEmit(room);
+      cb?.({ ok: true, room: wmPublic(room) });
+    });
+    socket.on("wm:start", () => {
+      const room = wmRooms.get(socket.data.wmCode);
+      if (!room || room.started || room.players.length < 2 || room.players[0].id !== socket.id) return;
+      wmBegin(room);
+    });
+    // a question from the menu: the server answers it for both to see
+    socket.on("wm:ask", ({ q }) => {
+      const at = wmMine();
+      const question = at && WM.wmCleanQuestion(q);
+      if (!at || !question) return;
+      const hidden = WM.wmByName(at.room.hidden);
+      at.room.log.push({ mark: at.me.mark, q: question, yes: !!hidden && WM.wmAnswer(hidden, question) });
+      wmNext(at.room);
+    });
+    // naming the player: right wins, wrong costs a heart (the last one loses)
+    socket.on("wm:guess", ({ name }) => {
+      const at = wmMine();
+      const guess = nameOf(name);
+      if (!at || !guess) return;
+      const hidden = WM.wmByName(at.room.hidden);
+      const right = !!hidden && WM.wmIsRight(guess, hidden);
+      at.room.log.push({ mark: at.me.mark, guess, right });
+      if (right) return wmEnd(at.room, at.me.mark, "named");
+      at.room.hearts[at.me.mark]--;
+      if (at.room.hearts[at.me.mark] <= 0) return wmEnd(at.room, at.me.mark === "X" ? "O" : "X", "hearts");
+      wmNext(at.room);
+    });
+    socket.on("wm:forfeit", () => {
+      const room = wmRooms.get(socket.data.wmCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || !room.started || room.winner || room.players.length < 2) return;
+      wmEnd(room, me.mark === "X" ? "O" : "X", "forfeit");
+    });
+    socket.on("wm:rematch", () => {
+      const room = wmRooms.get(socket.data.wmCode);
+      if (!room || !room.winner || room.players.length < 2 || room.players[0].id !== socket.id) return;
+      const players = room.players.map((p) => ({ ...p, mark: p.mark === "X" ? "O" : "X" }));
+      Object.assign(room, wmNewRoom(room.code, players));
+      wmBegin(room);
+    });
+    const wmPair = (waiting, other) => {
+      const room = wmNewRoom(wmCode(), [
+        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
+        { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
+      ]);
+      wmRooms.set(room.code, room);
+      wmJoinRoom(waiting.socket, room);
+      wmJoinRoom(other.socket, room);
+      io.to("wm:" + room.code).emit("wm:matched", { code: room.code, players: wmPublic(room).players });
+      setTimeout(() => wmRooms.has(room.code) && !room.started && room.players.length === 2 && wmBegin(room), HT_INTRO_MS);
+    };
+    socket.on("wm:queue", ({ nick, tier, avatar, frame }) => {
+      if (!WM) return;
+      wmQueue = wmQueue.filter((w) => w.socket.id !== socket.id);
+      wmQueue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: wmPair });
+      matchQueues();
+    });
+    socket.on("wm:unqueue", () => {
+      wmQueue = wmQueue.filter((w) => w.socket.id !== socket.id);
+    });
+    const wmDrop = () => {
+      wmQueue = wmQueue.filter((w) => w.socket.id !== socket.id);
+      const room = wmRooms.get(socket.data.wmCode);
+      if (!room) return;
+      socket.data.wmCode = null;
+      socket.leave("wm:" + room.code);
+      const leaver = room.players.find((p) => p.id === socket.id);
+      if (leaver && room.started && !room.winner && room.players.length === 2) rateDuel("wm", room, leaver.mark === "X" ? "O" : "X");
+      room.players = room.players.filter((p) => p.id !== socket.id);
+      clearTimeout(room.timer);
+      if (room.players.length === 0) wmRooms.delete(room.code);
+      else {
+        room.started = false;
+        room.deadline = 0;
+        io.to("wm:" + room.code).emit("wm:peer-left", wmPublic(room));
+      }
+    };
+    socket.on("wm:leave", wmDrop);
+    socket.on("disconnect", (reason) => {
+      wmQueue = wmQueue.filter((w) => w.socket.id !== socket.id);
+      const room = wmRooms.get(socket.data.wmCode);
+      dropLater("wm", () => !!room && room.started && !room.winner && room.players.length === 2, wmDrop)(reason);
+    });
+
     // ── Live Activity: the token of this phone's activity for the match it's in, and whether the app is open
     socket.on("la:token", ({ game, token, s }) => {
       if (!["ht", "pp", "dz"].includes(game) || typeof token !== "string" || token.length > 200) return;
@@ -1313,7 +1501,7 @@ app.prepare().then(() => {
     const EMOTES = new Set(["clap", "wow", "laugh", "fire", "gg", "think", "cry", "cool"]);
     socket.on("em:send", ({ game, emote }) => {
       if (!EMOTES.has(emote) || Date.now() - (socket.data.lastEmote ?? 0) < 1500) return;
-      const code = game === "ht" ? socket.data.htCode : game === "pp" ? socket.data.ppCode : game === "dz" ? socket.data.dzCode : game === "rd" ? socket.data.rdCode : null;
+      const code = game === "ht" ? socket.data.htCode : game === "pp" ? socket.data.ppCode : game === "dz" ? socket.data.dzCode : game === "rd" ? socket.data.rdCode : game === "wm" ? socket.data.wmCode : null;
       if (!code) return;
       socket.data.lastEmote = Date.now();
       socket.to(game + ":" + code).emit("em:recv", { game, emote });
@@ -1496,7 +1684,7 @@ app.prepare().then(() => {
     // the match as it is now.
     const rk = typeof socket.handshake.auth?.rk === "string" && /^[A-Za-z0-9]{16,40}$/.test(socket.handshake.auth.rk) ? socket.handshake.auth.rk : null;
     socket.data.rk ??= rk;
-    const views = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic], rd: [rdRooms, rdPublic] };
+    const views = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic], rd: [rdRooms, rdPublic], wm: [wmRooms, wmPublic] };
     const welcomeBack = (prevId, data) => {
       let back = false;
       for (const [game, [map, view]] of Object.entries(views)) {
@@ -1527,7 +1715,7 @@ app.prepare().then(() => {
         welcomeBack(prev, data);
         if (old) {
           // the old connection is a ghost now: it must not leave the rooms it handed over
-          old.data.htCode = old.data.ppCode = old.data.dzCode = old.data.rdCode = null;
+          old.data.htCode = old.data.ppCode = old.data.dzCode = old.data.rdCode = old.data.wmCode = null;
           old.disconnect(true);
         }
       }

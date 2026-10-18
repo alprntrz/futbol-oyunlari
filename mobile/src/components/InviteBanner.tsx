@@ -17,7 +17,7 @@ import { Tap } from "./ui";
 
 type From = { nick: string; avatar: string; frame?: string; code: string } | null;
 /** a room invite, or "X added you as a friend" (`fr:added`) */
-type Invite = { kind: "invite"; from: From; game: "ht" | "tt" | "rd"; room: string } | { kind: "added"; from: From };
+type Invite = { kind: "invite"; from: From; game: "ht" | "tt" | "rd" | "wm"; room: string } | { kind: "added"; from: From };
 
 /** Banners hide on their own after this. */
 const SHOW_MS = 20_000;
@@ -43,7 +43,7 @@ export function InviteBanner() {
       play("pop");
       setInvite(i);
     };
-    const onInvite = (i: { from: From; game: "ht" | "tt" | "rd"; room: string }) => show({ kind: "invite", ...i });
+    const onInvite = (i: { from: From; game: "ht" | "tt" | "rd" | "wm"; room: string }) => show({ kind: "invite", ...i });
     const onAdded = ({ from }: { from: From }) => show({ kind: "added", from });
     socket.on("fr:invited", onInvite);
     socket.on("fr:added", onAdded);
@@ -70,6 +70,7 @@ export function InviteBanner() {
     // Tic-Tac-Toe room, or a Pitch Chess lobby
     if (invite.kind === "invite" && invite.game === "tt") router.push({ pathname: "/taktik/lobi", params: { code: invite.room } });
     else if (invite.kind === "invite" && invite.game === "rd") router.push({ pathname: "/rondo/oda/[code]", params: { code: invite.room } });
+    else if (invite.kind === "invite" && invite.game === "wm") router.push({ pathname: "/kimim/oda/[code]", params: { code: invite.room } });
     else if (invite.kind === "invite") router.push({ pathname: "/hat-trick/oda/[code]", params: { code: invite.room } });
     else router.push("/arkadaslar");
   };
@@ -83,7 +84,7 @@ export function InviteBanner() {
             {t(invite.kind === "invite" ? "inviteTitle" : "friendAddedTitle").replace("{nick}", nick)}
           </Text>
           <Text style={T.caption} numberOfLines={1}>
-            {invite.kind === "invite" ? t(invite.game === "tt" ? "inviteBodyTt" : invite.game === "rd" ? "inviteBodyRd" : "inviteBody").replace("{code}", invite.room) : t("friendAddedBody")}
+            {invite.kind === "invite" ? t(invite.game === "tt" ? "inviteBodyTt" : invite.game === "rd" ? "inviteBodyRd" : invite.game === "wm" ? "inviteBodyWm" : "inviteBody").replace("{code}", invite.room) : t("friendAddedBody")}
           </Text>
         </View>
         <Tap onPress={() => setInvite(null)} style={styles.later} accessibilityLabel={t("inviteLater")}>
