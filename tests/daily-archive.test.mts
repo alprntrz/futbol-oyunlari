@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { dailyMatch, dailyMatchFor, dateOfDay, dayNumber } from "../src/lib/daily.ts";
+import { dailyMatch, dailyMatchFor, dateOfDay, dayNumber } from "@/lib/daily";
 
 // The archive (mobile/src/app/arsiv.tsx) opens past days by day number: these two helpers must agree
 // with dailyMatch / dayNumber in every time zone CI or a laptop happens to run in.

@@ -656,6 +656,24 @@ function liveDz(room) {
   });
 }
 
+/**
+ * The two-player online games as the shared plumbing sees them (reconnect, room sweep, random
+ * queues, emotes, invites). Each one's rooms live in `rooms`, a seat's room code in
+ * `socket.data[id + "Code"]` and its socket.io room is `id + ":" + code`; `view` is what the
+ * phones get as `id + ":update"`. `pairOk` limits who may meet in the queue; `invitable` says a
+ * friend can still be invited into a room (none: no invites). A new game adds one entry here.
+ */
+const GAMES = [
+  { id: "ht", rooms: htRooms, view: htPublic, queue: () => htQueue, setQueue: (q) => (htQueue = q), invitable: () => true,
+    // the older player's grid is used: the other phone must be able to draw it
+    pairOk: (a, b) => a.league === b.league && canDraw(b.socket, a.grid) },
+  { id: "pp", rooms: ppRooms, view: ppPublic, queue: () => ppQueue, setQueue: (q) => (ppQueue = q) },
+  { id: "dz", rooms: dzRooms, view: dzPublic, queue: () => dzQueue, setQueue: (q) => (dzQueue = q) },
+  { id: "rd", rooms: rdRooms, view: rdPublic, queue: () => rdQueue, setQueue: (q) => (rdQueue = q), invitable: (room) => room.started === false },
+  { id: "wm", rooms: wmRooms, view: wmPublic, queue: () => wmQueue, setQueue: (q) => (wmQueue = q), invitable: (room) => room.started === false },
+];
+const gameById = (id) => GAMES.find((g) => g.id === id);
+
 (app ? app.prepare() : Promise.resolve()).then(() => {
   const server = createServer(async (req, res) => {
     // /api/account/*: sign-in and the account's XP (server-accounts.js); the rest is the Next site
@@ -694,29 +712,18 @@ function liveDz(room) {
 
   // pair waiting players as their allowed rank gap widens with time
   const matchQueues = () => {
-    // the older player's grid is used: the other phone must be able to draw it
-    const ht = takePairs(htQueue, (a, b) => a.league === b.league && canDraw(b.socket, a.grid));
-    htQueue = ht.rest;
-    for (const [a, b] of ht.pairs) a.pair(a, b);
-    const pp = takePairs(ppQueue);
-    ppQueue = pp.rest;
-    for (const [a, b] of pp.pairs) a.pair(a, b);
-    const dz = takePairs(dzQueue);
-    dzQueue = dz.rest;
-    for (const [a, b] of dz.pairs) a.pair(a, b);
-    const rd = takePairs(rdQueue);
-    rdQueue = rd.rest;
-    for (const [a, b] of rd.pairs) a.pair(a, b);
-    const wm = takePairs(wmQueue);
-    wmQueue = wm.rest;
-    for (const [a, b] of wm.pairs) a.pair(a, b);
+    for (const g of GAMES) {
+      const { pairs, rest } = takePairs(g.queue(), g.pairOk);
+      g.setQueue(rest);
+      for (const [a, b] of pairs) a.pair(a, b);
+    }
   };
   setInterval(matchQueues, 1000).unref();
 
   // Rooms nobody is connected to any more are cleared once a minute, timers included
   const alive = (id) => io.sockets.sockets.has(id);
   setInterval(() => {
-    for (const map of [rooms, htRooms, ppRooms, dzRooms, rdRooms, wmRooms]) {
+    for (const map of [rooms, ...GAMES.map((g) => g.rooms)]) {
       for (const [code, room] of map) {
         if (room.players.some((p) => alive(p.id))) continue;
         clearTimeout(room.timer);
@@ -807,8 +814,9 @@ function liveDz(room) {
     // with Join. Only between friends (friend codes), at most one every 3 s.
     socket.on("fr:invite", ({ to, game, room }, cb) => {
       const uid = socket.data.uid;
-      const open =
-        game === "ht" ? htRooms.has(String(room).toUpperCase()) : game === "tt" ? ttRooms.get(String(room).toUpperCase())?.phase === "lobby" : game === "rd" ? rdRooms.get(String(room).toUpperCase())?.started === false : game === "wm" ? wmRooms.get(String(room).toUpperCase())?.started === false : false;
+      const code = String(room).toUpperCase();
+      const g = gameById(game);
+      const open = game === "tt" ? ttRooms.get(code)?.phase === "lobby" : !!g?.invitable && g.rooms.has(code) && g.invitable(g.rooms.get(code));
       if (!uid || typeof room !== "string" || !open) return cb?.({ ok: false });
       if (Date.now() - (socket.data.lastInvite ?? 0) < 3000) return cb?.({ ok: false, error: "slow" });
       const friend = friendIdByCode(uid, to);
@@ -1419,7 +1427,7 @@ function liveDz(room) {
     const EMOTES = new Set(["clap", "wow", "laugh", "fire", "gg", "think", "cry", "cool"]);
     socket.on("em:send", ({ game, emote }) => {
       if (!EMOTES.has(emote) || Date.now() - (socket.data.lastEmote ?? 0) < 1500) return;
-      const code = game === "ht" ? socket.data.htCode : game === "pp" ? socket.data.ppCode : game === "dz" ? socket.data.dzCode : game === "rd" ? socket.data.rdCode : game === "wm" ? socket.data.wmCode : null;
+      const code = gameById(game) ? socket.data[game + "Code"] : null;
       if (!code) return;
       socket.data.lastEmote = Date.now();
       socket.to(game + ":" + code).emit("em:recv", { game, emote });
@@ -1602,10 +1610,9 @@ function liveDz(room) {
     // the match as it is now.
     const rk = typeof socket.handshake.auth?.rk === "string" && /^[A-Za-z0-9]{16,40}$/.test(socket.handshake.auth.rk) ? socket.handshake.auth.rk : null;
     socket.data.rk ??= rk;
-    const views = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic], rd: [rdRooms, rdPublic], wm: [wmRooms, wmPublic] };
     const welcomeBack = (prevId, data) => {
       let back = false;
-      for (const [game, [map, view]] of Object.entries(views)) {
+      for (const { id: game, rooms: map, view } of GAMES) {
         const room = map.get(data[game + "Code"]);
         const seat = room?.players.find((p) => p.id === prevId);
         if (!seat) continue;
@@ -1633,7 +1640,7 @@ function liveDz(room) {
         welcomeBack(prev, data);
         if (old) {
           // the old connection is a ghost now: it must not leave the rooms it handed over
-          old.data.htCode = old.data.ppCode = old.data.dzCode = old.data.rdCode = old.data.wmCode = null;
+          for (const g of GAMES) old.data[g.id + "Code"] = null;
           old.disconnect(true);
         }
       }
