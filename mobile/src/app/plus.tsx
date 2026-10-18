@@ -1,6 +1,6 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Linking, Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Alert, Linking, Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { PLUS_FOREVER, PLUS_PERKS, type PlusPerk } from "@/lib/plus";
@@ -70,7 +70,17 @@ export default function PlusScreen() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: t("plusName") }} />
+      {/* the hero carries the name (no repeated title); the modal gets a close button */}
+      <Stack.Screen
+        options={{
+          title: "",
+          headerRight: () => (
+            <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel={t("close")}>
+              <Icon name="xmark" size={20} color={C.text} fallback="✕" />
+            </Pressable>
+          ),
+        }}
+      />
 
       {/* Hero */}
       <View style={styles.hero}>

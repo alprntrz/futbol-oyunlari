@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
-import { Platform } from "react-native";
+import { NativeModules, Platform, TurboModuleRegistry } from "react-native";
 
 import { PLUS_ENTITLEMENT, PLUS_FOREVER, type PlusPlan } from "@/lib/plus";
 
@@ -53,6 +53,9 @@ const emit = () => listeners.forEach((fn) => fn());
 
 function purchases(): Purchases["default"] | null {
   if (!MONETIZE || !API_KEY) return null;
+  // no native module (Expo Go): don't even require() it — a throw inside a late require() becomes a red
+  // screen in dev instead of reaching the catch (see lib/ads.ts adsModule)
+  if (!TurboModuleRegistry.get("RNPurchases") && !NativeModules.RNPurchases) return null;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return (require("react-native-purchases") as Purchases).default;

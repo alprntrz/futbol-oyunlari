@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { Platform } from "react-native";
+import { Platform, TurboModuleRegistry } from "react-native";
 
 import { dayNumber } from "@/lib/daily";
 import { AD_RULES } from "@/lib/plus";
@@ -43,6 +43,10 @@ const UNITS = {
 
 function adsModule(): Ads | null {
   if (!MONETIZE) return null;
+  // Expo Go / a build without the plugin: the module's own getEnforcing() would throw, and a throw inside
+  // a require() made after start-up is reported by Metro as a fatal error (red screen) instead of reaching
+  // our catch, so ask the registry first (null when the native side isn't there).
+  if (!TurboModuleRegistry.get("RNGoogleMobileAdsModule")) return null;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require("react-native-google-mobile-ads") as Ads;

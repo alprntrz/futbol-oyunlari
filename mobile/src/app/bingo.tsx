@@ -130,15 +130,20 @@ export default function Bingo() {
   if (!run) {
     return (
       <GameHub
-        title={t("bingoName")}
+        title={past !== null ? `${t("bingoName")} #${day % 1000}` : t("bingoName")}
         image={BRAND.icon.bingo}
         bg={GAME.bingo.bg}
         tagline={t("bingoShort")}
         primary={{ label: t("bingoStart"), icon: "play.fill", fallback: "▶", onPress: () => setRun(freshRun()) }}
-        secondary={[
-          { label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice },
-          { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
-        ]}
+        secondary={
+          // a past day came from the archive: no way back into it from here
+          past !== null
+            ? [{ label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice }]
+            : [
+                { label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice },
+                { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
+              ]
+        }
         rules={<BingoSteps />}
       />
     );
