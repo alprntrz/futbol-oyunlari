@@ -1,5 +1,7 @@
 /**
- * Custom Next.js server with Socket.IO for online race rooms.
+ * Custom Next.js server with Socket.IO for the online games (each in server-games/, Pitch Chess in
+ * server-taktik.js) and the shared plumbing: reconnect, matchmaking, report / block, invites,
+ * emotes, Live Activity. Plan and layout: docs/server-bolme-plani.md.
  * Run with: npm run dev  (see package.json scripts)
  */
 const crypto = require("crypto");
@@ -15,10 +17,11 @@ const pp = require("./server-games/pp");
 const dz = require("./server-games/dz");
 const rd = require("./server-games/rd");
 const qz = require("./server-games/qz");
+const race = require("./server-games/race");
 const { handleAccountApi, handleRcWebhook, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
 const { refForSocket, addReport, cleanBlocks } = require("./server-refs");
 const { handleAppApi } = require("./server-app");
-const { REJOIN_MS, setIo, refById, cleanNick, takePairs, codeFor, qzNick } = require("./server-core");
+const { REJOIN_MS, setIo, refById, cleanNick, takePairs, qzNick } = require("./server-core");
 
 
 const dev = process.env.NODE_ENV !== "production";
@@ -32,32 +35,6 @@ const handle = SOCKETS_ONLY
       res.end();
     }
   : app.getRequestHandler();
-
-/** code -> room */
-const rooms = new Map();
-
-
-const makeCode = () => codeFor(rooms);
-
-function publicRoom(room) {
-  return {
-    code: room.code,
-    difficulty: room.difficulty,
-    matchId: room.matchId,
-    started: room.started,
-    players: room.players.map((p) => ({
-      id: p.id,
-      nick: p.nick,
-      solved: p.solved,
-      failed: p.failed,
-      totalGuesses: p.totalGuesses,
-      done: p.done,
-      won: p.won,
-      isHost: p.isHost,
-    })),
-  };
-}
-
 
 /**
  * The two-player online games as the shared plumbing sees them (reconnect, room sweep, random
@@ -125,7 +102,7 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
   // Rooms nobody is connected to any more are cleared once a minute, timers included
   const alive = (id) => io.sockets.sockets.has(id);
   setInterval(() => {
-    for (const map of [rooms, ...GAMES.map((g) => g.rooms)]) {
+    for (const map of [race.rooms, ...GAMES.map((g) => g.rooms)]) {
       for (const [code, room] of map) {
         if (room.players.some((p) => alive(p.id))) continue;
         clearTimeout(room.timer);
@@ -229,105 +206,8 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
 
     // app features this phone knows (older apps send none): "mate" / "coach" = "played with" / "managed by" grid criteria
     socket.data.caps = Array.isArray(socket.handshake.auth?.caps) ? socket.handshake.auth.caps.filter((c) => typeof c === "string").slice(0, 8) : [];
-    let joinedCode = null;
-
-    socket.on("room:create", ({ nick, difficulty, matchId }, cb) => {
-      dropLoneRoom(rooms, joinedCode, socket);
-      const code = makeCode();
-      const room = {
-        code,
-        difficulty: difficulty === "hard" ? "hard" : "normal",
-        matchId: typeof matchId === "string" || Number.isInteger(matchId) ? String(matchId).slice(0, 40) : null,
-        started: false,
-        players: [
-          {
-            id: socket.id,
-            nick: cleanNick(nick) || "Oyuncu 1",
-            solved: 0,
-            failed: 0,
-            totalGuesses: 0,
-            done: false,
-            won: false,
-            isHost: true,
-          },
-        ],
-      };
-      rooms.set(code, room);
-      joinedCode = code;
-      socket.join(code);
-      cb?.({ ok: true, room: publicRoom(room) });
-    });
-
-    socket.on("room:join", ({ code, nick }, cb) => {
-      const room = rooms.get(String(code || "").toUpperCase());
-      if (!room) return cb?.({ ok: false, error: "not_found" });
-      const existing = room.players.find((p) => p.id === socket.id);
-      if (existing) {
-        // Re-join after navigation: same socket, keep state as-is
-        joinedCode = room.code;
-        socket.join(room.code);
-        return cb?.({ ok: true, room: publicRoom(room) });
-      }
-      if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
-      room.players.push({
-        id: socket.id,
-        nick: cleanNick(nick) || "Oyuncu 2",
-        solved: 0,
-        failed: 0,
-        totalGuesses: 0,
-        done: false,
-        won: false,
-        isHost: false,
-      });
-      joinedCode = room.code;
-      socket.join(room.code);
-      io.to(room.code).emit("room:update", publicRoom(room));
-      cb?.({ ok: true, room: publicRoom(room) });
-    });
-
-    socket.on("room:start", () => {
-      const room = rooms.get(joinedCode);
-      if (!room) return;
-      const me = room.players.find((p) => p.id === socket.id);
-      if (!me?.isHost || room.players.length < 2) return;
-      room.started = true;
-      io.to(room.code).emit("room:update", publicRoom(room));
-    });
-
-    socket.on("race:progress", ({ solved, failed, totalGuesses, done, won }) => {
-      const room = rooms.get(joinedCode);
-      if (!room || !room.started) return;
-      const me = room.players.find((p) => p.id === socket.id);
-      if (!me) return;
-      me.solved = solved;
-      me.failed = failed;
-      me.totalGuesses = totalGuesses;
-      me.done = done;
-      me.won = won;
-
-      // Race end: someone solved all 11, or both are done
-      const fullSolve = room.players.find((p) => p.solved === 11);
-      const allDone = room.players.length === 2 && room.players.every((p) => p.done);
-      if (fullSolve || allDone) {
-        let winnerId = null;
-        if (fullSolve) {
-          winnerId = fullSolve.id;
-        } else {
-          const [a, b] = room.players;
-          if (a.solved !== b.solved) winnerId = a.solved > b.solved ? a.id : b.id;
-          else if (a.totalGuesses !== b.totalGuesses)
-            winnerId = a.totalGuesses < b.totalGuesses ? a.id : b.id;
-          // equal → tie, winnerId stays null
-        }
-        io.to(room.code).emit("race:over", {
-          winnerId,
-          room: publicRoom(room),
-        });
-        rooms.delete(room.code);
-      } else {
-        io.to(room.code).emit("room:update", publicRoom(room));
-      }
-    });
+    // ── Missing 11 race, web only (server-games/race.js) ──
+    race.attach(socket, { io, dropLoneRoom });
 
     // ── Possession Play (server-games/pp.js) ──
     pp.attach(socket, { io, dropLater, dropLoneRoom, matchQueues });
@@ -426,18 +306,6 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
     // ── Quiz (server-games/qz.js) ──
     qz.attach(socket, { io });
 
-    // Missing 11 race
-    socket.on("disconnect", () => {
-      const room = rooms.get(joinedCode);
-      if (!room) return;
-      room.players = room.players.filter((p) => p.id !== socket.id);
-      if (room.players.length === 0) {
-        rooms.delete(room.code);
-      } else {
-        room.players[0].isHost = true;
-        io.to(room.code).emit("room:peer-left", publicRoom(room));
-      }
-    });
   });
 
   server.listen(port, () => {
