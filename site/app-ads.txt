@@ -1,2 +1,0 @@
-# AdMob app-ads.txt: paste the line AdMob gives you (Apps -> App settings -> app-ads.txt), e.g.
-# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
