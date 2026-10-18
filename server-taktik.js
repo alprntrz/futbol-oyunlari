@@ -112,7 +112,7 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
   /** the set-up phase: the clock runs on the server; at zero every side kicks off at once */
   const plan = (room, extraMs = 0) => {
     room.phase = "plan";
-    room.planEnds = Date.now() + E.planSeconds(room.lobby.stage) * 1000 + extraMs;
+    room.planEnds = Date.now() + E.planSeconds() * 1000 + extraMs;
     clearTimeout(room.timer);
     room.timer = setTimeout(() => kick(room), room.planEnds - Date.now());
     send(room, true);

@@ -78,8 +78,8 @@ export const STAGE1: RoundKind[] = ["pve", "pve"];
 export const STAGE: RoundKind[] = ["pvp", "pvp", "pvp", "pve", "pvp"];
 /** a tactics card is offered at the start of these stages */
 export const AUGMENT_STAGES = [2, 3, 4];
-/** seconds to set up before every match kicks off (everyone at once when played online); stage 1 is short, its sides are small */
-export const planSeconds = (stage: number) => (stage === 1 ? 15 : 25);
+/** seconds to set up before every match kicks off (everyone at once when played online); 25 s every stage, the first ones too */
+export const planSeconds = () => 25;
 /** free swaps per tactics card offer (shared by the three cards) */
 export const AUGMENT_REROLLS = 2;
 

@@ -476,13 +476,13 @@ export default function TaktikGame() {
               key={`clock-${lobby.seed}-${roundKey}-${online.phase}`}
               wide
               dense={dense}
-              seconds={planSeconds(lobby.stage)}
+              seconds={planSeconds()}
               endsAt={online.planEnds}
               running={online.phase === "plan"}
               onEnd={() => setSel(null)}
             />
           ) : (
-            <PlanClock key={`clock-${lobby.seed}-${roundKey}`} wide dense={dense} seconds={planSeconds(lobby.stage)} running={!match && !out && !showIntro && tour.step === null} onEnd={startMatch} />
+            <PlanClock key={`clock-${lobby.seed}-${roundKey}`} wide dense={dense} seconds={planSeconds()} running={!match && !out && !showIntro && tour.step === null} onEnd={startMatch} />
           )}
         </View>
       </View>
