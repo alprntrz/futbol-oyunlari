@@ -12,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import { AppErrorScreen, UpdateRequired } from "~/components/AppError";
+import { EloToast } from "~/components/EloToast";
 import { InviteBanner } from "~/components/InviteBanner";
 import { PlayerMenuHost } from "~/components/PlayerMenu";
 import { useUpdateRequired } from "~/lib/appHealth";
@@ -84,6 +85,7 @@ export default function RootLayout() {
       </Stack>
       <RewardScreen />
       <XpToast />
+      <EloToast />
       <InviteBanner />
       <RemindersSync />
       <RatingAsk />

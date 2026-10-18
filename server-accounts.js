@@ -248,12 +248,13 @@ function putRating(userId, game, r) {
  * an Elo game; K is split so a 5-player quiz moves ratings about as much as a duel.
  * Users that don't exist (deleted, guests) are skipped.
  */
+/** Rate a finished game. Returns uid → { rating, delta } (rounded) for the players it rated, or null. */
 function recordResult(game, places) {
-  if (!RATED.has(game)) return;
+  if (!RATED.has(game)) return null;
   const exists = db.prepare("SELECT 1 FROM users WHERE id = ?");
   const placed = places.map((ids) => [...new Set(ids)].filter((id) => id && exists.get(id)));
   const all = placed.flat();
-  if (all.length < 2 || new Set(all).size !== all.length) return;
+  if (all.length < 2 || new Set(all).size !== all.length) return null;
   const cur = new Map(all.map((id) => [id, getRating(id, game)]));
   const delta = new Map(all.map((id) => [id, 0]));
   const K = 32 / (all.length - 1);
@@ -269,18 +270,23 @@ function recordResult(game, places) {
       });
     }
   });
+  const out = new Map();
   db.exec("BEGIN");
   try {
     placed.forEach((ids, pi) => {
       for (const id of ids) {
         const r = cur.get(id);
-        putRating(id, game, { rating: Math.max(100, r.rating + delta.get(id)), games: r.games + 1, wins: r.wins + (pi === 0 && placed.length > 1 ? 1 : 0) });
+        const rating = Math.max(100, r.rating + delta.get(id));
+        putRating(id, game, { rating, games: r.games + 1, wins: r.wins + (pi === 0 && placed.length > 1 ? 1 : 0) });
+        out.set(id, { rating: Math.round(rating), delta: Math.round(rating) - Math.round(r.rating) });
       }
     });
     db.exec("COMMIT");
   } catch {
     db.exec("ROLLBACK");
+    return null;
   }
+  return out;
 }
 
 /** Session token from the app (socket handshake) → user id, or null. */

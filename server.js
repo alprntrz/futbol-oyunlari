@@ -209,10 +209,19 @@ function htSeries(room) {
 function rateDuel(game, room, winnerMark) {
   const [a, b] = room.players;
   if (!a?.uid || !b?.uid) return;
-  if (winnerMark === "draw") return recordResult(game, [[a.uid, b.uid]]);
+  if (winnerMark === "draw") return tellElo(game, room.players, recordResult(game, [[a.uid, b.uid]]));
   const w = room.players.find((p) => p.mark === winnerMark);
   const l = room.players.find((p) => p.mark !== winnerMark);
-  if (w && l) recordResult(game, [[w.uid], [l.uid]]);
+  if (w && l) tellElo(game, room.players, recordResult(game, [[w.uid], [l.uid]]));
+}
+
+/** Each rated player's phone hears its new rating and the change ("+18"), for the end-of-match pill. */
+function tellElo(game, players, result) {
+  if (!result) return;
+  for (const p of players) {
+    const r = p.uid && result.get(p.uid);
+    if (r) ioServer?.sockets.sockets.get(p.id)?.emit("elo", { game, rating: r.rating, delta: r.delta });
+  }
 }
 
 /** Hat-trick: once a series is decided, rate it (once per series). */
@@ -1327,8 +1336,8 @@ app.prepare().then(() => {
       const { score } = dzPublic(room);
       const [a, b] = [room.players.find((p) => p.side === 0), room.players.find((p) => p.side === 1)];
       if (!a?.uid || !b?.uid) return;
-      if (score[0] === score[1]) recordResult("dz", [[a.uid, b.uid]]);
-      else recordResult("dz", score[0] > score[1] ? [[a.uid], [b.uid]] : [[b.uid], [a.uid]]);
+      if (score[0] === score[1]) tellElo("dz", room.players, recordResult("dz", [[a.uid, b.uid]]));
+      else tellElo("dz", room.players, recordResult("dz", score[0] > score[1] ? [[a.uid], [b.uid]] : [[b.uid], [a.uid]]));
     };
 
     // Open a round: the question and a fresh clock; a missing pick plays a random unused card
@@ -1456,7 +1465,7 @@ app.prepare().then(() => {
       if (leaver && room.started && !room.over && room.players.length === 2 && !room.rated) {
         const stay = room.players.find((p) => p !== leaver);
         room.rated = true;
-        if (leaver.uid && stay?.uid) recordResult("dz", [[stay.uid], [leaver.uid]]);
+        if (leaver.uid && stay?.uid) tellElo("dz", room.players, recordResult("dz", [[stay.uid], [leaver.uid]]));
       }
       room.players = room.players.filter((p) => p.id !== socket.id);
       clearTimeout(room.timer);
@@ -2029,7 +2038,7 @@ app.prepare().then(() => {
         if (last && last.score === p.score) last.ids.push(p.uid);
         else places.push({ score: p.score, ids: [p.uid] });
       }
-      recordResult("qz", places.map((x) => x.ids));
+      tellElo("qz", rated, recordResult("qz", places.map((x) => x.ids)));
     };
 
     // "Delete my data" in the app: drop this player's quiz record for good

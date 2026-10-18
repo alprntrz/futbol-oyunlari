@@ -29,6 +29,7 @@ const MATERIAL: Record<string, AndroidSymbol> = {
   "arrow.triangle.2.circlepath": "sync",
   "arrow.up": "arrow_upward",
   "arrow.up.right": "north_east",
+  "arrow.down.right": "south_east",
   "arrow.uturn.left": "undo",
   "bell.fill": "notifications",
   "ellipsis.circle": "more_horiz",

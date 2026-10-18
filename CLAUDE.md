@@ -193,6 +193,8 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
   well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50
   per match (`qz:joker`, the server picks the two wrong options for that player only); Rondo one +10 s per match (`rd:joker`).
+- Rating change: `recordResult` returns uid → { rating, delta }; server.js `tellElo` emits `elo` to each rated player's socket
+  (ht / pp / dz / qz / rd); `components/EloToast.tsx` (root layout) shows "+18 · Tic-Tac-Toe 1034" after the victory screens close.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`
