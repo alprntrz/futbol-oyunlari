@@ -1,5 +1,9 @@
 # server.js bölme planı
 
+> **Durum (2026-10-18): 0–4 tamamlandı, canlıda.** `server.js` 2.231 → 314 satır; oyunlar `server-games/`
+> altında, ortak yardımcılar `server-core.js`, Live Activity parçaları `server-live.js`. Her adım ayrı commit
+> + deploy, entegrasyon testleri ve canlı duman testiyle. 5. adım (`duelRoomKit`) isteğe bağlı, yapılmadı.
+
 Kaynak: graphify kod haritası (`graphify-out/`, 2026-10-18). `server.js` 2.318 satır; haritada en zayıf
 bağlı grup ("Game server core", 79 düğüm, bütünlük 0.028). İçinde altı online oyun, Eksik 11 yarışı,
 Live Activity, emoji, şikayet/engel, yeniden bağlanma ve eşleştirme bir arada. Oyunlar birbirine bağlı

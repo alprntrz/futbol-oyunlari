@@ -109,7 +109,9 @@ avatar kullanılır.
 ## Proje yapısı
 
 ```
-server.js                      # Custom Next + Socket.IO sunucu (oda/yarış, bellekte)
+server.js                      # Custom Next + Socket.IO sunucu: ortak altyapı (yeniden bağlanma, eşleştirme, davet, emoji)
+server-games/                  # Her online oyun ayrı dosya (ht, pp, dz, rd, wm, qz, race)
+server-core.js                 # Sunucu ortak yardımcıları (takma ad, eşleştirme, oda kodu, Elo)
 src/
   app/                         # App Router sayfaları
     page.tsx                   #   ana menü (iki oyun kartı)

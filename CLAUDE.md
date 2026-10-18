@@ -17,6 +17,19 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
   are still verified by hand (simulator / browser).
 - Node 22.18+ (`.nvmrc` = 24): the data scripts import `.ts` files directly.
 
+## Game server layout
+
+`server.js` is the HTTP / Next server plus the shared Socket.IO plumbing (guarded handlers, reconnect, room
+sweep, matchmaking, report / block, invites, emotes, Live Activity tokens). Each online game is its own file in
+`server-games/` (`ht.js` Tic-Tac-Toe, `pp.js` Possession, `dz.js` Card Duel, `rd.js` Rondo, `wm.js` Who Am I?,
+`qz.js` Quiz, `race.js` web Missing 11 race; Pitch Chess stays in `server-taktik.js`). Shared helpers (nicks, rank
+pairing `takePairs` / `tierGap`, room codes `codeFor`, refs, `rateDuel` / `tellElo`, `INTRO_MS`) are in
+`server-core.js`; Live Activity building blocks in `server-live.js`. The two-player games export
+`{ id, rooms, view, queue, setQueue, pairOk?, invitable?, live?, attach(socket, ctx) }` and are listed in `GAMES` in
+server.js, which drives reconnect, sweep, queues, emotes and invites: a new two-player game is one file + one line
+there. "server.js" below means this whole set. Plan / history: `docs/server-bolme-plani.md`. `npm test` starts the
+server (`tests/server.int.test.mts`) and plays every online game; it must pass after any server change.
+
 ## Mobile app (`mobile/`), released as Tiktako
 
 Native iOS/Android app in Expo (SDK 57, Expo Router, React Native) — real native
@@ -40,14 +53,14 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Saudi / Egyptian leagues ("sa", "eg"): `ARAB_CRITERIA` in tiki.ts (ids "arab-…", never in ALL_CRITERIA so seeded daily
   grids / Bingo / Mystery / Pitch Chess don't change), players in `src/data/players-arab.ts` ← `ONLY=arab-… FROM=2000 node
   scripts/tiki-scrape-squads.mjs` → `scripts/arab-build-players.mjs`; answers search `GRID_PLAYERS` (PLAYERS + those). Phones send
-  caps "arab"; server.js `canDraw` keeps such grids from older apps.
+  caps "arab"; `canDraw` (server-games/ht.js) keeps such grids from older apps.
 - Leagues (`src/lib/leagues.ts`): Hat-trick grids per league (`leagueGrid`, only that league's
   clubs plus countries/honours; leagues need 3+ clubs in tiki CLUBS); the pick lives in
   `mobile/src/lib/league.ts` and rooms/queue carry `league`. Missing 11 categories (`XI_CATEGORIES`)
   filter matches by tag/competition.
 - Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
   data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
-  until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5
+  until the reveal, runs the clock and scores (`qzPoints` in server-games/qz.js mirrors `quizPoints`: 10 → 5
   by speed). Random rooms (`qz:queue`) start after 8 s (`QZ_FILL_MS`) and fill up with house players.
   Levels/standings: phones send a random install id (`pid`, `loadPlayerId` in `mobile/src/lib/nick.ts`);
   at full time the server adds XP (points + 10 + podium bonus) to `data/quiz-stats.json` (gitignored;
@@ -76,7 +89,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   the 7-day `DailyRewardCard` lives on Profile.
 - Ranks (v1.1): `RANKS` / `rankOf` in `src/lib/levels.ts` name the level bands (Amateur → Legend, bronze/silver/gold
   steps; `components/Rank.tsx`). The rank index is the matchmaking tier: `ht:queue`, `pp:queue`, `qz:queue` carry `tier`
-  (`loadTier` in lib/xp.ts); server.js `takePairs` / `tierGap` pair the same rank first and widen every `TIER_WIDEN_MS`
+  (`loadTier` in lib/xp.ts); `takePairs` / `tierGap` (server-core.js) pair the same rank first and widen every `TIER_WIDEN_MS`
   (a 1 s sweep, `matchQueues`). Quiz random rooms are keyed `difficulty:tier` in `qzOpen`.
 - Friends (v1.1, signed-in): `friends` table + `users.friend_code` in server-accounts.js (`/api/account/friends`
   GET/POST {code}/DELETE /:code; added both ways, max 100). Presence = any socket with that `uid`; `fr:invite`
@@ -128,7 +141,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - Kart Düellosu / Card Duel (docs/design/kart-duellosu.md): draft 7 cards (budget 15, gold 3 / silver 2 / bronze 1 by fame) under
   the day's theme, then 7 stat rounds (higher wins; "lower wins" questions in red). Rules `src/lib/duel.ts` (pure); numbers
   `src/data/duel.ts` + `server-data/duel-cards.json` ← `scripts/duel-fetch-wikidata.mjs` (Wikidata, CC0, matched by Transfermarkt id
-  P2446) → `scripts/duel-build.mjs` (never hand-edit). Online `dz:*` in server.js (server deals questions, hides picks, 20 s clock,
+  P2446) → `scripts/duel-build.mjs` (never hand-edit). Online `dz:*` in server-games/dz.js (server deals questions, hides picks, 20 s clock,
   judges, Elo board "dz"); house player / daily / practice run on the phone (`mobile/src/lib/duelMatch.ts`). Screens `app/duello/`.
 - Quick emotes (`components/Emotes.tsx`): a fixed emoji set, no free text, relayed by server.js `em:send` → `em:recv` to the other
   player of the ht / pp / dz room (1.5 s rate limit); the house player answers sometimes. Recent matches on Profile
@@ -195,7 +208,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
   well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50
   per match (`qz:joker`, the server picks the two wrong options for that player only); Rondo one +10 s per match (`rd:joker`).
-- Rating change: `recordResult` returns uid → { rating, delta }; server.js `tellElo` emits `elo` to each rated player's socket
+- Rating change: `recordResult` returns uid → { rating, delta }; `tellElo` (server-core.js) emits `elo` to each rated player's socket
   (ht / pp / dz / qz / rd); `components/EloToast.tsx` (root layout) shows "+18 · Tic-Tac-Toe 1034" after the victory screens close.
 - Who Am I? (`wm:*`, rules `src/lib/whoami.ts`): one hidden player (`WM_POOL`, 400 well-known) for both; turns of a yes / no
   question from a fixed menu (club, country, league, position, honour, birth decade; `wmCleanQuestion` / `wmAnswer`) or a guess.
