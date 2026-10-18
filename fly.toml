@@ -15,7 +15,7 @@ primary_region = "fra"
   # APPLE_PRIVATE_KEY secrets are set with: flyctl secrets set ...
   APPLE_AUDIENCES = "com.alprntrz.tiktako"
   # Google iOS OAuth client (project tiktako-511323); public, also shipped in the app
-  GOOGLE_CLIENT_IDS = "360213444851-nj294lghif6tnt08rn7tb7i9u6sukkj4.apps.googleusercontent.com"
+  GOOGLE_CLIENT_IDS = "360213444851-nj294lghif6tnt08rn7tb7i9u6sukkj4.apps.googleusercontent.com,360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com"
 
 [mounts]
   source = "tiktako_data"

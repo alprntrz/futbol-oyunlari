@@ -182,6 +182,7 @@ Not: IP adresi bağlantı sırasında sunucuya teknik olarak ulaşır ama kayded
 - İmza anahtarı (EAS, upload key) SHA-1: `A2:97:4A:F0:C2:27:38:3D:5E:1F:2D:80:A2:F7:0D:96:48:95:C5:9A`
 - SHA-256: `8C:12:39:68:9C:9D:4D:D7:7D:CB:43:28:3F:2E:4F:6D:E0:CA:A0:29:B7:C3:94:A4:77:CA:89:C1:A2:59:54:95`
 - Google Cloud (proje tiktako-511323) → Kimlik bilgileri:
-  1. **Web uygulaması** OAuth istemcisi → kimliği `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (eas.json) ve Fly'daki `GOOGLE_CLIENT_IDS`'e eklenir.
-  2. **Android** OAuth istemcisi: paket `com.alprntrz.tiktako` + yukarıdaki SHA-1.
-  3. Play'e ilk yüklemeden sonra Play App Signing anahtarının SHA-1'i (Play Console → Test ve yayın → Uygulama bütünlüğü) için **ikinci bir Android istemcisi** açılır; Play'den indirilen uygulama o anahtarla imzalanır.
+  1. [x] **Web uygulaması** OAuth istemcisi "Tiktako Web (Android sign-in)" (19.10.2026): `360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com`
+     → `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (eas.json) ve `GOOGLE_CLIENT_IDS` (fly.toml). İstemci sırrı kullanılmıyor, saklanmadı.
+  2. [x] **Android** OAuth istemcisi "Tiktako Android (EAS upload key)": paket `com.alprntrz.tiktako` + yukarıdaki SHA-1.
+  3. [ ] Play'e ilk yüklemeden sonra Play App Signing anahtarının SHA-1'i (Play Console → Test ve yayın → Uygulama bütünlüğü) için **ikinci bir Android istemcisi** açılır; Play'den indirilen uygulama o anahtarla imzalanır.
