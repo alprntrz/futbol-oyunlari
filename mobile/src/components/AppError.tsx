@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { rootStrings, reportCrash } from "~/lib/appHealth";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
+import { captureCrash } from "~/lib/sentry";
 import { C, F } from "~/lib/theme";
 
 import { Text } from "./Text";
@@ -13,7 +14,7 @@ import { Button } from "./ui";
 
 /**
  * A screen threw while drawing: instead of a white screen, say so, send an anonymous report
- * (lib/appHealth.ts) and offer to try again or go Home. Drawn outside the i18n provider, so it
+ * (lib/appHealth.ts, and to Sentry: lib/sentry.ts) and offer to try again or go Home. Drawn outside the i18n provider, so it
  * reads the phone's language itself.
  */
 export function AppErrorScreen({ error, retry }: ErrorBoundaryProps) {
@@ -25,6 +26,7 @@ export function AppErrorScreen({ error, retry }: ErrorBoundaryProps) {
       screen = router.canGoBack() ? "nested" : "root";
     } catch {}
     reportCrash(error, screen);
+    captureCrash(error, screen);
   }, [error]);
 
   return (

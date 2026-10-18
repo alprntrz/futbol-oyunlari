@@ -18,6 +18,7 @@ import { PlayerMenuHost } from "~/components/PlayerMenu";
 import { useUpdateRequired } from "~/lib/appHealth";
 import { RatingAsk } from "~/lib/rating";
 import { RemindersSync } from "~/lib/reminders";
+import { initSentry, wrapRoot } from "~/lib/sentry";
 import { RewardScreen } from "~/components/RewardScreen";
 import { CapSheetHost } from "~/components/Rewarded";
 import { XpToast } from "~/components/XpToast";
@@ -30,13 +31,16 @@ import { initSounds } from "~/lib/sound";
 import { loadXp } from "~/lib/xp";
 import { C, F } from "~/lib/theme";
 
+initSentry();
 SplashScreen.preventAutoHideAsync();
 
 // a screen that throws shows a friendly page (and sends an anonymous report) instead of a white screen
 export const ErrorBoundary = AppErrorScreen;
 
 /** Tabs live in (tabs); every game screen is pushed full-screen on top. */
-export default function RootLayout() {
+export default wrapRoot(RootLayout);
+
+function RootLayout() {
   const [loaded] = useFonts({
     BarlowCondensed_600SemiBold,
     BarlowCondensed_800ExtraBold,

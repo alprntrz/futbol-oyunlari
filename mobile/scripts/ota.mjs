@@ -7,6 +7,7 @@
  * production build profile in eas.json (else the update would talk to localhost). It
  * reaches only builds with the same app version (runtimeVersion policy "appVersion"):
  * JS / asset fixes only; a new native module, permission or plugin needs a store build.
+ * With SENTRY_AUTH_TOKEN set, the update's source maps go to Sentry too (else crash stacks stay minified).
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -25,3 +26,8 @@ execFileSync("npx", ["eas-cli", "update", "--channel", "production", "--message"
   stdio: "inherit",
   env: { ...process.env, ...env },
 });
+if (process.env.SENTRY_AUTH_TOKEN) {
+  execFileSync("npx", ["sentry-expo-upload-sourcemaps", "dist"], { stdio: "inherit" });
+} else {
+  console.warn("SENTRY_AUTH_TOKEN not set: source maps not uploaded to Sentry");
+}

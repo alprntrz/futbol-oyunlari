@@ -142,12 +142,15 @@ Toplanan veri türleri (hiçbiri üçüncü taraflarla **paylaşılmıyor**; hi�
 | Kişisel bilgiler → Diğer bilgiler | Takma ad, seçilen hazır avatar ve çerçeve | Online oynayınca | Uygulama işlevselliği |
 | Uygulama etkinliği → Uygulama içi işlemler | XP, seviye, oyun başına puan (Elo), maç ve galibiyet sayısı, haftalık lig | İsteğe bağlı | Uygulama işlevselliği, Hesap yönetimi |
 
-| Uygulama bilgileri ve performansı → Kilitlenme günlükleri | Anonim hata raporu (hata mesajı, kodda yeri, sürüm, platform; takma ad ya da kimlik yok) | Otomatik, bir ekran çökünce | Uygulama işlevselliği (hata ayıklama) |
+| Uygulama bilgileri ve performansı → Kilitlenme günlükleri | Hata raporu (hata mesajı, kodda yeri, sürüm, platform; takma ad yok); sunucumuza + Sentry'ye | Otomatik, çökünce | Analiz (hata ayıklama) |
+| Uygulama bilgileri ve performansı → Diğer uygulama performans verileri | Sentry: telefon modeli, Android sürümü, son uygulama adımları, hesaba bağlanmayan rastgele kurulum kimliği | Otomatik, çökünce | Analiz (hata ayıklama) |
 | Kişisel bilgiler → Diğer bilgiler | Şikayet kaydı (zaman, iki anonim tanıtıcı, görülen takma ad, sebep) | Şikayet edince | Güvenlik, uyumluluk |
 
 Toplanmayanlar: ad soyad, e-posta, telefon, adres, konum, fotoğraflar (profil fotoğrafı telefondan çıkmaz), kişiler, mesajlar, cihaz kimliği (IMEI/reklam kimliği), tarama geçmişi.
 
 Not (1.1): reklam ve satın alma bu sürümde yok; 1.2'de bu form AdMob ve RevenueCat için güncellenecek (monetization.md).
+
+Not: Sentry bizim adımıza işleyen hizmet sağlayıcı (processor); Play'e göre bu "paylaşım" sayılmaz.
 
 Not: IP adresi bağlantı sırasında sunucuya teknik olarak ulaşır ama kaydedilmez (gizlilik sayfası böyle diyor).
 

@@ -240,7 +240,9 @@ reklam olmaması.
 - **Tanımlayıcılar → Kullanıcı Kimliği** (Apple / Google'ın verdiği anonim kimlik, rastgele kurulum kimliği): Uygulama
   İşlevselliği. Kimliğe bağlı: Evet. Takip için değil.
 - **Kullanım Verisi → Ürün Etkileşimi** (XP, seviye, Elo, lig, ilerleme): Uygulama İşlevselliği. Kimliğe bağlı: Evet.
-- **Tanılama → Çökme Verisi** (anonim hata raporu: mesaj, sürüm, platform): Uygulama İşlevselliği. Kimliğe bağlı: Hayır.
+- **Tanılama → Çökme Verisi** (hata raporu: mesaj, kodda yeri, sürüm, platform; sunucumuza + Sentry'ye) ve
+  **Tanılama → Diğer Tanılama Verisi** (Sentry: telefon modeli, iOS sürümü, son uygulama adımları): Uygulama İşlevselliği.
+  Kimliğe bağlı: Hayır (Sentry'nin rastgele cihaz kimliği hesaba bağlanmaz). Takip için değil.
 - Toplanmıyor: iletişim bilgisi (ad, e-posta istenmiyor), konum, kişiler, fotoğraflar (profil fotoğrafı telefonda kalır),
   finans, sağlık, tarama / arama geçmişi. Live Activity push token'ı yalnızca maç sürerken bellekte: toplanan veri sayılmaz.
 - **Takip: Hayır.**

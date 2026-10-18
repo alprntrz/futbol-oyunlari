@@ -91,6 +91,14 @@
         {
           "mode": "production"
         }
+      ],
+      [
+        "@sentry/react-native",
+        {
+          "url": "https://sentry.io/",
+          "organization": "tiktako",
+          "project": "tiktako-app"
+        }
       ]
     ],
     "experiments": {
