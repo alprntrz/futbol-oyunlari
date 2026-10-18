@@ -87,6 +87,9 @@ if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "frame"
 // calendar, quests, frame pick, Dribbling Rush best): a small JSON blob so it follows the player
 // to a new phone (mobile/src/lib/progress.ts). Never the profile photo or the block list.
 if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "progress")) db.exec("ALTER TABLE users ADD COLUMN progress TEXT NOT NULL DEFAULT ''");
+// Tiktako Plus: when the entitlement ends (ms; PLUS_FOREVER for a lifetime purchase; 0 = none). Set only
+// from RevenueCat (REST check on /plus/sync, webhook /api/rc/webhook), never from what a phone claims.
+if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "plus_until")) db.exec("ALTER TABLE users ADD COLUMN plus_until INTEGER NOT NULL DEFAULT 0");
 const PROGRESS_KEYS = new Set(["history-v1", "play-streak-v1", "ht-trophies", "missing11-stats", "daily-rewards-v1", "frame-v1", "quests-v1", "rush-best", "rush-club"]);
 const PROGRESS_MAX = 24 * 1024;
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS users_friend_code ON users (friend_code)");
@@ -141,6 +144,9 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 // Avatar frames open with the rank (mobile/src/lib/cosmetics.ts FRAMES, src/lib/levels.ts RANKS)
 const FRAME_RANK = { none: 0, bronze: 1, silver: 2, gold: 3, emerald: 4, galaxy: 5, legend: 6 };
+/** the Plus frame opens with the subscription, not a rank (mobile/src/lib/cosmetics.ts) */
+const PLUS_FRAME = "plus";
+const isPlus = (u) => (u?.plus_until ?? 0) > Date.now();
 const FRAME_BY_RANK = ["none", "bronze", "silver", "gold", "emerald", "galaxy", "legend"];
 const RANK_FROM = [1, 5, 10, 15, 20, 30, 40];
 const rankIndex = (xp) => {
@@ -152,6 +158,7 @@ const rankIndex = (xp) => {
 /** the frame others see: the pick if the rank has opened it, else the best open one */
 const frameOf = (u) => {
   const rank = rankIndex(u.xp ?? 0);
+  if (u.frame === PLUS_FRAME) return isPlus(u) ? PLUS_FRAME : FRAME_BY_RANK[rank];
   return u.frame && FRAME_RANK[u.frame] !== undefined && FRAME_RANK[u.frame] <= rank ? u.frame : FRAME_BY_RANK[rank];
 };
 
@@ -159,17 +166,36 @@ const frameOf = (u) => {
  * The look a phone shows strangers in a random match (avatar + frame), checked:
  * a known avatar id, and a frame the sent rank has opened. Old apps send none.
  */
-function cleanLook({ avatar, frame } = {}, tier = 0) {
+function cleanLook({ avatar, frame } = {}, tier = 0, plus = false) {
   return {
     avatar: AVATARS.has(avatar) ? avatar : null,
-    frame: FRAME_RANK[frame] !== undefined && FRAME_RANK[frame] <= tier ? frame : null,
+    frame: frame === PLUS_FRAME ? (plus ? PLUS_FRAME : null) : FRAME_RANK[frame] !== undefined && FRAME_RANK[frame] <= tier ? frame : null,
   };
+}
+
+/** Does this account (socket.data.uid) have Plus right now? (random queues check the Plus frame with it) */
+function plusOf(uid) {
+  if (!uid) return false;
+  const u = db.prepare("SELECT plus_until FROM users WHERE id = ?").get(uid);
+  return isPlus(u);
 }
 
 function publicUser(u) {
   const ratings = {};
   for (const r of db.prepare("SELECT game, rating, games, wins FROM ratings WHERE user_id = ?").all(u.id)) ratings[r.game] = { rating: Math.round(r.rating), games: r.games, wins: r.wins };
-  return { id: u.id, provider: u.provider, nick: u.nick, avatar: u.avatar, frame: frameOf(u), xp: u.xp, byGame: JSON.parse(u.by_game || "{}"), bonusToday: u.bonus_day === today(), ratings };
+  return {
+    id: u.id,
+    provider: u.provider,
+    nick: u.nick,
+    avatar: u.avatar,
+    frame: frameOf(u),
+    xp: u.xp,
+    byGame: JSON.parse(u.by_game || "{}"),
+    bonusToday: u.bonus_day === today(),
+    ratings,
+    plus: isPlus(u),
+    plusUntil: u.plus_until || 0,
+  };
 }
 
 function userFromRequest(req) {
@@ -443,6 +469,71 @@ function addXp(user, key, game, amount, cap = MAX_AWARD, imported = false) {
   return true;
 }
 
+// ── Tiktako Plus (RevenueCat). The phone buys through the store; RevenueCat keeps the receipt and
+// tells us: on /plus/sync we ask RevenueCat's REST API about the account (app user id = our user id),
+// and RevenueCat's webhook calls /api/rc/webhook on renewals, cancellations and refunds. Without
+// REVENUECAT_SECRET the server never grants Plus (the phone keeps its local state for ads / cap only).
+const RC_SECRET = process.env.REVENUECAT_SECRET || "";
+const RC_WEBHOOK_AUTH = process.env.REVENUECAT_WEBHOOK_AUTH || "";
+const PLUS_ENTITLEMENT = "plus";
+const PLUS_FOREVER = Date.UTC(2100, 0, 1);
+/** user id → last REST check (ms); a phone can't make us hammer RevenueCat */
+const plusChecked = new Map();
+const PLUS_CHECK_GAP = 30_000;
+
+/** Ask RevenueCat when this user's Plus ends (0 = none). Throws when RevenueCat can't be reached. */
+async function fetchPlusUntil(userId) {
+  if (!RC_SECRET) throw new Error("no RevenueCat secret");
+  const res = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`, {
+    headers: { authorization: `Bearer ${RC_SECRET}`, accept: "application/json", "x-platform": "ios" },
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error(`revenuecat ${res.status}`);
+  const body = await res.json();
+  const ent = body?.subscriber?.entitlements?.[PLUS_ENTITLEMENT];
+  if (!ent) return 0;
+  // lifetime: no expiry
+  if (!ent.expires_date) return PLUS_FOREVER;
+  const until = Date.parse(ent.expires_date);
+  return Number.isFinite(until) ? until : 0;
+}
+
+/** Refresh the stored Plus end for a user from RevenueCat; returns the user row (updated) or null. */
+async function refreshPlus(userId, force = false) {
+  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
+  if (!user) return null;
+  const last = plusChecked.get(userId) ?? 0;
+  if (!force && Date.now() - last < PLUS_CHECK_GAP) return user;
+  plusChecked.set(userId, Date.now());
+  const until = await fetchPlusUntil(userId);
+  if (until !== user.plus_until) {
+    db.prepare("UPDATE users SET plus_until = ? WHERE id = ?").run(until, userId);
+    user.plus_until = until;
+    console.log(`plus ${userId.slice(0, 8)}: ${until ? new Date(until).toISOString().slice(0, 10) : "none"}`);
+  }
+  return user;
+}
+
+/**
+ * POST /api/rc/webhook (RevenueCat → us). The body names the app user id; we don't trust its
+ * entitlement fields, we re-read the subscriber from the REST API. Always 200 for a well-formed
+ * call so RevenueCat doesn't retry forever on accounts we don't know (anonymous / deleted).
+ */
+async function handleRcWebhook(req, res) {
+  if (!RC_WEBHOOK_AUTH || req.headers.authorization !== RC_WEBHOOK_AUTH) return send(res, 401, { error: "unauthorized" }), true;
+  let body;
+  try {
+    body = await readJson(req);
+  } catch {
+    return send(res, 400, { error: "bad request" }), true;
+  }
+  const ids = [body?.event?.app_user_id, body?.event?.original_app_user_id, ...(Array.isArray(body?.event?.aliases) ? body.event.aliases : [])].filter(
+    (id) => typeof id === "string" && !id.startsWith("$RCAnonymousID:")
+  );
+  for (const id of new Set(ids)) await refreshPlus(id, true).catch((e) => console.error(`rc webhook ${id.slice(0, 8)}: ${e.message}`));
+  return send(res, 200, { ok: true }), true;
+}
+
 async function readJson(req) {
   let raw = "";
   for await (const chunk of req) {
@@ -527,6 +618,18 @@ async function handleAccountApi(req, res, cleanNick) {
 
     if (url === "/api/account/me" && req.method === "GET") return send(res, 200, { user: publicUser(user) }), true;
 
+    // The phone bought / restored Plus (or starts up): ask RevenueCat and store the answer on the account
+    if (url === "/api/account/plus/sync" && req.method === "POST") {
+      if (!RC_SECRET) return send(res, 503, { error: "unavailable", plus: isPlus(user), plusUntil: user.plus_until || 0 }), true;
+      try {
+        const fresh = (await refreshPlus(user.id, !!(await readJson(req).catch(() => ({}))).force)) ?? user;
+        return send(res, 200, { plus: isPlus(fresh), plusUntil: fresh.plus_until || 0, user: publicUser(fresh) }), true;
+      } catch (e) {
+        console.error(`plus sync ${user.id.slice(0, 8)}: ${e.message}`);
+        return send(res, 502, { error: "revenuecat", plus: isPlus(user), plusUntil: user.plus_until || 0 }), true;
+      }
+    }
+
     // XP awards made on the phone; each key counts once (same rule as the phone)
     if (url === "/api/account/xp" && req.method === "POST") {
       const b = await readJson(req);
@@ -570,7 +673,7 @@ async function handleAccountApi(req, res, cleanNick) {
       const b = await readJson(req);
       const nick = b.nick !== undefined ? cleanNick(String(b.nick)) || user.nick : user.nick;
       const avatar = AVATARS.has(b.avatar) ? b.avatar : user.avatar;
-      const frame = b.frame === undefined ? user.frame : b.frame === "" || FRAME_RANK[b.frame] !== undefined ? b.frame : user.frame;
+      const frame = b.frame === undefined ? user.frame : b.frame === "" || b.frame === PLUS_FRAME || FRAME_RANK[b.frame] !== undefined ? b.frame : user.frame;
       db.prepare("UPDATE users SET nick = ?, avatar = ?, frame = ? WHERE id = ?").run(nick, avatar, frame, user.id);
       return send(res, 200, { user: publicUser({ ...user, nick, avatar, frame }) }), true;
     }
@@ -626,4 +729,4 @@ async function handleAccountApi(req, res, cleanNick) {
   }
 }
 
-module.exports = { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook };
+module.exports = { handleAccountApi, handleRcWebhook, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook, plusOf };

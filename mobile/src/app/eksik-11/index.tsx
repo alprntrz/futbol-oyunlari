@@ -27,6 +27,7 @@ export default function MissingXIHome() {
       secondary={[
         { label: t("daily"), icon: "calendar", fallback: "📅", onPress: () => router.push("/eksik-11/gunluk") },
         { label: t("byTeam"), icon: "tshirt.fill", fallback: "👕", onPress: () => router.push("/eksik-11/takimlar") },
+        { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
       ]}
       settings={
         <HubSetting label={t("xiMatchesFrom")} value={`${current.name[locale]} · ${current.matches().length}`} onPress={() => setPicking(true)} />

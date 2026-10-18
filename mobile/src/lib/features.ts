@@ -26,3 +26,12 @@ export const LIVE_PUSH = true;
  * or "pitch" (draft C, components/HomePitch.tsx, not liked: kept for reference).
  */
 export const HOME_LAYOUT: "list" | "fixtures" | "pitch" | "next" | "board" = "board";
+
+/**
+ * Money (docs/release/monetization.md): opt-in rewarded ads and a capped interstitial after solo
+ * games (lib/ads.ts, Google AdMob) plus the Tiktako Plus subscription (lib/plus.ts, RevenueCat).
+ * Off = the app is exactly the ad-free 1.1 again (no SDK is started, no entry point shows).
+ * Needs the native build with the "react-native-google-mobile-ads" plugin and the EXPO_PUBLIC_ADMOB_* /
+ * EXPO_PUBLIC_RC_* values in eas.json; the privacy page must describe ads and purchases while this is on.
+ */
+export const MONETIZE = true;

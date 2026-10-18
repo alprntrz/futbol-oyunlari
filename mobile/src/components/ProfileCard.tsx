@@ -6,7 +6,8 @@ import { rankOf, RANKS } from "@/lib/levels";
 
 import { syncProfile, useAccount } from "~/lib/account";
 import { AVATARS, loadAvatar, saveAvatar, type AvatarId } from "~/lib/avatar";
-import { FRAMES, frameFor, frameUnlocked, saveFrame, useChosenFrame, type FrameId } from "~/lib/cosmetics";
+import { FRAMES, frameFor, frameUnlocked, PLUS_FRAME, saveFrame, useChosenFrame, type FrameId } from "~/lib/cosmetics";
+import { purchasesAvailable, usePlus } from "~/lib/plus";
 import { pickPhoto, savePhoto, useMyPhoto } from "~/lib/photo";
 import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
@@ -47,6 +48,7 @@ export function ProfileCard() {
   const account = useAccount();
   const myPhoto = useMyPhoto();
   const chosenFrame = useChosenFrame();
+  const plus = usePlus();
 
   const refresh = useCallback(() => {
     loadNick().then(setNick);
@@ -118,7 +120,11 @@ export function ProfileCard() {
       {account === null && <SignInCard />}
 
       <Card style={{ padding: 0, overflow: "hidden", marginTop: 16 }}>
-        <Row icon="person.2.fill" iconFallback="👥" color={C.blue} soft={C.blueSoft} title={t("friends")} subtitle={t("friendsDesc")} onPress={() => router.push("/arkadaslar")} last />
+        <Row icon="person.2.fill" iconFallback="👥" color={C.blue} soft={C.blueSoft} title={t("friends")} subtitle={t("friendsDesc")} onPress={() => router.push("/arkadaslar")} />
+        <Row icon="archivebox.fill" iconFallback="🗄" color={C.greenDark} soft={C.greenSoft} title={t("archiveTitle")} subtitle={t("archiveDesc")} onPress={() => router.push("/arsiv")} last={!(purchasesAvailable() || plus.active)} />
+        {(purchasesAvailable() || plus.active) && (
+          <Row icon="crown.fill" iconFallback="👑" color="#3B2A05" soft="#FACC15" title={t("plusName")} subtitle={plus.active ? t("plusActive") : t("plusSettingsDesc")} onPress={() => router.push("/plus")} last />
+        )}
       </Card>
 
       <SectionLabel>{t("xpByGame")}</SectionLabel>
@@ -266,11 +272,13 @@ function EditProfile({
           {FRAMES.map((f) => {
             const open = frameUnlocked(f.id, level);
             const on = frameFor(level, draftFrame) === f.id;
+            // the Plus frame: locked, it leads to the paywall (hidden when nothing can be bought here)
+            if (f.id === PLUS_FRAME && !open && !purchasesAvailable()) return null;
             return (
               <Tap
                 key={f.id}
-                disabled={!open}
-                onPress={() => (haptic.tap(), setDraftFrame(f.id))}
+                disabled={!open && f.id !== PLUS_FRAME}
+                onPress={() => (haptic.tap(), open ? setDraftFrame(f.id) : (onClose(), router.push("/plus")))}
                 accessibilityRole="button"
                 accessibilityState={{ selected: on, disabled: !open }}
                 accessibilityLabel={t(`frame_${f.id}`)}
@@ -285,7 +293,7 @@ function EditProfile({
                   </View>
                 )}
                 <Text style={[T.caption, { textAlign: "center" }, on && { color: C.greenDark, fontWeight: "800" }]} numberOfLines={1}>
-                  {open ? t(`frame_${f.id}`) : t(`rank_${RANKS[f.rank].id}`)}
+                  {f.id === PLUS_FRAME || open ? t(`frame_${f.id}`) : t(`rank_${RANKS[f.rank].id}`)}
                 </Text>
               </Tap>
             );

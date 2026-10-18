@@ -203,6 +203,20 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   3 lives, 25 s a move, 24 moves then a draw. House player `useWmHouse` (lib/whoamiMatch.ts, `wmHouseMove` narrows the fits);
   screens `app/kimim/`, board `components/WhoAmIBoard.tsx`; Elo board / XP "wm". Art: `docs/design/kimim-brief.md` →
   `python3 scripts/kimim-assets.py docs/design/kimim-art/originals` → `mobile/assets/brand/kimim/` (`KIMIM` in brand.ts). Mystery Player (`gizli.tsx`) stays the solo one.
+- Money (v1.2, docs/release/monetization.md; `MONETIZE` in lib/features.ts turns it all off): opt-in **rewarded ads**
+  (`lib/ads.ts`, Google AdMob via react-native-google-mobile-ads; consent = UMP `gatherConsent` + iOS ATT, content rating PG)
+  buy only *practice*: lift the practice-XP cap (+`AD_RULES.capLiftXp`, 2/day; `onCapHit` in lib/xp.ts → `CapSheetHost`),
+  repair a streak broken yesterday (`repairStreak`, 1/30 days), double the daily gift (`doubleDaily`); one **interstitial**
+  after a finished solo game only (`SOLO_KEY` award keys), never in the first 3 days, ≤2/session, 4 min apart, never over a
+  clock. **Tiktako Plus** (`lib/plus.ts`, RevenueCat react-native-purchases; entitlement `plus`, products in
+  `src/lib/plus.ts`): no interstitials, no practice cap, 30-day archive of the daily puzzles (`app/arsiv.tsx`; the three daily
+  screens take `?day=` via `lib/archive.ts` and redirect to `/plus` without Plus), free streak repair, the "plus" frame
+  (cosmetics FRAMES rank 99; server `frameOf` / `cleanLook(…, plus)` check it against `users.plus_until`). Paywall
+  `app/plus.tsx` (yearly default, store prices, restore, legal lines). Server: `users.plus_until` written only from
+  RevenueCat (`POST /api/account/plus/sync` REST check with `REVENUECAT_SECRET`; `POST /api/rc/webhook` with
+  `REVENUECAT_WEBHOOK_AUTH`), never from the phone. Fair by design: nothing bought or watched touches a match (jokers, lives,
+  clocks, Elo). Ad unit ids / RC keys live in eas.json `EXPO_PUBLIC_ADMOB_*` / `EXPO_PUBLIC_RC_*` (dev builds use Google's
+  test units; a store build without ids shows no ads). Needs a native build. Privacy page describes ads + purchases.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

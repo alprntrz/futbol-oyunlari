@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
@@ -15,7 +15,9 @@ import { CriterionBadge } from "~/components/HatTrickBoard";
 import { useShareCard } from "~/components/ShareCard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
+import { archiveDay } from "~/lib/archive";
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
+import { usePlus } from "~/lib/plus";
 import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -56,8 +58,12 @@ const practiceSeed = () => 1_000_000 + Math.floor(Math.random() * 1_000_000_000)
 export default function Bingo() {
   const { t, locale } = useI18n();
   const { share: shareCard, card: shareView } = useShareCard();
-  const practice = useLocalSearchParams<{ practice?: string }>().practice === "1";
-  const day = dayNumber();
+  const params = useLocalSearchParams<{ practice?: string; day?: string }>();
+  const practice = params.practice === "1";
+  // ?day=N: a past day's card from the archive (Plus); otherwise today's
+  const past = archiveDay(params.day);
+  const plus = usePlus().active;
+  const day = past ?? dayNumber();
   const [seed, setSeed] = useState(() => (practice ? practiceSeed() : day));
   const { card, stream } = useMemo(() => bingoForDay(seed), [seed]);
   // a practice card starts at once; the daily one loads its saved run first
@@ -118,6 +124,7 @@ export default function Bingo() {
 
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
 
+  if (past !== null && !plus) return <Redirect href="/plus" />;
   if (run === undefined) return <Page>{null}</Page>;
 
   if (!run) {
@@ -128,7 +135,10 @@ export default function Bingo() {
         bg={GAME.bingo.bg}
         tagline={t("bingoShort")}
         primary={{ label: t("bingoStart"), icon: "play.fill", fallback: "▶", onPress: () => setRun(freshRun()) }}
-        secondary={[{ label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice }]}
+        secondary={[
+          { label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice },
+          { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
+        ]}
         rules={<BingoSteps />}
       />
     );
@@ -186,7 +196,7 @@ export default function Bingo() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: practice ? t("bingoPracticeTitle") : t("bingoName") }} />
+      <Stack.Screen options={{ title: practice ? t("bingoPracticeTitle") : past !== null ? `${t("bingoName")} #${day % 1000}` : t("bingoName") }} />
 
       <Card style={styles.strip}>
         <View style={styles.stat}>

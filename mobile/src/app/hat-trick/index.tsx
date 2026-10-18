@@ -35,6 +35,7 @@ export default function HatTrickHome() {
         { label: t("htFriend"), icon: "person.2.fill", fallback: "👥", onPress: () => router.push("/hat-trick/oda") },
         { label: t("htSame"), icon: "iphone", fallback: "📱", onPress: () => router.push("/hat-trick/yerel") },
         { label: t("htSolo"), icon: "person.fill", fallback: "👤", onPress: () => router.push("/hat-trick/tek") },
+        { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
       ]}
       settings={
         <>

@@ -7,6 +7,8 @@ import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, Possess
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { deleteAccount, signOut, useAccount } from "~/lib/account";
+import { privacyOptionsAvailable, showPrivacyOptions, useConsentDone } from "~/lib/ads";
+import { purchasesAvailable, usePlus } from "~/lib/plus";
 import { BRAND, ROZET, TAKTIK, KIMIM, RONDO } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
@@ -62,10 +64,27 @@ export default function SettingsTab() {
     ]);
   const [sound, setSound] = useState(soundsOn() ? "on" : "off");
   const reminders = useReminders();
+  const plus = usePlus();
+  const consentDone = useConsentDone();
 
   return (
     <Page topInset>
       <Text style={T.largeTitle}>{t("tabSettings")}</Text>
+
+      {(purchasesAvailable() || plus.active) && (
+        <Card style={{ padding: 0, overflow: "hidden", marginTop: 14 }}>
+          <Row
+            icon="crown.fill"
+            iconFallback="👑"
+            color="#3B2A05"
+            soft="#FACC15"
+            title={t("plusName")}
+            subtitle={plus.active ? t("plusActive") : t("plusSettingsDesc")}
+            onPress={() => router.push("/plus")}
+            last
+          />
+        </Card>
+      )}
 
       <SectionLabel>{t("settingsLanguage")}</SectionLabel>
       <Segmented
@@ -136,6 +155,9 @@ export default function SettingsTab() {
         <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
         <Row image={BRAND.settings.support} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
         <Row icon="hand.raised.fill" iconFallback="✋" color={C.text2} soft="#EEF2EF" title={t("blockedTitle")} onPress={() => router.push("/engellenenler")} />
+        {consentDone && privacyOptionsAvailable() && (
+          <Row icon="lock.shield.fill" iconFallback="🛡" color={C.text2} soft="#EEF2EF" title={t("privacyOptions")} onPress={() => showPrivacyOptions()} />
+        )}
         <Row image={BRAND.settings.delete} title={account ? t("deleteAccount") : t("deleteData")} onPress={confirmDelete} last />
       </Card>
 

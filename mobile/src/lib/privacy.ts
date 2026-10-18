@@ -8,6 +8,7 @@ import { resetCosmetics } from "./cosmetics";
 import { resetDuel } from "./duel";
 import { resetPhoto } from "./photo";
 import { resetPlayStreak } from "./playStreak";
+import { resetPlus } from "./plus";
 import { resetQuests } from "./quests";
 import { resetTaktik } from "./taktik";
 import { resetXpCache } from "./xp";
@@ -34,6 +35,7 @@ export async function deleteMyData(): Promise<{ server: boolean }> {
   resetDuel();
   resetCosmetics();
   resetDailyRewards();
+  resetPlus();
   return { server };
 }
 

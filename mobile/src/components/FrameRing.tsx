@@ -9,7 +9,8 @@ import { frameById, type FrameId } from "~/lib/cosmetics";
 export function FrameRing({ id, size }: { id: FrameId; size: number }) {
   const f = frameById(id);
   const spin = useSharedValue(0);
-  const turning = id === "legend";
+  // the Legend and Plus rings turn slowly
+  const turning = id === "legend" || id === "plus";
   useEffect(() => {
     if (turning) spin.set(withRepeat(withTiming(360, { duration: 6000, easing: Easing.linear }), -1));
   }, [turning, spin]);

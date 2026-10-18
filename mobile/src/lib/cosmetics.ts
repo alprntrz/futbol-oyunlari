@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { rankOf } from "@/lib/levels";
 
 import { AVATARS, loadAvatar } from "./avatar";
+import { plusActive, usePlus } from "./plus";
 import { loadTotals } from "./history";
 import { loadTrophies } from "./trophies";
 import { loadXp, onXpAward, type XpGame } from "./xp";
@@ -23,11 +24,14 @@ export const FRAMES = [
   { id: "emerald", rank: 4, colors: ["#7DF0B6", "#0C8A55", "#3DDC97"] },
   { id: "galaxy", rank: 5, colors: ["#C4A1FF", "#4B2AA8", "#3BB3FF"] },
   { id: "legend", rank: 6, colors: ["#FF5F6D", "#FFC371", "#47E891", "#3BB3FF", "#C26BFF", "#FF5F6D"] },
+  // Tiktako Plus (lib/plus.ts): opens with the subscription, not a rank; a status, never an edge in a match
+  { id: "plus", rank: 99, colors: ["#FDE68A", "#0EA5E9", "#14532D", "#FDE68A"] },
 ] as const;
 
 export type FrameId = (typeof FRAMES)[number]["id"];
+export const PLUS_FRAME = "plus" satisfies FrameId;
 export const frameById = (id: string | null | undefined) => FRAMES.find((f) => f.id === id);
-export const frameUnlocked = (id: FrameId, level: number) => (frameById(id)?.rank ?? 99) <= rankOf(level).index;
+export const frameUnlocked = (id: FrameId, level: number, plus = plusActive()) => (id === PLUS_FRAME ? plus : (frameById(id)?.rank ?? 99) <= rankOf(level).index);
 
 const FRAME_KEY = "frame-v1";
 /** null = automatic: the best frame your rank has opened */
@@ -64,20 +68,21 @@ export function saveFrame(id: FrameId | null) {
 }
 
 /** The frame to draw: the chosen one if it's still open, else the best your rank has. */
-export function frameFor(level: number, choice: FrameId | null): FrameId {
-  if (choice && frameUnlocked(choice, level)) return choice;
-  return FRAMES[Math.min(rankOf(level).index, FRAMES.length - 1)].id;
+export function frameFor(level: number, choice: FrameId | null, plus = plusActive()): FrameId {
+  if (choice && frameUnlocked(choice, level, plus)) return choice;
+  return FRAMES[Math.min(rankOf(level).index, 6)].id;
 }
 
-/** This phone's frame right now (follows level ups and the choice in Edit profile). */
+/** This phone's frame right now (follows level ups, Plus and the choice in Edit profile). */
 export function useMyFrame(): FrameId {
   const choice = useChosenFrame();
+  const plus = usePlus().active;
   const [level, setLevel] = useState(1);
   useEffect(() => {
     loadXp().then((x) => setLevel(x.level));
     return onXpAward((a) => setLevel(a.after.level));
   }, []);
-  return frameFor(level, choice);
+  return frameFor(level, choice, plus);
 }
 
 /** Avatar + frame to show a random opponent (server.js checks the frame against the rank). */

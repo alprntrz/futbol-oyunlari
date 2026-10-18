@@ -19,7 +19,9 @@ import { useUpdateRequired } from "~/lib/appHealth";
 import { RatingAsk } from "~/lib/rating";
 import { RemindersSync } from "~/lib/reminders";
 import { RewardScreen } from "~/components/RewardScreen";
+import { CapSheetHost } from "~/components/Rewarded";
 import { XpToast } from "~/components/XpToast";
+import { AdsHost } from "~/lib/ads";
 import { initAccount } from "~/lib/account";
 import "~/lib/playStreak"; // counts finished games from app start
 import { ONBOARDING } from "~/lib/features";
@@ -82,7 +84,10 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: "fullScreenModal", animation: "fade" }} />
         <Stack.Screen name="oyna" options={{ headerShown: false, presentation: "fullScreenModal", animation: "slide_from_bottom" }} />
+        <Stack.Screen name="plus" options={{ presentation: "modal" }} />
       </Stack>
+      <AdsHost />
+      <CapSheetHost />
       <RewardScreen />
       <XpToast />
       <EloToast />

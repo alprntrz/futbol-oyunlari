@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack } from "expo-router";
+import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
@@ -18,6 +18,8 @@ import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/compon
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { categoryFilter } from "~/lib/league";
+import { archiveDay } from "~/lib/archive";
+import { usePlus } from "~/lib/plus";
 import { C, F, R, shadow, T } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
@@ -49,7 +51,10 @@ const surname = (name: string) => name.trim().split(/\s+/).slice(-1)[0];
 export default function HatTrickSolo() {
   const { t, locale } = useI18n();
   const { share: shareCard, card: shareView } = useShareCard();
-  const day = dayNumber();
+  // ?day=N: a past day's grid from the archive (Plus); otherwise today's
+  const past = archiveDay(useLocalSearchParams<{ day?: string }>().day);
+  const plus = usePlus().active;
+  const day = past ?? dayNumber();
   // null = today's shared grid (saved); a number = an extra random grid after it (not saved)
   const [seed, setSeed] = useState<number | null>(null);
   // today's grid stays plain (same for everyone, saved); extra grids may get a "played with" / "managed by" line
@@ -118,6 +123,7 @@ export default function HatTrickSolo() {
     ],
   });
 
+  if (past !== null && !plus) return <Redirect href="/plus" />;
   if (run === undefined) return <Page>{null}</Page>;
 
   const start = () => {
@@ -159,7 +165,7 @@ export default function HatTrickSolo() {
   if (!run) {
     return (
       <Page>
-        <Stack.Screen options={{ title: t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
+        <Stack.Screen options={{ title: past !== null ? `${t("htSolo")} #${day % 1000}` : t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
         {/* the header already names the mode */}
         <Text style={T.body}>{t("bbIntro")}</Text>
         <View style={styles.tipRow}>
@@ -208,7 +214,7 @@ export default function HatTrickSolo() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
+      <Stack.Screen options={{ title: past !== null ? `${t("htSolo")} #${day % 1000}` : t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
 
       {/* Score strip */}
       <Card style={styles.strip}>

@@ -16,6 +16,8 @@ interface CalState {
   last: number;
   /** index of the last claimed slot (0-6) */
   step: number;
+  /** day number the reward was doubled on (one rewarded ad a day) */
+  doubled?: number;
 }
 
 const KEY = "daily-rewards-v1";
@@ -33,13 +35,13 @@ function load() {
     .then(emit));
 }
 
-/** Where today stands: which slot is today's and whether it's taken. */
+/** Where today stands: which slot is today's, whether it's taken, and whether it can still be doubled. */
 function view(s: CalState) {
   const today = dayNumber();
-  if (s.last === today) return { todayIndex: s.step, claimed: true };
+  if (s.last === today) return { todayIndex: s.step, claimed: true, doubled: s.doubled === today };
   // claimed yesterday: the next slot; a gap (or a full week) starts over
   const next = s.last === today - 1 && s.step < CALENDAR.length - 1 ? s.step + 1 : 0;
-  return { todayIndex: next, claimed: false };
+  return { todayIndex: next, claimed: false, doubled: false };
 }
 
 export function useDailyRewards() {
@@ -66,6 +68,18 @@ export async function claimDaily() {
   emit();
   await AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => {});
   return awardXp(`calendar-${today}`, "bonus", CALENDAR[v.todayIndex], { label: "dailyClaimed" });
+}
+
+/** A rewarded ad was watched after today's claim: the same amount again (once a day). */
+export async function doubleDaily() {
+  await load();
+  const v = view(state);
+  if (!v.claimed || v.doubled) return null;
+  const today = dayNumber();
+  state = { ...state, doubled: today };
+  emit();
+  await AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => {});
+  return awardXp(`calendar-${today}-x2`, "bonus", CALENDAR[v.todayIndex], { label: "dailyDoubled" });
 }
 
 export function resetDailyRewards() {

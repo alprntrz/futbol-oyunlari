@@ -10,7 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const { pushLive } = require("./server-live");
 const { attachTaktik, ttRooms } = require("./server-taktik");
-const { handleAccountApi, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
+const { handleAccountApi, handleRcWebhook, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook, plusOf } = require("./server-accounts");
 const { refForSocket, addReport, shownNick, cleanBlocks } = require("./server-refs");
 const { handleAppApi } = require("./server-app");
 const { REJOIN_MS, refById, seatRef, seatNick, cleanNick, cleanTier, tierGap, takePairs, codeFor, qzNick, critId, nameOf } = require("./server-core");
@@ -660,6 +660,8 @@ function liveDz(room) {
   const server = createServer(async (req, res) => {
     // /api/account/*: sign-in and the account's XP (server-accounts.js); the rest is the Next site
     if (req.url.startsWith("/api/account") && (await handleAccountApi(req, res, cleanNick))) return;
+    // RevenueCat tells us about Plus renewals / refunds (server-accounts.js)
+    if (req.url.split("?")[0] === "/api/rc/webhook" && req.method === "POST" && (await handleRcWebhook(req, res))) return;
     // /api/app/*: minimum app version, anonymous crash reports (server-app.js)
     if (req.url.startsWith("/api/app/") && (await handleAppApi(req, res))) return;
     handle(req, res);
@@ -1044,7 +1046,7 @@ function liveDz(room) {
     socket.on("pp:queue", ({ nick, board, tier, avatar, frame }) => {
       if (!ppBoardOk(board)) return;
       ppQueue = ppQueue.filter((w) => w.socket.id !== socket.id);
-      ppQueue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: ppPair });
+      ppQueue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: ppPair });
       matchQueues();
     });
 
@@ -1208,7 +1210,7 @@ function liveDz(room) {
     socket.on("rd:queue", ({ nick, tier, avatar, frame }) => {
       if (!RD) return;
       rdQueue = rdQueue.filter((w) => w.socket.id !== socket.id);
-      rdQueue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: rdPair });
+      rdQueue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: rdPair });
       matchQueues();
     });
     socket.on("rd:unqueue", () => {
@@ -1357,7 +1359,7 @@ function liveDz(room) {
     socket.on("wm:queue", ({ nick, tier, avatar, frame }) => {
       if (!WM) return;
       wmQueue = wmQueue.filter((w) => w.socket.id !== socket.id);
-      wmQueue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: wmPair });
+      wmQueue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: wmPair });
       matchQueues();
     });
     socket.on("wm:unqueue", () => {
@@ -1550,7 +1552,7 @@ function liveDz(room) {
     socket.on("dz:queue", ({ nick, hand, tier, avatar, frame }) => {
       if (!dzHandOk(hand)) return;
       dzQueue = dzQueue.filter((w) => w.socket.id !== socket.id);
-      dzQueue.push({ socket, nick: cleanNick(nick), hand, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: dzPair });
+      dzQueue.push({ socket, nick: cleanNick(nick), hand, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: dzPair });
       matchQueues();
     });
 
@@ -1751,7 +1753,7 @@ function liveDz(room) {
       if (!htGridOk(grid)) return;
       const lg = typeof league === "string" ? league.slice(0, 12) : "all";
       htQueue = htQueue.filter((w) => w.socket.id !== socket.id);
-      htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: htPair });
+      htQueue.push({ socket, nick: cleanNick(nick), grid, league: lg, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: htPair });
       matchQueues();
     });
 

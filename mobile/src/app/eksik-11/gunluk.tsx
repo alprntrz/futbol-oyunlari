@@ -1,7 +1,7 @@
-import { Stack } from "expo-router";
+import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 
-import { dailyMatch } from "@/lib/daily";
+import { dailyMatch, dailyMatchFor } from "@/lib/daily";
 import { XP } from "@/lib/levels";
 import type { Difficulty, Match } from "@/lib/types";
 
@@ -11,7 +11,9 @@ import { useCombo } from "~/components/Combo";
 import { MissingXIBoard } from "~/components/MissingXIBoard";
 import { ResultCard } from "~/components/ResultCard";
 import { Page } from "~/components/ui";
+import { archiveDay } from "~/lib/archive";
 import { useI18n } from "~/lib/i18n";
+import { usePlus } from "~/lib/plus";
 import { loadDayState, recordResult, saveDayState, type DayState } from "~/lib/storage";
 import { useMissingXI } from "~/lib/useMissingXI";
 import { useQuestOnce } from "~/lib/quests";
@@ -19,7 +21,10 @@ import { useXpAward, type XpStat } from "~/lib/xp";
 
 export default function DailyScreen() {
   const { t } = useI18n();
-  const { match, day } = useMemo(() => dailyMatch(), []);
+  // ?day=N: a past day's match from the archive (Plus); otherwise today's
+  const past = archiveDay(useLocalSearchParams<{ day?: string }>().day);
+  const plus = usePlus().active;
+  const { match, day } = useMemo(() => (past !== null ? dailyMatchFor(past) : dailyMatch()), [past]);
   const [saved, setSaved] = useState<DayState | null | undefined>(undefined);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
 
@@ -32,9 +37,10 @@ export default function DailyScreen() {
     });
   }, [day, match.id]);
 
+  if (past !== null && !plus) return <Redirect href="/plus" />;
   return (
     <Page>
-      <Stack.Screen options={{ title: t("daily"), headerRight: () => <HelpButton game="xi" /> }} />
+      <Stack.Screen options={{ title: past !== null ? `${t("daily")} #${day % 1000}` : t("daily"), headerRight: () => <HelpButton game="xi" /> }} />
       {saved === undefined ? null : !difficulty ? (
         <GameIntro subtitle={t("dailyHeroDesc")} onStart={setDifficulty} />
       ) : (

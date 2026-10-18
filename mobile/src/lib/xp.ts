@@ -3,6 +3,9 @@ import { useEffect, useRef } from "react";
 
 import { dayNumber } from "@/lib/daily";
 import { levelOf, rankOf, XP, type LevelInfo } from "@/lib/levels";
+import { AD_RULES } from "@/lib/plus";
+
+import { plusActive } from "./plus";
 
 /** Which game an award came from (per-game totals on the profile). */
 export type XpGame = "xi" | "ht" | "qz" | "mystery" | "bingo" | "pp" | "tt" | "dz" | "rd" | "wm";
@@ -17,6 +20,8 @@ interface XpState {
   /** unlimited-mode XP earned on `practiceDay` */
   practiceDay: number;
   practiceToday: number;
+  /** rewarded ads watched on `practiceDay` to lift the cap (AD_RULES.capLiftXp each) */
+  capLifts?: number;
 }
 
 /** One line on the end-of-game reward screen ("Found 9/11"). */
@@ -50,7 +55,35 @@ export interface XpAward {
 
 const KEY = "xp-v1";
 const MAX_KEYS = 400;
-const empty = (): XpState => ({ xp: 0, byGame: {}, keys: [], practiceDay: 0, practiceToday: 0 });
+const empty = (): XpState => ({ xp: 0, byGame: {}, keys: [], practiceDay: 0, practiceToday: 0, capLifts: 0 });
+
+/** Today's practice-XP cap: the base, plus what rewarded ads opened; no cap at all with Plus. */
+function practiceCap(s: XpState) {
+  if (plusActive()) return Infinity;
+  return XP.practiceDailyCap + (s.capLifts ?? 0) * AD_RULES.capLiftXp;
+}
+function rollPracticeDay(s: XpState) {
+  const today = dayNumber();
+  if (s.practiceDay !== today) {
+    s.practiceDay = today;
+    s.practiceToday = 0;
+    s.capLifts = 0;
+  }
+}
+
+/** The practice cap was hit (an award was cut or dropped): the sheet offering an ad / Plus listens. */
+export interface CapHit {
+  /** XP the player would have had */
+  lost: number;
+  liftsLeft: number;
+}
+const capListeners = new Set<(c: CapHit) => void>();
+export function onCapHit(fn: (c: CapHit) => void) {
+  capListeners.add(fn);
+  return () => {
+    capListeners.delete(fn);
+  };
+}
 
 let cache: XpState | null = null;
 let queue: Promise<unknown> = Promise.resolve();
@@ -87,13 +120,20 @@ export function awardXp(key: string, game: XpSource, amount: number, opts: XpOpt
     if (amount <= 0 || s.keys.includes(key)) return null;
     let gained = Math.round(amount);
     if (opts.practice) {
-      const today = dayNumber();
-      if (s.practiceDay !== today) {
-        s.practiceDay = today;
-        s.practiceToday = 0;
+      rollPracticeDay(s);
+      const room = Math.max(0, practiceCap(s) - s.practiceToday);
+      if (room < gained) {
+        const hit: CapHit = { lost: gained - room, liftsLeft: Math.max(0, AD_RULES.capLiftsPerDay - (s.capLifts ?? 0)) };
+        // the key is spent either way: a game never pays twice, even after an ad lifts the cap
+        if (room <= 0) {
+          s.keys = [...s.keys, key].slice(-MAX_KEYS);
+          await AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
+          capListeners.forEach((fn) => fn(hit));
+          return null;
+        }
+        setTimeout(() => capListeners.forEach((fn) => fn(hit)), 0);
       }
-      gained = Math.min(gained, XP.practiceDailyCap - s.practiceToday);
-      if (gained <= 0) return null;
+      gained = Math.min(gained, room);
       s.practiceToday += gained;
     }
     const before = { ...levelOf(s.xp), xp: s.xp };
@@ -105,6 +145,28 @@ export function awardXp(key: string, game: XpSource, amount: number, opts: XpOpt
     listeners.forEach((fn) => fn(award));
     sink?.(key, game, gained);
     return award;
+  });
+  queue = run.catch(() => {});
+  return run;
+}
+
+/** Where today's practice XP stands (the cap sheet and the paywall show it). */
+export async function loadPracticeToday() {
+  await queue;
+  const s = await load();
+  rollPracticeDay(s);
+  return { used: s.practiceToday, cap: practiceCap(s), lifts: s.capLifts ?? 0, liftsLeft: Math.max(0, AD_RULES.capLiftsPerDay - (s.capLifts ?? 0)) };
+}
+
+/** A rewarded ad was watched through: open AD_RULES.capLiftXp more practice XP for today. */
+export function liftPracticeCap() {
+  const run = queue.then(async () => {
+    const s = await load();
+    rollPracticeDay(s);
+    if ((s.capLifts ?? 0) >= AD_RULES.capLiftsPerDay) return false;
+    s.capLifts = (s.capLifts ?? 0) + 1;
+    await AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
+    return true;
   });
   queue = run.catch(() => {});
   return run;

@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 
 import { dayNumber } from "@/lib/daily";
+import { AD_RULES } from "@/lib/plus";
 
 import { isGameAward, onXpAward } from "./xp";
 
@@ -13,6 +14,8 @@ interface StreakState {
   last: number;
   count: number;
   best: number;
+  /** day number of the last repair (one in AD_RULES.streakRepairDays; progress.ts keeps it with the rest) */
+  repaired?: number;
 }
 
 const KEY = "play-streak-v1";
@@ -42,7 +45,15 @@ onXpAward((a) => {
   });
 });
 
-/** Current streak (still alive if the last game was today or yesterday) and whether today counts yet. */
+/** A streak that just broke: the player missed exactly yesterday, and a repair is allowed this month. */
+function repairable(s: StreakState, today: number) {
+  return s.last === today - 2 && s.count > 0 && (s.repaired === undefined || today - s.repaired >= AD_RULES.streakRepairDays) ? s.count : 0;
+}
+
+/**
+ * Current streak (still alive if the last game was today or yesterday), whether today counts yet, and
+ * `lost`: a streak that broke yesterday and can still be repaired (rewarded ad, or free with Plus).
+ */
 export function usePlayStreak() {
   const s = useSyncExternalStore(
     (fn) => {
@@ -56,7 +67,18 @@ export function usePlayStreak() {
   );
   const today = dayNumber();
   const alive = s.last >= today - 1;
-  return { count: alive ? s.count : 0, playedToday: s.last === today, best: s.best };
+  return { count: alive ? s.count : 0, playedToday: s.last === today, best: s.best, lost: repairable(s, today) };
+}
+
+/** Put yesterday back: the streak carries on as if the missed day was played. True when it did. */
+export async function repairStreak() {
+  await load();
+  const today = dayNumber();
+  if (!repairable(state, today)) return false;
+  state = { ...state, last: today - 1, repaired: today };
+  emit();
+  await AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => {});
+  return true;
 }
 
 export function resetPlayStreak() {

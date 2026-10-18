@@ -4,6 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { useSyncExternalStore } from "react";
 import { Platform } from "react-native";
 
+import { applyServerPlus, initPlus, plusSignedOut, setPlusServerSync } from "./plus";
 import { stopProgress, syncProgress } from "./progress";
 import { loadAvatar, saveAvatar, type AvatarId } from "./avatar";
 import { loadNick, loadPlayerId, saveNick } from "./nick";
@@ -27,6 +28,9 @@ export interface Account {
   bonusToday: boolean;
   /** skill rating per online game (ht, qz, pp) */
   ratings: Partial<Record<RatedGame, { rating: number; games: number; wins: number }>>;
+  /** Tiktako Plus on the account (server-accounts.js, from RevenueCat) */
+  plus?: boolean;
+  plusUntil?: number;
 }
 
 export type RatedGame = "ht" | "qz" | "pp" | "dz" | "rd" | "wm";
@@ -97,8 +101,21 @@ const listeners = new Set<(a: Account | null) => void>();
 function setAccount(a: Account | null) {
   account = a;
   setSessionToken(a ? token : null);
+  if (a) applyServerPlus(!!a.plus, a.plusUntil ?? 0);
   listeners.forEach((fn) => fn(a));
 }
+
+// ── Plus: after a purchase / restore the server asks RevenueCat and stores the answer on the account
+setPlusServerSync(async (force) => {
+  if (!token) return;
+  try {
+    const res = await api<{ plus: boolean; plusUntil: number; user?: Account }>("/plus/sync", { method: "POST", body: JSON.stringify({ force }) });
+    if (res.user) setAccount(res.user);
+    else applyServerPlus(res.plus, res.plusUntil);
+  } catch {
+    // offline or RevenueCat down: the phone's own state stands, the webhook catches up
+  }
+});
 
 async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API}${path}`, {
@@ -166,16 +183,22 @@ export async function initAccount() {
   } catch {
     token = null;
   }
-  if (!token) return setAccount(null);
+  if (!token) {
+    setAccount(null);
+    initPlus(null);
+    return;
+  }
   try {
     await flushPending();
     const { user } = await api<{ user: Account }>("/me");
     setAccount(user);
     applyServerTotals(user.xp, user.byGame);
     syncProgress(progressApi);
+    initPlus(user.id);
   } catch {
     // offline: stay signed in, sync later
     if (account === undefined) setAccount(null);
+    initPlus(null);
   }
 }
 
@@ -196,6 +219,8 @@ async function finishSignIn(provider: "apple" | "google", idToken: string, autho
   setAccount(res.user);
   applyServerTotals(res.user.xp, res.user.byGame);
   syncProgress(progressApi);
+  // a Plus bought as a guest moves onto the account (RevenueCat logIn), and the account's Plus shows here
+  initPlus(res.user.id);
   return res.user;
 }
 
@@ -244,6 +269,7 @@ export async function signOut() {
   if (account?.provider === "google") await googleModule()?.GoogleSignin.signOut().catch(() => {});
   await forget();
   await resetLocalXp();
+  await plusSignedOut();
 }
 
 /** Delete the account and everything on the server (Guideline 5.1.1(v)). */
