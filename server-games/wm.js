@@ -5,7 +5,7 @@
 const path = require("path");
 const { pathToFileURL } = require("node:url");
 const { cleanLook, plusOf } = require("../server-accounts");
-const { codeFor, cleanNick, cleanTier, seatRef, seatNick, nameOf } = require("../server-core");
+const { INTRO_MS, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, nameOf } = require("../server-core");
 
 /** code -> room */
 const rooms = new Map();
@@ -46,7 +46,7 @@ function newRoom(code, players) {
  * `matchQueues` (pair the random queues now) and `INTRO_MS` (the VS screen before the first clock).
  */
 function attach(socket, ctx) {
-  const { io, rateDuel, dropLater, dropLoneRoom, matchQueues, INTRO_MS } = ctx;
+  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
   const wmEmit = (room) => io.to("wm:" + room.code).emit("wm:update", view(room));
   const wmEnd = (room, winner, reason) => {
     clearTimeout(room.timer);

@@ -6,7 +6,7 @@
 const fs = require("fs");
 const path = require("path");
 const { cleanLook, plusOf, recordResult } = require("../server-accounts");
-const { codeFor, cleanNick, cleanTier, seatRef, seatNick } = require("../server-core");
+const { tellElo, codeFor, cleanNick, cleanTier, seatRef, seatNick } = require("../server-core");
 const { liveSend, sec } = require("../server-live");
 
 const DZ_CARDS = (() => {
@@ -113,7 +113,7 @@ function live(room) {
 
 /** This socket's dz:* handlers; `ctx` as in server-games/wm.js, plus `tellElo` (the rating change to each phone). */
 function attach(socket, ctx) {
-  const { io, tellElo, dropLater, dropLoneRoom, matchQueues } = ctx;
+  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
   const dzEmit = (room) => {
     io.to("dz:" + room.code).emit("dz:update", view(room));
     live(room);

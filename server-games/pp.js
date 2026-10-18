@@ -3,7 +3,7 @@
 // server applies the move, runs both chess clocks and decides the result. server.js lists it in GAMES
 // (reconnect, room sweep, queue pairing, emotes, invites, Live Activity) and calls attach() per socket.
 const { cleanLook, plusOf } = require("../server-accounts");
-const { codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf } = require("../server-core");
+const { INTRO_MS, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf } = require("../server-core");
 const { liveSend, liveTurnProps } = require("../server-live");
 
 const PP_HEXES = 31;
@@ -85,7 +85,7 @@ function live(room) {
 
 /** This socket's pp:* handlers; `ctx` as in server-games/wm.js. */
 function attach(socket, ctx) {
-  const { io, rateDuel, dropLater, dropLoneRoom, matchQueues, INTRO_MS } = ctx;
+  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
   const ppEmit = (room) => {
     io.to("pp:" + room.code).emit("pp:update", view(room));
     live(room);

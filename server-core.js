@@ -1,13 +1,42 @@
 /**
  * Shared pieces of the game server (server.js and the game modules): nicknames, rank matchmaking,
- * room codes, player refs for report / block, the house players' names and small validators.
- * Pure: no sockets of its own (a queued entry carries its socket), no timers.
+ * room codes, player refs for report / block, the house players' names, small validators and the
+ * Elo hand-off. No timers; the one socket hook is `setIo` (server.js, once the server runs), so
+ * module-level helpers can find a seat's socket.
  * Plan: docs/server-bolme-plani.md.
  */
+const { recordResult } = require("./server-accounts");
 const { shownNick } = require("./server-refs");
 
 /** How long a dropped phone has to come back to a live online match. */
 const REJOIN_MS = Number(process.env.REJOIN_MS) || 60_000;
+/** Matched random games open with a short VS screen before the first clock starts. */
+const INTRO_MS = 2500;
+
+/** the Socket.IO server, set once it runs */
+let io = null;
+const setIo = (server) => (io = server);
+/** a connected socket by id (a seat's `id`), or undefined */
+const socketOf = (id) => io?.sockets.sockets.get(id);
+
+/** Rate a two-player result (marks): winner first, or a draw. Guests (no uid) aren't rated. */
+function rateDuel(game, room, winnerMark) {
+  const [a, b] = room.players;
+  if (!a?.uid || !b?.uid) return;
+  if (winnerMark === "draw") return tellElo(game, room.players, recordResult(game, [[a.uid, b.uid]]));
+  const w = room.players.find((p) => p.mark === winnerMark);
+  const l = room.players.find((p) => p.mark !== winnerMark);
+  if (w && l) tellElo(game, room.players, recordResult(game, [[w.uid], [l.uid]]));
+}
+
+/** Each rated player's phone hears its new rating and the change ("+18"), for the end-of-match pill. */
+function tellElo(game, players, result) {
+  if (!result) return;
+  for (const p of players) {
+    const r = p.uid && result.get(p.uid);
+    if (r) socketOf(p.id)?.emit("elo", { game, rating: r.rating, delta: r.delta });
+  }
+}
 
 // socket id → that player's ref (server-refs.js), so room views can carry it for report / block
 const refById = new Map();
@@ -98,4 +127,4 @@ const critId = (x) => typeof x === "string" && x.length > 0 && x.length <= 48;
 /** a footballer's name as sent by a phone */
 const nameOf = (v) => (typeof v === "string" ? v.trim().slice(0, 60) : "");
 
-module.exports = { REJOIN_MS, refById, seatRef, seatNick, blockedPair, CODE_ALPHABET, codeFor, cleanNick, TIER_WIDEN_MS, cleanTier, tierGap, takePairs, qzNick, critId, nameOf };
+module.exports = { REJOIN_MS, INTRO_MS, setIo, socketOf, rateDuel, tellElo, refById, seatRef, seatNick, blockedPair, CODE_ALPHABET, codeFor, cleanNick, TIER_WIDEN_MS, cleanTier, tierGap, takePairs, qzNick, critId, nameOf };

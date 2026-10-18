@@ -5,7 +5,7 @@
 const path = require("path");
 const { pathToFileURL } = require("node:url");
 const { cleanLook, plusOf } = require("../server-accounts");
-const { codeFor, cleanNick, cleanTier, seatRef, seatNick, nameOf } = require("../server-core");
+const { INTRO_MS, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, nameOf } = require("../server-core");
 
 /** code -> room */
 const rooms = new Map();
@@ -45,7 +45,7 @@ function newRoom(code, players) {
 
 /** This socket's rd:* handlers; `ctx` as in server-games/wm.js. */
 function attach(socket, ctx) {
-  const { io, rateDuel, dropLater, dropLoneRoom, matchQueues, INTRO_MS } = ctx;
+  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
   const rdEmit = (room) => io.to("rd:" + room.code).emit("rd:update", view(room));
 
   // the mover's clock: when it runs out they lose the round
