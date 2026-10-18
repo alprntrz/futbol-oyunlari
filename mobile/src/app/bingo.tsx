@@ -17,7 +17,7 @@ import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { archiveDay } from "~/lib/archive";
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
-import { usePlus } from "~/lib/plus";
+import { useArchiveOpen, usePlus } from "~/lib/plus";
 import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -63,6 +63,7 @@ export default function Bingo() {
   // ?day=N: a past day's card from the archive (Plus); otherwise today's
   const past = archiveDay(params.day);
   const plus = usePlus().active;
+  const archive = useArchiveOpen();
   const day = past ?? dayNumber();
   const [seed, setSeed] = useState(() => (practice ? practiceSeed() : day));
   const { card, stream } = useMemo(() => bingoForDay(seed), [seed]);
@@ -136,8 +137,8 @@ export default function Bingo() {
         tagline={t("bingoShort")}
         primary={{ label: t("bingoStart"), icon: "play.fill", fallback: "▶", onPress: () => setRun(freshRun()) }}
         secondary={
-          // a past day came from the archive: no way back into it from here
-          past !== null
+          // a past day came from the archive (no way back into it from here), or no archive in this build
+          past !== null || !archive
             ? [{ label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice }]
             : [
                 { label: t("bingoPractice"), icon: "shuffle", fallback: "⇄", onPress: openPractice },

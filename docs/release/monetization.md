@@ -7,6 +7,11 @@ fiyatlar mağazaların bölgesel fiyat tablosuyla, onay akışı Google UMP (AB/
 
 Durum: [x] kodda hazır · [ ] senin yapman gereken
 
+> **1.1 bunlarsız çıkıyor (19.10.2026).** "1.1 without ads and Plus" commit'i `MONETIZE`'ı kapatır, AdMob / takip
+> eklentilerini app.json'dan çıkarır, `mobile/react-native.config.js` + `package.json` `expo.autolinking.exclude` ile
+> AdMob, RevenueCat ve ATT'nin native kısmını build dışında tutar ve arşiv girişlerini gizler (`useArchiveOpen`).
+> Tam hali `monetization-full` etiketinde. **1.2'de açmak:** o commit'i `git revert` et, sonra bu listeye devam.
+
 ## 1. Model (karar verildi, 18.10.2026)
 
 - **Ödüllü reklam (isteğe bağlı):** antrenman XP tavanını kaldır (+150, günde 2), bozulan seriyi onar (ayda 1),

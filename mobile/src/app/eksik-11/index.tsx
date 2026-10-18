@@ -8,6 +8,7 @@ import { MissingXISteps } from "~/components/HowTo";
 import { LeagueBadge } from "~/components/LeaguePicker";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
+import { useArchiveOpen } from "~/lib/plus";
 import { GAME } from "~/lib/theme";
 
 /** Missing 11: one big Play (a random match from the chosen matches), today's match and pick-a-team below. */
@@ -16,6 +17,7 @@ export default function MissingXIHome() {
   const [cat, setCat] = useState<string>(XI_CATEGORIES[0].id);
   const [picking, setPicking] = useState(false);
   const current = XI_CATEGORIES.find((c) => c.id === cat) ?? XI_CATEGORIES[0];
+  const archive = useArchiveOpen();
 
   return (
     <GameHub
@@ -27,7 +29,7 @@ export default function MissingXIHome() {
       secondary={[
         { label: t("daily"), icon: "calendar", fallback: "📅", onPress: () => router.push("/eksik-11/gunluk") },
         { label: t("byTeam"), icon: "tshirt.fill", fallback: "👕", onPress: () => router.push("/eksik-11/takimlar") },
-        { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
+        ...(archive ? [{ label: t("archiveTitle"), icon: "archivebox.fill" as const, fallback: "🗄", onPress: () => router.push("/arsiv") }] : []),
       ]}
       settings={
         <HubSetting label={t("xiMatchesFrom")} value={`${current.name[locale]} · ${current.matches().length}`} onPress={() => setPicking(true)} />

@@ -217,7 +217,8 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   3 lives, 25 s a move, 24 moves then a draw. House player `useWmHouse` (lib/whoamiMatch.ts, `wmHouseMove` narrows the fits);
   screens `app/kimim/`, board `components/WhoAmIBoard.tsx`; Elo board / XP "wm". Art: `docs/design/kimim-brief.md` →
   `python3 scripts/kimim-assets.py docs/design/kimim-art/originals` → `mobile/assets/brand/kimim/` (`KIMIM` in brand.ts). Mystery Player (`gizli.tsx`) stays the solo one.
-- Money (v1.2, docs/release/monetization.md; `MONETIZE` in lib/features.ts turns it all off): opt-in **rewarded ads**
+- Money (v1.2, docs/release/monetization.md; `MONETIZE` in lib/features.ts turns it all off; **off in 1.1**, native SDKs
+  unlinked by `mobile/react-native.config.js` + `expo.autolinking.exclude`, full state at tag `monetization-full`): opt-in **rewarded ads**
   (`lib/ads.ts`, Google AdMob via react-native-google-mobile-ads; consent = UMP `gatherConsent` + iOS ATT, content rating PG)
   buy only *practice*: lift the practice-XP cap (+`AD_RULES.capLiftXp`, 2/day; `onCapHit` in lib/xp.ts → `CapSheetHost`),
   repair a streak broken yesterday (`repairStreak`, 1/30 days), double the daily gift (`doubleDaily`); one **interstitial**

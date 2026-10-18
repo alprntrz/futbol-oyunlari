@@ -65,5 +65,12 @@
     "lint": "expo lint",
     "ota": "node scripts/ota.mjs"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "expo-tracking-transparency"
+      ]
+    }
+  }
 }

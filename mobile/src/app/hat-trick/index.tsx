@@ -12,6 +12,7 @@ import { Text } from "~/components/Text";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { useHtCategories, useHtLeague } from "~/lib/league";
+import { useArchiveOpen } from "~/lib/plus";
 import { GAME, T } from "~/lib/theme";
 
 /** Tic-Tac-Toe: one big Find opponent; friend / same phone / solo below; the league is a setting. */
@@ -21,6 +22,7 @@ export default function HatTrickHome() {
   const [picking, setPicking] = useState(false);
   const [cats, setCats] = useHtCategories();
   const [pickingCats, setPickingCats] = useState(false);
+  const archive = useArchiveOpen();
   const catsLabel = cats.length >= GRID_CATEGORIES.length ? t("htCategoriesAll") : `${cats.length + 1}/${GRID_CATEGORIES.length + 1}`;
   const name = (l: (typeof LEAGUES)[number]) => (locale === "tr" ? l.name.tr : l.name.en);
 
@@ -35,7 +37,7 @@ export default function HatTrickHome() {
         { label: t("htFriend"), icon: "person.2.fill", fallback: "👥", onPress: () => router.push("/hat-trick/oda") },
         { label: t("htSame"), icon: "iphone", fallback: "📱", onPress: () => router.push("/hat-trick/yerel") },
         { label: t("htSolo"), icon: "person.fill", fallback: "👤", onPress: () => router.push("/hat-trick/tek") },
-        { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
+        ...(archive ? [{ label: t("archiveTitle"), icon: "archivebox.fill" as const, fallback: "🗄", onPress: () => router.push("/arsiv") }] : []),
       ]}
       settings={
         <>

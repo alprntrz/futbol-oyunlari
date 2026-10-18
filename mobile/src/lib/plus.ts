@@ -115,6 +115,11 @@ export function usePlus(): PlusState & { active: boolean } {
   return { ...s, active: isActive(s) };
 }
 
+/** The archive of past days is a Plus perk: its entry points show only while Plus can be bought here (or is owned). */
+export function useArchiveOpen() {
+  return usePlus().active || purchasesAvailable();
+}
+
 /** Signed in: the account's answer (server-accounts.js) wins over an old cache, never over a store receipt we just saw. */
 export function applyServerPlus(plus: boolean, until: number) {
   load().then(() => {
