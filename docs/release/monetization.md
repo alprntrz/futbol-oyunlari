@@ -19,7 +19,10 @@ Durum: [x] kodda hazır · [ ] senin yapman gereken
 
 ## 2. AdMob
 
-- [ ] AdMob hesabı → uygulama ekle (iOS `com.alprntrz.tiktako`, Android `com.alprntrz.tiktako`). App ID'leri
+- [x] AdMob hesabı açıldı; iOS uygulaması "Tiktako" eklendi (19.10.2026, mağazaya henüz bağlı değil, onay durumu
+      "İnceleme gerekli"): App ID `ca-app-pub-2321803679128648~7767345693`. 1.0 yayınlanınca AdMob → Uygulama ayarları →
+      Uygulama mağazası ayrıntıları → Ekle ile App Store'a bağla (Google incelemesi ancak o zaman başlar).
+- [ ] Android uygulamasını ekle (Play hesabı doğrulanınca). App ID'leri
       `mobile/app.json` → `react-native-google-mobile-ads` eklentisine yaz (şimdikiler Google'ın **test** app id'leri;
       yayınlanan build'de test id kalırsa reklam gelmez).
 - [ ] Reklam birimleri: her platform için **Rewarded** ve **Interstitial** birer tane. Id'leri `mobile/eas.json` →
