@@ -93,6 +93,158 @@ football,soccer,trivia,quiz,tic tac toe,starting xi,lineup,premier league,derby,
 >
 > To try an online room alone: open Football Quiz > Random opponent; a game starts within 15 seconds.
 
+## v1.1 (19.10.2026)
+
+Kaynak `mobile/store.config.json` (`version` 1.1): açıklama, tanıtım metni, anahtar kelimeler, "Bu sürümde yenilikler"
+(`releaseNotes`) ve inceleme notu orada; App Store Connect'e elle yapıştırılabilir ya da `eas metadata:push` ile gönderilir
+(**1.0 incelemedeyken gönderme**: 1.0 onaylanıp 1.1 sürümü açıldıktan sonra). 1.0'a göre: 5 yeni oyun, hesaplar, arkadaşlar,
+lig, şikayet/engelleme. Reklam ve Plus bu sürümde **yok** (monetization.md).
+
+### Türkçe: tanıtım metni, açıklama, anahtar kelimeler
+
+**Tanıtım metni (163/170):** Futbol bilgini sına: futbolcuyla Tic-Tac-Toe, Rondo, Ben Kimim?, Kart Düellosu, Taktik Tahtası ve 5 kişilik bilgi yarışı. Arkadaşınla ya da online rakiplerle oyna.
+
+**Açıklama:**
+Futbolu izlemek bir şey, bilmek başka. Tiktako futbol bilgini kısa, hızlı ve rekabetçi oyunlara çeviriyor.
+
+TIC-TAC-TOE
+Futbolcuyla XOX. Satır ve sütundaki kulübe, ülkeye ya da kupaya uyan futbolcuyu bul, kareyi kap. 3 oyun alan seriyi kazanır. Her oyunda iki joker: +15 saniye ve bir ipucu. Lig seç: Süper Lig, Premier Lig, La Liga, Serie A, Bundesliga, Portekiz, Suudi Arabistan ve Mısır ligleri.
+
+RONDO
+Bir kulüp çıkar; sırayla o kulüpte oynamış bir futbolcu say. Süren biterse turu kaybedersin. 2 turu alan kazanır.
+
+BEN KİMİM?
+İkinize aynı gizli futbolcu verilir. Sırayla evet/hayır sorusu sorun ya da tahmin edin; ilk bilen kazanır.
+
+KART DÜELLOSU
+Günün temasında bütçene göre 7 futbolcu kartı seç, sonra 7 istatistik turunda rakibinle kapış: maç, gol, milli maç, kupa...
+
+TAKTİK TAHTASI
+Transfer pazarından kadronu kur, aynı kulüpten ya da milli takımdan oyuncularla sinerji yakala ve 7 menajere karşı son ayakta kalan ol. 4 arkadaşını aynı odaya davet et.
+
+BİLGİ YARIŞI
+5 kişiye kadar online yarış: 10 soru, 4 şık. Hızlı ve doğru olan kazanır. Kolay, normal ya da zor seç; haftalık puan durumunda yüksel.
+
+POSSESSION PLAY
+Altıgen sahada rakibinin bölgesini çal; iki satranç saatiyle oynanır.
+
+TEK BAŞINA
+Eksik 11 (her gün tarihi bir maçın ilk 11'i), Gizli Oyuncu, Futbol Bingo ve Dribbling Rush.
+
+ARKADAŞLAR VE LİG
+Rastgele rakip birkaç saniyede bulunur. Apple ya da Google ile giriş yaparsan: arkadaş ekle ve odana davet et, haftalık ligde yüksel, her online oyunun sıralamasında yerini gör, ilerlemen telefon değiştirince de seninle gelsin. Seviye ve rütbe, günlük görevler, rozetler ve avatar çerçeveleri. Online maç kilit ekranında da güncellenir.
+
+ADİL OYUN
+Jokerler iki oyuncu için de aynı. Satın alınacak hiçbir şey yok.
+
+GİZLİLİK
+Hesap isteğe bağlı; reklam ve takip yok. Bir oyuncuyu şikayet edebilir ya da engelleyebilirsin. İstediğin an Ayarlar'dan hesabını ve tüm verilerini silebilirsin.
+
+**Anahtar kelimeler (96/100):** futbol,bilgi,yarışma,quiz,xox,ilk 11,kadro,süper lig,derbi,trivia,futbolcu,maç,rondo,kart,tahmin
+
+### English: tanıtım metni, açıklama, anahtar kelimeler
+
+**Tanıtım metni (156/170):** Test your football knowledge: tic-tac-toe with footballers, Rondo, Who Am I?, Card Duel, Pitch Chess and a 5-player quiz. Play a friend or online opponents.
+
+**Açıklama:**
+Watching football is one thing. Knowing it is another. Tiktako turns football knowledge into short, fast, competitive games.
+
+TIC-TAC-TOE
+Noughts and crosses with footballers. Name a player who fits the club, country or trophy in the row and column to take the square. First to 3 games wins the series. Two jokers every game: +15 seconds and a hint. Pick a league: Premier League, La Liga, Serie A, Bundesliga, Portuguese, Turkish, Saudi and Egyptian leagues.
+
+RONDO
+A club comes up; take turns naming someone who played there. Run out of time and you lose the round. First to 2 rounds wins.
+
+WHO AM I?
+You both get the same hidden footballer. Take turns asking yes/no questions or guessing; the first to name the player wins.
+
+CARD DUEL
+Draft 7 player cards on a budget under the day's theme, then beat your rival in 7 stat rounds: appearances, goals, caps, trophies...
+
+PITCH CHESS
+Build a squad from the transfer market, chase synergies from the same club or country, and be the last of 8 managers standing. Invite up to 4 friends to the same room.
+
+FOOTBALL QUIZ
+Online quiz for up to 5 players: 10 questions, 4 options. Fast and right wins. Pick easy, normal or hard and climb the weekly standings.
+
+POSSESSION PLAY
+Steal your rival's ground on a hex pitch, played on two chess clocks.
+
+SOLO
+Missing 11 (a classic match's starting XI every day), Mystery Player, Football Bingo and Dribbling Rush.
+
+FRIENDS AND LEAGUES
+A random opponent is found in seconds. Sign in with Apple or Google to add friends and invite them to your room, climb the weekly league, see your place on each online game's leaderboard, and keep your progress when you change phones. Levels and ranks, daily quests, badges and avatar frames. Online matches update on your Lock Screen too.
+
+FAIR PLAY
+Jokers are the same for both players. There is nothing to buy.
+
+PRIVACY
+Account optional; no ads, no tracking. You can report or block any player, and delete your account and all your data from Settings at any time.
+
+**Anahtar kelimeler (96/100):** football,soccer,trivia,quiz,tic tac toe,starting xi,lineup,premier league,derby,footballer,rondo
+
+### Bu sürümde yenilikler (tr)
+
+Tiktako'nun en büyük güncellemesi:
+
+• 5 yeni oyun: Rondo, Ben Kimim?, Kart Düellosu, Taktik Tahtası ve Dribbling Rush.
+• Hat-trick'in yeni adı Tic-Tac-Toe; her oyunda iki joker (+15 saniye ve ipucu).
+• Apple ya da Google ile isteğe bağlı giriş: arkadaşlar ve davetler, haftalık lig, sıralamalar; ilerlemen telefon değiştirince de seninle.
+• XP, seviye ve rütbeler, günlük görevler, 7 günlük ödül takvimi, rozetler ve avatar çerçeveleri.
+• Rastgele rakip artık birkaç saniyede bulunuyor.
+• Kilit ekranında canlı maç, hızlı emojiler, sonuç kartı paylaşma ve isteğe bağlı akşam hatırlatması.
+• Bağlantın koparsa maça 60 saniye içinde geri dönebilirsin.
+• Oyuncuları şikayet etme ve engelleme.
+• Suudi Arabistan ve Mısır ligleri.
+
+### What's New (en-US)
+
+Tiktako's biggest update yet:
+
+• 5 new games: Rondo, Who Am I?, Card Duel, Pitch Chess and Dribbling Rush.
+• Hat-trick is now Tic-Tac-Toe, with two jokers every game (+15 seconds and a hint).
+• Optional Sign in with Apple or Google: friends and invites, a weekly league, leaderboards, and your progress on any phone.
+• XP, levels and ranks, daily quests, a 7-day reward calendar, badges and avatar frames.
+• Random opponents are now found in seconds.
+• Live matches on your Lock Screen, quick emotes, shareable result cards and an optional evening reminder.
+• Lost your connection? Get back into the match within 60 seconds.
+• Report and block players.
+• Saudi and Egyptian leagues.
+
+### İnceleme notu (en, App Review Information → Notes)
+
+> No login is required: every game can be played as a guest. Sign in with Apple / Google is optional (progress across phones, friends, weekly league, leaderboards); we request no name or e-mail. Settings > "Delete my account and data" deletes the account on our server and revokes Sign in with Apple.
+> 
+> Online modes (Tic-Tac-Toe, Card Duel, Football Quiz, Possession Play, Rondo, Who Am I?, Pitch Chess lobby) connect to our game server over HTTPS. When no other player is searching, random-opponent modes start a game against a computer opponent within a few seconds, so a game can always be played.
+> 
+> User content is limited to nicknames and a fixed set of emoji reactions; there is no free-text chat. Nicknames are filtered for offensive words on the server. Any opponent can be reported or blocked from the menu next to the emoji button during a match, and from the leaderboards, weekly league, quiz standings and friends list. Blocked players are kept out of the player's matches and invites (Settings > Blocked players). Nicknames reported by several players are hidden, and we review reports.
+> 
+> Live Activities show an online match on the Lock Screen while the app is in the background. The evening reminder is a local notification and is off unless the player turns it on.
+> 
+> Player and match data are names and statistics only: no club crests, logos or player photos; avatars and artwork are original.
+> 
+> There are no purchases, ads, analytics or tracking in this version.
+> 
+> To try online play alone: Games > Rondo > Find opponent; a game starts within a few seconds.
+
+Notta özellikle olanlar: hesabın isteğe bağlı olması ve silinmesi (5.1.1), bilgisayar rakibin açıkça söylenmesi (2.3),
+kullanıcı içeriği için filtre + şikayet + engelleme + inceleme (1.2), arma / logo / fotoğraf olmaması (5.2), satın alma ve
+reklam olmaması.
+
+### App Privacy (1.1 için güncelle)
+
+1.0 etiketine ek olarak hesaplar, sıralamalar ve hata raporları geldi:
+- **Kullanıcı İçeriği → Diğer kullanıcı içeriği** (takma ad, oyun içi cevaplar, şikayetler): Uygulama İşlevselliği.
+  **Kimliğe bağlı: Evet** (giriş yapanlarda hesaba bağlı). Takip için değil.
+- **Tanımlayıcılar → Kullanıcı Kimliği** (Apple / Google'ın verdiği anonim kimlik, rastgele kurulum kimliği): Uygulama
+  İşlevselliği. Kimliğe bağlı: Evet. Takip için değil.
+- **Kullanım Verisi → Ürün Etkileşimi** (XP, seviye, Elo, lig, ilerleme): Uygulama İşlevselliği. Kimliğe bağlı: Evet.
+- **Tanılama → Çökme Verisi** (anonim hata raporu: mesaj, sürüm, platform): Uygulama İşlevselliği. Kimliğe bağlı: Hayır.
+- Toplanmıyor: iletişim bilgisi (ad, e-posta istenmiyor), konum, kişiler, fotoğraflar (profil fotoğrafı telefonda kalır),
+  finans, sağlık, tarama / arama geçmişi. Live Activity push token'ı yalnızca maç sürerken bellekte: toplanan veri sayılmaz.
+- **Takip: Hayır.**
+
 ## العربية (ar-SA) — v1.1
 
 Uygulamanın içi henüz İngilizce/Türkçe; açıklama bunu "اللغة" başlığında söylüyor. Metinler `mobile/store.config.json`
