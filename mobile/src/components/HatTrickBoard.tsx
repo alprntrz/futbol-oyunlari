@@ -3,8 +3,6 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import Animated, { Keyframe } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { GridPlayer } from "@/data/players";
-import { playerInfo } from "@/lib/playerInfo";
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
 import { haptic } from "~/lib/haptics";
@@ -14,6 +12,7 @@ import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type 
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
+import { PlayerLine, PlayerToken } from "./PlayerRow";
 import { Flag } from "./Flag";
 import { Jersey } from "./Jersey";
 import { Confetti, SmoothBar, SOFT_IN, softIn } from "./motion";
@@ -25,15 +24,6 @@ export const MARK: Record<Mark, { color: string; soft: string }> = {
   O: { color: C.coral, soft: C.coralSoft },
 };
 
-function initials(name: string) {
-  const t = name.trim().split(/\s+/);
-  return ((t[0]?.[0] ?? "") + (t.length > 1 ? t[t.length - 1][0] : "")).toUpperCase();
-}
-function avatarColor(name: string) {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return `hsl(${h % 360}, 45%, 48%)`;
-}
 
 export type Kit = { body: string; sleeves: string; pattern?: { color: string; bands: number; horizontal?: boolean } };
 const stripes = (color: string, bands = 7) => ({ color, bands });
@@ -428,42 +418,6 @@ export function HatTrickBoard({
   );
 }
 
-/** shirt colour per position group: keeper amber, defence blue, midfield green, attack coral */
-const POS_COLOR = { G: "#F59E0B", D: "#2563EB", M: "#16A34A", F: "#F43F5E" } as const;
-
-/**
- * A search result's badge: a little shirt in the colour of the player's
- * position with their initials on it. No flag or club: those would give the
- * square away.
- */
-function PlayerToken({ p }: { p: GridPlayer }) {
-  const { pos } = playerInfo(p);
-  const color = pos ? POS_COLOR[pos] : avatarColor(p.name);
-  return (
-    <View style={styles.token}>
-      <Icon name="tshirt.fill" size={34} color={color} fallback="👕" />
-      <Text allowFontScaling={false} style={styles.tokenText}>
-        {initials(p.name)}
-      </Text>
-    </View>
-  );
-}
-
-/** The name, and under it "Midfielder · 34" (or "1960–2020" for a player who has died). */
-function PlayerLine({ p }: { p: GridPlayer }) {
-  const { t } = useI18n();
-  const { pos, age, life } = playerInfo(p);
-  const bits = [pos ? t(`posName_${pos}`) : null, age ? t("ageYears").replace("{n}", String(age)) : life ? `${life[0]}–${life[1]}` : null].filter(Boolean);
-  return (
-    <View style={{ flex: 1 }}>
-      <Text style={[T.headline, { fontSize: 15 }]} numberOfLines={1}>
-        {p.name}
-      </Text>
-      {bits.length > 0 && <Text style={styles.playerSub}>{bits.join(" · ")}</Text>}
-    </View>
-  );
-}
-
 /**
  * The two things a square asks for, above the keyboard: one tile each (badge, name,
  * what kind of criterion it is) joined by a round "and" in the mover's colour.
@@ -588,8 +542,5 @@ const styles = StyleSheet.create({
   suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
   suggestionDivider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   avatar: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  token: { width: 36, height: 36, alignItems: "center", justifyContent: "center" },
-  tokenText: { position: "absolute", top: 12, color: "white", fontWeight: "900", fontSize: 11 },
-  playerSub: { fontSize: 13, color: C.text2, marginTop: 1 },
   avatarText: { color: "white", fontWeight: "800", fontSize: 12 },
 });

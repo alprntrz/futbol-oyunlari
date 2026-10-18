@@ -9,6 +9,7 @@ import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
 import { generateGrid, GRID_PLAYERS, searchPlayers, seededRandom, withHonour, withLink, type Criterion } from "@/lib/tiki";
 
+import { PlayerLine, PlayerToken } from "~/components/PlayerRow";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
 import { useShareCard } from "~/components/ShareCard";
@@ -256,7 +257,8 @@ export default function HatTrickSolo() {
               ) : (
                 suggestions.map((p, i) => (
                   <Tap key={p.name} onPress={() => pick(p)} style={[styles.suggestion, i > 0 && styles.divider]}>
-                    <Text style={[T.headline, { fontSize: 15 }]}>{p.name}</Text>
+                    <PlayerToken p={p} />
+                    <PlayerLine p={p} />
                   </Tap>
                 ))
               )}
@@ -351,7 +353,7 @@ const styles = StyleSheet.create({
   inputWrap: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 12 },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
   suggestions: { position: "absolute", top: 66, left: 0, right: 0, maxHeight: 260, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, ...shadow, shadowOpacity: 0.15 },
-  suggestion: { paddingHorizontal: 14, paddingVertical: 12 },
+  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   toast: { marginTop: 10, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12, alignSelf: "center" },
   grid: { width: "100%", gap: 6, marginTop: 14 },

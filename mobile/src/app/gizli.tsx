@@ -8,6 +8,7 @@ import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
 import { searchPlayers, type Criterion } from "@/lib/tiki";
 
+import { PlayerLine, PlayerToken } from "~/components/PlayerRow";
 import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { useShareCard, type Mark } from "~/components/ShareCard";
@@ -212,7 +213,8 @@ export default function MysteryPlayer() {
                   const tried = run.guesses.includes(p.name);
                   return (
                     <Tap key={p.name} disabled={tried} onPress={() => guess(p.name)} style={[styles.suggestion, i > 0 && styles.divider, tried && { opacity: 0.4 }]}>
-                      <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                      <PlayerToken p={p} />
+                      <PlayerLine p={p} />
                       {tried && <Icon name="xmark" size={13} color={C.text3} fallback="×" />}
                     </Tap>
                   );
@@ -285,7 +287,7 @@ const styles = StyleSheet.create({
   inputWrap: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 12 },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
   suggestions: { marginTop: 8, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, overflow: "hidden" },
-  suggestion: { flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 12 },
+  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   guess: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 10 },
   hit: { width: 30, height: 26, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: C.bg, opacity: 0.45 },

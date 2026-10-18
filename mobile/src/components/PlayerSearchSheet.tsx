@@ -8,6 +8,7 @@ import { matchPlayers, searchPlayers } from "@/lib/tiki";
 import { useI18n } from "~/lib/i18n";
 import { C, R, T } from "~/lib/theme";
 
+import { PlayerLine, PlayerToken } from "./PlayerRow";
 import { Text } from "./Text";
 import { Button, Icon, Tap } from "./ui";
 
@@ -97,7 +98,8 @@ export function PlayerSearchSheet({
                     onPress={() => submit(p)}
                     style={[styles.suggestion, i > 0 && styles.divider, used.has(p.name) && { opacity: 0.4 }]}
                   >
-                    <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                    <PlayerToken p={p} />
+                    <PlayerLine p={p} />
                     {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
                   </Tap>
                 ))
@@ -120,6 +122,6 @@ const styles = StyleSheet.create({
   inputWrap: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.bg, borderRadius: R.button, paddingHorizontal: 12 },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
   suggestions: { maxHeight: 230, marginTop: 10, borderRadius: R.button, borderWidth: 1, borderColor: C.border },
-  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 11 },
+  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
 });
