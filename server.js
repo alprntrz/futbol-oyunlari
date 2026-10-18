@@ -24,8 +24,15 @@ const blockedPair = (a, b) => !!(a.socket.data.blocks?.has(b.socket.data.ref) ||
 
 const dev = process.env.NODE_ENV !== "production";
 const port = parseInt(process.env.PORT || "3000", 10);
-const app = next({ dev });
-const handle = app.getRequestHandler();
+// SOCKETS_ONLY=1: the game server without the Next site (tests start it this way; production never sets it)
+const SOCKETS_ONLY = process.env.SOCKETS_ONLY === "1";
+const app = SOCKETS_ONLY ? null : next({ dev });
+const handle = SOCKETS_ONLY
+  ? (req, res) => {
+      res.writeHead(404);
+      res.end();
+    }
+  : app.getRequestHandler();
 
 /** code -> room */
 const rooms = new Map();
@@ -745,7 +752,7 @@ function liveDz(room) {
   });
 }
 
-app.prepare().then(() => {
+(app ? app.prepare() : Promise.resolve()).then(() => {
   const server = createServer(async (req, res) => {
     // /api/account/*: sign-in and the account's XP (server-accounts.js); the rest is the Next site
     if (req.url.startsWith("/api/account") && (await handleAccountApi(req, res, cleanNick))) return;
