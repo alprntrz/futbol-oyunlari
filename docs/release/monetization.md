@@ -65,7 +65,8 @@ Durum: [x] kodda hazır · [ ] senin yapman gereken
 
 ## 4. Gizlilik ve mağaza etiketleri (reklam açılmadan önce)
 
-- [x] `site/privacy.html`: reklam (AdMob), onay, satın alma (RevenueCat) bölümleri; "reklam yok" sözü kaldırıldı.
+- [ ] `site/privacy.html`: 1.1 için reklamsız sürüme döndü (19.10.2026). 1.2'de reklam (AdMob), onay ve satın alma
+      (RevenueCat) bölümlerini geri getir: `git checkout monetization-full -- site/privacy.html`, tarihi güncelle.
 - [ ] App Store **App Privacy**: Takip = **Evet** (ATT izin verirse IDFA reklam için kullanılır). Toplanan: Tanımlayıcılar →
       Cihaz Kimliği, Kullanım Verisi → Reklam Verisi, Satın Alma → Satın alma geçmişi (RevenueCat), ayrıca eskiden
       olanlar. Üçüncü taraf reklam amacı işaretli.

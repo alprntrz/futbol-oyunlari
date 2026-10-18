@@ -72,9 +72,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   starts a random game (Hat-trick / Quiz / Possession, last choice remembered). On a real deployment that file needs a persistent disk (or a database).
 - Release: `docs/release/` (checklist, App Store metadata). Public pages (privacy, support) live
   in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
-  analytics SDKs, ads only through Google AdMob (consent / ATT) and purchases only through RevenueCat (see Money below),
+  analytics/ads/tracking SDKs (true for 1.1; 1.2 brings back the AdMob / RevenueCat sections from tag `monetization-full`),
   no IP logging, quiz record = random id + nick + counts only, and Settings > Delete my data (`qz:forget` + local wipe).
-  Keep them true when adding anything. The site deploys from `main` only, so the ads / Plus text goes live when v1.1 is merged.
+  Keep them true when adding anything. The site deploys from `main` only.
 - Accounts (v1.1, optional): Sign in with Apple / Google; `server-accounts.js` (node:sqlite, `ACCOUNTS_DB`,
   `/api/account/*`) verifies the provider token and stores only provider + opaque sub, nick, avatar,
   XP — never name or e-mail (no scopes requested). App side `mobile/src/lib/account.ts` (session in
