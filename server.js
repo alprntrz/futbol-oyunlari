@@ -172,19 +172,29 @@ function htPublic(room) {
     flash: room.flash,
     remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : HT_TURN_MS,
     // the current turn's full length (longer for the comeback player)
-    turnMs: htTurnMs(room),
+    turnMs: room.turnLen ?? htTurnMs(room),
     // mark of the player with the comeback bonus this game, if any
     comeback: room.players.find((p) => p.id === room.comeback)?.mark ?? null,
     steals: room.steals,
     used: room.used,
     drawOffer: room.drawOffer ?? null,
     endReason: room.endReason ?? null,
+    // jokers left this game, the same for both players (never bought, never saved up)
+    jokers: htJokers(room),
     series: htSeries(room),
     league: room.league || "all",
     // every phone in the room can draw "played with" criteria: the host may deal them
     mates: htAllKnowMates(room),
     players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
+}
+
+/** Each game both players get the same jokers: one extra time (+15 s) and one hint. */
+const HT_JOKERS = { time: 1, hint: 1 };
+const HT_JOKER_TIME_MS = 15_000;
+function htJokers(room) {
+  room.jokers ??= { X: { ...HT_JOKERS }, O: { ...HT_JOKERS } };
+  return room.jokers;
 }
 
 /** Game wins per mark (wins follow the player, marks swap every game). */
@@ -328,6 +338,8 @@ function qzPublic(room, viewer) {
       ref: seatRef(p),
       nick: seatNick(p),
       score: p.score,
+      // 50/50 left for this player (the viewer reads its own)
+      fifty: p.id === viewer ? (p.fifty ?? 1) : undefined,
       answered: room.answers.has(p.id),
       choice: reveal || (viewer && room.answers.has(viewer)) || p.id === viewer ? (room.answers.get(p.id)?.choice ?? null) : null,
       gained: reveal ? (p.gained ?? 0) : 0,
@@ -421,12 +433,14 @@ function rdPublic(room) {
     roundEnd: room.roundEnd,
     winner: room.winner,
     flash: room.flash,
+    // one extra-time joker per player per match
+    jokers: room.jokers,
     players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
 }
 
 function rdNewRoom(code, players) {
-  return { code, clubs: RD.dealRondo(), round: 0, score: { X: 0, O: 0 }, turn: "X", names: [], roundEnd: null, winner: null, flash: null, started: false, deadline: 0, turnMs: 0, timer: null, players };
+  return { code, clubs: RD.dealRondo(), round: 0, score: { X: 0, O: 0 }, turn: "X", names: [], roundEnd: null, winner: null, flash: null, jokers: { X: { time: 1 }, O: { time: 1 } }, started: false, deadline: 0, turnMs: 0, timer: null, players };
 }
 
 function rdCode() {
@@ -1183,6 +1197,16 @@ app.prepare().then(() => {
       rdEmit(room);
     });
 
+    // +10 s on your own clock, once a match
+    socket.on("rd:joker", ({ kind }) => {
+      const room = rdRooms.get(socket.data.rdCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || kind !== "time" || !room.started || room.winner || room.roundEnd || room.turn !== me.mark || !(room.jokers[me.mark].time > 0)) return;
+      room.jokers[me.mark].time--;
+      rdStartTurn(room, Math.max(0, room.deadline - Date.now()) + 10_000);
+      rdEmit(room);
+    });
+
     socket.on("rd:forfeit", () => {
       const room = rdRooms.get(socket.data.rdCode);
       const me = room?.players.find((p) => p.id === socket.id);
@@ -1508,18 +1532,35 @@ app.prepare().then(() => {
     };
 
     // `graceMs` adds time before the first turn's clock (the "match found" intro)
-    const htStartTurn = (room, graceMs = 0) => {
+    const htStartTurn = (room, graceMs = 0) => htArm(room, htTurnMs(room) + graceMs, htTurnMs(room));
+    /** the mover's clock runs `ms` from now; at zero the turn passes */
+    const htArm = (room, ms, len = Math.max(ms, htTurnMs(room))) => {
       clearTimeout(room.timer);
-      const turnMs = htTurnMs(room);
-      room.deadline = Date.now() + turnMs + graceMs;
+      room.deadline = Date.now() + ms;
+      // the clock bar's full length (a time joker makes this turn longer)
+      room.turnLen = len;
       room.timer = setTimeout(() => {
         if (room.winner || !htRooms.has(room.code)) return;
         room.flash = { mark: room.turn, reason: "timeout" };
         room.turn = room.turn === "X" ? "O" : "X";
         htStartTurn(room);
         htEmit(room);
-      }, turnMs + graceMs);
+      }, ms);
     };
+
+    // A joker on your turn: "time" adds 15 s to your clock; "hint" is shown on your own phone
+    // (the server only counts it, and tells the other player it was used)
+    socket.on("ht:joker", ({ kind }) => {
+      const room = htRooms.get(socket.data.htCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || !room.started || room.winner || room.turn !== me.mark) return;
+      const left = htJokers(room)[me.mark];
+      if (!(kind in HT_JOKERS) || left[kind] <= 0) return;
+      left[kind]--;
+      if (kind === "time") htArm(room, Math.max(0, room.deadline - Date.now()) + HT_JOKER_TIME_MS);
+      room.flash = { mark: me.mark, reason: "joker", joker: kind };
+      htEmit(room);
+    });
 
     socket.on("ht:create", ({ nick, grid, steals, league }, cb) => {
       if (!htGridOk(grid)) return cb?.({ ok: false, error: "bad_grid" });
@@ -1723,6 +1764,7 @@ app.prepare().then(() => {
       room.endReason = null;
       for (const p of room.players) p.mark = p.mark === "X" ? "O" : "X";
       if (room.steals) room.steals = { X: 3, O: 3 };
+      room.jokers = null;
       room.used = [];
       room.turn = "X";
       htStartTurn(room);
@@ -1820,6 +1862,9 @@ app.prepare().then(() => {
       for (const p of room.players) {
         p.score = 0;
         p.gained = 0;
+        // one 50/50 per player per match (house players don't use theirs)
+        p.fifty = 1;
+        p.fiftyAt = -1;
       }
       room.index = -1;
       room.answers = new Map();
@@ -2021,6 +2066,19 @@ app.prepare().then(() => {
       const room = qzRooms.get(socket.data.qzCode);
       if (!room || room.hostId !== socket.id || room.phase !== "lobby" || room.players.length < 2) return;
       qzBegin(room);
+    });
+
+    // 50/50: two wrong options go, for this player only (the server alone knows the answer)
+    socket.on("qz:joker", ({ kind }, cb) => {
+      const room = qzRooms.get(socket.data.qzCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || kind !== "fifty" || room.phase !== "question" || room.answers.has(me.id) || !(me.fifty > 0)) return cb?.({ ok: false });
+      const q = room.questions[room.index];
+      const wrong = [0, 1, 2, 3].filter((i) => i !== q.answer);
+      const keep = wrong[Math.floor(Math.random() * 3)];
+      me.fifty--;
+      me.fiftyAt = room.index;
+      cb?.({ ok: true, index: room.index, remove: wrong.filter((i) => i !== keep) });
     });
 
     socket.on("qz:answer", ({ choice }) => {

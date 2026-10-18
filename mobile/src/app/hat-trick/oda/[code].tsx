@@ -36,7 +36,8 @@ interface HtRoom {
   board: (HtCell | null)[];
   turn: Mark;
   winner: Winner;
-  flash: { mark: Mark; reason: "wrong" | "timeout" | "declined" | "skip" } | null;
+  flash: { mark: Mark; reason: "wrong" | "timeout" | "declined" | "skip" | "joker"; joker?: "time" | "hint" } | null;
+  jokers?: Record<Mark, { time: number; hint: number }>;
   remainingMs: number;
   steals: Record<Mark, number> | null;
   used: string[];
@@ -242,7 +243,11 @@ export default function HatTrickRoom() {
       ? f.mark === me?.mark
         ? t("htDrawDeclined")
         : null
-      : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.reason === "wrong" ? "ttWrong" : f.reason === "skip" ? "htSkipped" : "ttTimeout")}`;
+      : f.reason === "joker"
+        ? f.mark === me?.mark
+          ? null
+          : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.joker === "time" ? "jkUsedTime" : "jkUsedHint")}`
+        : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.reason === "wrong" ? "ttWrong" : f.reason === "skip" ? "htSkipped" : "ttTimeout")}`;
   const iWon = room.winner === me?.mark;
   const series = room.series;
   const score = me ? `${series[me.mark]} – ${series[me.mark === "X" ? "O" : "X"]}` : "";
@@ -290,6 +295,8 @@ export default function HatTrickRoom() {
           turnSeconds={(room.turnMs ?? TURN_SECONDS * 1000) / 1000}
           comeback={room.comeback ?? null}
           onMove={(cell, name) => getSocket().emit("ht:move", { cell, name })}
+          jokers={me && room.jokers ? room.jokers[me.mark] : null}
+          onJoker={(kind) => getSocket().emit("ht:joker", { kind })}
           footer={
             room.winner && !series.over ? null : room.winner ? (
               <View style={{ marginTop: 18, gap: 10 }}>

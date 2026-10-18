@@ -30,6 +30,9 @@ export interface RondoMatch {
   wrong: { id: number; guess: string; reason: Exclude<RondoVerdict, { ok: true }>["reason"] } | null;
   /** a key for this match (XP, history): changes with a rematch */
   key: string;
+  /** +10 s jokers left this match */
+  timeJokers: number;
+  useTime: () => void;
   answer: (name: string) => void;
   forfeit: () => void;
   /** null: only the host deals the rematch */
@@ -49,6 +52,7 @@ interface ServerRoom {
   names: { mark: Mark; name: string }[];
   roundEnd: { winner: Mark; reason: "timeout" | "forfeit" } | null;
   winner: Mark | null;
+  jokers?: Record<Mark, { time: number }>;
   players: { id: string; ref?: string | null; nick: string; mark: Mark }[];
 }
 
@@ -121,6 +125,8 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
     peerLeft,
     wrong,
     key: `rd-${code}-${games}`,
+    timeJokers: room?.jokers?.[mark]?.time ?? 0,
+    useTime: () => getSocket().emit("rd:joker", { kind: "time" }),
     answer: (name) => getSocket().emit("rd:answer", { name }),
     forfeit: () => getSocket().emit("rd:forfeit"),
     rematch: isHost && !peerLeft ? () => getSocket().emit("rd:rematch") : null,
@@ -141,6 +147,7 @@ export function useRondoHouse(nick: string, ref: string): RondoMatch {
   const [turnMs, setTurnMs] = useState(RONDO_FIRST_TURN_MS);
   const [roundEnd, setRoundEnd] = useState<RondoMatch["roundEnd"]>(null);
   const [wrong, setWrong] = useState<RondoMatch["wrong"]>(null);
+  const [timeJokers, setTimeJokers] = useState(1);
   const over = score.me >= RONDO_TARGET || score.them >= RONDO_TARGET;
   const used = useRef<string[]>([]);
 
@@ -207,6 +214,14 @@ export function useRondoHouse(nick: string, ref: string): RondoMatch {
     peerLeft: false,
     wrong,
     key: `rd-house-${ref}-${game}`,
+    timeJokers,
+    useTime: () => {
+      if (!myTurn || roundEnd || over || timeJokers <= 0) return;
+      setTimeJokers((n) => n - 1);
+      const left = Math.max(0, deadline - Date.now()) + 10_000;
+      setTurnMs(Math.max(left, RONDO_TURN_MS));
+      setDeadline(Date.now() + left);
+    },
     answer: (guess) => {
       if (!myTurn || roundEnd || over) return;
       const v = judgeRondo(guess, clubs[round], used.current);
@@ -230,6 +245,7 @@ export function useRondoHouse(nick: string, ref: string): RondoMatch {
       used.current = [];
       setRoundEnd(null);
       setWrong(null);
+      setTimeJokers(1);
       startTurn(true, RONDO_FIRST_TURN_MS);
     },
   };

@@ -41,6 +41,9 @@ export default function HatTrickHouse() {
   const [endReason, setEndReason] = useState<"forfeit" | "agreed" | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [deadline, setDeadline] = useState(() => Date.now() + TURN_SECONDS * 1000);
+  // this game's jokers (the same as online: one extra time, one hint) and a time joker's extra seconds this turn
+  const [jokers, setJokers] = useState({ time: 1, hint: 1 });
+  const [extra, setExtra] = useState(0);
   const [timeLeft, setTimeLeft] = useState(TURN_SECONDS);
   const [usedNames, setUsedNames] = useState<string[]>([]);
   const [drawSent, setDrawSent] = useState(false);
@@ -64,8 +67,18 @@ export default function HatTrickHouse() {
   const nextTurn = () => {
     const next = other(turn);
     setTurn(next);
+    setExtra(0);
     setDeadline(Date.now() + turnSecondsOf(next) * 1000);
     setTimeLeft(turnSecondsOf(next));
+  };
+
+  const useJoker = (kind: "time" | "hint") => {
+    if (turn !== me || winner || jokers[kind] <= 0) return;
+    setJokers((j) => ({ ...j, [kind]: j[kind] - 1 }));
+    if (kind === "time") {
+      setExtra((e) => e + 15);
+      setDeadline((d) => d + 15_000);
+    }
   };
 
   const end = (w: Winner, reason: typeof endReason = null) => {
@@ -167,6 +180,8 @@ export default function HatTrickHouse() {
     setGrid(dealGrid(params.league));
     setBoard(Array(9).fill(null));
     setUsedNames([]);
+    setJokers({ time: 1, hint: 1 });
+    setExtra(0);
     setMe(rival);
     setTurn("X");
     setWinner(null);
@@ -236,9 +251,11 @@ export default function HatTrickHouse() {
         winnerText={winnerText}
         winnerSub={seriesOver ? score : `${score}, ${t("htNextGame")}`}
         series={me === "X" ? { X: wins.mine, O: wins.theirs } : { X: wins.theirs, O: wins.mine }}
-        turnSeconds={turnSecondsOf(turn)}
+        turnSeconds={turnSecondsOf(turn) + extra}
         comeback={comeback === "me" ? me : comeback === "rival" ? rival : null}
         onMove={play}
+        jokers={jokers}
+        onJoker={useJoker}
         footer={
           winner && !seriesOver ? null : winner ? (
             <View style={{ marginTop: 18, gap: 10 }}>

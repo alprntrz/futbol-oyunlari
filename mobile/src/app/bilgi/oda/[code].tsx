@@ -38,6 +38,8 @@ interface QzPlayer {
   answered: boolean;
   choice: number | null;
   gained: number;
+  /** 50/50 jokers left (only on this phone's own row) */
+  fifty?: number;
 }
 /** a random room starts this long after it opens (server.js QZ_FILL_MS) */
 const QZ_FILL_MS = 15_000;
@@ -152,6 +154,8 @@ export default function QuizRoom() {
   const [error, setError] = useState<string | null>(null);
   const [myId, setMyId] = useState(() => getSocket().id ?? "");
   const [picked, setPicked] = useState<number | null>(null);
+  // a 50/50: the question it was used on and the two options it took away
+  const [fifty, setFifty] = useState<{ index: number; remove: number[] } | null>(null);
   const [copied, setCopied] = useState(false);
   const [ceremonyClosed, setCeremonyClosed] = useState(false);
   const lastPhase = useRef("");
@@ -511,16 +515,17 @@ export default function QuizRoom() {
             const bg = right ? RIGHT : wrong ? WRONG : chosen ? PICKED : "white";
             const onColour = NIGHT.light && (right || wrong || chosen);
             const pickers = others.filter((p) => p.choice === i);
+            const gone = !reveal && fifty?.index === room.index && fifty.remove.includes(i);
             return (
               <Animated.View key={`${room.index}-${i}`} entering={OPTION_IN(i)} exiting={OPTION_OUT(i)}>
                 <Tap
-                  disabled={reveal || picked !== null}
+                  disabled={reveal || picked !== null || gone}
                   onPress={() => {
                     setPicked(i);
                     haptic.press();
                     getSocket().emit("qz:answer", { choice: i });
                   }}
-                  style={[styles.option, { backgroundColor: bg }, bg !== "white" && { borderColor: bg }]}
+                  style={[styles.option, { backgroundColor: bg }, bg !== "white" && { borderColor: bg }, gone && { opacity: 0.25 }]}
                   accessibilityLabel={tx(o)}
                 >
                   <Text style={[styles.optionText, onColour && { color: "white" }, reveal && !!room.values && { paddingRight: 30 }]} numberOfLines={2}>
@@ -553,6 +558,25 @@ export default function QuizRoom() {
             );
           })}
         </View>
+
+        {!reveal && picked === null && (me?.fifty ?? 0) > 0 && fifty?.index !== room.index && (
+          <Animated.View entering={FadeIn.duration(200)} style={{ alignItems: "center", marginTop: 16 }}>
+            <Tap
+              onPress={() => {
+                haptic.tap();
+                getSocket().emit("qz:joker", { kind: "fifty" }, (res?: { ok: boolean; index: number; remove: number[] }) => {
+                  if (res?.ok) setFifty({ index: res.index, remove: res.remove });
+                });
+              }}
+              style={styles.fifty}
+              accessibilityRole="button"
+              accessibilityHint={t("jkNote")}
+            >
+              <Text style={styles.fiftyText}>{t("jkFifty")}</Text>
+              <Text style={styles.fiftyCount}>×{me?.fifty}</Text>
+            </Tap>
+          </Animated.View>
+        )}
 
         {reveal && (me?.choice == null || me.choice !== room.answer) && (
           <Animated.View entering={FadeIn.delay(200).duration(200)} style={{ alignItems: "center", marginTop: 16 }}>
@@ -669,6 +693,9 @@ const styles = StyleSheet.create({
 
   option: { borderRadius: 999, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, minHeight: 52, paddingHorizontal: 44, paddingVertical: 10, alignItems: "center", justifyContent: "center" },
   optionText: { fontSize: 16, fontWeight: "800", color: C.text, textAlign: "center" },
+  fifty: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 18, paddingVertical: 9, borderRadius: 999, backgroundColor: NIGHT.raised, borderWidth: 1, borderColor: NIGHT.line },
+  fiftyText: { fontFamily: F.display, fontSize: 18, color: NIGHT.ink },
+  fiftyCount: { fontSize: 12, fontWeight: "800", color: NIGHT.ink, opacity: 0.6 },
   optionValue: { position: "absolute", right: 14, fontFamily: F.black, fontSize: 17, color: C.text2 },
   myPick: { position: "absolute", left: -6, top: -8 },
   theirPicks: { position: "absolute", right: -6, top: -8, flexDirection: "row" },

@@ -189,6 +189,10 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   name (`judgeRondo`; loads rondo.ts through server-taktik's "@/" resolver); a wrong name goes back only to the mover (`rd:wrong`).
   Queue falls back to the house player after 20 s (`useRondoHouse` in `lib/rondoMatch.ts`, same shape as `useRondoOnline`); Elo board
   "rd", XP source "rd". Screens `app/rondo/`, board `components/RondoBoard.tsx`. Art is a placeholder (`RONDO` in brand.ts).
+- Jokers (fair by design: the same for both players each game / match, never bought, never saved): Tic-Tac-Toe online +
+  house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
+  well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50
+  per match (`qz:joker`, the server picks the two wrong options for that player only); Rondo one +10 s per match (`rd:joker`).
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

@@ -121,6 +121,7 @@ export function TikiSteps() {
       <Rule image={BRAND.how.grid} title={t("tikiTakaName")} desc={t("ttStep1")} />
       <Rule image={BRAND.how.namePlayer} title={t("ttPlaceholder").replace("…", "")} desc={t("ttStep2")} />
       <Rule image={BRAND.how.threeRow} title="X O" desc={t("ttStep3")} />
+      <Text style={T.caption}>{t("jkRuleHt")}</Text>
     </View>
   );
 }
@@ -149,6 +150,7 @@ export function QuizSteps() {
       <Rule image={BRAND.how.questions} desc={t("qzRule1")} />
       <Rule image={BRAND.how.speed} desc={t("qzRule2")} />
       <Rule image={BRAND.how.players} desc={t("qzRule3")} />
+      <Text style={T.caption}>{t("jkRuleQz")}</Text>
     </View>
   );
 }
@@ -175,7 +177,7 @@ export function TaktikSteps() {
 
 export function RondoSteps() {
   const { t } = useI18n();
-  return <NumberedRules items={[t("rdRule1"), t("rdRule2"), t("rdRule3")]} />;
+  return <NumberedRules items={[t("rdRule1"), t("rdRule2"), t("rdRule3")]} note={t("jkRuleRd")} />;
 }
 
 export function BingoSteps() {

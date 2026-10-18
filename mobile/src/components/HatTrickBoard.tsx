@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import Animated, { Keyframe } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { playerInfo } from "@/lib/playerInfo";
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
 import { haptic } from "~/lib/haptics";
@@ -12,7 +13,7 @@ import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type 
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
-import { PlayerLine, PlayerToken } from "./PlayerRow";
+import { initials, PlayerLine, PlayerToken } from "./PlayerRow";
 import { Flag } from "./Flag";
 import { Jersey } from "./Jersey";
 import { Confetti, SmoothBar, SOFT_IN, softIn } from "./motion";
@@ -129,6 +130,8 @@ export function HatTrickBoard({
   sheetCaption,
   steals,
   usedNames,
+  jokers = null,
+  onJoker,
   turnSeconds = TURN_SECONDS,
   comeback = null,
 }: {
@@ -162,6 +165,9 @@ export function HatTrickBoard({
   steals?: Record<Mark, number> | null;
   /** every name played this game, including ones stolen off the board */
   usedNames?: string[];
+  /** jokers left this game (both players get the same; null = none in this mode) */
+  jokers?: { time: number; hint: number } | null;
+  onJoker?: (kind: "time" | "hint") => void;
 }) {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
@@ -170,6 +176,8 @@ export function HatTrickBoard({
   const [review, setReview] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [confetti, setConfetti] = useState(0);
+  // a hint joker: initials and position of a well-known answer for that square
+  const [hint, setHint] = useState<{ cell: number; text: string } | null>(null);
   // Explicit cell sizes keep header and board columns exactly aligned
   const [gridW, setGridW] = useState(0);
   const cellW = gridW ? (gridW - 3 * 6) / 4.1 : 0;
@@ -212,6 +220,16 @@ export function HatTrickBoard({
     onMove(openCell, player?.name ?? null);
     setOpenCell(null);
     setInput("");
+  };
+
+  const useHint = () => {
+    if (openCell === null || !jokers?.hint) return;
+    const answer = answersFor(grid, openCell).find((p) => !used.has(p.name));
+    if (!answer) return;
+    const { pos } = playerInfo(answer);
+    haptic.tap();
+    setHint({ cell: openCell, text: [initials(answer.name).split("").join(". ") + ".", pos ? t(`posName_${pos}`) : null].filter(Boolean).join(" · ") });
+    onJoker?.("hint");
   };
 
   const low = timeLeft <= 10;
@@ -371,6 +389,26 @@ export function HatTrickBoard({
               {sheetCaption ??
                 `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
             </Text>
+            {jokers && canMove && (
+              <View style={styles.jokers}>
+                <Tap disabled={!jokers.time} onPress={() => (haptic.tap(), onJoker?.("time"))} style={[styles.joker, !jokers.time && { opacity: 0.4 }]} accessibilityRole="button">
+                  <Icon name="stopwatch.fill" size={15} color={C.blue} />
+                  <Text style={styles.jokerText}>{t("jkTime")}</Text>
+                  <Text style={styles.jokerCount}>×{jokers.time}</Text>
+                </Tap>
+                <Tap disabled={!jokers.hint || hint?.cell === openCell} onPress={useHint} style={[styles.joker, (!jokers.hint || hint?.cell === openCell) && { opacity: 0.4 }]} accessibilityRole="button">
+                  <Icon name="lightbulb.fill" size={15} color={C.amber} />
+                  <Text style={styles.jokerText}>{t("jkHint")}</Text>
+                  <Text style={styles.jokerCount}>×{jokers.hint}</Text>
+                </Tap>
+              </View>
+            )}
+            {hint && hint.cell === openCell && (
+              <View style={styles.hintBox}>
+                <Icon name="lightbulb.fill" size={14} color={C.amber} />
+                <Text style={styles.hintText}>{hint.text}</Text>
+              </View>
+            )}
             <View style={styles.inputWrap}>
               <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
               <TextInput
@@ -490,6 +528,12 @@ function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: numbe
 }
 
 const styles = StyleSheet.create({
+  jokers: { flexDirection: "row", gap: 8, justifyContent: "center", marginBottom: 10 },
+  joker: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, backgroundColor: C.bg, borderWidth: 1, borderColor: C.border },
+  jokerText: { fontFamily: F.display, fontSize: 16, color: C.text },
+  jokerCount: { fontSize: 12, fontWeight: "800", color: C.text3 },
+  hintBox: { flexDirection: "row", alignItems: "center", gap: 8, alignSelf: "center", backgroundColor: C.amberSoft, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 7, marginBottom: 10 },
+  hintText: { fontFamily: F.display, fontSize: 17, color: "#92400E" },
   reviewHint: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12 },
   suggestionsStatic: { borderRadius: R.button, borderWidth: 1, borderColor: C.border, overflow: "hidden" },
   placedTag: { fontFamily: F.black, fontSize: 16, borderRadius: 8, paddingHorizontal: 8, overflow: "hidden" },
