@@ -20,7 +20,7 @@ const SHOW_MS = 2400;
 type Bubble = { id: number; emote: EmoteId };
 
 /** Emote state for one game screen; pair with EmoteButton and EmoteLayer (or use Emotes). */
-export function useEmotes(game: "ht" | "pp" | "dz", online: boolean) {
+export function useEmotes(game: "ht" | "pp" | "dz" | "rd", online: boolean) {
   const [open, setOpen] = useState(false);
   const [mine, setMine] = useState<Bubble | null>(null);
   const [theirs, setTheirs] = useState<Bubble | null>(null);

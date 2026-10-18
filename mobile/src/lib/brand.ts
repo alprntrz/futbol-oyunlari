@@ -215,3 +215,6 @@ export const KOSU = {
   hudDistance: require("../../assets/brand/kosu/hud-distance.png"),
   hudGoal: require("../../assets/brand/kosu/hud-goal.png"),
 };
+
+/** Rondo: for now the toy ball of Pitch Chess (an own icon can follow the art brief) */
+export const RONDO = { icon: TAKTIK.ui.ball };

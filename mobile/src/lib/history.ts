@@ -11,7 +11,7 @@ const MAX = 30;
 export interface MatchRecord {
   /** unique per match, so a re-render never records it twice */
   key: string;
-  game: "ht" | "pp" | "dz";
+  game: "ht" | "pp" | "dz" | "rd";
   opponent: string;
   result: "win" | "loss" | "draw";
   /** e.g. "3–1" from my side */

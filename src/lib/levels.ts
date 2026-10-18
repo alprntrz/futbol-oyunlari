@@ -52,6 +52,9 @@ export const XP = {
   ppLoss: 8,
   /** Card Duel (online / house player); today's duel adds a bonus */
   dzWin: 30,
+  /** Rondo (online or the house player) */
+  rdWin: 25,
+  rdLoss: 8,
   dzDraw: 15,
   dzLoss: 10,
   dzDaily: 20,

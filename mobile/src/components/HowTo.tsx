@@ -173,6 +173,11 @@ export function TaktikSteps() {
   return <NumberedRules items={[t("ttkRule1"), t("ttkRule2"), t("ttkRule3"), t("ttkRule4"), t("ttkRule5"), t("ttkRule6")]} />;
 }
 
+export function RondoSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("rdRule1"), t("rdRule2"), t("rdRule3")]} />;
+}
+
 export function BingoSteps() {
   const { t } = useI18n();
   return <NumberedRules items={[t("bingoRule1"), t("bingoRule2")]} />;

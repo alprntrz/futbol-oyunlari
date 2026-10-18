@@ -29,7 +29,7 @@ export interface Account {
   ratings: Partial<Record<RatedGame, { rating: number; games: number; wins: number }>>;
 }
 
-export type RatedGame = "ht" | "qz" | "pp" | "dz";
+export type RatedGame = "ht" | "qz" | "pp" | "dz" | "rd";
 export type Board = "xp" | RatedGame;
 export interface BoardRow {
   rank: number;

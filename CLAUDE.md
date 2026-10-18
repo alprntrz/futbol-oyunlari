@@ -184,6 +184,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   /api/account/progress, whitelist `PROGRESS_KEYS`, history uploaded without opponents) into AsyncStorage at sign-in / start and
   restarts once if anything came back; uploads a few seconds later and on background. Add a key in both lists (never photo,
   blocks or the install id) and say so on the privacy page.
+- Rondo (`rd:*`, rules `src/lib/rondo.ts`): a club comes up, the two take turns naming someone who played there (15 s, first turn
+  20 s); out of time loses the round, first to 2. The server deals the clubs (`RONDO_CLUBS`: 60+ well-known players) and judges every
+  name (`judgeRondo`; loads rondo.ts through server-taktik's "@/" resolver); a wrong name goes back only to the mover (`rd:wrong`).
+  Queue falls back to the house player after 20 s (`useRondoHouse` in `lib/rondoMatch.ts`, same shape as `useRondoOnline`); Elo board
+  "rd", XP source "rd". Screens `app/rondo/`, board `components/RondoBoard.tsx`. Art is a placeholder (`RONDO` in brand.ts).
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`

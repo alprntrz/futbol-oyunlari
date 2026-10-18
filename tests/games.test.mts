@@ -80,3 +80,28 @@ test("card duel: higher wins, lower wins for 'lower' questions, ties draw", () =
   assert.equal(roundWinner({ stat: "height", lower: true }, tall[0].id, tall[tall.length - 1].id), 1);
   assert.equal(dealQuestions(dailyRand(1)).length, dealQuestions(dailyRand(2)).length);
 });
+
+test("rondo: clubs are dealt without repeats, answers are judged, the house player stays legal", async () => {
+  const { RONDO_CLUBS, RONDO_MAX_ROUNDS, dealRondo, judgeRondo, houseRondoAnswer } = await import("@/lib/rondo");
+  assert.ok(RONDO_CLUBS.length >= 10);
+  const clubs = dealRondo(seededRandom(9));
+  assert.equal(clubs.length, RONDO_MAX_ROUNDS);
+  assert.equal(new Set(clubs).size, clubs.length);
+  const ok = judgeRondo("Lionel Messi", "barcelona", []);
+  assert.ok(ok.ok);
+  assert.deepEqual(judgeRondo("Lionel Messi", "barcelona", ["Lionel Messi"]), { ok: false, reason: "used" });
+  assert.deepEqual(judgeRondo("Lionel Messi", "fenerbahce", []), { ok: false, reason: "wrong" });
+  assert.deepEqual(judgeRondo("zzzqqq", "barcelona", []), { ok: false, reason: "unknown" });
+  // every house answer fits the club and is new
+  for (const club of clubs) {
+    const used: string[] = [];
+    const rand = seededRandom(club.length);
+    for (let turn = 0; turn < 30; turn++) {
+      const name = houseRondoAnswer(club, used, turn, rand);
+      if (!name) break;
+      const v = judgeRondo(name, club, used);
+      assert.ok(v.ok, `${club}: ${name}`);
+      used.push(name);
+    }
+  }
+});

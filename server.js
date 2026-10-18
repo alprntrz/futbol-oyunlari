@@ -391,6 +391,45 @@ const ppRooms = new Map();
 /** players waiting for a random opponent: { socket, nick, board, tier, since, pair } */
 let ppQueue = [];
 
+// ── Rondo (src/lib/rondo.ts): a club comes up, the two players take turns naming someone who played
+// there; the server deals the clubs, judges every name and runs the clock; out of time loses the round.
+const rdRooms = new Map();
+let rdQueue = [];
+/** the rules module, once loaded (server-taktik.js registers the "@/" resolver it needs) */
+let RD = null;
+import(require("node:url").pathToFileURL(path.join(__dirname, "src", "lib", "rondo.ts")).href)
+  .then((m) => (RD = m))
+  .catch((e) => console.error("rondo rules:", e?.message));
+/** pause between rounds (the phones show who took it) */
+const RD_ROUND_GAP_MS = 3_000;
+
+function rdPublic(room) {
+  return {
+    code: room.code,
+    started: room.started,
+    round: room.round,
+    club: room.clubs[room.round] ?? null,
+    score: room.score,
+    turn: room.turn,
+    remainingMs: room.deadline ? Math.max(0, room.deadline - Date.now()) : 0,
+    turnMs: room.turnMs,
+    names: room.names,
+    roundEnd: room.roundEnd,
+    winner: room.winner,
+    flash: room.flash,
+    players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
+  };
+}
+
+function rdNewRoom(code, players) {
+  return { code, clubs: RD.dealRondo(), round: 0, score: { X: 0, O: 0 }, turn: "X", names: [], roundEnd: null, winner: null, flash: null, started: false, deadline: 0, turnMs: 0, timer: null, players };
+}
+
+function rdCode() {
+  const code = makeCode();
+  return rdRooms.has(code) ? rdCode() : code;
+}
+
 function ppResult(owners) {
   if (!owners.every(Boolean)) return null;
   const x = owners.filter((o) => o.mark === "X").length;
@@ -688,13 +727,16 @@ app.prepare().then(() => {
     const dz = takePairs(dzQueue);
     dzQueue = dz.rest;
     for (const [a, b] of dz.pairs) a.pair(a, b);
+    const rd = takePairs(rdQueue);
+    rdQueue = rd.rest;
+    for (const [a, b] of rd.pairs) a.pair(a, b);
   };
   setInterval(matchQueues, 1000).unref();
 
   // Rooms nobody is connected to any more are cleared once a minute, timers included
   const alive = (id) => io.sockets.sockets.has(id);
   setInterval(() => {
-    for (const map of [rooms, htRooms, ppRooms, dzRooms]) {
+    for (const map of [rooms, htRooms, ppRooms, dzRooms, rdRooms]) {
       for (const [code, room] of map) {
         if (room.players.some((p) => alive(p.id))) continue;
         clearTimeout(room.timer);
@@ -785,7 +827,8 @@ app.prepare().then(() => {
     // with Join. Only between friends (friend codes), at most one every 3 s.
     socket.on("fr:invite", ({ to, game, room }, cb) => {
       const uid = socket.data.uid;
-      const open = game === "ht" ? htRooms.has(String(room).toUpperCase()) : game === "tt" ? ttRooms.get(String(room).toUpperCase())?.phase === "lobby" : false;
+      const open =
+        game === "ht" ? htRooms.has(String(room).toUpperCase()) : game === "tt" ? ttRooms.get(String(room).toUpperCase())?.phase === "lobby" : game === "rd" ? rdRooms.get(String(room).toUpperCase())?.started === false : false;
       if (!uid || typeof room !== "string" || !open) return cb?.({ ok: false });
       if (Date.now() - (socket.data.lastInvite ?? 0) < 3000) return cb?.({ ok: false, error: "slow" });
       const friend = friendIdByCode(uid, to);
@@ -1048,6 +1091,161 @@ app.prepare().then(() => {
       dropLater("pp", () => !!room && room.started && !room.winner && room.players.length === 2, ppDrop)(reason);
     });
 
+    // ── Rondo ──
+    const rdEmit = (room) => io.to("rd:" + room.code).emit("rd:update", rdPublic(room));
+
+    // the mover's clock: when it runs out they lose the round
+    const rdStartTurn = (room, ms) => {
+      clearTimeout(room.timer);
+      room.turnMs = ms;
+      room.deadline = Date.now() + ms;
+      room.timer = setTimeout(() => rdRoundOver(room, room.turn === "X" ? "O" : "X", "timeout"), ms);
+    };
+    const rdRoundOver = (room, winnerMark, reason) => {
+      if (!rdRooms.has(room.code) || room.winner || room.roundEnd) return;
+      clearTimeout(room.timer);
+      room.deadline = 0;
+      room.score[winnerMark]++;
+      room.roundEnd = { winner: winnerMark, reason };
+      if (room.score[winnerMark] >= RD.RONDO_TARGET) {
+        room.winner = winnerMark;
+        rateDuel("rd", room, winnerMark);
+        return rdEmit(room);
+      }
+      rdEmit(room);
+      // next club; the other player starts it
+      room.timer = setTimeout(() => {
+        if (!rdRooms.has(room.code) || room.winner) return;
+        room.round++;
+        room.names = [];
+        room.roundEnd = null;
+        room.flash = null;
+        room.turn = room.round % 2 ? "O" : "X";
+        rdStartTurn(room, RD.RONDO_FIRST_TURN_MS);
+        rdEmit(room);
+      }, RD_ROUND_GAP_MS);
+    };
+    const rdBegin = (room) => {
+      room.started = true;
+      room.turn = "X";
+      rdStartTurn(room, RD.RONDO_FIRST_TURN_MS);
+      rdEmit(room);
+    };
+    const rdJoinRoom = (s, room) => {
+      s.data.rdCode = room.code;
+      s.join("rd:" + room.code);
+    };
+
+    socket.on("rd:create", ({ nick }, cb) => {
+      if (!RD) return cb?.({ ok: false, error: "not_ready" });
+      dropLoneRoom(rdRooms, socket.data.rdCode, socket);
+      const room = rdNewRoom(rdCode(), [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }]);
+      rdRooms.set(room.code, room);
+      rdJoinRoom(socket, room);
+      cb?.({ ok: true, room: rdPublic(room) });
+    });
+
+    socket.on("rd:join", ({ code, nick }, cb) => {
+      const room = rdRooms.get(String(code || "").toUpperCase());
+      if (!room) return cb?.({ ok: false, error: "not_found" });
+      if (!room.players.some((p) => p.id === socket.id)) {
+        if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
+        room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: room.players[0]?.mark === "X" ? "O" : "X" });
+      }
+      rdJoinRoom(socket, room);
+      rdEmit(room);
+      cb?.({ ok: true, room: rdPublic(room) });
+    });
+
+    socket.on("rd:start", () => {
+      const room = rdRooms.get(socket.data.rdCode);
+      if (!room || room.started || room.players.length < 2 || room.players[0].id !== socket.id) return;
+      rdBegin(room);
+    });
+
+    // a typed name: the server judges it; a wrong one only tells the mover (and costs time)
+    socket.on("rd:answer", ({ name }) => {
+      const room = rdRooms.get(socket.data.rdCode);
+      if (!room || !room.started || room.winner || room.roundEnd) return;
+      const me = room.players.find((p) => p.id === socket.id);
+      const guess = nameOf(name);
+      if (!me || me.mark !== room.turn || !guess) return;
+      const v = RD.judgeRondo(guess, room.clubs[room.round], room.names.map((n) => n.name));
+      if (!v.ok) return socket.emit("rd:wrong", { guess, reason: v.reason });
+      room.names.push({ mark: me.mark, name: v.player.name });
+      room.flash = { mark: me.mark, name: v.player.name };
+      room.turn = room.turn === "X" ? "O" : "X";
+      rdStartTurn(room, RD.RONDO_TURN_MS);
+      rdEmit(room);
+    });
+
+    socket.on("rd:forfeit", () => {
+      const room = rdRooms.get(socket.data.rdCode);
+      const me = room?.players.find((p) => p.id === socket.id);
+      if (!room || !me || !room.started || room.winner || room.players.length < 2) return;
+      clearTimeout(room.timer);
+      room.deadline = 0;
+      room.winner = me.mark === "X" ? "O" : "X";
+      room.roundEnd = { winner: room.winner, reason: "forfeit" };
+      rateDuel("rd", room, room.winner);
+      rdEmit(room);
+    });
+
+    socket.on("rd:rematch", () => {
+      const room = rdRooms.get(socket.data.rdCode);
+      if (!room || !room.winner || room.players.length < 2 || room.players[0].id !== socket.id) return;
+      const players = room.players.map((p) => ({ ...p, mark: p.mark === "X" ? "O" : "X" }));
+      Object.assign(room, rdNewRoom(room.code, players));
+      rdBegin(room);
+    });
+
+    const rdPair = (waiting, other) => {
+      const room = rdNewRoom(rdCode(), [
+        { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
+        { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
+      ]);
+      rdRooms.set(room.code, room);
+      rdJoinRoom(waiting.socket, room);
+      rdJoinRoom(other.socket, room);
+      io.to("rd:" + room.code).emit("rd:matched", { code: room.code, players: rdPublic(room).players });
+      // the VS intro first, then the first club
+      setTimeout(() => rdRooms.has(room.code) && !room.started && room.players.length === 2 && rdBegin(room), HT_INTRO_MS);
+    };
+
+    socket.on("rd:queue", ({ nick, tier, avatar, frame }) => {
+      if (!RD) return;
+      rdQueue = rdQueue.filter((w) => w.socket.id !== socket.id);
+      rdQueue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier)), since: Date.now(), pair: rdPair });
+      matchQueues();
+    });
+    socket.on("rd:unqueue", () => {
+      rdQueue = rdQueue.filter((w) => w.socket.id !== socket.id);
+    });
+
+    const rdDrop = () => {
+      rdQueue = rdQueue.filter((w) => w.socket.id !== socket.id);
+      const room = rdRooms.get(socket.data.rdCode);
+      if (!room) return;
+      socket.data.rdCode = null;
+      socket.leave("rd:" + room.code);
+      const leaver = room.players.find((p) => p.id === socket.id);
+      if (leaver && room.started && !room.winner && room.players.length === 2) rateDuel("rd", room, leaver.mark === "X" ? "O" : "X");
+      room.players = room.players.filter((p) => p.id !== socket.id);
+      clearTimeout(room.timer);
+      if (room.players.length === 0) rdRooms.delete(room.code);
+      else {
+        room.started = false;
+        room.deadline = 0;
+        io.to("rd:" + room.code).emit("rd:peer-left", rdPublic(room));
+      }
+    };
+    socket.on("rd:leave", rdDrop);
+    socket.on("disconnect", (reason) => {
+      rdQueue = rdQueue.filter((w) => w.socket.id !== socket.id);
+      const room = rdRooms.get(socket.data.rdCode);
+      dropLater("rd", () => !!room && room.started && !room.winner && room.players.length === 2, rdDrop)(reason);
+    });
+
     // ── Live Activity: the token of this phone's activity for the match it's in, and whether the app is open
     socket.on("la:token", ({ game, token, s }) => {
       if (!["ht", "pp", "dz"].includes(game) || typeof token !== "string" || token.length > 200) return;
@@ -1078,7 +1276,7 @@ app.prepare().then(() => {
     const EMOTES = new Set(["clap", "wow", "laugh", "fire", "gg", "think", "cry", "cool"]);
     socket.on("em:send", ({ game, emote }) => {
       if (!EMOTES.has(emote) || Date.now() - (socket.data.lastEmote ?? 0) < 1500) return;
-      const code = game === "ht" ? socket.data.htCode : game === "pp" ? socket.data.ppCode : game === "dz" ? socket.data.dzCode : null;
+      const code = game === "ht" ? socket.data.htCode : game === "pp" ? socket.data.ppCode : game === "dz" ? socket.data.dzCode : game === "rd" ? socket.data.rdCode : null;
       if (!code) return;
       socket.data.lastEmote = Date.now();
       socket.to(game + ":" + code).emit("em:recv", { game, emote });
@@ -1261,7 +1459,7 @@ app.prepare().then(() => {
     // the match as it is now.
     const rk = typeof socket.handshake.auth?.rk === "string" && /^[A-Za-z0-9]{16,40}$/.test(socket.handshake.auth.rk) ? socket.handshake.auth.rk : null;
     socket.data.rk ??= rk;
-    const views = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic] };
+    const views = { ht: [htRooms, htPublic], pp: [ppRooms, ppPublic], dz: [dzRooms, dzPublic], rd: [rdRooms, rdPublic] };
     const welcomeBack = (prevId, data) => {
       let back = false;
       for (const [game, [map, view]] of Object.entries(views)) {
@@ -1292,7 +1490,7 @@ app.prepare().then(() => {
         welcomeBack(prev, data);
         if (old) {
           // the old connection is a ghost now: it must not leave the rooms it handed over
-          old.data.htCode = old.data.ppCode = old.data.dzCode = null;
+          old.data.htCode = old.data.ppCode = old.data.dzCode = old.data.rdCode = null;
           old.disconnect(true);
         }
       }
