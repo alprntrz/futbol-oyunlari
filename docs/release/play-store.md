@@ -192,5 +192,5 @@ Alpha kanalı: 178 ülke, e-posta listesi "Tiktako testçileri", ilk sürüm 3 (
   1. [x] **Web uygulaması** OAuth istemcisi "Tiktako Web (Android sign-in)" (19.10.2026): `360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com`
      → `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (eas.json) ve `GOOGLE_CLIENT_IDS` (fly.toml). İstemci sırrı kullanılmıyor, saklanmadı.
   2. [x] **Android** OAuth istemcisi "Tiktako Android (EAS upload key)": paket `com.alprntrz.tiktako` + yukarıdaki SHA-1.
-  3. [ ] Play App Signing anahtarının SHA-1'i (ilk yüklemeden sonra okundu, 20.10.2026): `88:29:A9:22:43:B0:4A:6F:CD:A4:00:23:1E:CA:32:86:79:A4:76:28`.
-     Bunun için **ikinci bir Android OAuth istemcisi** açılacak (Play'den indirilen uygulama bu anahtarla imzalanır).
+  3. [x] Play App Signing anahtarının SHA-1'i (ilk yüklemeden sonra okundu, 20.10.2026): `88:29:A9:22:43:B0:4A:6F:CD:A4:00:23:1E:CA:32:86:79:A4:76:28`.
+     Bunun için ikinci Android OAuth istemcisi "Tiktako Android (Play app signing)" açıldı (20.10.2026; Play'den indirilen uygulama bu anahtarla imzalanır).
