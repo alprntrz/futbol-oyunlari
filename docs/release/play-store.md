@@ -156,6 +156,10 @@ Not: IP adresi bağlantı sırasında sunucuya teknik olarak ulaşır ama kayded
 
 ## Kapalı test
 
+Durum (20.10.2026): uygulama Play Console'da oluşturuldu (Tiktako: Futbol Oyunları, Oyun → Soru Cevap, ücretsiz), tüm beyanlar ve
+mağaza girişi dolduruldu (iletişim: tiktakosupport@gmail.com; simge ve öne çıkan görsel "yapay zekayla üretildi" etiketli),
+Alpha kanalı: 178 ülke, e-posta listesi "Tiktako testçileri", ilk sürüm 3 (1.1.0, Unity'siz build) Google incelemesine gönderildi.
+
 - Kanal: **Kapalı test → Alpha**, testçi listesi: e-posta listesi (Google hesapları) ya da Google Grubu.
 - En az **12 testçi** **14 gün boyunca** katılmış olmalı; sonra "Üretime erişim başvurusu".
 - Testçilere gidecek bağlantı Play Console'dan alınır (opt-in URL).
@@ -188,4 +192,5 @@ Not: IP adresi bağlantı sırasında sunucuya teknik olarak ulaşır ama kayded
   1. [x] **Web uygulaması** OAuth istemcisi "Tiktako Web (Android sign-in)" (19.10.2026): `360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com`
      → `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (eas.json) ve `GOOGLE_CLIENT_IDS` (fly.toml). İstemci sırrı kullanılmıyor, saklanmadı.
   2. [x] **Android** OAuth istemcisi "Tiktako Android (EAS upload key)": paket `com.alprntrz.tiktako` + yukarıdaki SHA-1.
-  3. [ ] Play'e ilk yüklemeden sonra Play App Signing anahtarının SHA-1'i (Play Console → Test ve yayın → Uygulama bütünlüğü) için **ikinci bir Android istemcisi** açılır; Play'den indirilen uygulama o anahtarla imzalanır.
+  3. [ ] Play App Signing anahtarının SHA-1'i (ilk yüklemeden sonra okundu, 20.10.2026): `88:29:A9:22:43:B0:4A:6F:CD:A4:00:23:1E:CA:32:86:79:A4:76:28`.
+     Bunun için **ikinci bir Android OAuth istemcisi** açılacak (Play'den indirilen uygulama bu anahtarla imzalanır).
