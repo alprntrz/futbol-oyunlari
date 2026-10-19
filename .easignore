@@ -1,0 +1,159 @@
+# EAS Build upload rules. When this file exists EAS ignores every .gitignore, so it repeats the root
+# .gitignore and mobile/.gitignore (prefixed) below. The one difference: mobile/unity/builds (the Dribbling
+# Rush Unity player, built by ./unity/build.sh and kept out of git) IS uploaded, so the native build has it.
+# Keep the three files in step when you change one of them.
+
+# EAS defaults
+.git
+node_modules
+
+# the Unity project itself (only its builds go up)
+/unity/
+
+# local tooling (kept out of git by .git/info/exclude)
+/.agents/
+/skills-lock.json
+
+# ---- root .gitignore ----
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# editor / tooling
+/.claude
+/.vscode
+/.idea
+
+# intermediate data drafts (not used by the app)
+# scraper drafts: only the league drafts are kept (they are the source of
+# src/data/matches-ligler.ts and matches-derbiler.ts; see scripts/leagues-to-ts.mjs)
+/data-drafts/*
+!/data-drafts/league-*.json
+
+# Transfermarkt match-sheet cache (scripts/build-league-derbies.mjs)
+scripts/.cache/tm/
+
+# quiz levels/standings written by server.js
+/data
+# club-season squads for teammates (scripts/tiki-scrape-seasons.mjs), large and re-scrapable
+scripts/.cache/raw-seasons.json
+scripts/.cache/tm-coaches/
+scripts/.cache/raw-coaches.json
+scripts/.cache/raw-positions.json
+scripts/.cache/raw-wikidata.json
+
+# full-size card art originals (14 MB); the app copies live in mobile/assets/brand/taktik/aug
+/docs/design/taktik-card-art/originals/
+
+# full-size screen art (mockups and 1024 px parts); the app copies live in mobile/assets/brand/taktik/ui
+/docs/design/taktik-screen-art/
+/docs/design/taktik-screen-art-v2/*.png
+!/docs/design/taktik-screen-art-v2/preview-*.png
+/docs/design/taktik-pitch-art/
+/docs/design/taktik-match-art/*.png
+!/docs/design/taktik-match-art/preview-screens.png
+/docs/design/forma-art/jersey-*.png
+
+# Transfermarkt achievements pages + parsed honours (scripts/tiki-scrape-honours.mjs)
+scripts/.cache/tm-erfolge/
+scripts/.cache/raw-honours.json
+# Dribbling Rush full-size art (22 MB); the app copies live in mobile/assets/brand/kosu (scripts/kosu-assets.py)
+/docs/design/kosu-art/originals/
+/docs/design/rondo-art/originals/
+/docs/design/kimim-art/originals/
+/docs/design/kosu-art/preview-80px.png
+/docs/design/kosu-art/preview-character.png
+/docs/design/kosu-art/preview-run.gif
+
+# graphify knowledge graph (local)
+/graphify-out/
+
+# ---- mobile/.gitignore (prefixed) ----
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+/mobile/**/node_modules/
+
+# Expo
+/mobile/**/.expo/
+/mobile/**/dist/
+/mobile/**/web-build/
+/mobile/**/expo-env.d.ts
+
+# Native
+/mobile/**/.kotlin/
+/mobile/**/*.orig.*
+/mobile/**/*.jks
+/mobile/**/*.p8
+/mobile/**/*.p12
+/mobile/**/*.key
+/mobile/**/*.mobileprovision
+
+# Metro
+/mobile/**/.metro-health-check*
+
+# debug
+/mobile/**/npm-debug.*
+/mobile/**/yarn-debug.*
+/mobile/**/yarn-error.*
+
+# macOS
+/mobile/**/.DS_Store
+/mobile/**/*.pem
+
+# local env files
+/mobile/**/.env*.local
+
+# typescript
+/mobile/**/*.tsbuildinfo
+
+/mobile/**/example
+
+# generated native folders
+/mobile/ios
+/mobile/android
+/mobile/**/store.contact.json
+
+# Google Play service account key (eas submit -p android); secret, never commit
+/mobile/**/google-play-key.json
+
+# Dribbling Rush 3D: Unity builds (./unity/build.sh); EAS gets them through .easignore
+# (mobile/unity/builds is uploaded on purpose)

@@ -79,6 +79,15 @@
           "microphonePermission": false
         }
       ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ],
+      "./plugins/withUnity",
       "./plugins/withApsProduction",
       [
         "expo-widgets",

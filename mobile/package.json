@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@azesmway/react-native-unity": "1.1.1",
     "@expo-google-fonts/barlow-condensed": "^0.4.1",
     "@expo-google-fonts/material-symbols": "^0.4.49",
     "@expo/ui": "~57.0.22",
@@ -15,6 +16,7 @@
     "expo-apple-authentication": "~57.0.2",
     "expo-asset": "~57.0.19",
     "expo-audio": "~57.0.5",
+    "expo-build-properties": "~57.0.22",
     "expo-clipboard": "~57.0.2",
     "expo-constants": "~57.0.21",
     "expo-device": "~57.0.2",
@@ -60,8 +62,8 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
     "ota": "node scripts/ota.mjs"

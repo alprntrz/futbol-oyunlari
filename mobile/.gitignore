@@ -45,3 +45,6 @@ store.contact.json
 
 # Google Play service account key (eas submit -p android); secret, never commit
 google-play-key.json
+
+# Dribbling Rush 3D: Unity builds (./unity/build.sh); EAS gets them through .easignore
+/unity/builds/

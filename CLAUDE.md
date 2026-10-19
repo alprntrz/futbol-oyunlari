@@ -144,6 +144,13 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `src/data/duel.ts` + `server-data/duel-cards.json` ← `scripts/duel-fetch-wikidata.mjs` (Wikidata, CC0, matched by Transfermarkt id
   P2446) → `scripts/duel-build.mjs` (never hand-edit). Online `dz:*` in server-games/dz.js (server deals questions, hides picks, 20 s clock,
   judges, Elo board "dz"); house player / daily / practice run on the phone (`mobile/src/lib/duelMatch.ts`). Screens `app/duello/`.
+- Dribbling Rush (endless runner, docs/design/futbol-kosu.md) is 3D in Unity: project `unity/DribblingRush` (rules
+  `RushEngine.cs` = port of `src/lib/kosu/engine.ts`, keep both in step; `RushBuild.Parity` compares), world built in code
+  (no imported models), embedded with @azesmway/react-native-unity (`plugins/withUnity.js`). `./unity/build.sh ios|android|shots`
+  writes `mobile/unity/builds/` (gitignored, uploaded to EAS by the root `.easignore`, which repeats both .gitignores; keep
+  them in step). The app screen `components/kosu/Rush3D.tsx` keeps HUD / question / result / XP / sounds; builds without
+  Unity (Expo Go, older store builds) get `Rush2D.tsx` (`hasUnity()`, lib/unity.ts). Unity changes need a native build (no OTA).
+  See unity/README.md.
 - Quick emotes (`components/Emotes.tsx`): a fixed emoji set, no free text, relayed by server.js `em:send` → `em:recv` to the other
   player of the ht / pp / dz room (1.5 s rate limit); the house player answers sometimes. Recent matches on Profile
   (`lib/history.ts`, local only, last 30; `useRecordMatch` in the Tic-Tac-Toe, Possession and Card Duel screens).
