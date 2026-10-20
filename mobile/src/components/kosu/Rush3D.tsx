@@ -1,7 +1,7 @@
 import UnityView from "@azesmway/react-native-unity";
-import { Stack, router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, View, type GestureResponderEvent } from "react-native";
+import { Stack, router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Image, Platform, StyleSheet, View, type GestureResponderEvent } from "react-native";
 import Animated, { FadeIn, FadeInDown, FadeOut, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -34,6 +34,18 @@ type FromGame =
 const GAME = "RushGame";
 
 /**
+ * Unity on Android can't start a second player in the same process (Unity 6: "UnityFoldingFeaturesWrapper.init()
+ * should be called only once"), so the package's unload on unmount would leave the game blank until the app
+ * restarts. There the player is kept and paused instead (plugins/withUnity.js hands it to the next view); iOS unloads
+ * and reloads fine. fullScreen={false} keeps Unity from hiding the status bar for the rest of the app.
+ */
+class GameView extends UnityView {
+  componentWillUnmount() {
+    if (Platform.OS !== "android") super.componentWillUnmount();
+  }
+}
+
+/**
  * Dribbling Rush in 3D: the run is drawn by the Unity player (unity/DribblingRush, embedded with
  * @azesmway/react-native-unity); the rules there are a port of src/lib/kosu/engine.ts. This screen keeps
  * everything around it: swipes, HUD, the goal's question, result, XP, quests, sounds and haptics.
@@ -44,7 +56,7 @@ export default function Rush3D() {
   const insets = useSafeAreaInsets();
   const [club] = useFavClub();
   const kit = CLUB_KITS[club] ?? { body: "#16A34A", sleeves: "#16A34A" };
-  const unity = useRef<UnityView>(null);
+  const unity = useRef<GameView>(null);
 
   const [ready, setReady] = useState(false);
   const [phase, setPhase] = useState<"ready" | "run" | "over">("ready");
@@ -64,6 +76,15 @@ export default function Rush3D() {
     const id = setInterval(() => unity.current?.postMessage(GAME, "Cmd", '{"t":"ping"}'), 400);
     return () => clearInterval(id);
   }, [ready]);
+
+  // Android: the one Unity player lives for the whole app run (see GameView), so it sleeps while this screen is away
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== "android") return;
+      unity.current?.resumeUnity();
+      return () => unity.current?.pauseUnity(true);
+    }, [])
+  );
 
   useEffect(() => {
     if (!toast) return;
@@ -187,7 +208,7 @@ export default function Rush3D() {
     <View style={styles.screen}>
       <Stack.Screen options={{ headerShown: false, gestureEnabled: phase !== "run" }} />
       <FocusStatusBar style="dark" />
-      <UnityView ref={unity} style={StyleSheet.absoluteFill} onUnityMessage={(e) => onMessage(e.nativeEvent.message)} />
+      <GameView ref={unity} fullScreen={false} style={StyleSheet.absoluteFill} onUnityMessage={(e) => onMessage(e.nativeEvent.message)} />
       <View style={StyleSheet.absoluteFill} onTouchStart={onStart} onTouchMove={onMove} onTouchEnd={() => (touch.current = null)} />
 
       {/* HUD */}

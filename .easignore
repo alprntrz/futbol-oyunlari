@@ -11,6 +11,7 @@ node_modules
 /unity/
 
 # local tooling (kept out of git by .git/info/exclude)
+/release-artifacts/
 /.agents/
 /skills-lock.json
 
