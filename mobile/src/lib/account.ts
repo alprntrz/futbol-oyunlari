@@ -4,6 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { useSyncExternalStore } from "react";
 import { Platform } from "react-native";
 
+import { track } from "./analytics";
 import { applyServerPlus, initPlus, plusSignedOut, setPlusServerSync } from "./plus";
 import { stopProgress, syncProgress } from "./progress";
 import { loadAvatar, saveAvatar, type AvatarId } from "./avatar";
@@ -117,6 +118,17 @@ setPlusServerSync(async (force) => {
   }
 });
 
+/** Fields the sign-out request carries for other modules (lib/push.ts: this phone's push token, so it goes too). */
+let signOutExtras: () => Promise<Record<string, unknown>> = async () => ({});
+export function setSignOutExtras(fn: () => Promise<Record<string, unknown>>) {
+  signOutExtras = fn;
+}
+
+/** An /api/account call with this phone's session (lib/push.ts uses it for /push). */
+export function accountApi<T>(path: string, init: RequestInit = {}): Promise<T> {
+  return api<T>(path, init);
+}
+
 async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API}${path}`, {
     ...init,
@@ -221,6 +233,7 @@ async function finishSignIn(provider: "apple" | "google", idToken: string, autho
   syncProgress(progressApi);
   // a Plus bought as a guest moves onto the account (RevenueCat logIn), and the account's Plus shows here
   initPlus(res.user.id);
+  track("signed_in", { provider });
   return res.user;
 }
 
@@ -265,7 +278,10 @@ export async function signInWithGoogle(): Promise<Account | null> {
 
 /** Sign out: the account keeps its XP; this phone becomes a fresh guest. */
 export async function signOut() {
-  if (token) await api("/signout", { method: "POST" }).catch(() => {});
+  if (token) {
+    const extras = await signOutExtras().catch(() => ({}));
+    await api("/signout", { method: "POST", body: JSON.stringify(extras) }).catch(() => {});
+  }
   if (account?.provider === "google") await googleModule()?.GoogleSignin.signOut().catch(() => {});
   await forget();
   await resetLocalXp();

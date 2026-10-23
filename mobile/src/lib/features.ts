@@ -35,3 +35,18 @@ export const HOME_LAYOUT: "list" | "fixtures" | "pitch" | "next" | "board" = "bo
  * EXPO_PUBLIC_RC_* values in eas.json; the privacy page must describe ads and purchases while this is on.
  */
 export const MONETIZE = false;
+
+/**
+ * Push notifications for signed-in players (lib/push.ts, server-push.js): friend invites, "X added you"
+ * and opt-in news, sent through Expo's push service. Needs a native build with expo-notifications; on
+ * Android also FCM (v1) credentials uploaded to EAS, without them registering just logs and skips.
+ * The privacy page describes the push token while this is on.
+ */
+export const PUSH = true;
+
+/**
+ * Anonymous usage events to PostHog (lib/analytics.ts): only with EXPO_PUBLIC_POSTHOG_KEY set, never in
+ * development, and not after "Share usage data" is turned off in Settings. No identify(), no person
+ * profiles, no replay, no touch autocapture. The privacy page describes it while this is on.
+ */
+export const ANALYTICS = true;

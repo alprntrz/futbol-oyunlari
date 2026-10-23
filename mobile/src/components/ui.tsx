@@ -1,7 +1,7 @@
 import { MaterialSymbols_600SemiBold_Filled } from "@expo-google-fonts/material-symbols/600SemiBold_Filled";
 import { SymbolView, type AndroidSymbol, type SymbolViewProps } from "expo-symbols";
 import semiBold from "expo-symbols/androidWeights/semiBold";
-import { Image, Platform, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -289,6 +289,27 @@ export function Row({
         <Icon name="chevron.right" size={14} color={C.text3} fallback="›" />
       </View>
     </Tap>
+  );
+}
+
+/** List row with an on / off switch (Settings: notification categories, usage data). */
+export function SwitchRow({ title, subtitle, value, onChange, last }: { title: string; subtitle?: string; value: boolean; onChange: (on: boolean) => void; last?: boolean }) {
+  return (
+    <View style={[styles.rowText, { paddingLeft: 14 }, !last && styles.rowDivider]}>
+      <View style={{ flex: 1 }}>
+        <Text style={T.headline}>{title}</Text>
+        {subtitle ? <Text style={[T.body, { fontSize: 14, marginTop: 2 }]}>{subtitle}</Text> : null}
+      </View>
+      <Switch
+        value={value}
+        onValueChange={(v) => {
+          haptic.tap();
+          onChange(v);
+        }}
+        trackColor={{ true: C.green, false: undefined }}
+        accessibilityLabel={title}
+      />
+    </View>
   );
 }
 

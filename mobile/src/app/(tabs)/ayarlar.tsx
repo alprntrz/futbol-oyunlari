@@ -3,10 +3,12 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Linking, View } from "react-native";
 
+import { PushSettings } from "~/components/PushSettings";
 import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
-import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
+import { Card, Page, Row, SectionLabel, Segmented, SwitchRow } from "~/components/ui";
 import { deleteAccount, signOut, useAccount } from "~/lib/account";
+import { analyticsAvailable, setAnalyticsOn, useAnalyticsOn } from "~/lib/analytics";
 import { privacyOptionsAvailable, showPrivacyOptions, useConsentDone } from "~/lib/ads";
 import { purchasesAvailable, usePlus } from "~/lib/plus";
 import { BRAND, ROZET, TAKTIK, KIMIM, RONDO } from "~/lib/brand";
@@ -66,6 +68,7 @@ export default function SettingsTab() {
   const reminders = useReminders();
   const plus = usePlus();
   const consentDone = useConsentDone();
+  const analyticsOn = useAnalyticsOn();
 
   return (
     <Page topInset>
@@ -128,6 +131,8 @@ export default function SettingsTab() {
         </>
       )}
 
+      <PushSettings />
+
       <SectionLabel>{t("howToPlay")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
         {games.map((g, i) => (
@@ -156,6 +161,7 @@ export default function SettingsTab() {
 
       <SectionLabel>{t("privacyTitle")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
+        {analyticsAvailable() && <SwitchRow title={t("settingsAnalytics")} subtitle={t("settingsAnalyticsNote")} value={analyticsOn} onChange={setAnalyticsOn} />}
         <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
         <Row image={BRAND.settings.support} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
         <Row icon="hand.raised.fill" iconFallback="✋" color={C.text2} soft="#EEF2EF" title={t("blockedTitle")} onPress={() => router.push("/engellenenler")} />

@@ -24,6 +24,8 @@ import { CapSheetHost } from "~/components/Rewarded";
 import { XpToast } from "~/components/XpToast";
 import { AdsHost } from "~/lib/ads";
 import { initAccount } from "~/lib/account";
+import { AnalyticsScreens, initAnalytics } from "~/lib/analytics";
+import { PushSync } from "~/lib/push";
 import "~/lib/playStreak"; // counts finished games from app start
 import { ONBOARDING } from "~/lib/features";
 import { I18nProvider } from "~/lib/i18n";
@@ -53,6 +55,8 @@ function RootLayout() {
     if (!loaded) return;
     SplashScreen.hideAsync();
     initSounds();
+    // anonymous usage events, unless turned off in Settings (lib/analytics.ts)
+    initAnalytics();
     // restore the account session (if any), sync XP, pay the daily sign-in bonus
     initAccount();
     // Onboarding (app/onboarding.tsx): new installs only (no XP yet), so players updating from 1.0 never see it
@@ -97,6 +101,8 @@ function RootLayout() {
       <EloToast />
       <InviteBanner />
       <RemindersSync />
+      <PushSync />
+      <AnalyticsScreens />
       <RatingAsk />
       <PlayerMenuHost />
     </I18nProvider>

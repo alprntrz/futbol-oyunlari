@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, Share, StyleSheet, TextInput, View } from "re
 import Animated from "react-native-reanimated";
 
 import { openPlayerMenu } from "~/components/PlayerMenu";
+import { PushAsk } from "~/components/PushAsk";
 import { Avatar } from "~/components/Avatar";
 import { softIn } from "~/components/motion";
 import { RankChip } from "~/components/Rank";
@@ -88,9 +89,9 @@ export default function Friends() {
         })
       : remove(f);
 
-  // open a Tic-Tac-Toe room, ring the friend's phone, then wait in the room
+  // open a Tic-Tac-Toe room, ring the friend's phone (a push when their app is closed and they
+  // allow it; the server says "offline" otherwise), then wait in the room
   const invite = async (f: Friend) => {
-    if (!f.online) return setNote({ text: t("friendsInviteOffline").replace("{nick}", f.nick), ok: false });
     setBusy(f.code);
     const socket = getSocket();
     const fail = () => {
@@ -103,14 +104,14 @@ export default function Friends() {
       .emit("ht:create", { nick: await loadNick(), grid: gridToIds(dealGrid(league)), steals: false, league }, (err: Error | null, res?: { ok: boolean; room?: { code: string } }) => {
         const room = res?.room?.code;
         if (err || !res?.ok || !room) return fail();
-        socket.timeout(6000).emit("fr:invite", { to: f.code, game: "ht", room }, (err2: Error | null, r?: { ok: boolean; error?: string }) => {
+        socket.timeout(6000).emit("fr:invite", { to: f.code, game: "ht", room }, (err2: Error | null, r?: { ok: boolean; error?: string; push?: boolean }) => {
           setBusy(null);
           if (err2 || !r?.ok) {
             if (r?.error === "offline") return setNote({ text: t("friendsInviteOffline").replace("{nick}", f.nick), ok: false });
             return fail();
           }
           haptic.success();
-          setNote({ text: t("friendsInviteSent"), ok: true });
+          setNote({ text: r.push && !f.online ? t("friendsInvitePushed").replace("{nick}", f.nick) : t("friendsInviteSent"), ok: true });
           router.push({ pathname: "/hat-trick/oda/[code]", params: { code: room } });
         });
       });
@@ -126,6 +127,7 @@ export default function Friends() {
         </>
       ) : (
         <>
+          <PushAsk />
           <Card style={styles.codeCard}>
             <Text style={T.caption}>{t("friendsMyCode")}</Text>
             {info ? (
@@ -190,7 +192,7 @@ export default function Friends() {
                   ) : (
                     <Tap onPress={() => invite(f)} style={[styles.invite, !f.online && styles.inviteOff]} accessibilityRole="button" accessibilityLabel={`${t("friendsInvite")} ${f.nick}`}>
                       <Icon name="paperplane.fill" size={13} color={f.online ? "white" : C.text3} fallback="✈" />
-                      <Text style={[styles.inviteText, !f.online && { color: C.text3 }]}>{f.online ? t("friendsInvite") : t("friendsOffline")}</Text>
+                      <Text style={[styles.inviteText, !f.online && { color: C.text3 }]}>{t("friendsInvite")}</Text>
                     </Tap>
                   )}
                 </Animated.View>

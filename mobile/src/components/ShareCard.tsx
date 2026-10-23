@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Image, Platform, Share, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import { captureRef } from "react-native-view-shot";
 
+import { track } from "~/lib/analytics";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, F, GAME } from "~/lib/theme";
@@ -56,6 +57,7 @@ export function useShareCard(): { share: (s: ShareSpec) => void; card: ReactNode
 
   const share = (s: ShareSpec) => {
     const message = `${s.text}\n\n${t("shareCta")} ${SHARE_URL}`;
+    track("share_tapped", { game: s.game });
     if (Platform.OS !== "ios") {
       Share.share({ message });
       return;

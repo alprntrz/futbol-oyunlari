@@ -46,6 +46,8 @@ export interface XpAward {
   key: string;
   gained: number;
   game: XpSource;
+  /** paid under the daily practice cap (an unlimited mode) */
+  practice?: boolean;
   stats?: XpStat[];
   title?: string;
   label?: string;
@@ -141,7 +143,7 @@ export function awardXp(key: string, game: XpSource, amount: number, opts: XpOpt
     s.byGame = { ...s.byGame, [game]: (s.byGame[game] ?? 0) + gained };
     s.keys = [...s.keys, key].slice(-MAX_KEYS);
     await AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
-    const award: XpAward = { key, gained, game, before, after: { ...levelOf(s.xp), xp: s.xp }, stats: opts.stats, title: opts.title, label: opts.label };
+    const award: XpAward = { key, gained, game, practice: !!opts.practice, before, after: { ...levelOf(s.xp), xp: s.xp }, stats: opts.stats, title: opts.title, label: opts.label };
     listeners.forEach((fn) => fn(award));
     sink?.(key, game, gained);
     return award;

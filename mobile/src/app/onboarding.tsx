@@ -8,6 +8,7 @@ import { Text } from "~/components/Text";
 import { Button, Segmented } from "~/components/ui";
 import { BRAND, KOSU, ROZET, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
+import { track } from "~/lib/analytics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, GAME } from "~/lib/theme";
 
@@ -34,6 +35,7 @@ export default function Onboarding() {
   const done = async (then?: "/hat-trick/tek") => {
     haptic.success();
     await AsyncStorage.setItem(ONBOARDED_KEY, "1");
+    track("onboarding_done", {});
     if (router.canGoBack()) router.back();
     else router.replace("/");
     if (then) setTimeout(() => router.push(then), 250);

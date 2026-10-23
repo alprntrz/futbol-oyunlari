@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { reloadAppAsync } from "expo";
 
+import { ANALYTICS_OFF_KEY, resetAnalytics } from "./analytics";
 import { loadPlayerId } from "./nick";
 import { getSocket } from "./socket";
 import { resetDailyRewards } from "./dailyRewards";
@@ -27,7 +28,11 @@ export async function deleteMyData(): Promise<{ server: boolean }> {
       .emit("qz:forget", { pid }, (err: Error | null, res?: { ok: boolean }) => resolve(!err && !!res?.ok));
   });
   await resetPhoto();
+  // usage data: the device id and queue go with the rest; a "no" to sharing stays a no
+  const analyticsOff = await AsyncStorage.getItem(ANALYTICS_OFF_KEY).catch(() => null);
+  resetAnalytics();
   await AsyncStorage.clear().catch(() => {});
+  if (analyticsOff) await AsyncStorage.setItem(ANALYTICS_OFF_KEY, analyticsOff).catch(() => {});
   resetXpCache();
   resetQuests();
   resetPlayStreak();
