@@ -2,11 +2,11 @@ import UnityView from "@azesmway/react-native-unity";
 import { Stack, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Image, Platform, StyleSheet, View, type GestureResponderEvent } from "react-native";
-import Animated, { FadeIn, FadeInDown, FadeOut, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { POWER_S, type PowerKind } from "@/lib/kosu/engine";
-import { quizQuestions } from "@/lib/quiz";
+import { rushWords } from "@/lib/kosu/names";
 
 import { CLUB_KITS } from "~/components/HatTrickBoard";
 import { POWER_LOOK, PowerChip } from "~/components/kosu/Rush2D";
@@ -26,9 +26,9 @@ import { useXpAward } from "~/lib/xp";
 /** what the game (unity/DribblingRush, Bridge.cs) sends */
 type FromGame =
   | { t: "ready" }
-  | { t: "hud"; score: number; coins: number; mult: number; boots: number; magnet: number; double: number; armband: number; q: number; m: number }
-  | { t: "ev"; e: "coin" | "bump" | "dead" | "goal" | "save" | "power" | "saved" | "splash"; k?: number; mult?: number }
-  | { t: "over"; score: number; coins: number; metres: number; goals: number };
+  | { t: "hud"; score: number; coins: number; mult: number; boots: number; magnet: number; double: number; armband: number; jet?: number; spring?: number; word?: string; got?: number; words?: number; m: number }
+  | { t: "ev"; e: "coin" | "bump" | "dead" | "power" | "saved" | "letter" | "word"; k?: number; mult?: number; name?: string }
+  | { t: "over"; score: number; coins: number; metres: number; words?: number };
 
 /** the object in the Unity scene that takes the app's commands */
 const GAME = "RushGame";
@@ -47,11 +47,11 @@ class GameView extends UnityView {
 
 /**
  * Dribbling Rush in 3D: the run is drawn by the Unity player (unity/DribblingRush, embedded with
- * @azesmway/react-native-unity); the rules there are a port of src/lib/kosu/engine.ts. This screen keeps
- * everything around it: swipes, HUD, the goal's question, result, XP, quests, sounds and haptics.
+ * @azesmway/react-native-unity); the rules there are a port of src/lib/kosu/engine.ts (with `extras`). This screen
+ * keeps everything around it: swipes, HUD, the name being spelt, result, XP, quests, sounds and haptics.
  */
 export default function Rush3D() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const { share: shareCard, card: shareView } = useShareCard();
   const insets = useSafeAreaInsets();
   const [club] = useFavClub();
@@ -60,12 +60,11 @@ export default function Rush3D() {
 
   const [ready, setReady] = useState(false);
   const [phase, setPhase] = useState<"ready" | "run" | "over">("ready");
-  const [hud, setHud] = useState({ score: 0, coins: 0, mult: 1, boots: 0, magnet: 0, double: 0, armband: 0, q: -1 });
-  const [questions, setQuestions] = useState<{ text: string; lanes: string[]; answer: number }[]>([]);
+  const [hud, setHud] = useState({ score: 0, coins: 0, mult: 1, boots: 0, magnet: 0, double: 0, armband: 0, jet: 0, spring: 0, word: "", got: 0, words: 0 });
   const [final, setFinal] = useState<{ score: number; coins: number; metres: number } | null>(null);
   const [newBest, setNewBest] = useState(false);
   const [runNo, setRunNo] = useState(0);
-  const [flash, setFlash] = useState<{ id: number; goal: boolean; mult: number } | null>(null);
+  const [flash, setFlash] = useState<{ id: number; name: string; mult: number } | null>(null);
   const [toast, setToast] = useState<{ id: number; text: string; color: string } | null>(null);
 
   const send = (method: "Cmd" | "Swipe", msg: string) => unity.current?.postMessage(GAME, method, msg);
@@ -97,12 +96,13 @@ export default function Rush3D() {
     return () => clearTimeout(id);
   }, [flash]);
 
-  const end = (sc: number, coins: number, metres: number, goals: number) => {
+  const end = (sc: number, coins: number, metres: number, words: number) => {
     setFinal({ score: sc, coins, metres });
     const best = recordRun(sc);
     setNewBest(best);
     if (best) setTimeout(() => play("levelup"), 950);
-    questEvent("rush_goals", goals);
+    // every finished name raises the multiplier (it never drops in the 3D game)
+    questEvent("rush_mult", Math.min(5, 1 + words));
     questEvent("rush_metres", metres);
     setTimeout(() => setPhase("over"), 450);
   };
@@ -119,24 +119,22 @@ export default function Rush3D() {
       if (!ready) send("Cmd", JSON.stringify({ t: "menu", body: kit.body, sleeves: kit.sleeves, num: "10" }));
       setReady(true);
     }
-    else if (m.t === "hud") setHud({ score: m.score, coins: m.coins, mult: m.mult, boots: m.boots, magnet: m.magnet, double: m.double, armband: m.armband, q: m.q });
-    else if (m.t === "over") end(m.score, m.coins, m.metres, m.goals);
+    else if (m.t === "hud")
+      setHud({ score: m.score, coins: m.coins, mult: m.mult, boots: m.boots, magnet: m.magnet, double: m.double, armband: m.armband, jet: m.jet ?? 0, spring: m.spring ?? 0, word: m.word ?? "", got: m.got ?? 0, words: m.words ?? 0 });
+    else if (m.t === "over") end(m.score, m.coins, m.metres, m.words ?? 0);
     else if (m.t === "ev") {
       if (m.e === "coin") haptic.tap();
       else if (m.e === "bump") haptic.warning();
       else if (m.e === "dead") {
         haptic.error();
         play("whistle");
-      } else if (m.e === "goal" || m.e === "save") {
-        const goal = m.e === "goal";
-        setFlash({ id: Date.now(), goal, mult: m.mult ?? 1 });
-        if (goal) {
-          haptic.success();
-          play("goal");
-        } else {
-          haptic.warning();
-          play("wrong");
-        }
+      } else if (m.e === "letter") {
+        haptic.success();
+        play("pop");
+      } else if (m.e === "word") {
+        setFlash({ id: Date.now(), name: m.name ?? "", mult: m.mult ?? 1 });
+        haptic.success();
+        play("goal");
       } else if (m.e === "power") {
         haptic.success();
         play("power");
@@ -156,16 +154,7 @@ export default function Rush3D() {
 
   const start = () => {
     if (!ready) return;
-    // goal questions for this run (easy quiz, three options): the right one in a random lane
-    const pick = (l: { tr: string; en: string }) => (locale === "tr" ? l.tr : l.en);
-    const qs = quizQuestions(30, "players", "easy").map((q) => {
-      const lane = Math.floor(Math.random() * 3);
-      const wrong = q.options.filter((_, i) => i !== q.answer).slice(0, 2);
-      const lanes = [0, 1, 2].map((i) => (i === lane ? pick(q.options[q.answer]) : pick(wrong[i < lane ? i : i - 1])));
-      return { text: pick(q.text), lanes, answer: lane - 1 };
-    });
-    setQuestions(qs);
-    setHud({ score: 0, coins: 0, mult: 1, boots: 0, magnet: 0, double: 0, armband: 0, q: -1 });
+    setHud({ score: 0, coins: 0, mult: 1, boots: 0, magnet: 0, double: 0, armband: 0, jet: 0, spring: 0, word: "", got: 0, words: 0 });
     setToast(null);
     setFlash(null);
     setFinal(null);
@@ -178,8 +167,8 @@ export default function Rush3D() {
         body: kit.body,
         sleeves: kit.sleeves,
         num: "10",
-        answers: qs.map((q) => q.answer),
-        goals: qs.map((q) => ({ lanes: q.lanes })),
+        // footballers' names to spell with the letters on the pitch, in this order
+        words: rushWords(),
       })
     );
     setPhase("run");
@@ -202,7 +191,6 @@ export default function Rush3D() {
     send("Swipe", Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up");
   };
 
-  const question = phase === "run" && hud.q >= 0 ? questions[hud.q % Math.max(1, questions.length)] : undefined;
 
   return (
     <View style={styles.screen}>
@@ -233,9 +221,23 @@ export default function Rush3D() {
       </View>
 
       {/* power-ups running: a bar that empties as the time runs out */}
-      <View style={[styles.powers, { top: insets.top + 54 + (question ? 96 : 0) }]} pointerEvents="none">
-        {([0, 1, 3] as PowerKind[]).map((k) => {
-          const left = k === 0 ? hud.boots : k === 1 ? hud.magnet : hud.double;
+      {/* the footballer's name being spelt: the letters collected so far light up */}
+      {phase === "run" && hud.word !== "" && (
+        <View style={[styles.spell, { top: insets.top + 52 }]} pointerEvents="none">
+          <Text style={styles.spellLabel}>{t("rushSpell")}</Text>
+          <View style={styles.spellRow}>
+            {hud.word.split("").map((ch, i) => (
+              <View key={`${hud.word}-${i}`} style={[styles.tile, i < hud.got && styles.tileOn]}>
+                <Text style={[styles.tileText, i < hud.got && styles.tileTextOn]}>{ch}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+
+      <View style={[styles.powers, { top: insets.top + 54 + (phase === "run" && hud.word ? 70 : 0) }]} pointerEvents="none">
+        {([4, 5, 0, 1, 3] as PowerKind[]).map((k) => {
+          const left = k === 0 ? hud.boots : k === 1 ? hud.magnet : k === 3 ? hud.double : k === 4 ? hud.jet : hud.spring;
           if (left <= 0) return null;
           return <PowerChip key={k} kind={k} share={left / POWER_S[k]} />;
         })}
@@ -247,17 +249,11 @@ export default function Rush3D() {
         </Animated.View>
       )}
 
-      {/* the goal's question while it's coming up; the options stand over the lanes in the game */}
-      {question && (
-        <Animated.View key={hud.q} entering={FadeInDown.duration(200)} exiting={FadeOut.duration(150)} style={[styles.question, { top: insets.top + 56 }]} pointerEvents="none">
-          <Text style={styles.qLabel}>{t("rushGoalAsk")}</Text>
-          <Text style={styles.qText}>{question.text}</Text>
-        </Animated.View>
-      )}
       {flash && (
         <Animated.View key={flash.id} entering={ZoomIn.duration(220)} exiting={FadeOut.duration(200)} style={styles.flash} pointerEvents="none">
-          <Text style={[styles.flashText, { color: flash.goal ? C.green : C.red }]}>{flash.goal ? t("rushGoal") : t("rushSaved")}</Text>
-          {flash.goal && flash.mult > 1 && <Text style={styles.flashMult}>×{flash.mult}</Text>}
+          <Text style={[styles.flashText, { color: C.green }]}>{flash.name}</Text>
+          <Text style={styles.flashSub}>{t("rushNameDone")}</Text>
+          {flash.mult > 1 && <Text style={styles.flashMult}>×{flash.mult}</Text>}
         </Animated.View>
       )}
 
@@ -265,7 +261,7 @@ export default function Rush3D() {
         <Animated.View entering={FadeIn.duration(250)} style={styles.center} pointerEvents="none">
           <View style={styles.startCard}>
             <Text style={styles.big}>{t("rushTap")}</Text>
-            <Text style={styles.small}>{t("rushHow")}</Text>
+            <Text style={styles.small}>{t("rushHow3D")}</Text>
           </View>
         </Animated.View>
       )}
@@ -331,10 +327,15 @@ const styles = StyleSheet.create({
   powers: { position: "absolute", right: 12, gap: 6, alignItems: "flex-end" },
   toast: { position: "absolute", left: 0, right: 0, top: "46%", alignItems: "center" },
   toastText: { fontFamily: F.black, fontSize: 30, textShadowColor: "rgba(255,255,255,0.9)", textShadowRadius: 6, textShadowOffset: { width: 0, height: 0 } },
-  question: { position: "absolute", left: 16, right: 16, backgroundColor: C.card, borderRadius: R.card, padding: 14, alignItems: "center", gap: 2, ...shadow },
-  qLabel: { fontWeight: "800", fontSize: 12, color: C.greenMid, letterSpacing: 0.5 },
-  qText: { fontFamily: F.display, fontSize: 21, color: C.text, textAlign: "center" },
+  spell: { position: "absolute", alignSelf: "center", alignItems: "center", gap: 4, backgroundColor: "rgba(15,23,42,0.78)", borderRadius: 14, paddingHorizontal: 10, paddingTop: 5, paddingBottom: 8 },
+  spellLabel: { fontWeight: "900", fontSize: 11, color: "#FACC15", letterSpacing: 1 },
+  spellRow: { flexDirection: "row", gap: 4 },
+  tile: { width: 30, height: 36, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.12)", borderWidth: 2, borderColor: "rgba(255,255,255,0.5)", alignItems: "center", justifyContent: "center" },
+  tileOn: { backgroundColor: "#FACC15", borderColor: "#0E74E6" },
+  tileText: { fontFamily: F.black, fontSize: 20, color: "rgba(255,255,255,0.55)" },
+  tileTextOn: { color: "#0F172A" },
   flash: { position: "absolute", left: 0, right: 0, top: "34%", alignItems: "center" },
   flashText: { fontFamily: F.black, fontSize: 52, textShadowColor: "rgba(0,0,0,0.25)", textShadowRadius: 8, textShadowOffset: { width: 0, height: 2 } },
+  flashSub: { fontFamily: F.black, fontSize: 22, color: "white", textShadowColor: "rgba(0,0,0,0.35)", textShadowRadius: 6, textShadowOffset: { width: 0, height: 1 } },
   flashMult: { fontFamily: F.black, fontSize: 30, color: C.text, backgroundColor: "#FACC15", borderRadius: 12, overflow: "hidden", paddingHorizontal: 12 },
 });

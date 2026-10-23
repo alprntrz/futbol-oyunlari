@@ -3,6 +3,7 @@
 #   ./unity/build.sh ios       → mobile/unity/builds/ios/UnityFramework.xcframework (device + simulator)
 #   ./unity/build.sh android   → mobile/unity/builds/android/unityLibrary
 #   ./unity/build.sh shots     → unity/DribblingRush/Builds/shots/*.png (an autopiloted run, for look checks)
+#   ./unity/build.sh icons     → unity/DribblingRush/Builds/icons/*.png (the 3D-only power-ups, for the app's HUD)
 # Needs Unity 6000.6.6f1 with iOS / Android support (UNITY=… to point elsewhere) and Xcode.
 # The outputs are not in git (see mobile/.gitignore); EAS Build picks them up through mobile/.easignore.
 set -euo pipefail
@@ -96,8 +97,12 @@ PY
     unity iOS RushBuild.Shots
     ls "$PROJ/Builds/shots"
     ;;
+  icons)
+    unity iOS RushBuild.Icons
+    ls "$PROJ/Builds/icons"
+    ;;
   *)
-    echo "usage: unity/build.sh ios|android|shots"
+    echo "usage: unity/build.sh ios|android|shots|icons"
     exit 2
     ;;
 esac

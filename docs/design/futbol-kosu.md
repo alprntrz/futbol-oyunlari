@@ -48,6 +48,37 @@ Bir koşu hedef olarak 1–3 dakika. Öğrenmesi 10 saniye.
 | Antrenman konileri dizisi | Zıpla | Alçak, sık |
 | Sulama fıskiyesi / su birikintisi | Şerit değiştir ya da zıpla | Kaygan, hafif yavaşlatır (ölümcül değil) |
 | Reklam panosu yıkılması (logosuz) | Kay | Nadir, ileri seviye |
+| Yedek kulübesi (3D) | Önündeki A-tipi saha panosundan (oklu rampa) çatısına çık ya da şerit değiştir | Önü cam duvar, yanı seni şeridine geri iter; çatısında altın dizisi, bazen bir sonrakine zıplanacak boşluk |
+| Çim biçme makinesi (3D) | Şerit değiştir | Sahacı kullanıyor, farları ve tepe lambası yanık, sana doğru gelir; yanındaki şeritlerden biri hep boş |
+| Çıta (3D, panonun yerine) | Kay | Kırmızı-beyaz çizgili, iki direk üstünde; altı açıkça boş |
+
+3D oyunda (Unity) bir de **kovalayan** var: **hakem**. Koşunun başında ve her yan çarpmadan sonra hemen
+arkanda koşar, sonra geride kalır; ikinci çarpmada yakalar ve kart gösterir. 3D oyunda fıskiye yok.
+
+**Kale ve soru yok (3D):** yerine sahada **harfler** çıkar ve bir futbolcunun adını yazar (`src/lib/kosu/names.ts`,
+ekranın üstünde kutular). İsim tamamlanınca: bonus puan, çarpan +1 ve bedava roket top uçuşu; sonra yeni isim.
+Kaçırılan harf bir sonraki seferde yine gelir. Harf, sıranın paralarından birkaç metre sonra, boş şeritte tek başına
+durur: koşucunun formasını giymiş, askıda bir **forma** üstünde sırt numarası gibi kalın bir 3D harf (iki yüzden de okunur).
+Hareket 3D'de daha yumuşak (daha uzun zıplama, yumuşak şerit geçişi).
+
+**Sahne (3D, 2026-10-20 düzeni, Subway Surfers'tan alınan dersler):**
+
+- Kamera koşucunun arkasında alçakta, hiç dönmez (şeritler ekranda hep düz); şerit değişimini kendi hızlı
+  yumuşatmasıyla izler, görüş açısı sabit (güçlendirmede kısa bir açılma). Kare hızı ekranın hızı (120 Hz dahil).
+- Dünya ufka doğru **kıvrılır** (`RushCurve.cginc`: kameradan d m ileri olan nokta d²·0.0018 m alçalır): saha ~50 m
+  sonra ufkun altına yuvarlanır, kuralların 90 m ileride koyduğu her şey "yüklenmek" yerine ufuktan yükselerek gelir.
+  Uzaktakiler sise (gök rengi) karışır; karşı tribün resmi kıvrılmaz, ufkun arkasında durur.
+- Zemin sakin: daha koyu, az doygun çim, hafif biçme şeritleri, silik şerit çizgileri; 64 m'de bir gerçek saha
+  çizgileri (kale çizgisi, ceza sahası, penaltı noktası ve yayı, orta çizgi ve orta yuvarlak). Tribün biraz kısık,
+  panolar biraz koyu: parlak olan şey hep şeritteki nesneler (altın, forma-harf, kulübe çatısı). Rampa okları
+  lacivert-beyaz, kulübe koltukları açık gri.
+- Futbol dokunuşları: koşu **orta yuvarlaktan, santra noktasından** başlar; taç çizgisinde dalgalanan
+  **köşe bayrakları**; LED panolar akar; tribünde **fotoğraf makinesi flaşları** (isim tamamlanınca bir fırtına).
+- Sahnedeki her uzun parça (tribün, kulübe, pano) kıvrılmaya uyması için dilimli mesh (`Look.LongCube`,
+  `Look.GridQuad`); yazılar `Rush/Text` shader'ıyla kıvrılır. Çizim çağrıları için GPU instancing açık; havuzlar ve
+  shader'lar açılışta ısıtılır (`Prewarm`), koşu sırasında yeni nesne yaratılmaz.
+
+Görseller: `kosu-3d-brief.md`.
 
 Engel desenleri önceden tasarlanmış küçük "parçalar" (chunk) halinde gelir; her parça en az
 bir geçilebilir yol bırakır (bunu üretici kod doğrular).
@@ -59,6 +90,11 @@ bir geçilebilir yol bırakır (bunu üretici kod doğrular).
 - **Mıknatıslı top:** 8 sn yakındaki paraları çeker.
 - **Kaptanlık bandı:** Bir çarpışmayı affeder (kalkan).
 - **2× rozet:** 10 sn çift puan.
+- **Roket top (3D):** 6 sn her şeyin üstünden uç; havada bir altın yolu, arkanda gökkuşağı izi.
+- **Yaylı krampon (3D):** 10 sn yüksek zıpla: otobüs çatılarına, duvarların ve defansçıların üstünden.
+
+Kulübeler, makine, harfler, roket top ve yaylı krampon sadece 3D oyunda: kurallarda `newRun(…, extras)` ile açılır, 2.5D sürüm
+eski kurallarla oynar.
 
 Güçlendirmeler satın alınmaz, yükseltilmez; sadece koşu içinde bulunur.
 

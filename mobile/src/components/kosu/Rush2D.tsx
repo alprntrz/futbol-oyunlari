@@ -33,11 +33,14 @@ const OBST = 18;
 const COINS = 40;
 const PICKUPS = 4;
 /** each power-up's look (stand-ins until the art): colour, symbol, name key */
-export const POWER_LOOK: { color: string; icon: string; name: "rushP_boots" | "rushP_magnet" | "rushP_armband" | "rushP_double" }[] = [
+export const POWER_LOOK: { color: string; icon: string; name: "rushP_boots" | "rushP_magnet" | "rushP_armband" | "rushP_double" | "rushP_jet" | "rushP_spring" }[] = [
   { color: "#F97316", icon: "👟", name: "rushP_boots" },
   { color: "#DC2626", icon: "🧲", name: "rushP_magnet" },
   { color: "#FACC15", icon: "🛡️", name: "rushP_armband" },
   { color: "#8B5CF6", icon: "✖️2", name: "rushP_double" },
+  // the 3D game only (engine `extras`)
+  { color: "#EC4899", icon: "🚀", name: "rushP_jet" },
+  { color: "#22C55E", icon: "🦘", name: "rushP_spring" },
 ];
 /** the touchlines, and the advertising boards (blank) along them for a sense of speed */
 const HALF = 4.4;
@@ -212,8 +215,8 @@ export default function Rush2D() {
     const best = recordRun(sc);
     setNewBest(best);
     if (best) setTimeout(() => play("levelup"), 950);
-    // daily quests: goals in this run (best counts), metres add up
-    questEvent("rush_goals", goals);
+    // daily quests: the multiplier this run reached (every goal raises it; best counts), metres add up
+    questEvent("rush_mult", Math.min(5, 1 + goals));
     questEvent("rush_metres", m);
     setTimeout(() => setPhase("over"), 900);
   };

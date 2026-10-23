@@ -123,20 +123,22 @@ function patchUnityView(pkg) {
         unityPlayer.resume();
         _isUnityPaused = false; // tiktako: resumed (plugins/withUnity.js)`
   );
-  // re-parenting keeps the SurfaceView's surface, so Unity (which let go of it on the detach) never hears of a new
-  // one: the game runs on but the picture stays frozen. Hiding and showing the surface once makes a real new one,
-  // as coming back from the background does
+  // leaving the screen pauses Unity, and on pause it lays a still picture of the last frame over its surface (a plain
+  // View holding a Bitmap), meant to come off once the resumed game draws again. After the player has moved to
+  // another view that never happens: the game runs on behind a frozen picture. So once it's back and resumed, drop
+  // every plain View from its frame (that snapshot and the empty launch placeholder; the surface sits in a ViewGroup)
   edit(
     "ReactNativeUnity.java",
-    "tiktako: new surface",
+    "tiktako: drop the pause snapshot",
     `        _isUnityPaused = false; // tiktako: resumed (plugins/withUnity.js)`,
     `        _isUnityPaused = false; // tiktako: resumed (plugins/withUnity.js)
-        // tiktako: new surface (plugins/withUnity.js)
-        final android.view.View surface = frame.findViewById(frame.getResources().getIdentifier("unitySurfaceView", "id", frame.getContext().getPackageName()));
-        if (surface != null) {
-            surface.setVisibility(android.view.View.GONE);
-            surface.post(() -> surface.setVisibility(android.view.View.VISIBLE));
-        }`
+        // tiktako: drop the pause snapshot (plugins/withUnity.js)
+        frame.postDelayed(() -> {
+            for (int i = frame.getChildCount() - 1; i >= 0; i--) {
+                android.view.View child = frame.getChildAt(i);
+                if (!(child instanceof ViewGroup)) frame.removeView(child);
+            }
+        }, 300);`
   );
   // the parking spot itself: full size but hidden instead of 1×1 — Unity keeps rendering at the size it was parked
   // at, so after a 1×1 park it fills the screen with one stretched pixel even once it's back in a full-size view

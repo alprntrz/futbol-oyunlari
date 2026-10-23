@@ -10,7 +10,7 @@ import { awardXp, onXpAward } from "./xp";
  * Daily quests: three a day, the same for everyone (seeded by the day), each pays
  * XP once when done; all three done pays a bonus. Progress lives on the phone.
  */
-export type QuestEvent = "xi_finish" | "xi_players" | "ht_series" | "ht_win" | "qz_correct" | "mystery_solve" | "bingo_play" | "combo" | "xp" | "rush_goals" | "rush_metres";
+export type QuestEvent = "xi_finish" | "xi_players" | "ht_series" | "ht_win" | "qz_correct" | "mystery_solve" | "bingo_play" | "combo" | "xp" | "rush_mult" | "rush_metres";
 
 export interface QuestDef {
   id: string;
@@ -33,8 +33,8 @@ const POOL: QuestDef[] = [
   { id: "bg1", event: "bingo_play", target: 1, text: "qBingo", reward: 30 },
   { id: "cb4", event: "combo", target: 4, mode: "max", text: "qCombo", reward: 40 },
   { id: "xp100", event: "xp", target: 100, text: "qXp", reward: 30 },
-  // Dribbling Rush: goals in one run (best counts), metres added up over the day
-  { id: "ru3", event: "rush_goals", target: 3, mode: "max", text: "qRushGoals", reward: 40 },
+  // Dribbling Rush: the multiplier reached in one run (best counts; a goal in 2.5D, a spelt name in 3D), metres added up
+  { id: "rum2", event: "rush_mult", target: 2, mode: "max", text: "qRushMult", reward: 40 },
   { id: "ru1k", event: "rush_metres", target: 1000, text: "qRushMetres", reward: 30 },
 ];
 export const ALL_DONE_BONUS = 50;

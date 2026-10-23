@@ -206,7 +206,7 @@ export const KOSU = {
     wall: require("../../assets/brand/kosu/obs-wall.png"),
     sprinkler: require("../../assets/brand/kosu/obs-sprinkler.png"),
   },
-  pick: [require("../../assets/brand/kosu/pick-boots.png"), require("../../assets/brand/kosu/pick-magnet.png"), require("../../assets/brand/kosu/pick-armband.png"), require("../../assets/brand/kosu/pick-2x.png")],
+  pick: [require("../../assets/brand/kosu/pick-boots.png"), require("../../assets/brand/kosu/pick-magnet.png"), require("../../assets/brand/kosu/pick-armband.png"), require("../../assets/brand/kosu/pick-2x.png"), require("../../assets/brand/kosu/pick-jet.png"), require("../../assets/brand/kosu/pick-spring.png")],
   coin: require("../../assets/brand/kosu/pick-coin.png"),
   goal: require("../../assets/brand/kosu/goal.png"),
   keeper: require("../../assets/brand/kosu/keeper.png"),

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rush
 {
-    public enum Pose { Idle, Run, Jump, Slide, Fall, Caught, Stand, Tackle, Wall, Ref, Keeper, Dive }
+    public enum Pose { Idle, Run, Jump, Slide, Fall, Caught, Stand, Tackle, Wall, Ref, Keeper, Dive, Fly, Grab }
 
     public class Figure
     {
@@ -83,7 +83,7 @@ namespace Rush
                 float lum = shirt.r * 0.3f + shirt.g * 0.59f + shirt.b * 0.11f;
                 number.color = lum > 0.6f ? new Color32(20, 24, 32, 255) : Color.white;
                 var mr = t.GetComponent<MeshRenderer>();
-                mr.sharedMaterial = number.font.material;
+                mr.sharedMaterial = Look.TextMat(number.font);
             }
             renderers = root.GetComponentsInChildren<Renderer>(true);
         }
@@ -176,6 +176,20 @@ namespace Rush
                     bodyPos.y -= 0.12f;
                     al = Quaternion.Euler(-30, 0, -55 + Mathf.Sin(ph) * 5);
                     ar = Quaternion.Euler(-30, 0, 55 - Mathf.Sin(ph) * 5);
+                    break;
+                case Pose.Fly:
+                    // the jet: leaning into the wind, legs trailing, arms out like wings
+                    bodyRot = Quaternion.Euler(28, 0, Mathf.Sin(ph * 0.7f) * 6);
+                    hl = -14 + s * 8; hr = -6 - s * 8; kl = 40; kr = 30;
+                    al = Quaternion.Euler(-10, 0, -78 + Mathf.Sin(ph) * 6);
+                    ar = Quaternion.Euler(-10, 0, 78 - Mathf.Sin(ph) * 6);
+                    break;
+                case Pose.Grab:
+                    // the steward reaching for the runner's shoulders
+                    bodyRot = Quaternion.Euler(22, 0, 0);
+                    hl = 30; kl = 40; hr = -10; kr = 20;
+                    al = X(100) * Quaternion.Euler(0, 0, 12);
+                    ar = X(100) * Quaternion.Euler(0, 0, -12);
                     break;
                 case Pose.Dive:
                     float e = Ease(k);

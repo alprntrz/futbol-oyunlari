@@ -61,6 +61,11 @@ logo, no face details visible from behind."*
 | `pick-magnet.png` | Mıknatıs şeklinde top (kırmızı-beyaz mıknatıs, ucunda top). |
 | `pick-armband.png` | Kaptanlık bandı, altın kenarlı kalkan gibi parlayan. |
 | `pick-2x.png` | Yıldızlı parlak rozet (yazısız; "2×" kodla yazılır). |
+| `pick-jet.png` | Roket top (3D oyun): klasik siyah-beyaz futbol topu, altında üç kırmızı kanatçık ve aşağı doğru turuncu-sarı alev; hafif yukarı eğik, uçuyor. |
+| `pick-spring.png` | Yaylı krampon (3D oyun): tek parlak yeşil krampon, tabanının altında gümüş helezon yay; hafif zıplıyormuş gibi. |
+
+Şimdilik bu ikisi Unity'deki 3D modellerden çizildi (`RushBuild.Icons`, `unity/DribblingRush/Builds/icons`);
+ChatGPT görselleri gelince `scripts/kosu-assets.py` ile değiştirilir.
 
 ## 4. Saha ve kale
 

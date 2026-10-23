@@ -54,6 +54,8 @@ namespace Rush
         /// <summary>right-answer lanes (-1, 0, 1), one per goal question, and the three options per goal (left to right)</summary>
         public int[] answers;
         public GoalOptions[] goals;
+        /// <summary>the footballers' names to spell with the letters (uppercase A–Z), in order</summary>
+        public string[] words;
     }
 
     [Serializable]
