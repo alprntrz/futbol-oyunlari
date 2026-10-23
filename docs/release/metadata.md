@@ -247,6 +247,23 @@ reklam olmaması.
   finans, sağlık, tarama / arama geçmişi. Live Activity push token'ı yalnızca maç sürerken bellekte: toplanan veri sayılmaz.
 - **Takip: Hayır.**
 
+### App Privacy (1.2: bildirimler + anonim kullanım verisi)
+
+1.1 etiketine ek olarak (push: `server-push.js` / `lib/push.ts`; analitik: `lib/analytics.ts`, PostHog EU):
+- **Kullanım Verisi → Ürün Etkileşimi** (PostHog: ekran adı kalıbı, biten oyun türü, tanıtım bitti, giriş yöntemi,
+  paylaş dokunuşu, bildirim izni, uygulama açıldı / arka plana alındı): amaç **Analiz**. **Kimliğe bağlı: Hayır**
+  (identify yok, hesaba bağlanmıyor). Takip için değil. (Uygulama İşlevselliği amaçlı XP/Elo satırı 1.1'deki gibi kalır.)
+- **Tanımlayıcılar → Cihaz Kimliği** (PostHog'un telefonda ürettiği rastgele kimlik): amaç **Analiz**. Kimliğe bağlı:
+  Hayır. Takip için değil. (IDFA / reklam kimliği yok.)
+- **Tanımlayıcılar → Kullanıcı Kimliği**: 1.1'deki satıra Expo push token'ı eklenir (giriş yapan ve izin veren
+  oyuncuda hesaba bağlı saklanıyor): Uygulama İşlevselliği. **Kimliğe bağlı: Evet.** Takip için değil.
+- Konum: hâlâ **Toplanmıyor** (PostHog GeoIP kapalı + proje ayarında "Discard client IP data" açık olmalı).
+- **Takip: Hayır** (ATT gerekmez: başka şirketlerin verisiyle birleştirme yok, reklam yok).
+- İnceleme notu (store.config.json `notes`, 1.2 sürümü açılınca): "There are no purchases, ads, analytics or tracking"
+  cümlesi değişmeli, ör. "No ads or tracking. Anonymous usage analytics (PostHog, EU) can be turned off in Settings >
+  Share usage data. Signed-in players can allow push notifications for friend invites (Settings > Notifications); news
+  pushes are opt-in and off by default."
+
 ## العربية (ar-SA) — v1.1
 
 Uygulamanın içi henüz İngilizce/Türkçe; açıklama bunu "اللغة" başlığında söylüyor. Metinler `mobile/store.config.json`

@@ -154,6 +154,22 @@ Not: Sentry bizim adımıza işleyen hizmet sağlayıcı (processor); Play'e gö
 
 Not: IP adresi bağlantı sırasında sunucuya teknik olarak ulaşır ama kaydedilmez (gizlilik sayfası böyle diyor).
 
+#### 1.2: bildirimler + anonim kullanım verisi (form bu sürümle güncellenmeli)
+
+Analitik artık **var**; yukarıdaki "hiçbiri reklam/analitik için değil" cümlesi 1.2'de geçersiz. Eklenecek satırlar:
+
+| Play kategorisi | Veri | Zorunlu mu | Amaç |
+|---|---|---|---|
+| Uygulama etkinliği → Uygulama etkileşimleri | PostHog: açılan ekran (rota kalıbı, kod yok), biten oyun türü, tanıtım bitti, giriş yöntemi, paylaş dokunuşu, bildirim izni, uygulama açıldı / arka plana alındı | İsteğe bağlı (Ayarlar → Kullanım verisi paylaş ile kapatılabilir) | Analiz |
+| Cihaz veya diğer kimlikler | PostHog'un rastgele cihaz kimliği (hesaba bağlanmaz; reklam kimliği değil) | İsteğe bağlı (aynı ayar) | Analiz |
+| Cihaz veya diğer kimlikler | Expo push token (giriş yapıp bildirimlere izin verende hesaba bağlı) | İsteğe bağlı | Uygulama işlevselliği (arkadaş daveti, arkadaş ekleme, isteğe bağlı haberler) |
+
+- "Paylaşılıyor mu?": **Hayır**. PostHog (veri işleyen, AB bölgesi) ve Expo (650 Industries) hizmet sağlayıcı; Play'e göre
+  paylaşım sayılmaz.
+- "Geçici olarak mı işleniyor?": Hayır (PostHog olayları saklanıyor).
+- Silme: Ayarlar → Verilerimi sil cihaz kimliğini siler; hesap silme push token'larını siler.
+- Konum: yine **toplanmıyor** (GeoIP kapalı, PostHog projesinde "Discard client IP data" açık olmalı).
+
 ## Kapalı test
 
 Durum (20.10.2026): uygulama Play Console'da oluşturuldu (Tiktako: Futbol Oyunları, Oyun → Soru Cevap, ücretsiz), tüm beyanlar ve

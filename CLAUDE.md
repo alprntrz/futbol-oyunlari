@@ -71,10 +71,28 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   (`qzOpen[level]`); the pick is `useQuizDifficulty` (mobile/src/lib/quizLevel.ts). Home's `QuickPlay` card
   starts a random game (Hat-trick / Quiz / Possession, last choice remembered). On a real deployment that file needs a persistent disk (or a database).
 - Release: `docs/release/` (checklist, App Store metadata). Public pages (privacy, support) live
-  in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
-  analytics/ads/tracking SDKs (true for 1.1; 1.2 brings back the AdMob / RevenueCat sections from tag `monetization-full`),
+  in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no ads/tracking SDKs
+  (1.2 brings back the AdMob / RevenueCat sections from tag `monetization-full`), analytics only the anonymous PostHog
+  events below (no identify, opt-out in Settings), push token stored only for signed-in phones that allowed it,
   no IP logging, quiz record = random id + nick + counts only, and Settings > Delete my data (`qz:forget` + local wipe).
   Keep them true when adding anything. The site deploys from `main` only.
+- Push (v1.2, `PUSH` in features.ts): `server-push.js` (table `push_tokens` on the accounts db: Expo token, platform, lang,
+  invites / friends / news switches, ≤5 per account; Expo push API in batches of 100, DeviceNotRegistered drops the token
+  from tickets and receipts). `POST/DELETE /api/account/push`; `/signout` takes `pushToken`; account deletion removes them.
+  server.js pushes `fr:invite` (category invites) and "added you" (friends) when the friend has no socket or all sockets
+  sent `app:state` inactive, skipping senders their phone blocked (`lastBlocks`, in memory). News: `POST /api/admin/push`
+  (Bearer `PUSH_ADMIN_TOKEN`, off without it) → `scripts/push-news.mjs`; news is opt-in (Apple 4.5.4). Tests stub Expo via
+  `PUSH_ENDPOINT` (`tests/push.int.test.mts`). App: `lib/push.ts` (registers only when permission is already granted;
+  `askPush` from `PushAsk` on the Friends screen or the switches in `PushSettings`; `PushSync` in the root layout also
+  opens tapped pushes via `lib/invites.ts`); no-op in Expo Go or when `getExpoPushTokenAsync` fails (Android needs FCM v1
+  credentials on EAS). Local reminders (`lib/reminders.ts`) are separate and stay guest-friendly.
+- Analytics (v1.2, `ANALYTICS`): `lib/analytics.ts`, PostHog EU (`EXPO_PUBLIC_POSTHOG_KEY`, optional `_HOST`; off in
+  `__DEV__` and without a key; not in eas.json yet: eas-cli rejects empty values). personProfiles "never", never
+  identify, GeoIP off, no replay / touch autocapture / flags / surveys / error tracking, lifecycle events on, storage in
+  AsyncStorage (Delete my data wipes the id; the off switch survives). Only the typed events in `track()` (screen = route
+  pattern from `useSegments`, game_finished via `onXpAward` + `isGameAward`, onboarding_done, signed_in, share_tapped,
+  push_permission). Never add nick, account / install id, friend or room codes or free text. Settings > Share usage data.
+  The PostHog project must have "Discard client IP data" on.
 - Accounts (v1.1, optional): Sign in with Apple / Google; `server-accounts.js` (node:sqlite, `ACCOUNTS_DB`,
   `/api/account/*`) verifies the provider token and stores only provider + opaque sub, nick, avatar,
   XP — never name or e-mail (no scopes requested). App side `mobile/src/lib/account.ts` (session in
