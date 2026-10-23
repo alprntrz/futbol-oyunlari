@@ -41,6 +41,8 @@ const PROPS: { [E in keyof Events]: (keyof Events[E])[] } = {
 
 type Client = import("posthog-react-native").default;
 let client: Client | null = null;
+/** the route on screen, so the first screen counts even when PostHog starts a moment later */
+let lastScreen: string | null = null;
 let on = true;
 let loaded: Promise<void> | null = null;
 const listeners = new Set<() => void>();
@@ -74,6 +76,7 @@ function start() {
       errorTracking: { autocapture: false },
       customStorage: AsyncStorage,
     });
+    if (lastScreen) client.screen(lastScreen).catch(() => {});
   } catch (e) {
     console.warn("analytics off:", (e as Error).message);
     client = null;
@@ -116,8 +119,8 @@ export function AnalyticsScreens() {
   const segments = useSegments();
   const name = screenName(segments);
   useEffect(() => {
-    if (!client) return;
-    client.screen(name).catch(() => {});
+    lastScreen = name;
+    client?.screen(name).catch(() => {});
   }, [name]);
   return null;
 }
