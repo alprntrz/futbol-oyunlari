@@ -163,8 +163,13 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   P2446) → `scripts/duel-build.mjs` (never hand-edit). Online `dz:*` in server-games/dz.js (server deals questions, hides picks, 20 s clock,
   judges, Elo board "dz"); house player / daily / practice run on the phone (`mobile/src/lib/duelMatch.ts`). Screens `app/duello/`.
 - Dribbling Rush (endless runner, docs/design/futbol-kosu.md) is 3D in Unity: project `unity/DribblingRush` (rules
-  `RushEngine.cs` = port of `src/lib/kosu/engine.ts`, keep both in step; `RushBuild.Parity` compares), world built in code
-  (no imported models), embedded with @azesmway/react-native-unity (`plugins/withUnity.js`). `./unity/build.sh ios|android|shots`
+  `RushEngine.cs` = port of `src/lib/kosu/engine.ts`, keep both in step; `RushBuild.Parity` compares; the 3D rules only (`extras`, on in C#,
+  `newRun(seed, answers, true, words)` in TS, so Rush2D keeps the old game): dugouts with A-frame-board ramps and roofs (`blocks`),
+  the groundsman's mower driving at you, jet and spring boots, softer moves, no goals / questions but letters spelling footballers'
+  names (`src/lib/kosu/names.ts`; a finished name = bonus, ×+1, a free jet); the referee chases after a bump; optional ChatGPT
+  textures in `Assets/Resources/Art` (docs/design/kosu-3d-brief.md)), world built in code
+  (no imported models; the camera never yaws and the world bends away under the horizon, `RushCurve.cginc` shared by the three
+  shaders, so long pieces use `Look.LongCube` / `Look.GridQuad`; the look's rules are in futbol-kosu.md → "Sahne"), embedded with @azesmway/react-native-unity (`plugins/withUnity.js`). `./unity/build.sh ios|android|shots`
   writes `mobile/unity/builds/` (gitignored, uploaded to EAS by the root `.easignore`, which repeats both .gitignores; keep
   them in step). The app screen `components/kosu/Rush3D.tsx` keeps HUD / question / result / XP / sounds; builds without
   Unity (Expo Go, older store builds) get `Rush2D.tsx` (`hasUnity()`, lib/unity.ts). Unity changes need a native build (no OTA).

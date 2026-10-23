@@ -1,4 +1,5 @@
-// Unlit, alpha-blended and unlit-textured bits for Dribbling Rush: blob shadows, glows, the net, the sky.
+// Unlit, alpha-blended and unlit-textured bits for Dribbling Rush: blob shadows, glows, particles, the far backdrop.
+// Bends with the world (RushCurve.cginc) unless _Curve is 0.
 Shader "Rush/Glow"
 {
     Properties
@@ -9,6 +10,8 @@ Shader "Rush/Glow"
         [Enum(UnityEngine.Rendering.BlendMode)] _Dst ("Dst", Float) = 10
         [Enum(Off,0,On,1)] _ZWrite ("ZWrite", Float) = 0
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
+        _Fog ("Fog", Range(0,1)) = 1
+        _Curve ("Curve", Range(0,1)) = 1
     }
     SubShader
     {
@@ -23,10 +26,13 @@ Shader "Rush/Glow"
             #pragma fragment frag
             #pragma multi_compile_fog
             #include "UnityCG.cginc"
+            #include "RushCurve.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
             fixed4 _Color;
+            half _Fog;
+            half _Curve;
 
             struct v2f
             {
@@ -39,7 +45,8 @@ Shader "Rush/Glow"
             v2f vert (appdata_full v)
             {
                 v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);
+                float4 wp = RushBend(mul(unity_ObjectToWorld, v.vertex), _Curve);
+                o.pos = mul(UNITY_MATRIX_VP, wp);
                 o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
                 o.color = v.color * _Color;
                 UNITY_TRANSFER_FOG(o, o.pos);
@@ -49,7 +56,10 @@ Shader "Rush/Glow"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 c = tex2D(_MainTex, i.uv) * i.color;
-                UNITY_APPLY_FOG(i.fogCoord, c);
+                // how much of the fog to take (the far backdrop takes only a haze)
+                fixed4 f = c;
+                UNITY_APPLY_FOG(i.fogCoord, f);
+                c.rgb = lerp(c.rgb, f.rgb, _Fog);
                 return c;
             }
             ENDCG
