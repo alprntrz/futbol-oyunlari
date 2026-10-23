@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAccount } from "~/lib/account";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { openInvite, type InviteGame } from "~/lib/invites";
 import { play } from "~/lib/sound";
 import { getSocket } from "~/lib/socket";
 import { C, F, shadow, T } from "~/lib/theme";
@@ -17,7 +18,7 @@ import { Tap } from "./ui";
 
 type From = { nick: string; avatar: string; frame?: string; code: string } | null;
 /** a room invite, or "X added you as a friend" (`fr:added`) */
-type Invite = { kind: "invite"; from: From; game: "ht" | "tt" | "rd" | "wm"; room: string } | { kind: "added"; from: From };
+type Invite = { kind: "invite"; from: From; game: InviteGame; room: string } | { kind: "added"; from: From };
 
 /** Banners hide on their own after this. */
 const SHOW_MS = 20_000;
@@ -43,7 +44,7 @@ export function InviteBanner() {
       play("pop");
       setInvite(i);
     };
-    const onInvite = (i: { from: From; game: "ht" | "tt" | "rd" | "wm"; room: string }) => show({ kind: "invite", ...i });
+    const onInvite = (i: { from: From; game: InviteGame; room: string }) => show({ kind: "invite", ...i });
     const onAdded = ({ from }: { from: From }) => show({ kind: "added", from });
     socket.on("fr:invited", onInvite);
     socket.on("fr:added", onAdded);
@@ -67,11 +68,7 @@ export function InviteBanner() {
   const join = () => {
     haptic.tap();
     setInvite(null);
-    // Tic-Tac-Toe room, or a Pitch Chess lobby
-    if (invite.kind === "invite" && invite.game === "tt") router.push({ pathname: "/taktik/lobi", params: { code: invite.room } });
-    else if (invite.kind === "invite" && invite.game === "rd") router.push({ pathname: "/rondo/oda/[code]", params: { code: invite.room } });
-    else if (invite.kind === "invite" && invite.game === "wm") router.push({ pathname: "/kimim/oda/[code]", params: { code: invite.room } });
-    else if (invite.kind === "invite") router.push({ pathname: "/hat-trick/oda/[code]", params: { code: invite.room } });
+    if (invite.kind === "invite") openInvite(invite.game, invite.room);
     else router.push("/arkadaslar");
   };
 
