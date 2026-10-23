@@ -100,7 +100,8 @@
         "expo-notifications",
         {
           "mode": "production",
-          "color": "#16A34A"
+          "color": "#16A34A",
+          "icon": "./assets/brand/notification-icon.png"
         }
       ],
       [
