@@ -249,7 +249,7 @@ reklam olmaması.
 
 ### App Privacy (1.2: bildirimler + anonim kullanım verisi)
 
-1.1 etiketine ek olarak (push: `server-push.js` / `lib/push.ts`; analitik: `lib/analytics.ts`, PostHog EU):
+1.1 etiketine ek olarak (push: `server-push.js` / `lib/push.ts`; analitik: `lib/analytics.ts`, PostHog US):
 - **Kullanım Verisi → Ürün Etkileşimi** (PostHog: ekran adı kalıbı, biten oyun türü, tanıtım bitti, giriş yöntemi,
   paylaş dokunuşu, bildirim izni, uygulama açıldı / arka plana alındı): amaç **Analiz**. **Kimliğe bağlı: Hayır**
   (identify yok, hesaba bağlanmıyor). Takip için değil. (Uygulama İşlevselliği amaçlı XP/Elo satırı 1.1'deki gibi kalır.)
@@ -260,7 +260,7 @@ reklam olmaması.
 - Konum: hâlâ **Toplanmıyor** (PostHog GeoIP kapalı + proje ayarında "Discard client IP data" açık olmalı).
 - **Takip: Hayır** (ATT gerekmez: başka şirketlerin verisiyle birleştirme yok, reklam yok).
 - İnceleme notu (store.config.json `notes`, 1.2 sürümü açılınca): "There are no purchases, ads, analytics or tracking"
-  cümlesi değişmeli, ör. "No ads or tracking. Anonymous usage analytics (PostHog, EU) can be turned off in Settings >
+  cümlesi değişmeli, ör. "No ads or tracking. Anonymous usage analytics (PostHog, US) can be turned off in Settings >
   Share usage data. Signed-in players can allow push notifications for friend invites (Settings > Notifications); news
   pushes are opt-in and off by default."
 

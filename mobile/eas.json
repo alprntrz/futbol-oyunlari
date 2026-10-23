@@ -15,7 +15,8 @@
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "360213444851-nj294lghif6tnt08rn7tb7i9u6sukkj4.apps.googleusercontent.com",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com",
         "EXPO_PUBLIC_SENTRY_DSN": "https://5a52ab1960987f908d7504c85b0c9e85@o4512279603773440.ingest.us.sentry.io/4512279621009408",
-        "SENTRY_ALLOW_FAILURE": "true"
+        "SENTRY_ALLOW_FAILURE": "true",
+        "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m"
       },
       "channel": "preview",
       "android": {
@@ -29,7 +30,8 @@
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "360213444851-nj294lghif6tnt08rn7tb7i9u6sukkj4.apps.googleusercontent.com",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com",
         "EXPO_PUBLIC_SENTRY_DSN": "https://5a52ab1960987f908d7504c85b0c9e85@o4512279603773440.ingest.us.sentry.io/4512279621009408",
-        "SENTRY_ALLOW_FAILURE": "true"
+        "SENTRY_ALLOW_FAILURE": "true",
+        "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m"
       },
       "channel": "production"
     },

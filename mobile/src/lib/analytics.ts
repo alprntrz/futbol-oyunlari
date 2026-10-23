@@ -18,7 +18,7 @@ import { isGameAward, onXpAward, type XpSource } from "./xp";
  * The SDK keeps its queue and device id in AsyncStorage, so "Delete my data" wipes them.
  */
 const KEY = process.env.EXPO_PUBLIC_POSTHOG_KEY;
-const HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
+const HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 /** "1" = the player turned usage data off (kept through "Delete my data") */
 export const ANALYTICS_OFF_KEY = "analytics-off-v1";
 const MAX_VALUE = 40;

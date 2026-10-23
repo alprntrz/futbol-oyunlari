@@ -86,7 +86,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `askPush` from `PushAsk` on the Friends screen or the switches in `PushSettings`; `PushSync` in the root layout also
   opens tapped pushes via `lib/invites.ts`); no-op in Expo Go or when `getExpoPushTokenAsync` fails (Android needs FCM v1
   credentials on EAS). Local reminders (`lib/reminders.ts`) are separate and stay guest-friendly.
-- Analytics (v1.2, `ANALYTICS`): `lib/analytics.ts`, PostHog EU (`EXPO_PUBLIC_POSTHOG_KEY`, optional `_HOST`; off in
+- Analytics (v1.2, `ANALYTICS`): `lib/analytics.ts`, PostHog US cloud, project 684160 (`EXPO_PUBLIC_POSTHOG_KEY`, optional `_HOST`; off in
   `__DEV__` and without a key; not in eas.json yet: eas-cli rejects empty values). personProfiles "never", never
   identify, GeoIP off, no replay / touch autocapture / flags / surveys / error tracking, lifecycle events on, storage in
   AsyncStorage (Delete my data wipes the id; the off switch survives). Only the typed events in `track()` (screen = route
