@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "360213444851",
+    "project_id": "tiktako-511323",
+    "storage_bucket": "tiktako-511323.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360213444851:android:63dccf49176bc22f041f86",
+        "android_client_info": {
+          "package_name": "com.alprntrz.tiktako"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIwCZ9dwgrZI8uUUqCU3Sb0sx1l4FcGiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "360213444851-nj294lghif6tnt08rn7tb7i9u6sukkj4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alprntrz.tiktako",
+                "app_store_id": "6821740252"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
