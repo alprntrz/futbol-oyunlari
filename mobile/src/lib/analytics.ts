@@ -25,7 +25,7 @@ const MAX_VALUE = 40;
 
 /** The events and their properties: nothing else can be sent. */
 type Events = {
-  game_finished: { game: XpSource; practice: boolean };
+  game_finished: { game: XpSource | "kosu"; practice: boolean };
   onboarding_done: Record<string, never>;
   signed_in: { provider: "apple" | "google" };
   share_tapped: { game: string };
@@ -92,7 +92,9 @@ export async function initAnalytics() {
 
 // a finished game (not a reward, quest or sync), as the XP award that pays it
 onXpAward((a) => {
-  if (isGameAward(a)) track("game_finished", { game: a.game, practice: !!a.practice });
+  // Dribbling Rush pays as "bonus" with "run-" keys; name it so the board shows the game
+  const game = a.game === "bonus" && a.key.startsWith("run-") ? "kosu" : a.game;
+  if (isGameAward(a)) track("game_finished", { game, practice: !!a.practice });
 });
 
 /** Send one of the fixed events; unknown properties and long values are dropped. */
