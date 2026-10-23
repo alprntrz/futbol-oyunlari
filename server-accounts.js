@@ -3,7 +3,8 @@
  * the player's XP kept on the server so it follows them to a new phone.
  *
  * Privacy (keep site/privacy.html true): we store the provider + its opaque user
- * id, nickname, avatar id, avatar frame, XP and the game progress blob (PROGRESS_KEYS). No e-mail, no name, no IP. Deleting the account
+ * id, nickname, avatar id, avatar frame, XP, the game progress blob (PROGRESS_KEYS) and, for phones
+ * that allowed notifications, their Expo push token (server-push.js). No e-mail, no name, no IP. Deleting the account
  * removes every row and revokes the Apple token.
  *
  * Storage: node:sqlite in ACCOUNTS_DB (default data/accounts.db; on Fly /data).
@@ -19,6 +20,7 @@ const fs = require("fs");
 const path = require("path");
 const { DatabaseSync } = require("node:sqlite");
 const { refForUser, shownNick } = require("./server-refs");
+const { createPush } = require("./server-push");
 
 const DB_FILE = process.env.ACCOUNTS_DB || path.join(__dirname, "data", "accounts.db");
 const APPLE_AUD = (process.env.APPLE_AUDIENCES || "com.alprntrz.tiktako").split(",").map((s) => s.trim()).filter(Boolean);
@@ -93,6 +95,8 @@ if (!db.prepare("PRAGMA table_info(users)").all().some((c) => c.name === "plus_u
 const PROGRESS_KEYS = new Set(["history-v1", "play-streak-v1", "ht-trophies", "missing11-stats", "daily-rewards-v1", "frame-v1", "quests-v1", "rush-best", "rush-club"]);
 const PROGRESS_MAX = 24 * 1024;
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS users_friend_code ON users (friend_code)");
+// push tokens of signed-in phones (server-push.js)
+const push = createPush(db);
 
 // jose is ESM-only on some installs; load it lazily
 let josePromise = null;
@@ -214,7 +218,7 @@ const addTries = new Map();
 /** server.js tells us who has a socket open */
 let isOnline = () => false;
 const setPresence = (fn) => (isOnline = fn);
-/** server.js tells the added player's open app ("X added you") */
+/** server.js tells the added player (open app: "X added you"; else a push): (addedId, card, byId) */
 let onFriendAdded = () => {};
 const setFriendAdded = (fn) => (onFriendAdded = fn);
 
@@ -700,7 +704,7 @@ async function handleAccountApi(req, res, cleanNick) {
       if (count >= MAX_FRIENDS) return send(res, 400, { error: "limit" }), true;
       db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(user.id, other.id, now);
       const added = db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id, created) VALUES (?, ?, ?)").run(other.id, user.id, now).changes > 0;
-      if (added) onFriendAdded(other.id, inviteCard(user.id));
+      if (added) onFriendAdded(other.id, inviteCard(user.id), user.id);
       return send(res, 200, friendList(user)), true;
     }
 
@@ -710,9 +714,19 @@ async function handleAccountApi(req, res, cleanNick) {
       return send(res, 200, friendList(user)), true;
     }
 
+    // Push notifications (server-push.js): this phone's Expo token, language and category switches
+    if (url === "/api/account/push" && (req.method === "POST" || req.method === "DELETE")) {
+      const b = await readJson(req);
+      const out = req.method === "POST" ? push.register(user.id, b) : push.unregister(user.id, b.token);
+      return send(res, out.ok ? 200 : 400, out), true;
+    }
+
     if (url === "/api/account/signout" && req.method === "POST") {
       const m = /^Bearer (\S+)$/.exec(req.headers.authorization || "");
       if (m) db.prepare("DELETE FROM sessions WHERE hash = ?").run(sha(m[1]));
+      // the phone's push token goes with the session (1.2 apps send it)
+      const b = await readJson(req).catch(() => ({}));
+      if (typeof b?.pushToken === "string") push.unregister(user.id, b.pushToken);
       return send(res, 200, { ok: true }), true;
     }
 
@@ -723,6 +737,7 @@ async function handleAccountApi(req, res, cleanNick) {
       db.prepare("DELETE FROM friends WHERE user_id = ? OR friend_id = ?").run(user.id, user.id);
       db.prepare("DELETE FROM league_members WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM ratings WHERE user_id = ?").run(user.id);
+      push.deleteUser(user.id);
       db.prepare("DELETE FROM sessions WHERE user_id = ?").run(user.id);
       db.prepare("DELETE FROM users WHERE id = ?").run(user.id);
       return send(res, 200, { ok: true }), true;
@@ -734,4 +749,13 @@ async function handleAccountApi(req, res, cleanNick) {
   }
 }
 
-module.exports = { handleAccountApi, handleRcWebhook, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook, plusOf };
+/** The user's nickname as others see it (report-hidden nicks show as "Player"), for push texts. */
+function shownNickOf(userId) {
+  const u = db.prepare("SELECT nick FROM users WHERE id = ?").get(userId);
+  return u ? shownNick(refForUser(userId), u.nick) : "";
+}
+
+/** POST /api/admin/push (server-push.js): news to the phones that opted in. */
+const handlePushAdmin = (req, res) => push.handleAdmin(req, res, { readJson, send }).then(() => true);
+
+module.exports = { handleAccountApi, handleRcWebhook, handlePushAdmin, sendPush: push.sendPush, hasPushCategory: push.hasCategory, shownNickOf, recordResult, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook, plusOf };

@@ -18,7 +18,9 @@ const dz = require("./server-games/dz");
 const rd = require("./server-games/rd");
 const qz = require("./server-games/qz");
 const race = require("./server-games/race");
-const { handleAccountApi, handleRcWebhook, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
+const { handleAccountApi, handleRcWebhook, handlePushAdmin, sendPush, hasPushCategory, shownNickOf, userIdFromToken, setPresence, setFriendAdded, friendIdByCode, inviteCard, cleanLook } = require("./server-accounts");
+const { invitePush, friendPush } = require("./server-push");
+const { refForUser } = require("./server-refs");
 const { refForSocket, addReport, cleanBlocks } = require("./server-refs");
 const { handleAppApi } = require("./server-app");
 const { REJOIN_MS, setIo, refById, cleanNick, takePairs, qzNick } = require("./server-core");
@@ -58,6 +60,8 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
     if (req.url.startsWith("/api/account") && (await handleAccountApi(req, res, cleanNick))) return;
     // RevenueCat tells us about Plus renewals / refunds (server-accounts.js)
     if (req.url.split("?")[0] === "/api/rc/webhook" && req.method === "POST" && (await handleRcWebhook(req, res))) return;
+    // news push to the phones that opted in (server-push.js; off without PUSH_ADMIN_TOKEN)
+    if (req.url.split("?")[0] === "/api/admin/push" && req.method === "POST" && (await handlePushAdmin(req, res))) return;
     // /api/app/*: minimum app version, anonymous crash reports (server-app.js)
     if (req.url.startsWith("/api/app/") && (await handleAppApi(req, res))) return;
     handle(req, res);
@@ -84,9 +88,20 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
   // a signed-in user is "online" for friends while any of their sockets is open
   const socketsOf = (uid) => [...io.sockets.sockets.values()].filter((s) => uid && s.data.uid === uid);
   setPresence((uid) => socketsOf(uid).length > 0);
-  // someone added you by your code: your open app says so
-  setFriendAdded((uid, from) => {
+  // the app is on screen on one of this user's phones (app:state; a fresh socket counts as open)
+  const inFront = (uid) => socketsOf(uid).some((s) => s.data.active !== false);
+  // signed-in user id → the block list (refs) their phone sent last: a push to a phone that is away
+  // still skips players it blocked. In memory only; a phone sends its list again when it connects.
+  const lastBlocks = new Map();
+  const blocksOf = (uid) => {
+    const open = socketsOf(uid);
+    return open.length ? open[0].data.blocks : lastBlocks.get(uid);
+  };
+  // someone added you by your code: your open app says so, else a push (category "friends")
+  setFriendAdded((uid, from, byUid) => {
+    if (blocksOf(uid)?.has(refForUser(byUid))) return;
     for (const s of socketsOf(uid)) s.emit("fr:added", { from });
+    if (!inFront(uid)) sendPush([uid], { category: "friends", build: friendPush(shownNickOf(byUid)), data: { type: "friend" } });
   });
 
   // pair waiting players as their allowed rank gap widens with time
@@ -152,10 +167,12 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
     socket.data.ref ??= refForSocket(socket.data.uid, socket.handshake.auth?.pid) ?? crypto.randomBytes(8).toString("hex");
     refById.set(socket.id, socket.data.ref);
     socket.data.blocks ??= cleanBlocks(socket.handshake.auth?.blocks);
+    if (socket.data.uid) lastBlocks.set(socket.data.uid, socket.data.blocks);
     socket.on("disconnect", () => setTimeout(() => !io.sockets.sockets.has(socket.id) && refById.delete(socket.id), REJOIN_MS + 5000));
     // the phone's block list (refs) changed: matchmaking and invites skip those players
     socket.on("blk:set", ({ refs }) => {
       socket.data.blocks = cleanBlocks(refs);
+      if (socket.data.uid) lastBlocks.set(socket.data.uid, socket.data.blocks);
     });
     // report a player (their nickname, cheating, other): one every 5 s
     socket.on("rep:send", (p, cb) => {
@@ -184,7 +201,9 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
       );
     };
     // Invite a friend into a room you opened: the friend's open app shows a banner
-    // with Join. Only between friends (friend codes), at most one every 3 s.
+    // with Join. Only between friends (friend codes), at most one every 3 s. A friend whose app is
+    // closed or in the background gets a push instead (category "invites", 1.2 apps), unless their
+    // phone blocked you.
     socket.on("fr:invite", ({ to, game, room }, cb) => {
       const uid = socket.data.uid;
       const code = String(room).toUpperCase();
@@ -195,11 +214,14 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
       const friend = friendIdByCode(uid, to);
       if (!friend) return cb?.({ ok: false, error: "not_friend" });
       const targets = socketsOf(friend);
-      if (!targets.length) return cb?.({ ok: false, error: "offline" });
+      const blocked = !!blocksOf(friend)?.has(socket.data.ref);
+      const pushIt = !blocked && !inFront(friend) && hasPushCategory(friend, "invites");
+      if (!targets.length && !pushIt) return cb?.({ ok: false, error: "offline" });
       socket.data.lastInvite = Date.now();
       const from = inviteCard(uid);
-      for (const s of targets) if (!s.data.blocks?.has(socket.data.ref)) s.emit("fr:invited", { from, game, room: room.toUpperCase() });
-      cb?.({ ok: true });
+      for (const s of targets) if (!s.data.blocks?.has(socket.data.ref)) s.emit("fr:invited", { from, game, room: code });
+      if (pushIt) sendPush([friend], { category: "invites", build: invitePush(shownNickOf(uid), game), data: { type: "invite", game, room: code } });
+      cb?.({ ok: true, ...(pushIt ? { push: true } : {}) });
     });
 
     taktikSocket(socket);
