@@ -98,7 +98,8 @@
       [
         "expo-notifications",
         {
-          "mode": "production"
+          "mode": "production",
+          "color": "#16A34A"
         }
       ],
       [
@@ -108,7 +109,8 @@
           "organization": "tiktako",
           "project": "tiktako-app"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
