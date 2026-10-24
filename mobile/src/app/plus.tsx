@@ -9,7 +9,7 @@ import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { PRIVACY_URL } from "~/lib/links";
+import { openPage, PRIVACY_URL } from "~/lib/links";
 import { loadPlusOffers, purchasePlus, purchasesAvailable, restorePlus, simulatePlus, usePlus, type PlusOffer } from "~/lib/plus";
 import { play } from "~/lib/sound";
 import { C, F, R, shadow, T } from "~/lib/theme";
@@ -166,8 +166,8 @@ export default function PlusScreen() {
         {plus.active && plus.source !== "dev" && <Tap onPress={() => Linking.openURL(MANAGE_URL)}><Text style={styles.link}>{t("plusManage")}</Text></Tap>}
         {plus.active && plus.source === "dev" && __DEV__ && <Tap onPress={() => simulatePlus(false)}><Text style={styles.link}>{t("plusSimulateOff")}</Text></Tap>}
         {available && <Tap onPress={restore} disabled={busy}><Text style={styles.link}>{t("plusRestore")}</Text></Tap>}
-        <Tap onPress={() => Linking.openURL(TERMS_URL)}><Text style={styles.link}>{t("plusTerms")}</Text></Tap>
-        <Tap onPress={() => Linking.openURL(PRIVACY_URL)}><Text style={styles.link}>{t("privacyPolicy")}</Text></Tap>
+        <Tap onPress={() => openPage(TERMS_URL, t("linkFailed"))}><Text style={styles.link}>{t("plusTerms")}</Text></Tap>
+        <Tap onPress={() => openPage(PRIVACY_URL, t("linkFailed"))}><Text style={styles.link}>{t("privacyPolicy")}</Text></Tap>
       </View>
     </Page>
   );

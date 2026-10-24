@@ -89,6 +89,7 @@
         }
       ],
       "./plugins/withUnity",
+      "./plugins/withTabsReentryFix",
       "./plugins/withApsProduction",
       [
         "expo-widgets",

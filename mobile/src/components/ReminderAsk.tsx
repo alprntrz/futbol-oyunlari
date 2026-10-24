@@ -1,4 +1,5 @@
-import { Alert, Linking, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
+import { openAppSettings } from "~/lib/links";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import type { TKey } from "@/lib/strings";
@@ -47,7 +48,7 @@ export function ReminderAsk() {
 export function remindersDenied(t: (k: TKey) => string) {
   Alert.alert(t("remindersDenied"), undefined, [
     { text: "OK", style: "cancel" },
-    { text: t("remOpenSettings"), onPress: () => Linking.openSettings() },
+    { text: t("remOpenSettings"), onPress: openAppSettings },
   ]);
 }
 
