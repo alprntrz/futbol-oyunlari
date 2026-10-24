@@ -1,3 +1,4 @@
+import { Asset } from "expo-asset";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Image, ImageBackground, Modal, StyleSheet, View, type ImageSourcePropType } from "react-native";
@@ -28,6 +29,14 @@ const PITCH_DEEP = "#0B3A1F";
 const RIBBON_W = 290;
 const RIBBON_H = RIBBON_W * (172 / 900);
 const INK = "#5B3A06";
+/** the gold and cream the art is painted in: drawn behind every picture, so the screen reads before (or without) them */
+const GOLD = "#F5C542";
+const GOLD_EDGE = "#C9951B";
+const CREAM = "#FFF4D6";
+const CREAM_CARD = "#FBE7B3";
+
+// the art is heavy (laurels ~400 KB): fetch it once, early, so the ceremony never opens half-drawn
+Asset.loadAsync(Object.values(REWARD)).catch(() => {});
 
 // the ceremony's beats, in ms from opening
 const T_TITLE = 0;
@@ -88,6 +97,7 @@ function Medal({ won, kind, value }: { won: boolean; kind: "trophy" | "level"; v
       {won && <Animated.View style={[styles.halo, halo]} />}
       <Image source={won ? REWARD.laurelGold : REWARD.laurelSilver} style={styles.laurel} resizeMode="contain" />
       <View style={styles.medal}>
+        <View style={styles.medalDisc} />
         <Image source={kind === "level" ? REWARD.levelBadge : REWARD.medal} style={styles.medalImage} resizeMode="contain" />
         <Text allowFontScaling={false} style={[styles.medalText, kind === "level" && { marginTop: 10 }]}>
           {value}
@@ -182,6 +192,7 @@ export function Victory({
         <Medal won={won} kind={medalKind} value={medal} />
 
         <Animated.View entering={FadeIn.delay(T_PANEL).duration(260)} style={styles.panelWrap}>
+          <View style={styles.panelBoard} />
           <ImageBackground source={REWARD.panel} resizeMode="stretch" capInsets={{ top: 60, left: 60, bottom: 60, right: 60 }} style={styles.panel}>
             <View style={styles.cards}>
               {rewards.map((r, i) => (
@@ -197,6 +208,7 @@ export function Victory({
           </ImageBackground>
           {/* ribbon over the panel's top edge */}
           <View style={styles.ribbon}>
+            <View style={styles.ribbonBase} />
             <Image source={REWARD.ribbon} style={styles.ribbonImage} resizeMode="stretch" />
             {/* the art's band covers the top 68% of the image (its tails hang below) */}
             <View style={styles.ribbonBand}>
@@ -235,19 +247,22 @@ const styles = StyleSheet.create({
   halo: { position: "absolute", width: 150, height: 150, borderRadius: 75, backgroundColor: "#FFE58A" },
   laurel: { position: "absolute", top: 0, left: 0, width: 250, height: 228 },
   medal: { width: 116, height: 116, alignItems: "center", justifyContent: "center", marginTop: -8 },
+  medalDisc: { position: "absolute", top: 8, left: 8, width: 100, height: 100, borderRadius: 50, backgroundColor: GOLD, borderWidth: 4, borderColor: GOLD_EDGE },
   medalImage: { position: "absolute", top: 0, left: 0, width: 116, height: 116 },
-  medalText: { fontFamily: F.black, fontSize: 40, lineHeight: 44, color: INK, marginTop: -10 },
+  medalText: { fontFamily: F.black, fontSize: 44, lineHeight: 48, color: INK, marginTop: -10 },
   medalTrophy: { position: "absolute", bottom: 14, width: 26, height: 26 },
   panelWrap: { alignSelf: "stretch", marginTop: 30 },
+  panelBoard: { position: "absolute", top: 10, left: 6, right: 6, bottom: 6, borderRadius: 22, backgroundColor: CREAM, borderWidth: 4, borderColor: GOLD_EDGE },
   panel: { paddingTop: 40, paddingBottom: 22, paddingHorizontal: 18 },
   ribbon: { position: "absolute", top: -RIBBON_H * 0.42, alignSelf: "center", width: RIBBON_W, height: RIBBON_H },
+  ribbonBase: { position: "absolute", top: 0, left: RIBBON_W * 0.14, right: RIBBON_W * 0.14, height: RIBBON_H * 0.68, borderRadius: 10, backgroundColor: C.greenMid, borderWidth: 3, borderColor: GOLD_EDGE },
   ribbonImage: { position: "absolute", top: 0, left: 0, width: RIBBON_W, height: RIBBON_H },
   ribbonBand: { position: "absolute", top: 0, left: RIBBON_W * 0.2, right: RIBBON_W * 0.2, height: RIBBON_H * 0.68, alignItems: "center", justifyContent: "center" },
-  ribbonText: { fontFamily: F.black, fontSize: 20, lineHeight: 23, color: "white", textShadowColor: PITCH_DEEP, textShadowOffset: { width: 0, height: 1.5 }, textShadowRadius: 0 },
+  ribbonText: { fontFamily: F.black, fontSize: 22, lineHeight: 25, color: "white", textShadowColor: PITCH_DEEP, textShadowOffset: { width: 0, height: 1.5 }, textShadowRadius: 0 },
   cards: { flexDirection: "row", gap: 8 },
-  card: { flex: 1, alignItems: "center", backgroundColor: "#FBE7B3", borderRadius: 16, paddingVertical: 10, paddingHorizontal: 4, gap: 1 },
+  card: { flex: 1, alignItems: "center", backgroundColor: CREAM_CARD, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 4, gap: 2 },
   cardImage: { width: 54, height: 54, marginBottom: 2 },
-  rewardValue: { fontFamily: F.black, fontSize: 26, lineHeight: 28, color: INK },
-  rewardLabel: { fontSize: 12, fontWeight: "700", color: "#8A6417", textAlign: "center" },
+  rewardValue: { fontFamily: F.black, fontSize: 32, lineHeight: 34, color: INK },
+  rewardLabel: { fontFamily: F.semi, fontSize: 14, lineHeight: 16, color: INK, textAlign: "center" },
   actions: { alignSelf: "stretch", gap: 10, marginTop: "auto" },
 });
