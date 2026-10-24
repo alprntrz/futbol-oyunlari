@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Linking, View } from "react-native";
+import { Alert, View } from "react-native";
 
 import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
@@ -12,7 +12,7 @@ import { purchasesAvailable, usePlus } from "~/lib/plus";
 import { BRAND, ROZET, TAKTIK, KIMIM, RONDO } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
-import { PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
+import { openPage, PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
 import { deleteMyData, restartApp } from "~/lib/privacy";
 import { remindersDenied } from "~/components/ReminderAsk";
 import { remindersAvailable, setRemindersOn, useReminders } from "~/lib/reminders";
@@ -156,8 +156,8 @@ export default function SettingsTab() {
 
       <SectionLabel>{t("privacyTitle")}</SectionLabel>
       <Card style={{ padding: 0, overflow: "hidden" }}>
-        <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => Linking.openURL(PRIVACY_URL)} />
-        <Row image={BRAND.settings.support} title={t("support")} onPress={() => Linking.openURL(SUPPORT_URL)} />
+        <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => openPage(PRIVACY_URL, t("linkFailed"))} />
+        <Row image={BRAND.settings.support} title={t("support")} onPress={() => openPage(SUPPORT_URL, t("linkFailed"))} />
         <Row icon="hand.raised.fill" iconFallback="✋" color={C.text2} soft="#EEF2EF" title={t("blockedTitle")} onPress={() => router.push("/engellenenler")} />
         {consentDone && privacyOptionsAvailable() && (
           <Row icon="lock.shield.fill" iconFallback="🛡" color={C.text2} soft="#EEF2EF" title={t("privacyOptions")} onPress={() => showPrivacyOptions()} />
