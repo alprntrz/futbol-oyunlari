@@ -166,11 +166,14 @@ function createPush(db) {
   /** One request of up to BATCH messages; dead tokens in the tickets are dropped at once. */
   async function sendBatch(messages) {
     const res = await postJson(PUSH_ENDPOINT, messages);
+    if (Array.isArray(res?.errors)) console.error(`push request: ${JSON.stringify(res.errors).slice(0, 300)}`);
     const tickets = Array.isArray(res?.data) ? res.data : [];
     tickets.forEach((t, i) => {
       const token = messages[i]?.to;
       if (!token) return;
       if (t?.status === "error" && t.details?.error === "DeviceNotRegistered") dropToken.run(token);
+      // other errors (bad credentials, too big…): log the reason, never the token
+      else if (t?.status === "error") console.error(`push ticket: ${t.details?.error || "error"} ${String(t.message || "").slice(0, 200)}`);
       else if (t?.status === "ok" && typeof t.id === "string" && pendingReceipts.size < MAX_PENDING_RECEIPTS) pendingReceipts.set(t.id, token);
     });
     scheduleReceipts();
