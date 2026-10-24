@@ -11,7 +11,7 @@ import { loadPlayerId } from "./nick";
 export const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL ?? "http://localhost:3000";
 
 /** What this app version understands, so the server never sends an older phone a grid it can't draw ("arab": Saudi / Egyptian clubs, "hon": honour counts and birth decades). */
-const CAPS = ["mate", "coach", "arab", "hon"];
+const CAPS = ["mate", "coach", "arab", "hon", "rdpair"];
 
 let socket: Socket | null = null;
 let sessionToken: string | null = null;

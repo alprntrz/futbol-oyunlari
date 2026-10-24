@@ -219,7 +219,11 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   20 s); out of time loses the round, first to 2. The server deals the clubs (`RONDO_CLUBS`: 60+ well-known players) and judges every
   name (`judgeRondo`; loads rondo.ts through server-taktik's "@/" resolver); a wrong name goes back only to the mover (`rd:wrong`).
   Queue falls back to the house player after 3–6 s (`useRondoHouse` in `lib/rondoMatch.ts`, same shape as `useRondoOnline`); Elo board
-  "rd", XP source "rd". Screens `app/rondo/`, board `components/RondoBoard.tsx`. Art: `docs/design/rondo-brief.md` →
+  "rd", XP source "rd". Screens `app/rondo/`, board `components/RondoBoard.tsx`. Second mode "pair" = Two-Club Duel (`RondoMode`, picked on
+  the hub, `lib/rondoMode.ts`): the server deals club pairs with 4+ well-known shared players (`RONDO_PAIRS`, `dealRondoPairs`), both race,
+  the first right name takes the hand (`judgeRondoPair`; a miss locks that box `RONDO_PAIR_MISS_MS`), 20 s a hand, nobody = no hand, first to
+  `target` hands (2/3/4 = best of 3/5/7, `rd:create {mode, target}`; the queue plays best of 5 and pairs only same-mode players, `pairOk`);
+  every hand ends with the best-known fits (`rondoPairAnswers`). House player `useRondoPairHouse` (lib/rondoPairHouse.ts). Same Elo / XP "rd". Art: `docs/design/rondo-brief.md` →
   `python3 scripts/rondo-assets.py docs/design/rondo-art/originals` → `mobile/assets/brand/rondo/` (`RONDO` in brand.ts).
 - Jokers (fair by design: the same for both players each game / match, never bought, never saved): Tic-Tac-Toe online +
   house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a

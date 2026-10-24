@@ -16,7 +16,6 @@ import Animated, {
   ZoomIn,
 } from "react-native-reanimated";
 
-import { RONDO_MAX_ROUNDS, RONDO_TARGET } from "@/lib/rondo";
 import { searchPlayers } from "@/lib/tiki";
 
 import { RONDO } from "~/lib/brand";
@@ -33,7 +32,8 @@ import { Button, Icon, Tap } from "./ui";
 /**
  * The Rondo match screen, the same online and against the house player: the score and
  * the club up top, the clock, the names said so far (yours green, theirs coral), and the
- * search box at the bottom that answers on your turn.
+ * search box at the bottom that answers on your turn. In the two-club duel the card shows
+ * both clubs, the clock is shared, and the box is open to both until someone gets it.
  */
 export function RondoBoard({
   m,
@@ -82,10 +82,17 @@ export function RondoBoard({
     () => (m.myTurn && input.trim().length >= 2 ? searchPlayers(input, 6) : []),
     [input, m.myTurn],
   );
-  const clubName = m.club ? (locale === "tr" ? m.club.tr : m.club.en) : "…";
+  const nameOf = (c: { tr: string; en: string }) => (locale === "tr" ? c.tr : c.en);
+  const pair = m.mode === "pair";
+  const clubName = pair ? (m.pair ? `${nameOf(m.pair[0])} + ${nameOf(m.pair[1])}` : "…") : m.club ? nameOf(m.club) : "…";
+
+  // the wrong banner belongs to the hand it happened in
+  const [wrongAt, setWrongAt] = useState<{ id: number; round: number } | null>(null);
+  if (m.wrong && wrongAt?.id !== m.wrong.id) setWrongAt({ id: m.wrong.id, round: m.round });
+  const showWrong = !!m.wrong && wrongAt?.id === m.wrong.id && wrongAt.round === m.round && !m.roundEnd && (pair || m.myTurn);
 
   const send = (name: string) => {
-    if (!name.trim()) return;
+    if (!name.trim() || !m.myTurn) return;
     m.answer(name);
     setInput("");
   };
@@ -120,14 +127,26 @@ export function RondoBoard({
 
       {/* the club of this round */}
       <View style={[styles.clubCard, { backgroundColor: GAME.rd.bg }]}>
-        {m.club && <CriterionBadge c={m.club} size={46} />}
+        {pair ? (
+          m.pair && (
+            <View style={styles.pairBadges}>
+              <CriterionBadge c={m.pair[0]} size={40} />
+              <Text style={[styles.plus, { color: GAME.rd.ink }]}>+</Text>
+              <CriterionBadge c={m.pair[1]} size={40} />
+            </View>
+          )
+        ) : (
+          m.club && <CriterionBadge c={m.club} size={46} />
+        )}
         <View style={{ flex: 1 }}>
           <Text style={[styles.roundLabel, { color: GAME.rd.ink }]}>
-            {t("rdRound")
-              .replace("{n}", String(m.round + 1))
-              .replace("{max}", String(RONDO_MAX_ROUNDS))}
+            {pair
+              ? `${t("rdHand").replace("{n}", String(m.round + 1))} · ${m.score.me} – ${m.score.them}`
+              : t("rdRound")
+                  .replace("{n}", String(m.round + 1))
+                  .replace("{max}", String(m.maxRounds))}
           </Text>
-          <Text style={[styles.club, { color: GAME.rd.ink }]} numberOfLines={2}>
+          <Text style={[styles.club, pair && styles.clubPair, { color: GAME.rd.ink }]} numberOfLines={2}>
             {clubName}
           </Text>
         </View>
@@ -136,7 +155,7 @@ export function RondoBoard({
       {/* whose turn + clock */}
       <View style={styles.turnRow}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          {m.myTurn && !m.roundEnd && !m.over && (
+          {(pair || m.myTurn) && !m.roundEnd && !m.over && (
             <Image
               source={RONDO.turn}
               style={{ width: 26, height: 20 }}
@@ -144,15 +163,19 @@ export function RondoBoard({
             />
           )}
           <Text
-            style={[styles.turn, { color: m.myTurn ? C.greenMid : C.coral }]}
+            style={[styles.turn, { color: pair || m.myTurn ? C.greenMid : C.coral }]}
           >
             {m.over
               ? ""
               : m.roundEnd
                 ? " "
-                : m.myTurn
-                  ? t("rdYourTurn")
-                  : t("rdTheirTurn")}
+                : pair
+                  ? m.myTurn
+                    ? t("rdPairGo")
+                    : t("rdPairLocked")
+                  : m.myTurn
+                    ? t("rdYourTurn")
+                    : t("rdTheirTurn")}
           </Text>
         </View>
         {!m.roundEnd && !m.over && m.deadline > 0 && (
@@ -167,7 +190,7 @@ export function RondoBoard({
             styles.barFill,
             {
               width: `${frac * 100}%`,
-              backgroundColor: m.myTurn ? C.green : C.coral,
+              backgroundColor: pair || m.myTurn ? C.green : C.coral,
             },
             secs <= 5 && { backgroundColor: C.red },
           ]}
@@ -188,7 +211,7 @@ export function RondoBoard({
               { textAlign: "center", color: C.text2, marginTop: 24 },
             ]}
           >
-            {m.myTurn ? t("rdStartYou") : t("rdStartThem")}
+            {pair ? t("rdPairStart") : m.myTurn ? t("rdStartYou") : t("rdStartThem")}
           </Text>
         )}
         {m.names.map((n, i) => (
@@ -216,19 +239,23 @@ export function RondoBoard({
       </ScrollView>
 
       {/* a wrong try: only the mover sees it */}
-      {m.wrong && m.myTurn && (
+      {m.wrong && showWrong && (
         <Animated.View
           key={m.wrong.id}
           entering={ZoomIn.duration(160)}
           exiting={FadeOut.duration(150)}
           style={styles.wrong}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
         >
           <Text style={styles.wrongText}>
             {t(
               m.wrong.reason === "used"
                 ? "rdUsed"
                 : m.wrong.reason === "wrong"
-                  ? "rdWrong"
+                  ? pair
+                    ? "rdPairWrong"
+                    : "rdWrong"
                   : "rdUnknown",
             ).replace("{name}", m.wrong.guess)}
           </Text>
@@ -257,7 +284,7 @@ export function RondoBoard({
               ))}
             </View>
           )}
-          <View style={[styles.inputWrap, !m.myTurn && { opacity: 0.5 }]}>
+          <View style={[styles.inputWrap, !m.myTurn && { opacity: 0.5 }]} accessibilityLabel={pair ? t("rdPairPlaceholder") : t("rdPlaceholder")}>
             <Icon
               name="magnifyingglass"
               size={16}
@@ -267,13 +294,13 @@ export function RondoBoard({
             <TextInput
               value={input}
               onChangeText={setInput}
-              editable={m.myTurn}
+              editable={pair || m.myTurn}
               onSubmitEditing={() =>
                 suggestions.length === 1
                   ? send(suggestions[0].name)
                   : send(input)
               }
-              placeholder={m.myTurn ? t("rdPlaceholder") : t("rdWaiting")}
+              placeholder={pair ? (m.myTurn ? t("rdPairPlaceholder") : t("rdPairLocked")) : m.myTurn ? t("rdPlaceholder") : t("rdWaiting")}
               placeholderTextColor={C.text3}
               autoCorrect={false}
               autoCapitalize="words"
@@ -306,7 +333,7 @@ export function RondoBoard({
         </View>
       )}
 
-      {/* round result, between clubs */}
+      {/* round result, between clubs / hands */}
       {m.roundEnd && !m.over && (
         <Animated.View
           entering={FadeIn.duration(200)}
@@ -321,19 +348,47 @@ export function RondoBoard({
             <Text
               style={[
                 styles.roundTitle,
-                { color: m.roundEnd.won ? C.greenMid : C.red },
+                { color: m.roundEnd.won ? C.greenMid : m.roundEnd.won === null ? C.text2 : C.red },
               ]}
             >
-              {m.roundEnd.won ? t("rdRoundWon") : t("rdRoundLost")}
+              {pair
+                ? m.roundEnd.won
+                  ? t("rdHandWon")
+                  : m.roundEnd.won === null
+                    ? t("rdHandNobody")
+                    : t("rdHandLost")
+                : m.roundEnd.won
+                  ? t("rdRoundWon")
+                  : t("rdRoundLost")}
             </Text>
-            <Text style={T.body}>
-              {m.roundEnd.won ? t("rdTheirTime") : t("rdYourTime")}
-            </Text>
+            {pair ? (
+              m.roundEnd.name && (
+                <Text style={T.body}>
+                  {m.roundEnd.won
+                    ? t("rdHandYou").replace("{player}", m.roundEnd.name)
+                    : t("rdHandThem").replace("{nick}", m.opponent?.nick || t("opponent")).replace("{player}", m.roundEnd.name)}
+                </Text>
+              )
+            ) : (
+              <Text style={T.body}>
+                {m.roundEnd.won ? t("rdTheirTime") : t("rdYourTime")}
+              </Text>
+            )}
+            {pair && !!m.roundEnd.answers?.length && (
+              <View style={styles.answers}>
+                <Text style={[T.caption, { marginBottom: 2 }]}>{t("rdHandAnswers")}</Text>
+                {m.roundEnd.answers.map((name) => (
+                  <Text key={name} style={[styles.answer, name === m.roundEnd?.name && { color: C.greenDark }]} numberOfLines={1}>
+                    {name}
+                  </Text>
+                ))}
+              </View>
+            )}
             <Text style={styles.roundScore}>
               {m.score.me} – {m.score.them}
             </Text>
             <Text style={T.caption}>
-              {t("rdFirstTo").replace("{n}", String(RONDO_TARGET))}
+              {t(pair ? "rdPairFirstTo" : "rdFirstTo").replace("{n}", String(m.target))}
             </Text>
           </Animated.View>
         </Animated.View>
@@ -361,6 +416,11 @@ const styles = StyleSheet.create({
   },
   roundLabel: { fontFamily: F.semi, fontSize: 14, opacity: 0.8 },
   club: { fontFamily: F.display, fontSize: 28, lineHeight: 30 },
+  clubPair: { fontSize: 22, lineHeight: 26 },
+  pairBadges: { flexDirection: "row", alignItems: "center", gap: 4 },
+  plus: { fontFamily: F.black, fontSize: 20 },
+  answers: { alignItems: "center", gap: 2, marginTop: 6 },
+  answer: { fontFamily: F.display, fontSize: 17, color: C.text },
   turnRow: {
     flexDirection: "row",
     justifyContent: "space-between",

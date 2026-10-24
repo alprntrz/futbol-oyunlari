@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Linking, View } from "react-native";
 
-import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
+import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, RondoPairSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented } from "~/components/ui";
 import { deleteAccount, signOut, useAccount } from "~/lib/account";
@@ -29,6 +29,7 @@ export default function SettingsTab() {
     { key: "quiz", title: t("qzName"), image: BRAND.icon.quiz, steps: <QuizSteps /> },
     { key: "pp", title: t("ppName"), image: BRAND.icon.possession, steps: <PossessionSteps /> },
     { key: "rd", title: "Rondo", image: RONDO.icon, steps: <RondoSteps /> },
+    { key: "rdp", title: t("rdModePair"), image: RONDO.icon, steps: <RondoPairSteps /> },
     { key: "wm", title: t("wmName"), image: KIMIM.icon, steps: <WhoAmISteps /> },
     { key: "taktik", title: t("ttkName"), image: TAKTIK.hero, steps: <TaktikSteps /> },
     { key: "mystery", title: t("myName"), image: BRAND.icon.mystery, steps: <MysterySteps /> },

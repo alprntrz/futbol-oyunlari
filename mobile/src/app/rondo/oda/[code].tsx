@@ -26,6 +26,8 @@ export default function RondoRoom() {
   const m = useRondoOnline(code);
   const emotes = useEmotes("rd", true);
   const room = m.room;
+  const pair = m.mode === "pair";
+  const title = pair ? t("rdModePair") : "Rondo";
 
   useXpAward(m.over && !m.peerLeft, m.key, "rd", m.won ? XP.rdWin : XP.rdLoss);
   useRecordMatch(m.over, { key: m.key, game: "rd", opponent: m.opponent?.nick || t("opponent"), result: m.won ? "win" : "loss", score: `${m.score.me}–${m.score.them}` });
@@ -36,7 +38,7 @@ export default function RondoRoom() {
         <Stack.Screen options={{ title: "Rondo" }} />
         <Card style={{ alignItems: "center", gap: 12, paddingVertical: 28 }}>
           <Icon name="exclamationmark.triangle.fill" size={30} color={C.amber} fallback="⚠️" />
-          <Text style={T.headline}>{m.error === "full" ? t("roomFull") : t("roomNotFound")}</Text>
+          <Text style={T.headline}>{m.error === "full" ? t("roomFull") : m.error === "update" ? t("rdPairUpdate") : t("roomNotFound")}</Text>
           <Button title="Rondo" kind="secondary" icon="chevron.left" onPress={() => router.back()} />
         </Card>
       </Page>
@@ -47,13 +49,13 @@ export default function RondoRoom() {
     const isHost = room?.players[0]?.id === m.myId;
     return (
       <Page>
-        <Stack.Screen options={{ title: "Rondo" }} />
+        <Stack.Screen options={{ title }} />
         <WaitingRoom
           code={code}
           players={room?.players ?? []}
           nameOf={(p) => (p.id === m.myId ? t("you") : room?.players.find((x) => x.id === p.id)?.nick || t("opponent"))}
           isHost={isHost}
-          inviteText={t("rdInvite")}
+          inviteText={t(pair ? "rdPairInvite" : "rdInvite")}
           peerLeft={m.peerLeft}
           onStart={() => getSocket().emit("rd:start")}
         />
@@ -66,7 +68,7 @@ export default function RondoRoom() {
       <Page scroll={false}>
         <Stack.Screen
           options={{
-            title: params.random ? "Rondo" : code,
+            title: params.random ? title : code,
             headerRight: () => (
               <View style={{ flexDirection: "row", gap: 8 }}>
                 <PlayerMenuButton target={m.opponent?.ref ? { ref: m.opponent.ref, nick: m.opponent.nick, game: "rd" } : null} color={C.text} bg="#EEF2EF" />
@@ -76,7 +78,7 @@ export default function RondoRoom() {
           }}
         />
         {m.peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
-        <RondoBoard m={m} footer={<RondoEnd m={m} onNew={params.random ? () => router.replace("/rondo/rastgele") : undefined} />} />
+        <RondoBoard m={m} footer={<RondoEnd m={m} onNew={params.random ? () => router.replace({ pathname: "/rondo/rastgele", params: { mode: m.mode } }) : undefined} />} />
         <SeriesEnd over={m.over} won={m.won} mine={m.score.me} theirs={m.score.them} onRematch={m.rematch} countTrophy={false} />
         <EmoteLayer e={emotes} top={4} />
       </Page>

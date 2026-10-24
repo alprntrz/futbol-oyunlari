@@ -16,7 +16,7 @@ import { after, before, test } from "node:test";
 
 import { houseHand, themeForDay } from "@/lib/duel";
 import { quizQuestions } from "@/lib/quiz";
-import { houseRondoAnswer } from "@/lib/rondo";
+import { houseRondoAnswer, rondoPairAnswers } from "@/lib/rondo";
 import { generateGrid, seededRandom } from "@/lib/tiki";
 
 const require = createRequire(import.meta.url);
@@ -60,7 +60,7 @@ after(() => {
   server?.kill();
 });
 
-const CAPS = ["mate", "coach", "arab", "hon"];
+const CAPS = ["mate", "coach", "arab", "hon", "rdpair"];
 function client(auth: Record<string, unknown> = {}): Promise<Socket> {
   const s = io(URL, { transports: ["websocket"], forceNew: true, reconnectionDelay: 100, auth: { caps: CAPS, ...auth } });
   open.push(s);
@@ -176,6 +176,48 @@ test("Rondo: names are judged by the server, a wrong one only to the mover", asy
   await wait(200);
   assert.equal(st.v?.names.length, 1);
   assert.equal(st.v?.turn, "O");
+});
+
+test("Rondo pair duel: both race, a wrong name locks the box, the first right one takes the hand with the known answers", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  type Room = { mode: string; target: number; pair: string | null; club: string | null; score: Record<string, number>; locked: Record<string, number>; roundEnd: { winner: string | null; reason: string; name?: string; answers?: string[] } | null };
+  const st = latest<Room>(a, "rd:update");
+  const wrongB = latest<{ reason: string }>(b, "rd:wrong");
+  const c = await ask<{ ok: boolean; room: Room & { code: string } }>(a, "rd:create", { nick: "a", mode: "pair", target: 2 });
+  assert.equal(c.room.mode, "pair");
+  assert.equal(c.room.target, 2);
+  await ask(b, "rd:join", { code: c.room.code, nick: "b" });
+  a.emit("rd:start");
+  await wait(300);
+  assert.ok(st.v?.pair, "a pair is dealt");
+  assert.equal(st.v?.club, null);
+  // b misses: only b hears it, and b's box locks for a moment
+  b.emit("rd:answer", { name: "zzz nobody" });
+  await wait(200);
+  assert.equal(wrongB.v?.reason, "unknown");
+  assert.ok((st.v?.locked.O ?? 0) > 0);
+  b.emit("rd:answer", { name: rondoPairAnswers(st.v!.pair!)[0] });
+  await wait(200);
+  assert.equal(st.v?.roundEnd ?? null, null, "a locked player's answer does not count");
+  // a takes the hand out of turn: pair mode has no turns
+  const best = rondoPairAnswers(st.v!.pair!);
+  a.emit("rd:answer", { name: best[1] });
+  await wait(200);
+  assert.equal(st.v?.score.X, 1);
+  assert.equal(st.v?.roundEnd?.reason, "answer");
+  assert.equal(st.v?.roundEnd?.winner, "X");
+  assert.equal(st.v?.roundEnd?.name, best[1]);
+  assert.deepEqual(st.v?.roundEnd?.answers, best);
+});
+
+test("Rondo pair duel: an old app can't join a pair room", async () => {
+  const [a, old] = await Promise.all([client(), client({ caps: ["mate", "coach", "arab", "hon"] })]);
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "rd:create", { nick: "a", mode: "pair" });
+  const j = await ask<{ ok: boolean; error?: string }>(old, "rd:join", { code: c.room.code, nick: "old" });
+  assert.equal(j.ok, false);
+  assert.equal(j.error, "update");
+  const classic = await ask<{ ok: boolean; room: { code: string } }>(a, "rd:create", { nick: "a" });
+  assert.equal((await ask<{ ok: boolean }>(old, "rd:join", { code: classic.room.code, nick: "old" })).ok, true);
 });
 
 test("Who Am I?: questions are answered, the player stays hidden", async () => {
