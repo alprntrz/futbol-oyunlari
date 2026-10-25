@@ -88,3 +88,6 @@ scripts/.cache/raw-honours.json
 
 # graphify knowledge graph (local)
 /graphify-out/
+
+# morning PostHog reports (scripts/posthog-report.mjs --out raporlar)
+raporlar/

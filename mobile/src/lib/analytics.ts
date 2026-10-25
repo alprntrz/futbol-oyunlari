@@ -6,7 +6,7 @@ import { ANALYTICS } from "./features";
 import { isGameAward, onXpAward, type XpSource } from "./xp";
 
 /**
- * Anonymous usage events (v1.2) to PostHog, EU cloud. Privacy (keep site/privacy.html true):
+ * Anonymous usage events (v1.2) to PostHog, US cloud (project 684160; morning report: scripts/posthog-report.mjs). Privacy (keep site/privacy.html true):
  * - a random device id made by the SDK, never linked to the account: no identify(), no person
  *   profiles, no aliases or groups;
  * - only the fixed events below, with fixed property names and short values: never the nickname,
