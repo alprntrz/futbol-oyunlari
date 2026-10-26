@@ -1,11 +1,19 @@
 // Tic-Tac-Toe online (ht:*; "Hat-trick" in code, 3×3 criteria grid). The host's phone builds the
-// grid and sends criterion ids; both phones validate guesses against the same bundled player list.
-// The server owns the turn, the 45 s clock, jokers, the series (first to 3) and the result.
+// grid and sends criterion ids; the phones and the server judge names against the same player list
+// (src/lib/tiki.ts). The server owns the turn, the 45 s clock, jokers, the series (first to 3) and the result.
 // server.js lists it in GAMES (reconnect, room sweep, queue pairing, emotes, invites, Live
 // Activity) and calls attach() for every socket.
 const { cleanLook, plusOf } = require("../server-accounts");
 const { INTRO_MS, socketOf, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf } = require("../server-core");
 const { liveSend, liveTurnProps } = require("../server-live");
+const path = require("path");
+const { pathToFileURL } = require("node:url");
+
+/** the grid rules, once loaded (server-taktik.js registers the "@/" resolver they need) */
+let TIKI = null;
+import(pathToFileURL(path.join(__dirname, "..", "src", "lib", "tiki.ts")).href)
+  .then((m) => (TIKI = m))
+  .catch((e) => console.error("tiki rules:", e?.message));
 
 /**
  * Criteria newer apps added ("mate-…" played with, "coach-…" managed by, "arab-…" Saudi / Egyptian clubs, "hon-…" honour counts and birth decades): the caps
@@ -113,7 +121,18 @@ function htTurnMs(room) {
 }
 
 // A grid comes from a phone and goes to the other phone: short criterion ids only
-const htGridOk = (g) => !!g && Array.isArray(g.rows) && Array.isArray(g.cols) && g.rows.length === 3 && g.cols.length === 3 && [...g.rows, ...g.cols].every(critId);
+const htGridOk = (g) =>
+  !!g && Array.isArray(g.rows) && Array.isArray(g.cols) && g.rows.length === 3 && g.cols.length === 3 &&
+  [...g.rows, ...g.cols].every((id) => critId(id) && (!TIKI || !!TIKI.criterionById(id)));
+
+/** the footballer a phone named for a square, judged by the server; null = not a fit (or already used) */
+function htJudge(room, cell, name) {
+  if (!TIKI) return name; // rules still loading: trust the phone, as before
+  const row = TIKI.criterionById(room.grid.rows[Math.floor(cell / 3)]);
+  const col = TIKI.criterionById(room.grid.cols[cell % 3]);
+  if (!row || !col) return null;
+  return TIKI.validateCell(name, row, col, new Set(room.used))?.name ?? null;
+}
 
 /** The Live Activity of an away phone: whose turn, the mover's clock, the series */
 function live(room) {
@@ -269,9 +288,11 @@ function attach(socket, ctx) {
     if (!room || !room.started || room.winner) return;
     const me = room.players.find((p) => p.id === socket.id);
     if (!me || me.mark !== room.turn) return;
-    const player = nameOf(name);
+    const i = Number.isInteger(cell) ? cell : -1;
+    const named = nameOf(name);
+    // a name that doesn't fit the square counts as a wrong guess
+    const player = named && i >= 0 && i < 9 ? htJudge(room, i, named) : named;
     if (player) {
-      const i = Number.isInteger(cell) ? cell : -1;
       const taken = i >= 0 && i < 9 ? room.board[i] : null;
       // A taken square is only allowed as a steal of the opponent's square
       const steal = !!taken && !!room.steals && taken.mark !== me.mark && room.steals[me.mark] > 0;
@@ -356,7 +377,7 @@ function attach(socket, ctx) {
   // Host deals a new grid; marks swap so the other player starts
   socket.on("ht:rematch", ({ grid }) => {
     const room = rooms.get(socket.data.htCode);
-    if (!room || !room.winner || room.players[0].id !== socket.id || !htGridOk(grid)) return;
+    if (!room || !room.winner || room.players.length < 2 || room.players[0].id !== socket.id || !htGridOk(grid)) return;
     // every phone in the room must be able to draw the next grid (newer criteria)
     if (!room.players.every((p) => canDraw(socketOf(p.id), grid))) return;
     // next game of the series, or a fresh series once it's decided

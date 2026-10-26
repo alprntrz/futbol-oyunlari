@@ -6,7 +6,14 @@
 const fs = require("fs");
 const path = require("path");
 const { cleanLook, plusOf, recordResult } = require("../server-accounts");
-const { tellElo, codeFor, cleanNick, cleanTier, seatRef, seatNick } = require("../server-core");
+const { tellElo, codeFor, cleanNick, cleanTier, seatRef, seatNick, pairAllowsRating } = require("../server-core");
+const { pathToFileURL } = require("node:url");
+
+/** the draft rules (themes), once loaded (server-taktik.js registers the "@/" resolver they need) */
+let DUEL = null;
+import(pathToFileURL(path.join(__dirname, "..", "src", "lib", "duel.ts")).href)
+  .then((m) => (DUEL = m))
+  .catch((e) => console.error("duel rules:", e?.message));
 const { liveSend, sec } = require("../server-live");
 
 const DZ_CARDS = (() => {
@@ -33,7 +40,11 @@ let queue = [];
 function dzHandOk(hand) {
   if (!Array.isArray(hand) || hand.length !== DZ_HAND || new Set(hand).size !== DZ_HAND) return false;
   if (!hand.every((id) => Number.isInteger(id) && DZ_CARDS[id])) return false;
-  return hand.reduce((n, id) => n + DZ_CARDS[id][9], 0) <= DZ_BUDGET;
+  if (hand.reduce((n, id) => n + DZ_CARDS[id][9], 0) > DZ_BUDGET) return false;
+  // drafted under the day's theme: the phone's local day is within one of the server's UTC day
+  if (!DUEL) return true;
+  const day = Math.floor(Date.now() / 86_400_000);
+  return [day - 1, day, day + 1].some((d) => DUEL.checkHand(hand, DUEL.themeForDay(d)) === "ok");
 }
 
 function dzQuestions() {
@@ -129,7 +140,7 @@ function attach(socket, ctx) {
     room.rated = true;
     const { score } = view(room);
     const [a, b] = [room.players.find((p) => p.side === 0), room.players.find((p) => p.side === 1)];
-    if (!a?.uid || !b?.uid) return;
+    if (!a?.uid || !b?.uid || !pairAllowsRating("dz", a.uid, b.uid)) return;
     if (score[0] === score[1]) tellElo("dz", room.players, recordResult("dz", [[a.uid, b.uid]]));
     else tellElo("dz", room.players, recordResult("dz", score[0] > score[1] ? [[a.uid], [b.uid]] : [[b.uid], [a.uid]]));
   };

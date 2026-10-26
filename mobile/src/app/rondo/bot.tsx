@@ -59,7 +59,7 @@ function HouseMatch({ m, nick, refId, title }: { m: RondoMatch; nick: string; re
         }}
       />
       <RondoBoard m={m} footer={<RondoEnd m={m} onNew={() => router.replace({ pathname: "/rondo/rastgele", params: { mode: m.mode } })} />} />
-      <SeriesEnd over={m.over} won={m.won} mine={m.score.me} theirs={m.score.them} onRematch={m.rematch} countTrophy={false} />
+      <SeriesEnd over={m.over} won={m.won} mine={m.score.me} theirs={m.score.them} onRematch={m.rematch} countTrophy={false} payXp={false} />
       <EmoteLayer e={emotes} top={4} />
     </Page>
   );

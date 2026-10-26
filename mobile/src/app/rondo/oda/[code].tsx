@@ -79,7 +79,7 @@ export default function RondoRoom() {
         />
         {m.peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
         <RondoBoard m={m} footer={<RondoEnd m={m} onNew={params.random ? () => router.replace({ pathname: "/rondo/rastgele", params: { mode: m.mode } }) : undefined} />} />
-        <SeriesEnd over={m.over} won={m.won} mine={m.score.me} theirs={m.score.them} onRematch={m.rematch} countTrophy={false} />
+        <SeriesEnd over={m.over} won={m.won} mine={m.score.me} theirs={m.score.them} onRematch={m.rematch} countTrophy={false} payXp={false} />
         <EmoteLayer e={emotes} top={4} />
       </Page>
       <ConnectionBanner game="rd" />

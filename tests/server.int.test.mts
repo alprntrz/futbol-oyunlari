@@ -17,7 +17,7 @@ import { after, before, test } from "node:test";
 import { houseHand, themeForDay } from "@/lib/duel";
 import { quizQuestions } from "@/lib/quiz";
 import { houseRondoAnswer, rondoPairAnswers } from "@/lib/rondo";
-import { generateGrid, seededRandom } from "@/lib/tiki";
+import { criterionById, generateGrid, GRID_PLAYERS, seededRandom } from "@/lib/tiki";
 
 const require = createRequire(import.meta.url);
 const { io } = require("socket.io-client") as typeof import("socket.io-client");
@@ -109,6 +109,57 @@ test("Tic-Tac-Toe: room, turn order, jokers, forfeit", async () => {
   assert.equal(st.v?.winner, "X");
 });
 
+test("Tic-Tac-Toe: the server judges names, a made-up or misfit one is a miss", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  type Cell = { mark: string; name: string } | null;
+  const st = latest<{ turn: string; board: Cell[]; flash: { reason: string } | null }>(a, "ht:update");
+  const g = grid();
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "ht:create", { nick: "a", grid: g });
+  assert.ok(c.ok);
+  await ask(b, "ht:join", { code: c.room.code, nick: "b" });
+  a.emit("ht:start");
+  await wait(300);
+  a.emit("ht:move", { cell: 0, name: "Nobody Madeup" });
+  await wait(200);
+  assert.equal(st.v?.board[0], null, "a name that isn't a footballer takes nothing");
+  assert.equal(st.v?.turn, "O");
+  // a real footballer who fits square 1 (row 0, col 1)
+  const [row, col] = [criterionById(g.rows[0])!, criterionById(g.cols[1])!];
+  const fit = GRID_PLAYERS.find((p) => row.test(p) && col.test(p))!;
+  b.emit("ht:move", { cell: 1, name: fit.name });
+  await wait(200);
+  assert.equal(st.v?.board[1]?.name, fit.name);
+  // the same name can't be used again, and a footballer who doesn't fit the square is a miss
+  const misfit = GRID_PLAYERS.find((p) => !criterionById(g.rows[1])!.test(p))!;
+  a.emit("ht:move", { cell: 3, name: misfit.name });
+  await wait(200);
+  assert.equal(st.v?.board[3], null);
+  assert.equal(st.v?.flash?.reason, "wrong");
+});
+
+test("Possession: the server works out the claimed hexes", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  type Cell = { mark: string; name: string } | null;
+  const st = latest<{ turn: string; owners: Cell[] }>(a, "pp:update");
+  const board = Array.from({ length: 31 }, (_, i) => ["spain", "italy", "barcelona", "milan", "inter", "roma", "france", "brazil"][i % 8]);
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "pp:create", { nick: "a", board });
+  assert.ok(c.ok);
+  await ask(b, "pp:join", { code: c.room.code, nick: "b" });
+  a.emit("pp:start");
+  await wait(300);
+  // hex 0 is "spain"; claim it and every neighbour with a name that is not a footballer
+  a.emit("pp:move", { name: "Nobody Madeup", claims: [0, 1, 4, 5] });
+  await wait(200);
+  assert.ok(st.v?.owners.every((o) => o === null), "a made-up name takes nothing");
+  assert.equal(st.v?.turn, "O");
+  // a Spanish player who never played for Italy-board clubs: the phone claims extra hexes, the server keeps only fits
+  const spain = criterionById("spain")!;
+  const p = GRID_PLAYERS.find((x) => spain.test(x) && !["italy", "barcelona", "milan", "inter", "roma", "france", "brazil"].some((id) => criterionById(id)!.test(x)))!;
+  b.emit("pp:move", { name: p.name, claims: [0, 1, 4, 5] });
+  await wait(200);
+  assert.deepEqual(st.v?.owners.map((o, i) => (o ? i : -1)).filter((i) => i >= 0), [0]);
+});
+
 test("Tic-Tac-Toe: two queued players are paired", async () => {
   const [a, b] = await Promise.all([client(), client()]);
   const m = latest<{ code: string }>(a, "ht:matched");
@@ -143,9 +194,9 @@ test("Card Duel: two queued hands are matched", async () => {
   assert.ok(m.v?.code);
 });
 
-test("Quiz: room, start, 50/50 keeps the answer", async () => {
+test("Quiz: the server deals the questions, 50/50 keeps the answer", async () => {
   const [a, b] = await Promise.all([client(), client()]);
-  const st = latest<{ phase: string }>(a, "qz:update");
+  const st = latest<{ phase: string; total: number; answer: number | null }>(a, "qz:update");
   const qs = quizQuestions(3, "players", "easy", seededRandom(4));
   const c = await ask<{ ok: boolean; room: { code: string } }>(a, "qz:create", { nick: "a", settings: { seconds: 15 }, questions: qs });
   assert.ok(c.ok);
@@ -153,10 +204,17 @@ test("Quiz: room, start, 50/50 keeps the answer", async () => {
   a.emit("qz:start");
   for (let i = 0; i < 40 && st.v?.phase !== "question"; i++) await wait(150);
   assert.equal(st.v?.phase, "question");
+  // the phone asked for 3: the server deals its own set, rounded to a length the app offers
+  assert.equal(st.v?.total, 5);
   const f = await ask<{ ok: boolean; remove: number[] }>(a, "qz:joker", { kind: "fifty" });
   assert.ok(f.ok);
-  assert.ok(!f.remove.includes(qs[0].answer));
   assert.equal((await ask<{ ok: boolean }>(a, "qz:joker", { kind: "fifty" })).ok, false, "once a match");
+  a.emit("qz:answer", { choice: 0 });
+  b.emit("qz:answer", { choice: 0 });
+  const phase = () => st.v?.phase as string | undefined;
+  for (let i = 0; i < 40 && phase() !== "reveal"; i++) await wait(100);
+  assert.equal(phase(), "reveal");
+  assert.ok(st.v?.answer != null && !f.remove.includes(st.v.answer));
 });
 
 test("Rondo: names are judged by the server, a wrong one only to the mover", async () => {
@@ -172,6 +230,11 @@ test("Rondo: names are judged by the server, a wrong one only to the mover", asy
   await wait(200);
   assert.equal(wrongA.v?.reason, "unknown");
   assert.equal(wrongB.v, null);
+  // right after a wrong name the next one is ignored for a moment (RD_CLUB_MISS_MS)
+  a.emit("rd:answer", { name: houseRondoAnswer(st.v!.club, [], 0)! });
+  await wait(200);
+  assert.equal(st.v?.names.length, 0);
+  await wait(300);
   a.emit("rd:answer", { name: houseRondoAnswer(st.v!.club, [], 0)! });
   await wait(200);
   assert.equal(st.v?.names.length, 1);

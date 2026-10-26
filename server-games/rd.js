@@ -21,6 +21,8 @@ import(pathToFileURL(path.join(__dirname, "..", "src", "lib", "rondo.ts")).href)
   .catch((e) => console.error("rondo rules:", e?.message));
 /** pause between rounds / hands (the phones show who took it and the known answers) */
 const RD_ROUND_GAP_MS = 3_000;
+/** club mode: after a wrong name the mover's next one is ignored for this long (no human retypes faster; stops a phone spraying guesses) */
+const RD_CLUB_MISS_MS = 600;
 const RD_HAND_GAP_MS = 4_500;
 /** pair mode deals this many spare pairs for hands nobody wins */
 const RD_SPARE_PAIRS = 6;
@@ -204,9 +206,12 @@ function attach(socket, ctx) {
       room.names.push({ mark: me.mark, name: v.player.name });
       return rdRoundOver(room, me.mark, "answer", { name: v.player.name, answers: RD.rondoPairAnswers(pairId) });
     }
-    if (me.mark !== room.turn) return;
+    if (me.mark !== room.turn || msLeft(room.missUntil[me.mark]) > 0) return;
     const v = RD.judgeRondo(guess, room.clubs[room.round], room.names.map((n) => n.name));
-    if (!v.ok) return socket.emit("rd:wrong", { guess, reason: v.reason });
+    if (!v.ok) {
+      room.missUntil[me.mark] = Date.now() + RD_CLUB_MISS_MS;
+      return socket.emit("rd:wrong", { guess, reason: v.reason });
+    }
     room.names.push({ mark: me.mark, name: v.player.name });
     room.flash = { mark: me.mark, name: v.player.name };
     room.turn = other(room.turn);

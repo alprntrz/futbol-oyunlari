@@ -44,11 +44,13 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
 - Hat-trick is shown to players as "Tic-Tac-Toe" (v1.1 rename; code, routes and `ht:*` keep the old name).
 - Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`, incl. `ht:queue` matchmaking:
-  server owns turn, 45 s clock and result; the host's phone deals the grid as
-  criterion ids; a queue match gets `HT_INTRO_MS` before X's clock for the VS screen,
+  server owns turn, 45 s clock and result and judges every name against the square (`htJudge`: tiki.ts
+  `validateCell`; a name that doesn't fit is a wrong guess); the host's phone deals the grid as
+  criterion ids (unknown ids are refused); a queue match gets `INTRO_MS` (server-core.js) before X's clock for the VS screen,
   after 3–6 s (`houseAfterMs`, lib/matchmaking.ts) an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
-  `ht:forfeit` end games early; a match is a series, first to `HT_TARGET` = 3 game wins,
+  `ht:forfeit` (concedes the whole series) end early; a match is a series, first to `HT_TARGET` = 3 game wins,
+  the loser of the last game gets `HT_COMEBACK_MS` = +10 s a turn,
   wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
 - Saudi / Egyptian leagues ("sa", "eg"): `ARAB_CRITERIA` in tiki.ts (ids "arab-…", never in ALL_CRITERIA so seeded daily
   grids / Bingo / Mystery / Pitch Chess don't change), players in `src/data/players-arab.ts` ← `ONLY=arab-… FROM=2000 node
@@ -58,8 +60,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   clubs plus countries/honours; leagues need 3+ clubs in tiki CLUBS); the pick lives in
   `mobile/src/lib/league.ts` and rooms/queue carry `league`. Missing 11 categories (`XI_CATEGORIES`)
   filter matches by tag/competition.
-- Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
-  data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
+- Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): the server deals the questions itself with
+  `src/lib/quiz.ts` (`qzDeal`, 5 / 10 / 15 like the app offers), so no phone holds the answers; the set a
+  phone still sends is only used while those rules load. The server hides answers
   until the reveal, runs the clock and scores (`qzPoints` in server-games/qz.js mirrors `quizPoints`: 10 → 5
   by speed). Random rooms (`qz:queue`) start after 8 s (`QZ_FILL_MS`) and fill up with house players.
   Levels/standings: phones send a random install id (`pid`, `loadPlayerId` in `mobile/src/lib/nick.ts`);
@@ -171,8 +174,8 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.
   The match screen opts out of React Compiler memoization because the engine mutates `game`.
   Possession Play uses `pp:*` (same pattern, two chess clocks; random queue → house player after 3–6 s (`app/possession/bot.tsx`,
-  `housePpMove` in lib/possession.ts), a queue match starts X's clock after `HT_INTRO_MS` for the VS intro;
-  the mover's phone computes claimed hexes). Football Bingo is offline (daily
+  `housePpMove` in lib/possession.ts), a queue match starts X's clock after `INTRO_MS` for the VS intro;
+  the server judges the name and works out the claimed hexes itself, `ppClaims`, same rule as `claimsFor`). Football Bingo is offline (daily
   seeded card, `mobile/src/lib/bingo.ts`; `/bingo?practice=1` deals unsaved random cards, XP under the practice cap). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
 - Android (started 2026-10-17): `Icon` (ui.tsx) maps every SF Symbol to a Material Symbol (`MATERIAL`; filled font for
@@ -190,7 +193,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   finished game once Victory / reward screens close, then at most every 60 days; no own "Do you like it?" step (Apple 5.6.1).
   `isGameAward` (lib/xp.ts) = a finished game, Dribbling Rush's "bonus" + "run-" keys included (play streak uses it too).
 - Dropped connections: server.js turns on Socket.IO connection state recovery (`REJOIN_MS` = 60 s): a phone back within that
-  keeps its socket id, rooms and socket.data and gets the missed events. A live ht / pp / dz seat that drops (`dropLater`) waits
+  keeps its socket id, rooms and socket.data and gets the missed events. A live ht / pp / dz / rd / wm seat that drops (`dropLater`) waits
   REJOIN_MS (the other player gets `peer:away`) before the old leave logic (loss) runs; leaving on purpose drops at once.
   Behind Fly's proxy a phone is usually back before the server notices the old socket die, so recovery fails: the app then
   sends its old id (`prev`) and a per-run random key (`rk`, lib/socket.ts; only the server sees it) and `welcomeBack` hands the
@@ -229,6 +232,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
   well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50
   per match (`qz:joker`, the server picks the two wrong options for that player only); Rondo one +10 s per match (`rd:joker`).
+- Elo farming guard: the same two accounts get at most `PAIR_RATED_PER_DAY` = 3 rated games per game per UTC day
+  (`pairAllowsRating`, server-core.js; in memory). Guest XP brought into an account at first sign-in is capped at
+  `GUEST_IMPORT_CAP` = 10 000 in total. Card Duel online hands must fit the theme of the server's day ±1.
 - Rating change: `recordResult` returns uid → { rating, delta }; `tellElo` (server-core.js) emits `elo` to each rated player's socket
   (ht / pp / dz / qz / rd); `components/EloToast.tsx` (root layout) shows "+18 · Tic-Tac-Toe 1034" after the victory screens close.
 - Who Am I? (`wm:*`, rules `src/lib/whoami.ts`): one hidden player (`WM_POOL`, 400 well-known) for both; turns of a yes / no

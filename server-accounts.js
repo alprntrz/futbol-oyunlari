@@ -32,10 +32,13 @@ const AVATARS = new Set([
   ...["curls", "mohawk", "bun", "bald", "braids", "shades", "celebration", "retro-keeper"].map((x) => `legend-${x}`),
   ...Array.from({ length: 12 }, (_, i) => `c${i + 1}`),
 ]);
-const MAX_AWARD = 200; // one game never pays more than this (quiz max is ~140)
+const MAX_AWARD = 200; // one game never pays more than this (a 15-question quiz can reach ~220; the rest is dropped)
 // game XP an account can bank in one UTC day: far above a long day of play, but a
 // tampered phone can't push itself to the top of the boards and the league
 const DAILY_XP_CAP = 3000;
+// guest XP a phone may bring into an account at its first sign-in, all games together: the phone
+// reports the amounts, so this bounds what a tampered one can mint (≈ level 20, weeks of play)
+const GUEST_IMPORT_CAP = 10_000;
 
 fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 const db = new DatabaseSync(DB_FILE);
@@ -591,7 +594,11 @@ async function handleAccountApi(req, res, cleanNick) {
       const guest = b.guest && typeof b.guest === "object" ? b.guest : null;
       const imported = db.prepare("SELECT 1 FROM awards WHERE user_id = ? AND key LIKE 'import-%' LIMIT 1").get(user.id);
       if (guest && typeof b.installId === "string" && !imported && guest.byGame && typeof guest.byGame === "object") {
-        for (const [game, amount] of Object.entries(guest.byGame).slice(0, 12)) addXp(user, `import-${b.installId.slice(0, 40)}-${game}`, game, amount, 50000, true);
+        let left = GUEST_IMPORT_CAP;
+        for (const [game, amount] of Object.entries(guest.byGame).slice(0, 12)) {
+          const take = Math.max(0, Math.min(left, Math.round(Number(amount) || 0)));
+          if (take && addXp(user, `import-${b.installId.slice(0, 40)}-${game}`, game, take, take, true)) left -= take;
+        }
       }
       const token = crypto.randomBytes(32).toString("base64url");
       db.prepare("INSERT INTO sessions (hash, user_id, created) VALUES (?, ?, ?)").run(sha(token), user.id, Date.now());
