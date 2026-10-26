@@ -108,11 +108,17 @@ async function plan(t: (k: TKey) => string, streak: number, playedToday: boolean
     if (at <= now) continue;
     const body = d === 0 && streak > 0 ? t("remStreak").replace("{n}", String(streak)) : t(ROTATE[(today + d) % ROTATE.length]);
     await Notifications.scheduleNotificationAsync({
+      // one id per day: planning the same day again replaces it instead of adding a second copy
+      identifier: `reminder-${today + d}`,
       content: { title: "Tiktako", body },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: at, channelId: CHANNEL },
     });
   }
 }
+
+/** Plans run one after another: overlapping runs (start, streak loading, app back to the front) each
+ *  cancelled and then each scheduled the whole week, so the same reminder came up to three times. */
+let planning: Promise<void> = Promise.resolve();
 
 /** Keeps the week of reminders in step with the streak, the language and the day (root layout). */
 export function RemindersSync() {
@@ -121,7 +127,7 @@ export function RemindersSync() {
   const { count, playedToday } = usePlayStreak();
   useEffect(() => {
     const run = () => {
-      plan((k) => dict[locale][k], count, playedToday).catch(() => {});
+      planning = planning.then(() => plan((k) => dict[locale][k], count, playedToday)).catch(() => {});
     };
     run();
     // a new day while the app sat in the background: plan again on the way back
