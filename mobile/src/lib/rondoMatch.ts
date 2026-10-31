@@ -50,7 +50,7 @@ export interface RondoMatch {
 
 export interface RondoRoundEnd {
   won: boolean | null;
-  reason: "timeout" | "forfeit" | "answer";
+  reason: "timeout" | "forfeit" | "answer" | "left";
   name?: string;
   answers?: string[];
 }
@@ -70,7 +70,7 @@ interface ServerRoom {
   turnMs: number;
   names: { mark: Mark; name: string }[];
   locked?: Record<Mark, number>;
-  roundEnd: { winner: Mark | null; reason: "timeout" | "forfeit" | "answer"; name?: string; answers?: string[] } | null;
+  roundEnd: { winner: Mark | null; reason: "timeout" | "forfeit" | "answer" | "left"; name?: string; answers?: string[] } | null;
   /** pair mode: over with no winner (both idle for a few hands) */
   ended?: boolean;
   winner: Mark | null;
@@ -103,11 +103,14 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
       setNow(at);
       setLockedUntil({ X: r.locked?.X ? at + r.locked.X : 0, O: r.locked?.O ? at + r.locked.O : 0 });
     };
+    // events of another room (an older game this phone was in) are not this screen's
     const onUpdate = (r: ServerRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(false);
       apply(r);
     };
     const onLeft = (r: ServerRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(true);
       apply(r);
     };
@@ -126,6 +129,7 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
       socket.off("rd:peer-left", onLeft);
       socket.off("rd:wrong", onWrong);
       socket.off("connect", onConnect);
+      socket.emit("rd:leave", { code });
     };
   }, [code]);
 

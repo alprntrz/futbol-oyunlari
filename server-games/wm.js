@@ -46,7 +46,7 @@ function newRoom(code, players) {
  * `matchQueues` (pair the random queues now) and `INTRO_MS` (the VS screen before the first clock).
  */
 function attach(socket, ctx) {
-  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
+  const { io, dropLater, matchQueues } = ctx;
   const wmEmit = (room) => io.to("wm:" + room.code).emit("wm:update", view(room));
   const wmEnd = (room, winner, reason) => {
     clearTimeout(room.timer);
@@ -88,12 +88,15 @@ function attach(socket, ctx) {
   const wmMine = () => {
     const room = rooms.get(socket.data.wmCode);
     const me = room?.players.find((p) => p.id === socket.id);
-    return room && me && room.started && !room.winner && room.players.length === 2 && room.turn === me.mark ? { room, me } : null;
+    if (!room || !me || !room.started || room.winner || room.players.length !== 2) return null;
+    // not your turn (a screen showing an old state): resync the sender
+    if (room.turn !== me.mark) return void socket.emit("wm:update", view(room));
+    return { room, me };
   };
 
   socket.on("wm:create", ({ nick }, cb) => {
     if (!WM) return cb?.({ ok: false, error: "not_ready" });
-    dropLoneRoom(rooms, socket.data.wmCode, socket);
+    leaveRoom(socket);
     const room = newRoom(codeFor(rooms), [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }]);
     rooms.set(room.code, room);
     wmJoinRoom(socket, room);
@@ -102,6 +105,7 @@ function attach(socket, ctx) {
   socket.on("wm:join", ({ code, nick }, cb) => {
     const room = rooms.get(String(code || "").toUpperCase());
     if (!room) return cb?.({ ok: false, error: "not_found" });
+    if (socket.data.wmCode !== room.code) leaveRoom(socket);
     if (!room.players.some((p) => p.id === socket.id)) {
       if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
       room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: room.players[0]?.mark === "X" ? "O" : "X" });
@@ -155,6 +159,7 @@ function attach(socket, ctx) {
       { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
       { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
     ]);
+    for (const s of [waiting.socket, other.socket]) leaveRoom(s);
     rooms.set(room.code, room);
     wmJoinRoom(waiting.socket, room);
     wmJoinRoom(other.socket, room);
@@ -163,6 +168,7 @@ function attach(socket, ctx) {
   };
   socket.on("wm:queue", ({ nick, tier, avatar, frame }) => {
     if (!WM) return;
+    leaveRoom(socket);
     queue = queue.filter((w) => w.socket.id !== socket.id);
     queue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: wmPair });
     matchQueues();
@@ -170,24 +176,36 @@ function attach(socket, ctx) {
   socket.on("wm:unqueue", () => {
     queue = queue.filter((w) => w.socket.id !== socket.id);
   });
-  const wmDrop = () => {
-    queue = queue.filter((w) => w.socket.id !== socket.id);
-    const room = rooms.get(socket.data.wmCode);
+  /** Takes socket `s` out of its room (as ht.js): a room left empty is deleted with its clock, and
+   *  walking out of a live game loses it: the one who stays wins and sees the result. */
+  function leaveRoom(s) {
+    const room = rooms.get(s.data.wmCode);
+    s.leave("wm:" + s.data.wmCode);
+    s.data.wmCode = null;
     if (!room) return;
-    socket.data.wmCode = null;
-    socket.leave("wm:" + room.code);
-    const leaver = room.players.find((p) => p.id === socket.id);
-    if (leaver && room.started && !room.winner && room.players.length === 2) rateDuel("wm", room, leaver.mark === "X" ? "O" : "X");
-    room.players = room.players.filter((p) => p.id !== socket.id);
+    const leaver = room.players.find((p) => p.id === s.id);
+    if (leaver && room.started && !room.winner && room.players.length === 2) {
+      room.winner = leaver.mark === "X" ? "O" : "X";
+      room.endReason = "left";
+      rateDuel("wm", room, room.winner);
+    }
+    room.players = room.players.filter((p) => p.id !== s.id);
     clearTimeout(room.timer);
+    room.deadline = 0;
     if (room.players.length === 0) rooms.delete(room.code);
     else {
-      room.started = false;
-      room.deadline = 0;
+      if (!room.winner) room.started = false;
       io.to("wm:" + room.code).emit("wm:peer-left", view(room));
     }
+  }
+  const wmDrop = () => {
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+    leaveRoom(socket);
   };
-  socket.on("wm:leave", wmDrop);
+  // the room screen closing: only its own room (a late leave never ends the next game)
+  socket.on("wm:leave", ({ code }) => {
+    if (typeof code === "string" && code === socket.data.wmCode) wmDrop();
+  });
   socket.on("disconnect", (reason) => {
     queue = queue.filter((w) => w.socket.id !== socket.id);
     const room = rooms.get(socket.data.wmCode);

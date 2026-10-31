@@ -91,7 +91,7 @@ function newRoom(code, players, mode = "club", target = RD.RONDO_TARGET) {
 
 /** This socket's rd:* handlers; `ctx` as in server-games/wm.js. */
 function attach(socket, ctx) {
-  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
+  const { io, dropLater, matchQueues } = ctx;
   const rdEmit = (room) => io.to("rd:" + room.code).emit("rd:update", view(room));
 
   const rdSetClock = (room, ms, onEnd) => {
@@ -161,7 +161,7 @@ function attach(socket, ctx) {
 
   socket.on("rd:create", ({ nick, mode, target }, cb) => {
     if (!RD) return cb?.({ ok: false, error: "not_ready" });
-    dropLoneRoom(rooms, socket.data.rdCode, socket);
+    leaveRoom(socket);
     const room = newRoom(codeFor(rooms), [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }], RD.cleanRondoMode(mode), RD.cleanRondoTarget(target));
     rooms.set(room.code, room);
     rdJoinRoom(socket, room);
@@ -171,6 +171,7 @@ function attach(socket, ctx) {
   socket.on("rd:join", ({ code, nick }, cb) => {
     const room = rooms.get(String(code || "").toUpperCase());
     if (!room) return cb?.({ ok: false, error: "not_found" });
+    if (socket.data.rdCode !== room.code) leaveRoom(socket);
     if (!room.players.some((p) => p.id === socket.id)) {
       if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
       if (room.mode === "pair" && !socket.data.caps?.includes(RD_PAIR_CAP)) return cb?.({ ok: false, error: "update" });
@@ -206,7 +207,9 @@ function attach(socket, ctx) {
       room.names.push({ mark: me.mark, name: v.player.name });
       return rdRoundOver(room, me.mark, "answer", { name: v.player.name, answers: RD.rondoPairAnswers(pairId) });
     }
-    if (me.mark !== room.turn || msLeft(room.missUntil[me.mark]) > 0) return;
+    // not your turn (a screen showing an old state): resync the sender
+    if (me.mark !== room.turn) return socket.emit("rd:update", view(room));
+    if (msLeft(room.missUntil[me.mark]) > 0) return;
     const v = RD.judgeRondo(guess, room.clubs[room.round], room.names.map((n) => n.name));
     if (!v.ok) {
       room.missUntil[me.mark] = Date.now() + RD_CLUB_MISS_MS;
@@ -259,6 +262,7 @@ function attach(socket, ctx) {
       waiting.mode,
       RD.RONDO_PAIR_TARGET,
     );
+    for (const s of [waiting.socket, found.socket]) leaveRoom(s);
     rooms.set(room.code, room);
     rdJoinRoom(waiting.socket, room);
     rdJoinRoom(found.socket, room);
@@ -269,6 +273,7 @@ function attach(socket, ctx) {
 
   socket.on("rd:queue", ({ nick, tier, avatar, frame, mode }) => {
     if (!RD) return;
+    leaveRoom(socket);
     queue = queue.filter((w) => w.socket.id !== socket.id);
     queue.push({ socket, nick: cleanNick(nick), tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), mode: RD.cleanRondoMode(mode), since: Date.now(), pair: rdPair });
     matchQueues();
@@ -277,24 +282,36 @@ function attach(socket, ctx) {
     queue = queue.filter((w) => w.socket.id !== socket.id);
   });
 
-  const rdDrop = () => {
-    queue = queue.filter((w) => w.socket.id !== socket.id);
-    const room = rooms.get(socket.data.rdCode);
+  /** Takes socket `s` out of its room (as ht.js): a room left empty is deleted with its clock, and
+   *  walking out of a live match loses it: the one who stays wins and sees the result. */
+  function leaveRoom(s) {
+    const room = rooms.get(s.data.rdCode);
+    s.leave("rd:" + s.data.rdCode);
+    s.data.rdCode = null;
     if (!room) return;
-    socket.data.rdCode = null;
-    socket.leave("rd:" + room.code);
-    const leaver = room.players.find((p) => p.id === socket.id);
-    if (leaver && room.started && !room.winner && !room.ended && room.players.length === 2) rateDuel("rd", room, other(leaver.mark));
-    room.players = room.players.filter((p) => p.id !== socket.id);
+    const leaver = room.players.find((p) => p.id === s.id);
+    if (leaver && room.started && !room.winner && !room.ended && room.players.length === 2) {
+      room.winner = other(leaver.mark);
+      room.roundEnd = { winner: room.winner, reason: "left" };
+      rateDuel("rd", room, room.winner);
+    }
+    room.players = room.players.filter((p) => p.id !== s.id);
     clearTimeout(room.timer);
+    room.deadline = 0;
     if (room.players.length === 0) rooms.delete(room.code);
     else {
-      room.started = false;
-      room.deadline = 0;
+      if (!room.winner && !room.ended) room.started = false;
       io.to("rd:" + room.code).emit("rd:peer-left", view(room));
     }
+  }
+  const rdDrop = () => {
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+    leaveRoom(socket);
   };
-  socket.on("rd:leave", rdDrop);
+  // the room screen closing: only its own room (a late leave never ends the next game)
+  socket.on("rd:leave", ({ code }) => {
+    if (typeof code === "string" && code === socket.data.rdCode) rdDrop();
+  });
   socket.on("disconnect", (reason) => {
     queue = queue.filter((w) => w.socket.id !== socket.id);
     const room = rooms.get(socket.data.rdCode);

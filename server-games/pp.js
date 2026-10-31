@@ -105,7 +105,7 @@ function live(room) {
 
 /** This socket's pp:* handlers; `ctx` as in server-games/wm.js. */
 function attach(socket, ctx) {
-  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
+  const { io, dropLater, matchQueues } = ctx;
   const ppEmit = (room) => {
     io.to("pp:" + room.code).emit("pp:update", view(room));
     live(room);
@@ -133,7 +133,7 @@ function attach(socket, ctx) {
 
   socket.on("pp:create", ({ nick, board }, cb) => {
     if (!ppBoardOk(board)) return cb?.({ ok: false, error: "bad_board" });
-    dropLoneRoom(rooms, socket.data.ppCode, socket);
+    leaveRoom(socket);
     const room = newRoom(codeFor(rooms), board, [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }]);
     rooms.set(room.code, room);
     ppJoinRoom(socket, room);
@@ -143,6 +143,7 @@ function attach(socket, ctx) {
   socket.on("pp:join", ({ code, nick }, cb) => {
     const room = rooms.get(String(code || "").toUpperCase());
     if (!room) return cb?.({ ok: false, error: "not_found" });
+    if (socket.data.ppCode !== room.code) leaveRoom(socket);
     if (!room.players.some((p) => p.id === socket.id)) {
       if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
       const mark = room.players[0]?.mark === "X" ? "O" : "X";
@@ -166,7 +167,8 @@ function attach(socket, ctx) {
     const room = rooms.get(socket.data.ppCode);
     if (!room || !room.started || room.winner) return;
     const me = room.players.find((p) => p.id === socket.id);
-    if (!me || me.mark !== room.turn) return;
+    // not your turn (a screen showing an old state): resync the sender
+    if (!me || me.mark !== room.turn) return socket.emit("pp:update", view(room));
     room.clocks[me.mark] = Math.max(0, room.clocks[me.mark] - (Date.now() - room.turnStart));
     const player = nameOf(name);
     let hexes = [];
@@ -217,6 +219,7 @@ function attach(socket, ctx) {
       { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
       { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
     ]);
+    for (const s of [waiting.socket, other.socket]) leaveRoom(s);
     rooms.set(room.code, room);
     ppJoinRoom(waiting.socket, room);
     ppJoinRoom(other.socket, room);
@@ -233,6 +236,7 @@ function attach(socket, ctx) {
 
   socket.on("pp:queue", ({ nick, board, tier, avatar, frame }) => {
     if (!ppBoardOk(board)) return;
+    leaveRoom(socket);
     queue = queue.filter((w) => w.socket.id !== socket.id);
     queue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: ppPair });
     matchQueues();
@@ -242,22 +246,38 @@ function attach(socket, ctx) {
     queue = queue.filter((w) => w.socket.id !== socket.id);
   });
 
-  const ppDrop = () => {
-    queue = queue.filter((w) => w.socket.id !== socket.id);
-    const room = rooms.get(socket.data.ppCode);
+  /** Takes socket `s` out of its room (as ht.js): a room left empty is deleted with its clock, and
+   *  walking out of a live game loses it: the one who stays wins and sees the result. */
+  function leaveRoom(s) {
+    const room = rooms.get(s.data.ppCode);
+    s.leave("pp:" + s.data.ppCode);
+    s.data.ppCode = null;
     if (!room) return;
-    const leaver = room.players.find((p) => p.id === socket.id);
-    if (leaver && room.started && !room.winner && room.players.length === 2) rateDuel("pp", room, leaver.mark === "X" ? "O" : "X");
-    room.players = room.players.filter((p) => p.id !== socket.id);
+    const leaver = room.players.find((p) => p.id === s.id);
+    const live = !!leaver && room.started && !room.winner && room.players.length === 2;
+    if (live) {
+      room.winner = leaver.mark === "X" ? "O" : "X";
+      room.flash = { mark: leaver.mark, reason: "left" };
+      rateDuel("pp", room, room.winner);
+    }
+    room.players = room.players.filter((p) => p.id !== s.id);
     clearTimeout(room.timer);
+    room.turnStart = null;
     if (room.players.length === 0) {
       rooms.delete(room.code);
     } else {
-      room.started = false;
-      room.turnStart = null;
+      if (!room.winner) room.started = false;
       io.to("pp:" + room.code).emit("pp:peer-left", view(room));
     }
+  }
+  const ppDrop = () => {
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+    leaveRoom(socket);
   };
+  // the room screen closing: only its own room (a late leave never ends the next game)
+  socket.on("pp:leave", ({ code }) => {
+    if (typeof code === "string" && code === socket.data.ppCode) ppDrop();
+  });
   socket.on("disconnect", (reason) => {
     queue = queue.filter((w) => w.socket.id !== socket.id);
     const room = rooms.get(socket.data.ppCode);
