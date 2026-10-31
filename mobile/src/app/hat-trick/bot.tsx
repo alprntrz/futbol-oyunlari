@@ -13,7 +13,7 @@ import { useRecordMatch } from "~/lib/history";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { Button, Page } from "~/components/ui";
-import { haptic } from "~/lib/haptics";
+import { haptic, useTurnCue } from "~/lib/haptics";
 import { COMEBACK_SECONDS, NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
@@ -114,7 +114,6 @@ export default function HatTrickHouse() {
       setFlash(`${nameOf(turn)}: ${t("ttWrong")}`);
       return nextTurn();
     }
-    if (turn !== me) haptic.tap();
     setUsedNames((u) => [...u, name]);
     const next = board.slice();
     next[cell] = { mark: turn, name };
@@ -171,6 +170,7 @@ export default function HatTrickHouse() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawSent]);
 
+  useTurnCue(turn === me && !winner);
   useEffect(() => {
     if (!winner) return;
     if (winner === me) haptic.success();

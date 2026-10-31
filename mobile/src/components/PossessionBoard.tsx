@@ -6,7 +6,8 @@ import Svg, { Polygon } from "react-native-svg";
 import type { GridPlayer } from "@/data/players";
 import type { Criterion } from "@/lib/tiki";
 
-import { haptic } from "~/lib/haptics";
+import { haptic, useClockTicks } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { POS, ROWS, type PpCell } from "~/lib/possession";
@@ -95,6 +96,7 @@ export function PossessionBoard({
     if (winner && !wasWon.current && winner !== "draw" && celebrate) setConfetti(Date.now());
     wasWon.current = !!winner;
   }, [winner, celebrate]);
+  useClockTicks(winner ? null : clocks[turn], canMove);
 
   // Pointy-top hexes; wide rows hold 5, narrow rows 4 shifted half a hex
   const w = width / 5;
@@ -250,8 +252,13 @@ export function PossessionBoard({
         accept={(p) => open !== null && board[open].test(p)}
         onSubmit={(p) => {
           if (open === null) return;
-          if (p) haptic.success();
-          else haptic.error();
+          if (p) {
+            haptic.success();
+            play("correct");
+          } else {
+            haptic.error();
+            play("wrong");
+          }
           onMove(open, p);
           setOpen(null);
         }}

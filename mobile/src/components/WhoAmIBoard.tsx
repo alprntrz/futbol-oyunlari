@@ -7,11 +7,13 @@ import type { Locale, TKey } from "@/lib/strings";
 import { WM_CLUBS, WM_COUNTRIES, WM_DECADES, WM_HONOURS, WM_LEAGUES, WM_MAX_TURNS, WM_POSITIONS, type WmKind, type WmQuestion } from "@/lib/whoami";
 
 import { KIMIM } from "~/lib/brand";
-import { haptic } from "~/lib/haptics";
+import { haptic, useClockTicks, useTurnCue } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import type { WmMatch } from "~/lib/whoamiMatch";
 import { C, F, GAME, R, T, shadow } from "~/lib/theme";
 
+import { PopNumber } from "./motion";
 import { PlayerSearchSheet } from "./PlayerSearchSheet";
 import { Text } from "./Text";
 import { Button, Icon, Tap } from "./ui";
@@ -76,8 +78,10 @@ export function WhoAmIBoard({ m, footer }: { m: WmMatch; footer?: React.ReactNod
     if (!count) return;
     list.current?.scrollToEnd({ animated: true });
     const last = m.log[count - 1];
-    if ("guess" in last && !last.right && last.mine) haptic.error();
-    else if (!last.mine) haptic.tap();
+    if ("guess" in last && !last.right && last.mine) {
+      haptic.error();
+      play("wrong");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
 
@@ -85,6 +89,8 @@ export function WhoAmIBoard({ m, footer }: { m: WmMatch; footer?: React.ReactNod
   const wrong = useMemo(() => new Set(m.log.flatMap((e) => ("guess" in e && !e.right ? [e.guess] : []))), [m.log]);
   const left = m.deadline ? Math.max(0, m.deadline - now) : 0;
   const secs = Math.ceil(left / 1000);
+  useClockTicks(m.deadline && !m.over ? secs : null, m.myTurn);
+  useTurnCue(m.myTurn && !m.over);
   const frac = m.turnMs ? Math.min(1, left / m.turnMs) : 0;
 
   const confirmForfeit = () =>
@@ -134,7 +140,7 @@ export function WhoAmIBoard({ m, footer }: { m: WmMatch; footer?: React.ReactNod
           <View style={styles.turnRow}>
             <Text style={[styles.turn, { color: m.myTurn ? C.greenMid : C.coral }]}>{m.myTurn ? t("rdYourTurn") : t("rdTheirTurn")}</Text>
             <Text style={T.caption}>{t("wmTurnsLeft").replace("{n}", String(Math.max(0, WM_MAX_TURNS - m.turns)))}</Text>
-            {m.deadline > 0 && <Text style={[styles.secs, secs <= 5 && { color: C.red }]}>{secs}s</Text>}
+            {m.deadline > 0 && (secs <= 5 ? <PopNumber value={`${secs}s`} style={[styles.secs, { color: C.red }]} /> : <Text style={styles.secs}>{secs}s</Text>)}
           </View>
           <View style={styles.bar}>
             <View style={[styles.barFill, { width: `${frac * 100}%`, backgroundColor: m.myTurn ? C.green : C.coral }, secs <= 5 && { backgroundColor: C.red }]} />

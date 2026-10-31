@@ -7,7 +7,6 @@ import { cleanRondoMode, RONDO_PAIR_TARGET, RONDO_PAIR_TARGETS } from "@/lib/ron
 import { OnlineLobby } from "~/components/OnlineLobby";
 import { Text } from "~/components/Text";
 import { Tap } from "~/components/ui";
-import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
 
@@ -29,7 +28,7 @@ export default function RondoLobby() {
           <View style={styles.row}>
             <Text style={[T.caption, { flex: 1 }]}>{t("rdBestOf")}</Text>
             {RONDO_PAIR_TARGETS.map((n) => (
-              <Tap key={n} onPress={() => (haptic.tap(), setTarget(n))} style={[styles.pill, target === n && styles.pillOn]} accessibilityRole="button" accessibilityState={{ selected: target === n }} accessibilityLabel={t("rdBestOfN").replace("{n}", String(n))}>
+              <Tap key={n} onPress={() => setTarget(n)} style={[styles.pill, target === n && styles.pillOn]} accessibilityRole="button" accessibilityState={{ selected: target === n }} accessibilityLabel={t("rdBestOfN").replace("{n}", String(n))}>
                 <Text style={[styles.pillText, target === n && { color: "white" }]}>{n * 2 - 1}</Text>
               </Tap>
             ))}

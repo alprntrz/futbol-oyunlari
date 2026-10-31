@@ -20,6 +20,7 @@ import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { useArchiveOpen, usePlus } from "~/lib/plus";
 import { BRAND } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { C, F, GAME, R, shadow, T } from "~/lib/theme";
 import { useQuestOnce } from "~/lib/quests";
@@ -171,17 +172,20 @@ export default function Bingo() {
       setWildcardOn(false);
       if (all.length === 0) return wrong(i);
       haptic.success();
+      play("power");
       setFlash({ text: `${current.name} +${all.length}`, ok: true });
       return setRun({ placed: run.placed.map((p, j) => (all.includes(j) ? current.name : p)), index: run.index + 1, wildcardUsed: true });
     }
     if (!fits(i)) return wrong(i);
     haptic.success();
+    play("correct");
     setRun({ ...run, placed: run.placed.map((p, j) => (j === i ? current.name : p)), index: run.index + 1 });
   };
 
   // A wrong square costs a turn: the next footballer is skipped too
   const wrong = (i: number) => {
     haptic.error();
+    play("wrong");
     setWrongSquare(i);
     setFlash({ text: t("bingoWrong"), ok: false });
     setRun({ ...run, index: run.index + 2, wildcardUsed: run.wildcardUsed || wildcardOn });

@@ -147,8 +147,10 @@ function Board({
     if (last.winner === "me") {
       haptic.success();
       play("pop");
-    } else if (last.winner === "them") haptic.error();
-    else haptic.tap();
+    } else if (last.winner === "them") {
+      haptic.error();
+      play("wrong");
+    } else haptic.tap();
   }, [m.results.length, last]);
 
   // the last reveal stays up for a moment before the result card
@@ -174,6 +176,13 @@ function Board({
     title: t("dzWon"),
     stats: practice || outcome !== "win" ? undefined : [{ label: t("dzName"), value: `${mine}–${theirs}`, tone: "green" }],
   });
+
+  // the reward screen sounds a non-practice win; every other ending gets its own short cue
+  useEffect(() => {
+    if (!showEnd || (outcome === "win" && !practice)) return;
+    play(outcome === "win" ? "victory" : outcome === "lose" ? "lose" : "whistle");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showEnd]);
 
   // Lock Screen / Dynamic Island: round, score, the pick clock (iOS draws it)
   const roundNo = Math.min(ROUNDS, m.round + (m.deadline ? 1 : 0));
@@ -280,7 +289,7 @@ function Board({
             width={cardW}
             used={used.has(id)}
             selected={m.myPick === id}
-            onPress={m.deadline && m.myPick === null ? () => (haptic.tap(), m.pick(id)) : undefined}
+            onPress={m.deadline && m.myPick === null ? () => m.pick(id) : undefined}
           />
         ))}
       </View>

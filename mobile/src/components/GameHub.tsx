@@ -81,7 +81,7 @@ export function GameHub({
 
       {status && <Text style={styles.status}>{status}</Text>}
       <View style={{ marginTop: status ? 8 : 18 }}>
-        <Tap onPress={() => (haptic.press(), primary.onPress())} style={styles.primary} accessibilityLabel={primary.label}>
+        <Tap onPress={() => primary.onPress()} style={styles.primary} accessibilityLabel={primary.label}>
           <Icon name={primary.icon} size={20} color="#3B2A05" fallback={primary.fallback} />
           <Text style={styles.primaryText} numberOfLines={1} adjustsFontSizeToFit>
             {primary.label}
@@ -92,7 +92,7 @@ export function GameHub({
       {secondary.length > 0 && (
         <View style={styles.secondary}>
           {secondary.map((a) => (
-            <Tap key={a.label} onPress={() => (haptic.tap(), a.onPress())} style={styles.sec} accessibilityLabel={a.hint ? `${a.label}. ${a.hint}` : a.label}>
+            <Tap key={a.label} onPress={() => a.onPress()} style={styles.sec} accessibilityLabel={a.hint ? `${a.label}. ${a.hint}` : a.label}>
               <Icon name={a.icon} size={18} color={C.greenDark} fallback={a.fallback} />
               <Text style={styles.secText} numberOfLines={1} adjustsFontSizeToFit>
                 {a.label}
@@ -122,7 +122,7 @@ export function GameHub({
 /** A settings row: "League · All clubs ›". */
 export function HubSetting({ label, value, onPress }: { label: string; value: string; onPress: () => void }) {
   return (
-    <Tap onPress={() => (haptic.tap(), onPress())} style={styles.setting} accessibilityLabel={`${label}: ${value}`}>
+    <Tap onPress={() => onPress()} style={styles.setting} accessibilityLabel={`${label}: ${value}`}>
       <Text style={styles.settingLabel}>{label}</Text>
       <Text style={styles.settingValue} numberOfLines={1}>
         {value}
@@ -175,7 +175,7 @@ export function ChoiceSheet<T extends string>({
         <Text style={[T.title, { marginBottom: 6 }]}>{title}</Text>
         <ScrollView style={{ maxHeight: 460 }}>
           {options.map((o, i) => (
-            <Tap key={o.value} onPress={() => (haptic.tap(), onPick(o.value), onClose())} style={[sheet.row, i > 0 && sheet.divider]} accessibilityLabel={o.label}>
+            <Tap key={o.value} onPress={() => (onPick(o.value), onClose())} style={[sheet.row, i > 0 && sheet.divider]} accessibilityLabel={o.label}>
               {o.left}
               <View style={{ flex: 1 }}>
                 <Text style={sheet.label}>{o.label}</Text>

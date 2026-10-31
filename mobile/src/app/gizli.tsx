@@ -15,6 +15,7 @@ import { useShareCard, type Mark } from "~/components/ShareCard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { compare, findPlayer, MAX_GUESSES, mysteryForDay, randomMystery, START_CLUES, type Clue, type Puzzle } from "~/lib/mystery";
 import { C, F, R, T } from "~/lib/theme";
@@ -86,8 +87,13 @@ export default function MysteryPlayer() {
   const guess = (name: string) => {
     if (over || run.guesses.includes(name)) return;
     setInput("");
-    if (name === answer.name) haptic.success();
-    else haptic.error();
+    if (name === answer.name) {
+      haptic.success();
+      play("correct");
+    } else {
+      haptic.error();
+      play("wrong");
+    }
     update({ ...run, guesses: [...run.guesses, name] });
   };
 

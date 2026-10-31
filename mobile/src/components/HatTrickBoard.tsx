@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { playerInfo } from "@/lib/playerInfo";
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
-import { haptic } from "~/lib/haptics";
+import { haptic, useClockTicks } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { answersFor } from "~/lib/htBot";
 import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
@@ -16,7 +16,7 @@ import { C, F, R, shadow, T } from "~/lib/theme";
 import { initials, PlayerLine, PlayerToken } from "./PlayerRow";
 import { Flag } from "./Flag";
 import { Jersey } from "./Jersey";
-import { Confetti, SmoothBar, SOFT_IN, softIn } from "./motion";
+import { Confetti, PopNumber, SmoothBar, SOFT_IN, softIn } from "./motion";
 import { Text } from "./Text";
 import { Button, Card, Icon, Tap } from "./ui";
 
@@ -211,7 +211,7 @@ export function HatTrickBoard({
     if (openCell === null || !guess) return;
     const player = validateCell(guess, grid.rows[Math.floor(openCell / 3)], grid.cols[openCell % 3], used);
     if (player) {
-      haptic.press();
+      haptic.success();
       play("correct");
     } else {
       haptic.error();
@@ -228,11 +228,13 @@ export function HatTrickBoard({
     if (!answer) return;
     const { pos } = playerInfo(answer);
     haptic.tap();
+    play("power");
     setHint({ cell: openCell, text: [initials(answer.name).split("").join(". ") + ".", pos ? t(`posName_${pos}`) : null].filter(Boolean).join(" · ") });
     onJoker?.("hint");
   };
 
   const low = timeLeft <= 10;
+  useClockTicks(winner ? null : timeLeft, canMove);
   const row = openCell !== null ? grid.rows[Math.floor(openCell / 3)] : null;
   const col = openCell !== null ? grid.cols[openCell % 3] : null;
 
@@ -288,7 +290,7 @@ export function HatTrickBoard({
                       </Text>
                     </View>
                   )}
-                  {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
+                  {active && (timeLeft <= 5 ? <PopNumber value={`${timeLeft}s`} style={styles.playerTime} /> : <Text style={styles.playerTime}>{timeLeft}s</Text>)}
                 </View>
               );
             })}
@@ -391,7 +393,7 @@ export function HatTrickBoard({
             </Text>
             {jokers && canMove && (
               <View style={styles.jokers}>
-                <Tap disabled={!jokers.time} onPress={() => (haptic.tap(), onJoker?.("time"))} style={[styles.joker, !jokers.time && { opacity: 0.4 }]} accessibilityRole="button">
+                <Tap disabled={!jokers.time} onPress={() => (play("power"), onJoker?.("time"))} style={[styles.joker, !jokers.time && { opacity: 0.4 }]} accessibilityRole="button">
                   <Icon name="stopwatch.fill" size={15} color={C.blue} />
                   <Text style={styles.jokerText}>{t("jkTime")}</Text>
                   <Text style={styles.jokerCount}>×{jokers.time}</Text>

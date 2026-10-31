@@ -4,6 +4,7 @@ import type { Difficulty, Match, SlotState } from "@/lib/types";
 import { answerLetters } from "@/lib/wordle";
 
 import { haptic } from "./haptics";
+import { play } from "./sound";
 
 export interface GameProgress {
   solved: number;
@@ -46,9 +47,14 @@ export function useMissingXI(
     });
     setSlots(next);
     if (next.every((s) => s.solved || s.failed)) onFinish?.(next.every((s) => s.solved), next.filter((s) => s.solved).length);
-    if (isRight) haptic.success();
-    else if (next[idx].failed) haptic.error();
-    else haptic.warning();
+    if (isRight) {
+      haptic.success();
+      play("correct");
+    } else {
+      if (next[idx].failed) haptic.error();
+      else haptic.warning();
+      play("wrong");
+    }
   };
 
   const giveUp = () => {

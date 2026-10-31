@@ -13,6 +13,7 @@ import { ordinal } from "@/lib/strings";
 import { openPlayerMenu } from "~/components/PlayerMenu";
 import { Avatar as PlayerAvatar } from "~/components/Avatar";
 import { ComboBurst, ComboChip } from "~/components/Combo";
+import { PopNumber } from "~/components/motion";
 import { GrassPattern } from "~/components/GrassPattern";
 import { Victory } from "~/components/Victory";
 import { LevelProgress, type QuizProfile } from "~/components/QuizLevel";
@@ -21,7 +22,7 @@ import { goBack, NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/com
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { REWARD } from "~/lib/brand";
-import { haptic } from "~/lib/haptics";
+import { haptic, useClockTicks } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { loadNick, loadPlayerId } from "~/lib/nick";
@@ -133,9 +134,13 @@ function TimerRing({ fraction, seconds, low }: { fraction: number; seconds: numb
           transform="rotate(-90 22 22)"
         />
       </Svg>
-      <Text allowFontScaling={false} style={[styles.ringText, low && { color: WRONG }]}>
-        {seconds}
-      </Text>
+      {low ? (
+        <PopNumber value={seconds} style={[styles.ringText, { color: WRONG }]} />
+      ) : (
+        <Text allowFontScaling={false} style={styles.ringText}>
+          {seconds}
+        </Text>
+      )}
     </View>
   );
 }
@@ -239,13 +244,7 @@ export default function QuizRoom() {
 
   const ticking = room?.phase === "question" || room?.phase === "intro" || room?.phase === "reveal";
   // clock ticks through the last five seconds of a question (until you've answered)
-  const secLeft = room?.phase === "question" ? Math.ceil(Math.max(0, deadline - now) / 1000) : 0;
-  const lastTick = useRef(0);
-  useEffect(() => {
-    if (room?.phase !== "question" || picked !== null || secLeft < 1 || secLeft > 5 || secLeft === lastTick.current) return;
-    lastTick.current = secLeft;
-    haptic.tap();
-  }, [secLeft, room?.phase, picked]);
+  useClockTicks(room?.phase === "question" ? Math.ceil(Math.max(0, deadline - now) / 1000) : null, picked === null);
   useEffect(() => {
     if (!ticking) return;
     const id = setInterval(() => setNow(Date.now()), 100);
@@ -523,7 +522,6 @@ export default function QuizRoom() {
                   disabled={reveal || picked !== null || gone}
                   onPress={() => {
                     setPicked(i);
-                    haptic.press();
                     getSocket().emit("qz:answer", { choice: i });
                   }}
                   style={[styles.option, { backgroundColor: bg }, bg !== "white" && { borderColor: bg }, gone && { opacity: 0.25 }]}
@@ -564,7 +562,7 @@ export default function QuizRoom() {
           <Animated.View entering={FadeIn.duration(200)} style={{ alignItems: "center", marginTop: 16 }}>
             <Tap
               onPress={() => {
-                haptic.tap();
+                play("power");
                 getSocket().emit("qz:joker", { kind: "fifty" }, (res?: { ok: boolean; index: number; remove: number[] }) => {
                   if (res?.ok) setFifty({ index: res.index, remove: res.remove });
                 });
