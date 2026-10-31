@@ -140,8 +140,10 @@ export default function HatTrickRoom() {
   // the series for Profile's recent matches
   const mineWon = me && room?.series ? room.series[me.mark] : 0;
   const theirsWon = me && room?.series ? room.series[me.mark === "X" ? "O" : "X"] : 0;
+  // one series in this room: its last grid (XP and Profile's recent matches)
+  const seriesKey = `ht-${code}-${[...(room?.grid?.rows ?? []), ...(room?.grid?.cols ?? [])].join(",")}`;
   useRecordMatch(seriesOver && !!me, {
-    key: `ht-${code}-${[...(room?.grid?.rows ?? []), ...(room?.grid?.cols ?? [])].join(",")}`,
+    key: seriesKey,
     game: "ht",
     opponent: opponent?.nick || t("opponent"),
     result: mineWon > theirsWon ? "win" : mineWon < theirsWon ? "loss" : "draw",
@@ -324,6 +326,7 @@ export default function HatTrickRoom() {
           }
         />
         <SeriesEnd
+          xpKey={`${seriesKey}-series`}
           over={series.over}
           won={iWon}
           mine={me ? series[me.mark] : 0}

@@ -115,7 +115,8 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
   setInterval(matchQueues, 1000).unref();
 
   // Rooms nobody is connected to any more are cleared once a minute, timers included
-  const alive = (id) => io.sockets.sockets.has(id);
+  // a seat waiting for its phone to come back (`dropLater`) counts as alive
+  const alive = (id) => io.sockets.sockets.has(id) || awayData.has(id);
   setInterval(() => {
     for (const map of [race.rooms, ...GAMES.map((g) => g.rooms)]) {
       for (const [code, room] of map) {
@@ -181,12 +182,15 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
       cb?.({ ok: addReport(socket.data.ref, p) });
     });
 
-    // Losing the connection in a live match: the other player hears "away" and the seat waits
-    // REJOIN_MS for this phone to come back (recovered socket, below) before `drop` runs. Leaving on
-    // purpose (the app closing its socket) or outside a live match drops at once.
+    // Losing the connection in a live match or a lobby nobody started yet (the host switched apps):
+    // the other player hears "away" and the seat waits REJOIN_MS for this phone to come back
+    // (recovered socket, below) before `drop` runs. Leaving on purpose (the app closing its socket)
+    // or a finished match drops at once.
     const dropLater = (game, live, drop) => (reason) => {
       const code = socket.data[game + "Code"];
-      if (!code || !live() || reason === "client namespace disconnect" || reason === "server namespace disconnect") return drop();
+      const room = gameById(game)?.rooms.get(code);
+      const lobby = !!room && !room.started && room.players.some((p) => p.id === socket.id);
+      if (!code || !(live() || lobby) || reason === "client namespace disconnect" || reason === "server namespace disconnect") return drop();
       const key = socket.id + game;
       clearTimeout(awayTimers.get(key));
       awayData.set(socket.id, socket.data);
@@ -303,6 +307,12 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
         io.to(game + ":" + room.code).emit(game + ":update", view(room));
         back = true;
       }
+      // the quiz (several players, not in GAMES) hands its seat over the same way
+      if (qz.rejoin(io, prevId, socket, data.qzCode)) {
+        clearTimeout(awayTimers.get(prevId + "qz"));
+        awayTimers.delete(prevId + "qz");
+        back = true;
+      }
       awayData.delete(prevId);
       if (back) socket.emit("seat:back");
     };
@@ -316,7 +326,7 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
         welcomeBack(prev, data);
         if (old) {
           // the old connection is a ghost now: it must not leave the rooms it handed over
-          for (const g of GAMES) old.data[g.id + "Code"] = null;
+          for (const id of [...GAMES.map((g) => g.id), "qz"]) old.data[id + "Code"] = null;
           old.disconnect(true);
         }
       }
@@ -326,7 +336,7 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
     ht.attach(socket, { io, dropLater, dropLoneRoom, matchQueues });
 
     // ── Quiz (server-games/qz.js) ──
-    qz.attach(socket, { io });
+    qz.attach(socket, { io, dropLater });
 
   });
 

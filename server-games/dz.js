@@ -87,6 +87,8 @@ function view(room) {
     results: room.results,
     score,
     over: room.over,
+    /** per side: asked for a rematch (it starts once both have) */
+    again: room.again ?? [false, false],
     players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), side: p.side, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
 }
@@ -184,7 +186,7 @@ function attach(socket, ctx) {
   };
 
   const dzStart = (room, graceMs = 0) => {
-    Object.assign(room, { started: true, questions: dzQuestions(), round: 0, results: [], over: false, rated: false, game: (room.game ?? 0) + 1 });
+    Object.assign(room, { started: true, questions: dzQuestions(), round: 0, results: [], over: false, rated: false, again: [false, false], game: (room.game ?? 0) + 1 });
     dzOpenRound(room, graceMs);
     dzEmit(room);
   };
@@ -229,11 +231,14 @@ function attach(socket, ctx) {
     else dzEmit(room);
   });
 
-  // same hands, new questions; either player may ask once the match is over
+  // same hands, new questions once the match is over and both players have asked
   socket.on("dz:rematch", () => {
     const room = rooms.get(socket.data.dzCode);
-    if (!room || !room.over || room.players.length < 2 || !room.players.some((p) => p.id === socket.id)) return;
-    dzStart(room);
+    const me = room?.players.find((p) => p.id === socket.id);
+    if (!room || !me || !room.over || room.players.length < 2) return;
+    room.again = (room.again ?? [false, false]).map((a, side) => a || side === me.side);
+    if (room.again.every(Boolean)) dzStart(room);
+    else dzEmit(room);
   });
 
   const dzPair = (waiting, other) => {
@@ -278,6 +283,7 @@ function attach(socket, ctx) {
     else {
       room.started = false;
       room.deadline = 0;
+      room.again = [false, false];
       io.to("dz:" + room.code).emit("dz:peer-left", view(room));
     }
   };

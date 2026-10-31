@@ -34,7 +34,7 @@ export default function WhoAmIRandom() {
     if (matched) return;
     const id = setTimeout(() => {
       getSocket().emit("wm:unqueue");
-      loadTier().then((tier) => setMatched({ kind: "bot", opponent: randomNick(), tier, ...houseLook(tier) }));
+      loadTier().then((tier) => setMatched((m) => m ?? { kind: "bot", opponent: randomNick(), tier, ...houseLook(tier) }));
     }, houseAfterMs());
     return () => clearTimeout(id);
   }, [matched]);

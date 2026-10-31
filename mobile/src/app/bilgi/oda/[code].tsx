@@ -209,7 +209,18 @@ export default function QuizRoom() {
         setCombo(tl.combo);
       }
     };
-    const onConnect = () => setMyId(socket.id ?? "");
+    const join = () =>
+      Promise.all([loadNick(), loadPlayerId()]).then(([nick, pid]) =>
+        socket.emit("qz:join", { code, nick, pid }, (res: { ok: boolean; error?: string; room?: QzRoom }) => {
+          if (res.ok && res.room) apply(res.room);
+          else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
+        })
+      );
+    // back after a drop: the server kept the seat for a minute (or the quiz went on without us: an error, not a frozen question)
+    const onConnect = () => {
+      setMyId(socket.id ?? "");
+      join();
+    };
     const onProgress = (p: { gained: number; before: QuizProfile; after: QuizProfile }) => {
       setProgress(p);
       // the same XP also counts towards the overall level (the server's game count keys it)
@@ -227,12 +238,7 @@ export default function QuizRoom() {
     socket.on("qz:progress", onProgress);
     socket.on("qz:update", apply);
     socket.on("connect", onConnect);
-    Promise.all([loadNick(), loadPlayerId()]).then(([nick, pid]) =>
-      socket.emit("qz:join", { code, nick, pid }, (res: { ok: boolean; error?: string; room?: QzRoom }) => {
-        if (res.ok && res.room) apply(res.room);
-        else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
-      })
-    );
+    join();
     return () => {
       socket.emit("qz:leave");
       socket.off("qz:progress", onProgress);

@@ -33,6 +33,8 @@ export interface RondoMatch {
   roundEnd: RondoRoundEnd | null;
   over: boolean;
   won: boolean;
+  /** over with nobody on target (pair mode: hands ran out): a draw */
+  draw?: boolean;
   opponent: { nick: string; ref: string | null } | null;
   peerLeft: boolean;
   /** the last wrong try of mine (changes id each time) */
@@ -95,7 +97,7 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
     const socket = getSocket();
     const apply = (r: ServerRoom) => {
       setRoom((prev) => {
-        if (prev?.winner && !r.winner) setGames((g) => g + 1);
+        if ((prev?.winner || prev?.ended) && !r.winner && !r.ended) setGames((g) => g + 1);
         return r;
       });
       setDeadline(r.remainingMs ? Date.now() + r.remainingMs : 0);
@@ -166,6 +168,7 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
     roundEnd: room?.roundEnd ? { won: room.roundEnd.winner === null ? null : room.roundEnd.winner === mark, reason: room.roundEnd.reason, name: room.roundEnd.name, answers: room.roundEnd.answers } : null,
     over: !!room?.winner || !!room?.ended,
     won: room?.winner === mark,
+    draw: !!room?.ended && !room.winner,
     opponent: them ? { nick: them.nick, ref: them.ref ?? null } : null,
     peerLeft,
     wrong,

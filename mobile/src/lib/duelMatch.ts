@@ -24,6 +24,8 @@ export interface DuelMatch {
   pick: (card: number) => void;
   /** another match with the same hands (online: rematch) */
   again: () => void;
+  /** online: I asked for the rematch, it starts once the other player asks too */
+  askedAgain?: boolean;
   /** on this phone only: freeze / resume the pick clock (a walkthrough is up) */
   hold?: (on: boolean) => void;
   /** ms left on a frozen clock, else null */
@@ -123,6 +125,8 @@ interface ServerState {
   picked: [boolean, boolean];
   results: { question: Question; cards: [number, number]; winner: 0 | 1 | "draw" }[];
   over: boolean;
+  /** per side: asked for a rematch (older servers send none) */
+  again?: [boolean, boolean];
   players: { id: string; ref?: string | null; nick: string; side: 0 | 1; tier: number | null }[];
 }
 
@@ -187,5 +191,6 @@ export function useOnlineDuel(code: string): DuelMatch & { opponent: string | nu
       getSocket().emit("dz:pick", { card });
     },
     again: () => getSocket().emit("dz:rematch"),
+    askedAgain: !!state?.over && !!state.again?.[side],
   };
 }

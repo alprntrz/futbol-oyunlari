@@ -152,19 +152,27 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
     }
   };
 
-  const away = (room, seat) => {
+  /** a lobby seat that left: gone from the list (the host's seat passes on) */
+  const leaveLobby = (room, seat) => {
+    if (!ttRooms.has(room.code)) return;
+    room.seats = room.seats.filter((s) => s !== seat);
+    if (!room.seats.length) return close(room);
+    if (room.hostPid === seat.pid) room.hostPid = room.seats[0].pid;
+    send(room);
+  };
+
+  /**
+   * A phone gone from its seat: TT_REJOIN_MS to come back (tt:join, same install id), in the lobby
+   * too, so a host who switches apps keeps the lobby. `leaving`: left a lobby on purpose, at once.
+   */
+  const away = (room, seat, leaving = false) => {
     if (seat.gone) return;
     seat.sid = null;
-    if (!room.lobby) {
-      // still in the lobby: just leave it (the host's seat passes on)
-      room.seats = room.seats.filter((s) => s !== seat);
-      if (!room.seats.length) return close(room);
-      if (room.hostPid === seat.pid) room.hostPid = room.seats[0].pid;
-      return send(room);
-    }
-    seat.away = Date.now();
     clearTimeout(seat.awayTimer);
-    seat.awayTimer = setTimeout(() => handOver(room, seat), TT_REJOIN_MS);
+    if (!room.lobby && leaving) return leaveLobby(room, seat);
+    seat.away = Date.now();
+    // the game may start meanwhile: then a house manager takes the seat over
+    seat.awayTimer = setTimeout(() => (room.lobby ? handOver(room, seat) : leaveLobby(room, seat)), TT_REJOIN_MS);
     send(room);
   };
 
@@ -186,7 +194,7 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
     socket.on("tt:create", (p, cb) => {
       if (!E || !isPid(p.pid)) return cb?.({ ok: false });
       const old = seatOf(socket);
-      if (old) away(old.room, old.seat);
+      if (old) away(old.room, old.seat, true);
       const room = {
         code: ttCode(),
         phase: "lobby",
@@ -230,7 +238,7 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
       if (!at) return;
       socket.data.ttCode = null;
       // leaving a live game is like dropping out: a minute to come back
-      away(at.room, at.seat);
+      away(at.room, at.seat, true);
     });
 
     socket.on("tt:start", (p, cb) => {

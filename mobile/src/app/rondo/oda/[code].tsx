@@ -32,7 +32,7 @@ export default function RondoRoom() {
   useLeaveGuard(!!room?.started && !m.over && !m.peerLeft);
 
   useXpAward(m.over, m.key, "rd", m.won ? XP.rdWin : XP.rdLoss);
-  useRecordMatch(m.over, { key: m.key, game: "rd", opponent: m.opponent?.nick || t("opponent"), result: m.won ? "win" : "loss", score: `${m.score.me}–${m.score.them}` });
+  useRecordMatch(m.over, { key: m.key, game: "rd", opponent: m.opponent?.nick || t("opponent"), result: m.won ? "win" : m.draw ? "draw" : "loss", score: `${m.score.me}–${m.score.them}` });
 
   if (m.error) {
     return (
@@ -81,7 +81,7 @@ export default function RondoRoom() {
         />
         {m.peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
         <RondoBoard m={m} footer={<RondoEnd m={m} onNew={params.random ? () => router.replace({ pathname: "/rondo/rastgele", params: { mode: m.mode } }) : undefined} />} />
-        <SeriesEnd over={m.over} won={m.won} mine={m.score.me} theirs={m.score.them} onRematch={m.rematch} countTrophy={false} payXp={false} />
+        <SeriesEnd over={m.over} won={m.won} title={m.draw ? t("rdDraw") : undefined} mine={m.score.me} theirs={m.score.them} onRematch={m.rematch} countTrophy={false} payXp={false} />
         <EmoteLayer e={emotes} top={4} />
       </Page>
       <ConnectionBanner game="rd" />
