@@ -17,7 +17,7 @@ ve görselleriyle; uygulamanın futbol bilgisi kimliğine bağlı.
 ## 2. Oyun döngüsü
 
 1. **Başla:** Futbolcu orta sahadan topla koşmaya başlar. Kamera arkadan, hafif yukarıdan.
-2. **Koş:** Hız saniyeler geçtikçe artar (2 dakikada yaklaşık 2 katı).
+2. **Koş:** Hız saniyeler geçtikçe artar (11 m/s'den başlar, yaklaşık 85 saniyede 27 m/s tavanına çıkar ≈ 2,5 katı; `engine.ts` ACCEL / MAX_SPEED).
 3. **Kaç:** Engeller üç şeritte gelir; doğru hareketle geçilir, çarpınca koşu biter.
 4. **Topla:** Şeritlerde altın paralar; arada güçlendirmeler.
 5. **Kale anı:** İlk kale 260 m'de, sonra her ~420–540 m'de; kale görününce ekranın üstünde
@@ -86,7 +86,7 @@ bir geçilebilir yol bırakır (bunu üretici kod doğrular).
 ## 5. Toplanabilirler ve güçlendirmeler
 
 - **Altın para:** Skor + oyun içi altın (sadece istatistik ve XP'ye döner, harcama yok).
-- **Krampon (hız botu):** 6 sn hızlanma ve engellerden geçme (dokunulmazlık).
+- **Krampon (hız botu):** 5 sn hızlanma ve engellerden geçme (dokunulmazlık).
 - **Mıknatıslı top:** 8 sn yakındaki paraları çeker.
 - **Kaptanlık bandı:** Bir çarpışmayı affeder (kalkan).
 - **2× rozet:** 10 sn çift puan.

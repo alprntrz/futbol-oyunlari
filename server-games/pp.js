@@ -1,10 +1,18 @@
 // Possession Play online (pp:*, 31 hexes). The host's phone deals the board (criterion ids). The
-// mover's phone works out which hexes a footballer claims (both phones share the player list); the
-// server applies the move, runs both chess clocks and decides the result. server.js lists it in GAMES
+// server judges the named footballer and works out which hexes he claims (same player list and rule
+// as the phones, src/lib/tiki.ts + mobile/src/lib/possession.ts), runs both chess clocks and decides the result. server.js lists it in GAMES
 // (reconnect, room sweep, queue pairing, emotes, invites, Live Activity) and calls attach() per socket.
 const { cleanLook, plusOf } = require("../server-accounts");
 const { INTRO_MS, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf } = require("../server-core");
 const { liveSend, liveTurnProps } = require("../server-live");
+const path = require("path");
+const { pathToFileURL } = require("node:url");
+
+/** the criteria and player list, once loaded (server-taktik.js registers the "@/" resolver they need) */
+let TIKI = null;
+import(pathToFileURL(path.join(__dirname, "..", "src", "lib", "tiki.ts")).href)
+  .then((m) => (TIKI = m))
+  .catch((e) => console.error("tiki rules:", e?.message));
 
 const PP_HEXES = 31;
 const PP_CLOCK_MS = 120_000;
@@ -65,7 +73,19 @@ const PP_NEIGHBOURS = (() => {
 })();
 
 // a board comes from a phone and goes to the other phone: short criterion ids only
-const ppBoardOk = (b) => Array.isArray(b) && b.length === PP_HEXES && b.every(critId);
+const ppBoardOk = (b) => Array.isArray(b) && b.length === PP_HEXES && b.every((id) => critId(id) && (!TIKI || !!TIKI.criterionById(id)));
+
+/**
+ * The hexes a move takes, judged by the server: the chosen hex plus every touching hex the
+ * footballer also fits that isn't already the mover's (claimsFor in mobile/src/lib/possession.ts).
+ * null = the name isn't a footballer who fits the chosen hex.
+ */
+function ppClaims(room, hex, name, mark) {
+  const crit = (i) => TIKI.criterionById(room.board[i]);
+  const p = TIKI.matchPlayers(name).find((x) => x.name === name && crit(hex)?.test(x));
+  if (!p) return null;
+  return [hex, ...PP_NEIGHBOURS[hex].filter((n) => room.owners[n]?.mark !== mark && crit(n)?.test(p))];
+}
 
 /** The Live Activity of an away phone: whose turn, the mover's clock, hexes held */
 function live(room) {
@@ -149,13 +169,21 @@ function attach(socket, ctx) {
     if (!me || me.mark !== room.turn) return;
     room.clocks[me.mark] = Math.max(0, room.clocks[me.mark] - (Date.now() - room.turnStart));
     const player = nameOf(name);
+    let hexes = [];
     if (player) {
-      const hexes = Array.isArray(claims) ? [...new Set(claims)].filter((i) => Number.isInteger(i) && i >= 0 && i < PP_HEXES) : [];
+      hexes = Array.isArray(claims) ? [...new Set(claims)].filter((i) => Number.isInteger(i) && i >= 0 && i < PP_HEXES) : [];
       // The first claim is the chosen hex and must be neutral; the rest must touch it; the name must be new
       const touching = hexes.slice(1).every((i) => PP_NEIGHBOURS[hexes[0]].includes(i));
       if (!hexes.length || hexes.length !== (claims?.length ?? 0) || !touching || room.owners[hexes[0]] || room.used.includes(player)) {
         return socket.emit("pp:update", view(room));
       }
+      // the server decides what the footballer takes; rules still loading → trust the phone, as before
+      if (TIKI) hexes = ppClaims(room, hexes[0], player, me.mark) ?? [];
+    }
+    if (player && !hexes.length) {
+      // a name that doesn't fit the hex counts as a wrong guess
+      room.flash = { mark: me.mark, reason: "wrong" };
+    } else if (player) {
       const stolen = hexes.filter((i) => room.owners[i] && room.owners[i].mark !== me.mark).length;
       for (const i of hexes) room.owners[i] = { mark: me.mark, name: player };
       room.used.push(player);
@@ -177,7 +205,7 @@ function attach(socket, ctx) {
 
   socket.on("pp:rematch", ({ board }) => {
     const room = rooms.get(socket.data.ppCode);
-    if (!room || !room.winner || room.players[0].id !== socket.id || !ppBoardOk(board)) return;
+    if (!room || !room.winner || room.players.length < 2 || room.players[0].id !== socket.id || !ppBoardOk(board)) return;
     const players = room.players.map((p) => ({ ...p, mark: p.mark === "X" ? "O" : "X" }));
     Object.assign(room, newRoom(room.code, board, players), { started: true });
     ppStartTurn(room);

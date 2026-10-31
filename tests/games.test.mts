@@ -106,6 +106,44 @@ test("rondo: clubs are dealt without repeats, answers are judged, the house play
   }
 });
 
+test("rondo pair duel: pairs share known players, answers must fit both clubs, the house player stays legal", async () => {
+  const { RONDO_PAIRS, RONDO_PAIR_TARGET, cleanRondoMode, cleanRondoTarget, dealRondoPairs, houseRondoPairAnswer, judgeRondoPair, rondoPairAnswers, rondoPairById } = await import("@/lib/rondo");
+  assert.ok(RONDO_PAIRS.length >= 100);
+  // Arrange: a dealt match
+  const dealt = dealRondoPairs(seededRandom(4), RONDO_PAIR_TARGET * 2 - 1);
+  assert.equal(dealt.length, RONDO_PAIR_TARGET * 2 - 1);
+  assert.equal(new Set(dealt).size, dealt.length, "no pair twice");
+  for (let i = 1; i < dealt.length; i++) {
+    const [a, b] = rondoPairById(dealt[i])!.clubs;
+    assert.ok(!rondoPairById(dealt[i - 1])!.clubs.includes(a) && !rondoPairById(dealt[i - 1])!.clubs.includes(b), "a club is not in two hands in a row");
+  }
+  // Act / Assert: judging
+  const madrid = RONDO_PAIRS.find((p) => p.clubs.includes("realmadrid") && p.clubs.includes("barcelona"))!;
+  assert.ok(madrid, "Real Madrid + Barcelona is a pair");
+  assert.ok(judgeRondoPair("Luis Figo", madrid.id, []).ok);
+  assert.deepEqual(judgeRondoPair("Luis Figo", madrid.id, ["Luís Figo"]), { ok: false, reason: "used" });
+  assert.deepEqual(judgeRondoPair("Lionel Messi", madrid.id, []), { ok: false, reason: "wrong" });
+  assert.deepEqual(judgeRondoPair("zzzqqq", madrid.id, []), { ok: false, reason: "unknown" });
+  // the best-known answers all fit, best known first
+  const best = rondoPairAnswers(madrid.id, 5);
+  assert.ok(best.length >= 4 && best.length <= 5);
+  for (const name of best) assert.ok(judgeRondoPair(name, madrid.id, []).ok, name);
+  // every house answer fits the pair
+  for (const id of dealt) {
+    const rand = seededRandom(id.length);
+    for (let i = 0; i < 20; i++) {
+      const name = houseRondoPairAnswer(id, rand);
+      if (name) assert.ok(judgeRondoPair(name, id, []).ok, `${id}: ${name}`);
+    }
+  }
+  // what a phone sends is cleaned
+  assert.equal(cleanRondoMode("pair"), "pair");
+  assert.equal(cleanRondoMode("zzz"), "club");
+  assert.equal(cleanRondoTarget(4), 4);
+  assert.equal(cleanRondoTarget(9), RONDO_PAIR_TARGET);
+  assert.equal(cleanRondoTarget("3"), RONDO_PAIR_TARGET);
+});
+
 test("quiz 'who has more': the right option has the top number, by a real gap", () => {
   let seen = 0;
   for (const level of ["easy", "normal", "hard"] as const) {

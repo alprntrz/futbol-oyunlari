@@ -180,6 +180,17 @@ export function RondoSteps() {
   return <NumberedRules items={[t("rdRule1"), t("rdRule2"), t("rdRule3")]} note={t("jkRuleRd")} />;
 }
 
+/** The two-club duel's rules (a Rondo mode); `target` = hands to win. */
+export function RondoPairSteps({ target = 3 }: { target?: number }) {
+  const { t } = useI18n();
+  return (
+    <View style={{ gap: 10 }}>
+      <Text style={styles.subTitle}>{t("rdModePair")}</Text>
+      <NumberedRules items={[t("rdPairRule1"), t("rdPairRule2"), t("rdPairRule3").replace("{n}", String(target))]} />
+    </View>
+  );
+}
+
 export function WhoAmISteps() {
   const { t } = useI18n();
   return <NumberedRules items={[t("wmRule1"), t("wmRule2"), t("wmRule3")]} />;
@@ -226,4 +237,5 @@ const styles = StyleSheet.create({
   num: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
   numText: { fontFamily: F.display, fontSize: 14, color: C.greenDark },
   sheetHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 20 },
+  subTitle: { fontFamily: F.display, fontSize: 19, color: C.text },
 });
