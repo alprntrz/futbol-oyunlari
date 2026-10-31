@@ -6,6 +6,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, w
 import { useAccount } from "~/lib/account";
 import { adsAvailable } from "~/lib/ads";
 import { loadAvatar } from "~/lib/avatar";
+import { MONETIZE } from "~/lib/features";
 import { CALENDAR, claimDaily, doubleDaily, useDailyRewards } from "~/lib/dailyRewards";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
@@ -35,8 +36,9 @@ export function HomeStatus() {
   const { todayIndex, claimed, doubled } = useDailyRewards();
   const plus = usePlus().active;
   const [sheet, setSheet] = useState<"streak" | "gift" | null>(null);
-  // a broken streak can be put back: free with Plus, else by a rewarded ad (or Plus as the way out)
-  const canRepair = streak.lost > 0 && (plus || adsAvailable() || purchasesAvailable());
+  // a broken streak can be put back: free with Plus or while there is no money side (1.1), else by a rewarded ad (or Plus as the way out)
+  const freeRepair = plus || !MONETIZE;
+  const canRepair = streak.lost > 0 && (freeRepair || adsAvailable() || purchasesAvailable());
   // the daily gift can be doubled once by an ad (an ad perk: Plus players have no ads to watch)
   const canDouble = claimed && !doubled && !plus && adsAvailable();
 
@@ -82,7 +84,7 @@ export function HomeStatus() {
   const onFlame = () => {
     if (!canRepair) return;
     haptic.tap();
-    if (plus) repair();
+    if (freeRepair) repair();
     else setSheet("streak");
   };
 

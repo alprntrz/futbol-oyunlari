@@ -19,6 +19,7 @@ import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
 import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
 import { dealGrid } from "~/lib/league";
+import { loadTier } from "~/lib/xp";
 
 /**
  * Random-queue fallback when nobody else is searching. Mirrors the online room
@@ -31,6 +32,12 @@ export default function HatTrickHouse() {
   const nick = params.nick || t("opponent");
   // report / block work on the house player too (a made-up ref), like on anyone online
   const [houseKey] = useState(() => houseRef(`${nick}-${Math.random()}`));
+
+  // the house player plays tighter against a higher rank
+  const [tier, setTier] = useState(0);
+  useEffect(() => {
+    loadTier().then(setTier);
+  }, []);
 
   const [me, setMe] = useState<Mark>("X");
   const rival = other(me);
@@ -142,7 +149,7 @@ export default function HatTrickHouse() {
     const ms = botThinkMs();
     if (ms === null) return;
     const id = setTimeout(() => {
-      const move = botMove(grid, board, usedNames, rival);
+      const move = botMove(grid, board, usedNames, rival, tier);
       play(move.cell, move.name);
     }, ms);
     return () => clearTimeout(id);

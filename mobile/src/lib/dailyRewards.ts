@@ -7,7 +7,7 @@ import { awardXp } from "./xp";
 
 /**
  * Seven-day reward calendar: come back each day to claim the next, bigger reward.
- * Missing a day starts the week over. Fixed amounts (no random chests).
+ * Missing a day steps back one slot (a full week starts over). Fixed amounts (no random chests).
  */
 export const CALENDAR = [10, 15, 20, 30, 40, 60, 100];
 
@@ -39,8 +39,8 @@ function load() {
 function view(s: CalState) {
   const today = dayNumber();
   if (s.last === today) return { todayIndex: s.step, claimed: true, doubled: s.doubled === today };
-  // claimed yesterday: the next slot; a gap (or a full week) starts over
-  const next = s.last === today - 1 && s.step < CALENDAR.length - 1 ? s.step + 1 : 0;
+  // claimed yesterday: the next slot (a full week starts over); a gap steps back one slot
+  const next = s.last === today - 1 ? (s.step < CALENDAR.length - 1 ? s.step + 1 : 0) : Math.max(0, s.step - 1);
   return { todayIndex: next, claimed: false, doubled: false };
 }
 
