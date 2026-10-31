@@ -5,6 +5,7 @@ import { test } from "node:test";
 import { BUDGET, CARDS, checkHand, dailyRand, dealQuestions, draftable, HAND_SIZE, handCost, houseHand, roundWinner, THEMES } from "@/lib/duel";
 import { leagueGrid } from "@/lib/leagues";
 import { quizPoints, quizQuestions } from "@/lib/quiz";
+import { ordinal } from "@/lib/strings";
 import { cellSolvable, generateGrid, seededRandom, withHonour } from "@/lib/tiki";
 import { evaluateGuess, normalizeAnswer } from "@/lib/wordle";
 
@@ -13,6 +14,11 @@ test("answers fold Turkish letters and accents, letters only", () => {
   // spaces go too: guesses compare letters only ("DI MARIA" in the data is "DIMARIA" here)
   assert.equal(normalizeAnswer("Di María"), "DIMARIA");
   assert.equal(normalizeAnswer("  çağlar söyüncü "), "CAGLARSOYUNCU");
+});
+
+test("places read as ordinals", () => {
+  assert.deepEqual([1, 2, 3, 4, 11, 12, 13, 21, 22, 103].map((n) => ordinal(n, "en")), ["1st", "2nd", "3rd", "4th", "11th", "12th", "13th", "21st", "22nd", "103rd"]);
+  assert.equal(ordinal(3, "tr"), "3.");
 });
 
 test("a guess is marked like Wordle", () => {

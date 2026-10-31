@@ -24,6 +24,7 @@ import { GAME_ICON, useLivePush, useMatchActivity } from "~/lib/liveActivity";
 import { REVEAL_MS, useLocalDuel, useOnlineDuel, type DuelMatch, type RoundResult } from "~/lib/duelMatch";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { randomNick } from "~/lib/nick";
 import { play } from "~/lib/sound";
 import { C, F, T } from "~/lib/theme";
@@ -78,6 +79,7 @@ function Local({ mode, hand, nick, themeId }: { mode: Mode; hand: number[]; nick
 function Online({ code, hand }: { code: string; hand: number[] }) {
   const m = useOnlineDuel(code);
   useLivePush("dz", code);
+  useLeaveGuard((m.question !== null || m.results.length > 0) && !m.over && !m.peerLeft);
   return (
     <>
       <Board m={m} hand={hand} opponent={m.opponent} opponentRef={m.opponentRef} xpKey={`dz-room-${code}-${m.game}`} online onAgain={m.peerLeft ? undefined : m.again} />
@@ -214,7 +216,7 @@ function Board({
 
       {/* top: back, round, score */}
       <View style={styles.topRow}>
-        <Tap onPress={() => router.back()} style={styles.back} accessibilityLabel="‹">
+        <Tap onPress={() => router.back()} style={styles.back} accessibilityLabel={t("back")}>
           <Icon name="chevron.left" size={18} color="white" fallback="‹" />
         </Tap>
         <Text style={styles.round}>{t("dzRound").replace("{n}", String(Math.min(ROUNDS, m.round + (revealing ? 0 : 1)))).replace("{max}", String(ROUNDS))}</Text>

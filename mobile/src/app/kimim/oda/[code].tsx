@@ -12,6 +12,7 @@ import { Button, Card, Icon, Page } from "~/components/ui";
 import { WaitingRoom } from "~/components/WaitingRoom";
 import { useRecordMatch } from "~/lib/history";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { useWmOnline } from "~/lib/whoamiMatch";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
@@ -25,6 +26,7 @@ export default function WhoAmIRoom() {
   const m = useWmOnline(code);
   const emotes = useEmotes("wm", true);
   const room = m.room;
+  useLeaveGuard(!!room?.started && !m.over && !m.peerLeft);
 
   useXpAward(m.over && !m.peerLeft, m.key, "wm", m.won ? XP.wmWin : m.draw ? XP.wmDraw : XP.wmLoss);
   useRecordMatch(m.over, { key: m.key, game: "wm", opponent: m.opponent?.nick || t("opponent"), result: m.won ? "win" : m.draw ? "draw" : "loss", score: `${m.hearts.me}–${m.hearts.them}` });

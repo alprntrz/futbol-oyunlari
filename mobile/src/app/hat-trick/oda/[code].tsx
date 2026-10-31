@@ -17,6 +17,7 @@ import { haptic } from "~/lib/haptics";
 import { useRecordMatch } from "~/lib/history";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { dealGrid } from "~/lib/league";
 import { GAME_ICON, useDuelActivity, useLivePush } from "~/lib/liveActivity";
 import { getNick } from "~/lib/raceSession";
@@ -122,6 +123,7 @@ export default function HatTrickRoom() {
 
   // Between games of a series the host's phone deals the next grid after a short pause
   const seriesOver = room?.series?.over ?? false;
+  useLeaveGuard(!!room?.started && !seriesOver && !peerLeft);
   const hostHere = room?.players[0]?.id === myId;
   const roomLeague = room?.league;
   // an older app in the room can't draw "played with" criteria

@@ -8,6 +8,7 @@ import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg"
 
 import { quizQuestions, type QuizCategory, type QuizDifficulty } from "@/lib/quiz";
 import { XP } from "@/lib/levels";
+import { ordinal } from "@/lib/strings";
 
 import { openPlayerMenu } from "~/components/PlayerMenu";
 import { Avatar as PlayerAvatar } from "~/components/Avatar";
@@ -410,7 +411,7 @@ export default function QuizRoom() {
     );
   } else if (room?.phase === "done") {
     const place = standings.findIndex((p) => p.id === myId) + 1;
-    const placeText = place === 1 ? t("qzWinner") : locale === "tr" ? `${place}${t("qzPlace")}` : `${place}${["st", "nd", "rd"][place - 1] ?? "th"}${t("qzPlace")}`;
+    const placeText = place === 1 ? t("qzWinner") : t("qzPlace").replace("{n}", ordinal(place, locale));
     const isHost = room.hostId === myId;
     const podium = [standings[1], standings[0], standings[2]];
     body = (
@@ -748,7 +749,7 @@ function QuizCeremony({
   const place = standings.findIndex((p) => p.id === myId) + 1;
   const me = standings[place - 1];
   const won = place === 1;
-  const placeTitle = won ? t("vcWon") : locale === "tr" ? `${place}. OLDUN` : `${place}${["ST", "ND", "RD"][place - 1] ?? "TH"} PLACE`;
+  const placeTitle = won ? t("vcWon") : t("qzPlace").replace("{n}", ordinal(place, locale)).toUpperCase();
   const levelled = !!progress && progress.after.level > progress.before.level;
   const isHost = room.hostId === myId;
 

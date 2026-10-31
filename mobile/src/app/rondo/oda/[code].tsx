@@ -13,6 +13,7 @@ import { Button, Card, Icon, Page } from "~/components/ui";
 import { WaitingRoom } from "~/components/WaitingRoom";
 import { useRecordMatch } from "~/lib/history";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { useRondoOnline } from "~/lib/rondoMatch";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
@@ -28,6 +29,7 @@ export default function RondoRoom() {
   const room = m.room;
   const pair = m.mode === "pair";
   const title = pair ? t("rdModePair") : "Rondo";
+  useLeaveGuard(!!room?.started && !m.over && !m.peerLeft);
 
   useXpAward(m.over && !m.peerLeft, m.key, "rd", m.won ? XP.rdWin : XP.rdLoss);
   useRecordMatch(m.over, { key: m.key, game: "rd", opponent: m.opponent?.nick || t("opponent"), result: m.won ? "win" : "loss", score: `${m.score.me}–${m.score.them}` });

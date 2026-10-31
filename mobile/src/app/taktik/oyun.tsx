@@ -423,7 +423,7 @@ export default function TaktikGame() {
       {/* top: back, the round, the clock, health / gold / streak */}
       <View style={[styles.top, { paddingTop: insets.top + 2 }]}>
         <View style={styles.topRow}>
-          <Tap onPress={leave} style={styles.back} accessibilityLabel="‹">
+          <Tap onPress={leave} style={styles.back} accessibilityLabel={t("back")}>
             <Icon name="chevron.left" size={17} color={C.text} fallback="‹" />
           </Tap>
           <Text style={styles.stage} numberOfLines={1}>

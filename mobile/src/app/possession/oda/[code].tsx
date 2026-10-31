@@ -8,6 +8,7 @@ import { PossessionBoard } from "~/components/PossessionBoard";
 import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
 import { PlayerMenuButton } from "~/components/PlayerMenu";
 import { ConnectionBanner } from "~/components/ConnectionBanner";
+import { GameActions } from "~/components/GameActions";
 import { Text } from "~/components/Text";
 import { WaitingRoom } from "~/components/WaitingRoom";
 import { Button, Card, Icon, Page } from "~/components/ui";
@@ -15,6 +16,7 @@ import { haptic } from "~/lib/haptics";
 import { useRecordMatch } from "~/lib/history";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { GAME_ICON, useDuelActivity, useLivePush } from "~/lib/liveActivity";
 import { boardFromIds, boardToIds, claimsFor, generateBoard, type PpCell } from "~/lib/possession";
 import { getNick } from "~/lib/raceSession";
@@ -55,6 +57,7 @@ export default function PossessionRoom() {
   const [error, setError] = useState<string | null>(null);
   const [peerLeft, setPeerLeft] = useState(false);
   const [myId, setMyId] = useState(() => getSocket().id ?? "");
+  const leave = useLeaveGuard(!!room?.started && !room.winner && !peerLeft);
 
   // each game in the room (a rematch deals a new board) pays once
   const myMark = room?.players.find((p) => p.id === myId)?.mark;
@@ -225,7 +228,16 @@ export default function PossessionRoom() {
               ) : (
                 <Text style={[T.body, { textAlign: "center", marginTop: 16 }]}>{t("htWaitRematch")}</Text>
               )
-            ) : null
+            ) : (
+              // pp:leave drops this seat (a loss), so the screen goes back with it
+              <GameActions
+                disabled={peerLeft}
+                onForfeit={() => {
+                  getSocket().emit("pp:leave", { code });
+                  leave();
+                }}
+              />
+            )
           }
         />
         <EmoteLayer e={emotes} top={4} />

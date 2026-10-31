@@ -4,6 +4,7 @@ import { Image, Modal, Pressable, ScrollView, StyleSheet, View, type ImageSource
 import { evaluateGuess } from "@/lib/wordle";
 
 import { BRAND } from "~/lib/brand";
+import { hasUnity } from "~/lib/unity";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
 
@@ -199,6 +200,12 @@ export function WhoAmISteps() {
 export function BingoSteps() {
   const { t } = useI18n();
   return <NumberedRules items={[t("bingoRule1"), t("bingoRule2")]} />;
+}
+
+/** Dribbling Rush: the 3D game's controls (or the 2D one's on builds without Unity), one step per " · " part. */
+export function RushSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={t(hasUnity() ? "rushHow3D" : "rushHow").split(" · ")} />;
 }
 
 export function MysterySteps() {

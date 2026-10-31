@@ -4,11 +4,13 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withSequ
 
 import type { TileMark } from "@/lib/types";
 
+import { useI18n } from "~/lib/i18n";
 import { C, F } from "~/lib/theme";
 
 import { Text } from "./Text";
 
 const MARK_BG: Record<TileMark, string> = { correct: C.tileCorrect, present: C.tilePresent, absent: C.tileAbsent };
+const MARK_LABEL = { correct: "tileCorrect", present: "tilePresent", absent: "tileAbsent" } as const;
 
 /** Per-tile flip timing (ms); the board waits for the flip before closing the sheet. */
 export const FLIP_STAGGER = 110;
@@ -30,6 +32,7 @@ export function Tile({
   /** empty tile on a dark surface (onboarding) */
   dark?: boolean;
 }) {
+  const { t } = useI18n();
   const flipping = mark !== undefined && flipIndex !== undefined;
   // 0 → 0.5: tile folds shut showing the typed letter; 0.5 → 1: opens again coloured
   const p = useSharedValue(flipping ? 0 : 1);
@@ -66,7 +69,11 @@ export function Tile({
   const color = mark && !shut ? "white" : hint ? C.text3 : dark ? "#f7f8f8" : C.text;
 
   return (
-    <Animated.View style={[styles.tile, { width: size, height: size }, box]}>
+    <Animated.View
+      style={[styles.tile, { width: size, height: size }, box]}
+      accessible={!!ch}
+      accessibilityLabel={ch ? (mark ? `${ch}, ${t(MARK_LABEL[mark])}` : ch) : undefined}
+    >
       <Text allowFontScaling={false} style={{ fontFamily: F.display, fontSize: Math.round(size * 0.62), color, minWidth: 8, textAlign: "center" }}>{ch}</Text>
     </Animated.View>
   );
