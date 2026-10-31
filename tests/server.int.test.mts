@@ -169,6 +169,42 @@ test("Tic-Tac-Toe: two queued players are paired", async () => {
   assert.ok(m.v?.code);
 });
 
+test("Tic-Tac-Toe: a new game takes both players out of the old room", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "ht:create", { nick: "a", grid: grid() });
+  await ask(b, "ht:join", { code: c.room.code, nick: "b" });
+  a.emit("ht:start");
+  await wait(300);
+  // both walk away from game 1 without a word (back button) and queue for a new one
+  const m = latest<{ code: string }>(a, "ht:matched");
+  a.emit("ht:queue", { nick: "a", grid: grid(), tier: 0 });
+  b.emit("ht:queue", { nick: "b", grid: grid(), tier: 0 });
+  await wait(1500);
+  const code2 = m.v?.code ?? "";
+  assert.ok(code2 && code2 !== c.room.code);
+  // the old room is gone (with its clock), so its updates can't reach the new game
+  const old = await ask<{ ok: boolean; error?: string }>(b, "ht:join", { code: c.room.code, nick: "b" });
+  assert.equal(old.error, "not_found");
+  // a late leave from game 1's screen doesn't take b out of game 2
+  b.emit("ht:leave", { code: c.room.code });
+  const st = latest<{ code: string; turn: string; started: boolean }>(a, "ht:update");
+  a.emit("ht:move", { cell: 0, name: null });
+  await wait(300);
+  assert.equal(st.v?.code, code2);
+  assert.equal(st.v?.started, true, "b is still seated in game 2");
+  assert.equal(st.v?.turn, "O", "a's miss passed the turn in game 2");
+  // a move out of turn is answered with the room as it is
+  st.v = null;
+  a.emit("ht:move", { cell: 1, name: null });
+  await wait(300);
+  assert.equal(st.v?.turn, "O");
+  // leaving game 2 tells the other player
+  const left = latest<{ code: string }>(b, "ht:peer-left");
+  a.emit("ht:leave", { code: code2 });
+  await wait(300);
+  assert.equal(left.v?.code, code2);
+});
+
 test("Possession: room, a miss passes the turn", async () => {
   const [a, b] = await Promise.all([client(), client()]);
   const st = latest<{ turn: string; started: boolean }>(a, "pp:update");

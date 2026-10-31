@@ -152,7 +152,7 @@ function live(room) {
 
 /** This socket's ht:* handlers; `ctx` as in server-games/wm.js. */
 function attach(socket, ctx) {
-  const { io, dropLater, dropLoneRoom, matchQueues } = ctx;
+  const { io, dropLater, matchQueues } = ctx;
 
   const htEmit = (room) => {
     io.to("ht:" + room.code).emit("ht:update", view(room));
@@ -192,7 +192,7 @@ function attach(socket, ctx) {
 
   socket.on("ht:create", ({ nick, grid, steals, league }, cb) => {
     if (!htGridOk(grid)) return cb?.({ ok: false, error: "bad_grid" });
-    dropLoneRoom(rooms, socket.data.htCode, socket);
+    leaveRoom(socket);
     const code = codeFor(rooms);
     const room = {
       code,
@@ -219,6 +219,7 @@ function attach(socket, ctx) {
   socket.on("ht:join", ({ code, nick }, cb) => {
     const room = rooms.get(String(code || "").toUpperCase());
     if (!room) return cb?.({ ok: false, error: "not_found" });
+    if (socket.data.htCode !== room.code) leaveRoom(socket);
     if (!room.players.some((p) => p.id === socket.id)) {
       if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
       if (!canDraw(socket, room.grid)) return cb?.({ ok: false, error: "update_app" });
@@ -253,6 +254,7 @@ function attach(socket, ctx) {
         { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
       ],
     };
+    for (const s of [waiting.socket, other.socket]) leaveRoom(s);
     rooms.set(code, room);
     for (const s of [waiting.socket, other.socket]) {
       s.data.htCode = code;
@@ -265,6 +267,7 @@ function attach(socket, ctx) {
   socket.on("ht:queue", ({ nick, grid, league, tier, avatar, frame }) => {
     if (!htGridOk(grid)) return;
     const lg = typeof league === "string" ? league.slice(0, 12) : "all";
+    leaveRoom(socket);
     queue = queue.filter((w) => w.socket.id !== socket.id);
     queue.push({ socket, nick: cleanNick(nick), grid, league: lg, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: htPair });
     matchQueues();
@@ -287,7 +290,8 @@ function attach(socket, ctx) {
     const room = rooms.get(socket.data.htCode);
     if (!room || !room.started || room.winner) return;
     const me = room.players.find((p) => p.id === socket.id);
-    if (!me || me.mark !== room.turn) return;
+    // not your turn (a screen showing an old state): resync the sender
+    if (!me || me.mark !== room.turn) return socket.emit("ht:update", view(room));
     const i = Number.isInteger(cell) ? cell : -1;
     const named = nameOf(name);
     // a name that doesn't fit the square counts as a wrong guess
@@ -401,17 +405,21 @@ function attach(socket, ctx) {
     htEmit(room);
   });
 
-  const htDrop = () => {
-    queue = queue.filter((w) => w.socket.id !== socket.id);
-    const room = rooms.get(socket.data.htCode);
+  /** Takes socket `s` out of its room: it stops getting that room's events, and a room left
+   *  empty is deleted (its clock with it). Starting or joining another game calls this first,
+   *  so an old room never keeps ticking into the next match's screen. */
+  function leaveRoom(s) {
+    const room = rooms.get(s.data.htCode);
+    s.leave("ht:" + s.data.htCode);
+    s.data.htCode = null;
     if (!room) return;
     // walking out of a live series loses it (no dodging a defeat)
-    const leaver = room.players.find((p) => p.id === socket.id);
+    const leaver = room.players.find((p) => p.id === s.id);
     if (leaver && room.started && room.players.length === 2 && !htSeries(room).over && !room.seriesRated) {
       room.seriesRated = true;
       rateDuel("ht", room, leaver.mark === "X" ? "O" : "X");
     }
-    room.players = room.players.filter((p) => p.id !== socket.id);
+    room.players = room.players.filter((p) => p.id !== s.id);
     if (room.players.length === 0) {
       clearTimeout(room.timer);
       rooms.delete(room.code);
@@ -421,7 +429,16 @@ function attach(socket, ctx) {
       room.deadline = null;
       io.to("ht:" + room.code).emit("ht:peer-left", view(room));
     }
+  }
+  const htDrop = () => {
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+    leaveRoom(socket);
   };
+  // the room screen closing: `code` is that screen's room, so a late leave from an old screen
+  // never takes the player out of the game they have moved on to
+  socket.on("ht:leave", ({ code }) => {
+    if (typeof code === "string" && code === socket.data.htCode) htDrop();
+  });
   socket.on("disconnect", (reason) => {
     queue = queue.filter((w) => w.socket.id !== socket.id);
     const room = rooms.get(socket.data.htCode);

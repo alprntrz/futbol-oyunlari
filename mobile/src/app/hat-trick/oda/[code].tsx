@@ -82,11 +82,14 @@ export default function HatTrickRoom() {
       });
       setDeadline(Date.now() + r.remainingMs);
     };
+    // events of another room (an older game this phone was in) are not this screen's
     const onUpdate = (r: HtRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(false);
       apply(r);
     };
     const onPeerLeft = (r: HtRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(true);
       apply(r);
     };
@@ -105,6 +108,7 @@ export default function HatTrickRoom() {
       socket.off("ht:update", onUpdate);
       socket.off("ht:peer-left", onPeerLeft);
       socket.off("connect", onConnect);
+      socket.emit("ht:leave", { code });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
