@@ -22,7 +22,7 @@ if (!env?.EXPO_PUBLIC_SOCKET_URL?.startsWith("https://")) {
   console.error("eas.json production env has no https EXPO_PUBLIC_SOCKET_URL; refusing to publish");
   process.exit(1);
 }
-execFileSync("npx", ["eas-cli", "update", "--channel", "production", "--message", message, "--non-interactive"], {
+execFileSync("npx", ["eas-cli", "update", "--channel", "production", "--environment", "production", "--message", message, "--non-interactive"], {
   stdio: "inherit",
   env: { ...process.env, ...env },
 });
