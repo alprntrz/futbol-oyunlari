@@ -106,11 +106,13 @@ export function WhoAmIBoard({ m, footer }: { m: WmMatch; footer?: React.ReactNod
     ? null
     : m.draw
       ? t("wmDraw")
-      : m.endReason === "forfeit"
-        ? t(m.won ? "wmForfeitWon" : "wmForfeitLost")
-        : m.endReason === "hearts"
-          ? t(m.won ? "wmWonHearts" : "wmLostHearts")
-          : t(m.won ? "wmWonNamed" : "wmLostNamed");
+      : m.endReason === "left"
+        ? t("htPeerLeft")
+        : m.endReason === "forfeit"
+          ? t(m.won ? "wmForfeitWon" : "wmForfeitLost")
+          : m.endReason === "hearts"
+            ? t(m.won ? "wmWonHearts" : "wmLostHearts")
+            : t(m.won ? "wmWonNamed" : "wmLostNamed");
 
   return (
     <View style={{ flex: 1 }}>

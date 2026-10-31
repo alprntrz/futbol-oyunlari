@@ -39,7 +39,7 @@ interface PpRoom {
   /** ms left per player at the time of the update */
   clocks: Record<Mark, number>;
   winner: Mark | "draw" | null;
-  flash: { mark: Mark; reason: "wrong" | "timeout" | "claim"; name?: string; count?: number; stolen?: number } | null;
+  flash: { mark: Mark; reason: "wrong" | "timeout" | "claim" | "left"; name?: string; count?: number; stolen?: number } | null;
   used: string[];
   players: PpPlayer[];
 }
@@ -85,11 +85,14 @@ export default function PossessionRoom() {
       });
       setReceivedAt(Date.now());
     };
+    // events of another room (an older game this phone was in) are not this screen's
     const onUpdate = (r: PpRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(false);
       apply(r);
     };
     const onPeerLeft = (r: PpRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(true);
       apply(r);
     };
@@ -105,6 +108,7 @@ export default function PossessionRoom() {
       socket.off("pp:update", onUpdate);
       socket.off("pp:peer-left", onPeerLeft);
       socket.off("connect", onConnect);
+      socket.emit("pp:leave", { code });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
@@ -177,7 +181,8 @@ export default function PossessionRoom() {
   const myTurn = !!me && room.turn === me.mark && !room.winner;
   const f = room.flash;
   const who = f ? nameOf(room.players.find((p) => p.mark === f.mark)) : "";
-  const flash = !f
+  // "left": the line above the board already says the opponent left
+  const flash = !f || f.reason === "left"
     ? null
     : f.reason === "claim"
       ? `${who}: ${f.name} +${f.count} ${t("ppClaimed")}${f.stolen ? `, ${f.stolen} ${t("ppStoleShort")}` : ""}`
@@ -218,7 +223,7 @@ export default function PossessionRoom() {
           }}
           footer={
             room.winner ? (
-              isHost ? (
+              peerLeft ? null : isHost ? (
                 <Button
                   title={t("htRematch")}
                   icon="arrow.clockwise"

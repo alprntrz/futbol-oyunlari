@@ -31,7 +31,7 @@ export default function RondoRoom() {
   const title = pair ? t("rdModePair") : "Rondo";
   useLeaveGuard(!!room?.started && !m.over && !m.peerLeft);
 
-  useXpAward(m.over && !m.peerLeft, m.key, "rd", m.won ? XP.rdWin : XP.rdLoss);
+  useXpAward(m.over, m.key, "rd", m.won ? XP.rdWin : XP.rdLoss);
   useRecordMatch(m.over, { key: m.key, game: "rd", opponent: m.opponent?.nick || t("opponent"), result: m.won ? "win" : "loss", score: `${m.score.me}–${m.score.them}` });
 
   if (m.error) {

@@ -205,6 +205,62 @@ test("Tic-Tac-Toe: a new game takes both players out of the old room", async () 
   assert.equal(left.v?.code, code2);
 });
 
+type SeatRoom = { code: string; started: boolean; winner: string | null; players: { id: string; mark: string }[] };
+/**
+ * Possession, Rondo and Who Am I? (same fix as Tic-Tac-Toe above): a new game takes both players
+ * out of the old room, a late leave from the old screen is harmless, and walking out of a live
+ * match gives the one who stays the win (`reason` reads where each game puts "left").
+ */
+async function newGameLeavesOldRoom(g: string, create: object, queue: object, reason: (r: SeatRoom) => string | undefined) {
+  const [a, b] = await Promise.all([client(), client()]);
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, `${g}:create`, { nick: "a", ...create });
+  assert.ok(c.ok);
+  await ask(b, `${g}:join`, { code: c.room.code, nick: "b" });
+  a.emit(`${g}:start`);
+  await wait(300);
+  // both walk away from game 1 without a word (back button) and queue for a new one
+  const m = latest<{ code: string }>(a, `${g}:matched`);
+  a.emit(`${g}:queue`, { nick: "a", tier: 0, ...queue });
+  b.emit(`${g}:queue`, { nick: "b", tier: 0, ...queue });
+  await wait(1500);
+  const code2 = m.v?.code ?? "";
+  assert.ok(code2 && code2 !== c.room.code);
+  // the old room is gone (with its clock), so its updates can't reach the new game
+  const old = await ask<{ ok: boolean; error?: string }>(b, `${g}:join`, { code: c.room.code, nick: "b" });
+  assert.equal(old.error, "not_found");
+  // a late leave from game 1's screen doesn't take b out of game 2
+  const st = latest<SeatRoom>(a, `${g}:update`);
+  b.emit(`${g}:leave`, { code: c.room.code });
+  await wait(3000);
+  assert.equal(st.v?.code, code2);
+  assert.equal(st.v?.started, true, "game 2 started");
+  assert.equal(st.v?.players.length, 2, "b is still seated in game 2");
+  // a walks out of the live game: b wins it and sees the result
+  const left = latest<SeatRoom>(b, `${g}:peer-left`);
+  a.emit(`${g}:leave`, { code: code2 });
+  await wait(300);
+  assert.equal(left.v?.code, code2);
+  assert.equal(left.v?.winner, st.v?.players.find((p) => p.id === b.id)?.mark);
+  assert.equal(reason(left.v!), "left");
+}
+
+test("Possession: a new game takes both players out of the old room", async () => {
+  const board = Array.from({ length: 31 }, (_, i) => ["spain", "italy", "barcelona", "milan", "inter", "roma", "france", "brazil"][i % 8]);
+  await newGameLeavesOldRoom("pp", { board }, { board }, (r) => (r as SeatRoom & { flash: { reason: string } | null }).flash?.reason);
+});
+
+test("Rondo: a new game takes both players out of the old room", async () => {
+  await newGameLeavesOldRoom("rd", {}, {}, (r) => (r as SeatRoom & { roundEnd: { reason: string } | null }).roundEnd?.reason);
+});
+
+test("Rondo pair: a new game takes both players out of the old room", async () => {
+  await newGameLeavesOldRoom("rd", { mode: "pair", target: 2 }, { mode: "pair" }, (r) => (r as SeatRoom & { roundEnd: { reason: string } | null }).roundEnd?.reason);
+});
+
+test("Who Am I?: a new game takes both players out of the old room", async () => {
+  await newGameLeavesOldRoom("wm", {}, {}, (r) => (r as SeatRoom & { endReason: string | null }).endReason ?? undefined);
+});
+
 test("Possession: room, a miss passes the turn", async () => {
   const [a, b] = await Promise.all([client(), client()]);
   const st = latest<{ turn: string; started: boolean }>(a, "pp:update");

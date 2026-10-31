@@ -28,7 +28,7 @@ export default function WhoAmIRoom() {
   const room = m.room;
   useLeaveGuard(!!room?.started && !m.over && !m.peerLeft);
 
-  useXpAward(m.over && !m.peerLeft, m.key, "wm", m.won ? XP.wmWin : m.draw ? XP.wmDraw : XP.wmLoss);
+  useXpAward(m.over, m.key, "wm", m.won ? XP.wmWin : m.draw ? XP.wmDraw : XP.wmLoss);
   useRecordMatch(m.over, { key: m.key, game: "wm", opponent: m.opponent?.nick || t("opponent"), result: m.won ? "win" : m.draw ? "draw" : "loss", score: `${m.hearts.me}–${m.hearts.them}` });
 
   if (m.error) {

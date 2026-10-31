@@ -23,7 +23,7 @@ export interface WmMatch {
   over: boolean;
   won: boolean;
   draw: boolean;
-  endReason: "named" | "hearts" | "turns" | "forfeit" | null;
+  endReason: "named" | "hearts" | "turns" | "forfeit" | "left" | null;
   /** the hidden player's name, once it's over */
   hidden: string | null;
   opponent: { nick: string; ref: string | null } | null;
@@ -71,11 +71,14 @@ export function useWmOnline(code: string): WmMatch & { room: ServerRoom | null; 
       });
       setDeadline(r.remainingMs ? Date.now() + r.remainingMs : 0);
     };
+    // events of another room (an older game this phone was in) are not this screen's
     const onUpdate = (r: ServerRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(false);
       apply(r);
     };
     const onLeft = (r: ServerRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(true);
       apply(r);
     };
@@ -91,6 +94,7 @@ export function useWmOnline(code: string): WmMatch & { room: ServerRoom | null; 
       socket.off("wm:update", onUpdate);
       socket.off("wm:peer-left", onLeft);
       socket.off("connect", onConnect);
+      socket.emit("wm:leave", { code });
     };
   }, [code]);
 
