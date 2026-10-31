@@ -51,7 +51,7 @@ const TT_INTRO_MS = 5_000;
 const TT_REJOIN_MS = 60_000;
 /** a finished or empty room is kept this long for anyone still looking at it */
 const TT_KEEP_MS = 120_000;
-const PERSONALITIES = ["loyal", "econ", "roller", "opportunist", "loyal", "econ", "opportunist"];
+const STYLES = ["loyal", "econ", "roller", "opportunist"];
 const COACHES = ["pass", "bus", "press"];
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -142,7 +142,7 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
     seat.sid = null;
     if (room.lobby) {
       const m = room.lobby.managers[seat.id];
-      if (m && !m.bot) m.bot = PERSONALITIES[seat.id % PERSONALITIES.length];
+      if (m && !m.bot) m.bot = STYLES[seat.id % STYLES.length];
     }
     send(room);
     if (room.lobby && !room.seats.some((s) => !s.gone)) {
@@ -239,7 +239,8 @@ function attachTaktik(io, { cleanNick, houseNick, cleanLook }) {
       const room = at.room;
       room.seats.forEach((s, i) => (s.id = i));
       const humans = room.seats.map((s) => ({ name: s.nick, coach: s.coach }));
-      const bots = PERSONALITIES.slice(0, 8 - humans.length).map((personality) => ({ name: houseNick(), personality }));
+      // a new mix of house styles every game
+      const bots = Array.from({ length: 8 - humans.length }, () => ({ name: houseNick(), personality: STYLES[Math.floor(Math.random() * STYLES.length)] }));
       room.lobby = E.newLobby(Math.floor(Math.random() * 2 ** 31), humans, bots);
       for (const s of room.seats) sockOf(s)?.emit("tt:players", room.lobby.players);
       cb?.({ ok: true });

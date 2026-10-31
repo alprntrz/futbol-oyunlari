@@ -82,7 +82,10 @@ export interface MatchResult {
   goals: [number, number];
   /** shoot-out score when it was a draw */
   pens: [number, number] | null;
+  /** the sim's shoot-out pick; ignore it when `draw` */
   winner: 0 | 1;
+  /** level after full time: nobody won, both lost DRAW_DAMAGE */
+  draw?: boolean;
   events: MatchEvent[];
   /** away is a friendly (PvE) side, or a copy of a manager (odd number left) */
   awayName: string;

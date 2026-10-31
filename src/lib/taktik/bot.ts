@@ -14,11 +14,16 @@ import type { Lobby, Manager, Personality, Unit } from "./types";
 /** level a bot wants by stage / round */
 const PLAN: Record<Personality, number[]> = {
   // index: stage (1-based); value: target level at that stage
-  loyal: [0, 3, 5, 6, 7, 8, 8, 9, 9, 9],
-  econ: [0, 3, 4, 6, 7, 8, 9, 9, 9, 9],
-  roller: [0, 3, 5, 7, 8, 8, 9, 9, 9, 9],
-  opportunist: [0, 3, 5, 6, 7, 8, 8, 9, 9, 9],
+  loyal: [0, 3, 5, 5, 6, 7, 7, 8, 8, 8],
+  econ: [0, 3, 4, 5, 6, 7, 8, 8, 8, 8],
+  roller: [0, 3, 5, 6, 7, 7, 8, 8, 8, 8],
+  opportunist: [0, 3, 5, 5, 6, 7, 7, 8, 8, 8],
 };
+/** how often a house manager passes over a card it wanted (people miss things too) */
+const MISS = 0.15;
+/** health under which a house manager spends everything, and how many rolls it then takes */
+const HURT_HP = 30;
+const HURT_ROLLS = 3;
 const RESERVE: Record<Personality, number> = { loyal: 30, econ: 50, roller: 10, opportunist: 30 };
 
 export const botScout = new Map<number, number>();
@@ -52,7 +57,9 @@ function buyRound(l: Lobby, m: Manager, reserve: number) {
     const full = priceOf(l, c!.pid, false);
     const v = wants(m, l, c!.pid);
     if (m.gold - full - reserve < 0 && v < 14) continue;
-    const named = !!c!.scout && rand(l) < (botScout.get(m.id) ?? 0.5);
+    if (rand(l) < MISS) continue;
+    // a scout card needs its name: a player guesses it now and then, not every other time
+    const named = !!c!.scout && rand(l) < (botScout.get(m.id) ?? 0.15);
     if (m.gold < priceOf(l, c!.pid, named)) continue;
     if (bench(m).length >= BENCH) sellWorst(m, l);
     buy(l, m, i, named ? l.players[c!.pid].name : undefined);
@@ -74,7 +81,7 @@ export function botTurn(l: Lobby, m: Manager) {
     const clubs = m.units.map((u) => u.club).filter(Boolean) as string[];
     m.target = clubs[0] ?? null;
   }
-  const hurt = m.hp < 40;
+  const hurt = m.hp < HURT_HP;
   const reserve = hurt ? 0 : Math.min(RESERVE[kind], SAVINGS.find((s) => m.gold >= s.from)?.from ?? 0);
   buyRound(l, m, reserve);
 
@@ -84,7 +91,7 @@ export function botTurn(l: Lobby, m: Manager) {
   // roll when rich, hurt, or (roller) once the level is reached
   let rolls = 0;
   const rollable = () => m.gold - REROLL_COST >= (hurt ? 0 : kind === "roller" ? 10 : RESERVE[kind]);
-  while (rollable() && rolls < (hurt ? 6 : kind === "roller" ? 4 : 2) && (hurt || m.gold > RESERVE[kind] + 10 || kind === "roller")) {
+  while (rollable() && rolls < (hurt ? HURT_ROLLS : kind === "roller" ? 4 : 2) && (hurt || m.gold > RESERVE[kind] + 10 || kind === "roller")) {
     reroll(l, m);
     buyRound(l, m, hurt ? 0 : reserve);
     rolls++;

@@ -28,7 +28,8 @@ const SEEN_KEY = "taktik-seen-v1";
 const ONLINE_KEY = "taktik-online-v1";
 /** how long a manager who left can still get back into the lobby */
 export const REJOIN_MS = 60_000;
-const PERSONALITIES: Personality[] = ["loyal", "econ", "roller", "opportunist", "loyal", "econ", "opportunist"];
+const STYLES: Personality[] = ["loyal", "econ", "roller", "opportunist"];
+const HOUSE_MANAGERS = 7;
 
 export type TtPhase = "lobby" | "plan" | "match" | "over";
 export interface TtSeat {
@@ -112,7 +113,8 @@ export async function startTaktik(coach: CoachId) {
   dropOnline();
   const name = await loadNick();
   const seed = Math.floor(Math.random() * 2 ** 31);
-  const bots = PERSONALITIES.map((personality) => ({ name: randomNick(), personality }));
+  // a new mix of house styles every game
+  const bots = Array.from({ length: HOUSE_MANAGERS }, () => ({ name: randomNick(), personality: STYLES[Math.floor(Math.random() * STYLES.length)] }));
   lobby = newLobby(seed, [{ name, coach }], bots);
   markTaktikSeen();
   emit();

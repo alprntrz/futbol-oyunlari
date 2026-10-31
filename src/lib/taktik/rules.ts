@@ -78,13 +78,15 @@ export const STAGE1: RoundKind[] = ["pve", "pve"];
 export const STAGE: RoundKind[] = ["pvp", "pvp", "pvp", "pve", "pvp"];
 /** a tactics card is offered at the start of these stages */
 export const AUGMENT_STAGES = [2, 3, 4];
-/** seconds to set up before every match kicks off (everyone at once when played online); 25 s every stage, the first ones too */
-export const planSeconds = () => 25;
+/** seconds to set up before every match kicks off (everyone at once when played online); 33 s every stage, the first ones too */
+export const planSeconds = () => 33;
 /** free swaps per tactics card offer (shared by the three cards) */
 export const AUGMENT_REROLLS = 2;
 
-/** losing costs: 6 + 3 × (stage − 1) + goal difference (max 5); a shoot-out loss counts as 1 goal */
+/** losing costs: 6 + 3 × (stage − 1) + goal difference (max 5) */
 export const damage = (stage: number, goalDiff: number) => 6 + 3 * (stage - 1) + Math.min(5, Math.max(1, goalDiff));
+/** a draw (level after full time) costs both sides this much */
+export const DRAW_DAMAGE = 1;
 
 // ── Match
 export const SLICES = 12;

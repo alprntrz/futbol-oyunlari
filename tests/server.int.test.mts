@@ -194,10 +194,10 @@ test("Tic-Tac-Toe: a new game takes both players out of the old room", async () 
   assert.equal(st.v?.started, true, "b is still seated in game 2");
   assert.equal(st.v?.turn, "O", "a's miss passed the turn in game 2");
   // a move out of turn is answered with the room as it is
-  st.v = null;
+  const resync = latest<{ turn: string }>(a, "ht:update");
   a.emit("ht:move", { cell: 1, name: null });
   await wait(300);
-  assert.equal(st.v?.turn, "O");
+  assert.equal(resync.v?.turn, "O");
   // leaving game 2 tells the other player
   const left = latest<{ code: string }>(b, "ht:peer-left");
   a.emit("ht:leave", { code: code2 });

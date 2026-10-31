@@ -28,11 +28,11 @@ ipuçlarından adını bilirsen ucuza alırsın (bkz. 9).
 - **Aşama 1** farklıdır: 3 hazırlık maçı oynanır, menajerler birbirine karşı oynamaz. Burada başlangıç birimleri ve ilk eşyalar gelir.
 - **Hedef süre:** 12–15 dakika. TFT ~35 dakika sürüyor; mobilde kısa tutuyoruz:
   - Maçlar ~15 saniye ve atlanabilir.
-  - Hazırlık turu süresi 25 saniye.
+  - Hazırlık turu süresi 33 saniye.
 - **Bitiş:** Canı 0'a düşen elenir. Son kalan 1. olur. İlk 4 "başarılı" sayılır; XP ve rütbe buna göre verilir.
 
 ### Kaybedince giden can
-`can kaybı = 6 + 3 × (aşama − 1) + gol farkı (en fazla 5)`; penaltılarla kaybetmek 1 gol sayılır.
+`can kaybı = 6 + 3 × (aşama − 1) + gol farkı (en fazla 5)`. Berabere biten maçta (normal süre eşit) iki taraf da 1 can kaybeder, galibiyet altını yok, seriler sıfırlanır; hazırlık maçında beraberlik 2. aşamadan sonra 1 can.
 
 Örnek: 4. aşamada 3-1 kaybettin → 6 + 9 + 2 = 17 can.
 

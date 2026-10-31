@@ -78,7 +78,8 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
   const oppId = flip ? mine.home : mine.away;
   const theirCards = oppId >= 0 && !mine.awayName.endsWith("*") ? (lobby.managers[oppId]?.augments ?? []) : [];
   const theirName = mine.away === -1 ? t("ttkFriendly") : name(flip ? mine.home : mine.away, mine.awayName);
-  const iWon = side(mine.winner) === 0;
+  const draw = !!mine.draw;
+  const iWon = !draw && side(mine.winner) === 0;
   const pens = mine.pens ? [mine.pens[side(0)], mine.pens[side(1)]] : null;
 
   // the man of the match: my top scorer, else my best player on the pitch
@@ -140,12 +141,12 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
               {/* full time: the result over the lower half */}
               {done && (
                 <Animated.View entering={FadeIn.duration(260)} style={[styles.result, { width: pitchW * 0.84 }]} onTouchEnd={onClose}>
-                  {pens && (
+                  {pens && !draw && (
                     <Text style={[T.caption, { fontWeight: "700" }]}>
                       {t("ttkPens")} {pens[0]} – {pens[1]}
                     </Text>
                   )}
-                  <Text style={[styles.resultTitle, { color: iWon ? C.greenMid : C.red }]}>{iWon ? t("ttkWon") : t("ttkLost")}</Text>
+                  <Text style={[styles.resultTitle, { color: draw ? C.text2 : iWon ? C.greenMid : C.red }]}>{draw ? t("ttkDraw") : iWon ? t("ttkWon") : t("ttkLost")}</Text>
                   <Text style={styles.resultScore}>
                     {score[0]} – {score[1]}
                   </Text>
@@ -166,14 +167,14 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
                     <View style={styles.others}>
                       {others.map((r: MatchResult, i) => (
                         <View key={i} style={styles.other}>
-                          <Text style={[styles.otherName, r.winner === 0 && styles.otherWin]} numberOfLines={1}>
+                          <Text style={[styles.otherName, !r.draw && r.winner === 0 && styles.otherWin]} numberOfLines={1}>
                             {name(r.home, "?")}
                           </Text>
                           <Text style={styles.otherScore}>
                             {r.goals[0]}–{r.goals[1]}
-                            {r.pens ? "*" : ""}
+                            {r.pens && !r.draw ? "*" : ""}
                           </Text>
-                          <Text style={[styles.otherName, { textAlign: "right" }, r.winner === 1 && styles.otherWin]} numberOfLines={1}>
+                          <Text style={[styles.otherName, { textAlign: "right" }, !r.draw && r.winner === 1 && styles.otherWin]} numberOfLines={1}>
                             {r.awayName.endsWith("*") ? `${r.awayName.slice(0, -1)} ${t("ttkGhost")}` : name(r.away, r.awayName)}
                           </Text>
                         </View>

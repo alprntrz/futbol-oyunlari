@@ -25,6 +25,7 @@ import {
   XP_COST,
   XP_PER_ROUND,
   damage,
+  DRAW_DAMAGE,
   savingsBonus,
   streakGold,
   zoneFit,
@@ -464,7 +465,8 @@ export function endRound(l: Lobby, botTurn: (l: Lobby, m: Manager) => void) {
     for (const m of live) {
       const f = friendly(l);
       const r = playMatch(sideOf(m), f, () => rand(l));
-      const won = r.winner === 0;
+      const draw = !!r.pens;
+      const won = !draw && r.winner === 0;
       let item: ItemId | null = null;
       let gold = 1;
       if (won) {
@@ -473,9 +475,9 @@ export function endRound(l: Lobby, botTurn: (l: Lobby, m: Manager) => void) {
         m.items.push(item);
       }
       m.gold += gold;
-      const dmg = won || l.stage === 1 ? 0 : 2;
+      const dmg = won || l.stage === 1 ? 0 : draw ? DRAW_DAMAGE : 2;
       if (dmg) m.hp -= dmg;
-      results.push({ home: m.id, away: -1, goals: r.goals, pens: r.pens, winner: r.winner, events: r.events, awayName: "friendly", damage: dmg, drops: { gold, item } });
+      results.push({ home: m.id, away: -1, goals: r.goals, pens: r.pens, winner: r.winner, draw, events: r.events, awayName: "friendly", damage: dmg, drops: { gold, item } });
     }
   } else {
     // pair up, avoiding last round's opponent where possible
@@ -507,14 +509,21 @@ export function endRound(l: Lobby, botTurn: (l: Lobby, m: Manager) => void) {
         m.streak = m.streak > 0 ? m.streak + 1 : 1;
       };
       let dealt = dmg;
-      if (b) {
+      if (r.pens) {
+        // a draw: both lose a point, nobody wins gold, streaks end (a copy takes nothing)
+        dealt = DRAW_DAMAGE;
+        for (const m of b ? [a, b] : [a]) {
+          m.hp -= DRAW_DAMAGE;
+          m.streak = 0;
+        }
+      } else if (b) {
         dealt = hit(loser);
         win(winner);
       } else if (loser === a) dealt = hit(a);
       else win(a);
       a.lastOpponent = ghost.id;
       if (b) b.lastOpponent = a.id;
-      results.push({ home: a.id, away: ghost.id, goals: r.goals, pens: r.pens, winner: r.winner, events: r.events, awayName: b ? ghost.name : `${ghost.name}*`, damage: dealt });
+      results.push({ home: a.id, away: ghost.id, goals: r.goals, pens: r.pens, winner: r.winner, events: r.events, draw: !!r.pens, awayName: b ? ghost.name : `${ghost.name}*`, damage: dealt });
     }
   }
   l.last = results;
