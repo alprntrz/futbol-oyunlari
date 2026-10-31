@@ -109,7 +109,7 @@ export function wmHouseMove(
   rand: () => number = Math.random
 ): { kind: "ask"; q: WmQuestion } | { kind: "guess"; name: string } {
   const fits = wmCandidates(log, wrong);
-  if (fits.length && (fits.length <= 2 || (fits.length <= 5 && rand() < 0.3))) return { kind: "guess", name: fits[Math.floor(rand() * fits.length)].name };
+  if (fits.length && (fits.length === 1 || (fits.length <= 4 && rand() < 0.35))) return { kind: "guess", name: fits[Math.floor(rand() * fits.length)].name };
   const asked = new Set(log.map((e) => `${e.q.kind}:${e.q.id}`));
   const scored = ALL_QUESTIONS.filter((q) => !asked.has(`${q.kind}:${q.id}`))
     .map((q) => {
@@ -120,5 +120,5 @@ export function wmHouseMove(
     .sort((a, b) => b.score - a.score);
   if (!scored.length) return fits.length ? { kind: "guess", name: fits[0].name } : { kind: "ask", q: ALL_QUESTIONS[Math.floor(rand() * ALL_QUESTIONS.length)] };
   // one of the better questions, not always the best (a person doesn't compute this)
-  return { kind: "ask", q: scored[Math.floor(rand() * Math.min(scored.length, 6))].q };
+  return { kind: "ask", q: scored[Math.floor(rand() * Math.min(scored.length, 10))].q };
 }

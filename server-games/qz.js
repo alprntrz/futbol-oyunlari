@@ -154,8 +154,8 @@ function qzLevel(xp) {
   return { level, into, need };
 }
 
-/** XP for one finished game: the points scored, a finishing bonus and a bonus for the podium. */
-const QZ_PLACE_XP = [30, 20, 10, 5, 0];
+/** XP for one finished game: the points scored, a finishing bonus and a bonus by place (the first five). */
+const QZ_PLACE_XP = [30, 20, 12, 8, 5];
 function qzGameXp(points, place, players) {
   return points + 10 + (players > 1 ? QZ_PLACE_XP[place] ?? 0 : 0);
 }
@@ -268,9 +268,12 @@ function attach(socket, ctx) {
     qzEmit(room);
   };
 
+  // a house player answers right this often: steadier on easy, shakier on hard
+  const qzHouseSkill = (level) => (level === "easy" ? 0.55 + Math.random() * 0.3 : level === "hard" ? 0.35 + Math.random() * 0.25 : 0.45 + Math.random() * 0.3);
+
   const qzAddBot = (room) => {
     if (room.phase !== "lobby" || room.players.length >= room.settings.maxPlayers) return;
-    room.players.push({ id: "p" + Math.random().toString(36).slice(2, 10), ref: crypto.randomBytes(8).toString("hex"), nick: qzNick(), score: 0, bot: true, skill: 0.45 + Math.random() * 0.3 });
+    room.players.push({ id: "p" + Math.random().toString(36).slice(2, 10), ref: crypto.randomBytes(8).toString("hex"), nick: qzNick(), score: 0, bot: true, skill: qzHouseSkill(room.settings.difficulty) });
     qzEmit(room);
   };
 

@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 
+import { questEvent, type QuestEvent } from "./quests";
+
 /**
  * Recent two-player matches (Tic-Tac-Toe series, Possession, Card Duel), kept
  * on this phone only, newest first, for the "Recent matches" list on Profile.
@@ -48,11 +50,21 @@ export async function loadTotals(): Promise<MatchTotals> {
   }
 }
 
+/** daily quests a recorded match counts for (Tic-Tac-Toe counts its series in SeriesEnd) */
+function questFor(r: Omit<MatchRecord, "at">): QuestEvent | null {
+  if (r.game === "dz") return "dz_play";
+  if (r.game === "pp") return "pp_play";
+  if (r.result !== "win") return null;
+  return r.game === "rd" ? "rd_win" : r.game === "wm" ? "wm_win" : null;
+}
+
 let queue = Promise.resolve();
 export function recordMatch(r: Omit<MatchRecord, "at">) {
   queue = queue.then(async () => {
     const list = await loadHistory();
     if (list.some((x) => x.key === r.key)) return;
+    const quest = questFor(r);
+    if (quest) questEvent(quest, 1, `match-${r.key}`);
     await AsyncStorage.setItem(KEY, JSON.stringify([{ ...r, at: Date.now() }, ...list].slice(0, MAX))).catch(() => {});
     const t = await loadTotals();
     t.games++;

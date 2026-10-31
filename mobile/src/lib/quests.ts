@@ -10,7 +10,7 @@ import { awardXp, onXpAward } from "./xp";
  * Daily quests: three a day, the same for everyone (seeded by the day), each pays
  * XP once when done; all three done pays a bonus. Progress lives on the phone.
  */
-export type QuestEvent = "xi_finish" | "xi_players" | "ht_series" | "ht_win" | "qz_correct" | "mystery_solve" | "bingo_play" | "combo" | "xp" | "rush_mult" | "rush_metres";
+export type QuestEvent = "xi_finish" | "xi_players" | "ht_series" | "ht_win" | "qz_correct" | "mystery_solve" | "bingo_play" | "combo" | "xp" | "rush_mult" | "rush_metres" | "rd_win" | "wm_win" | "dz_play" | "pp_play";
 
 export interface QuestDef {
   id: string;
@@ -36,6 +36,10 @@ const POOL: QuestDef[] = [
   // Dribbling Rush: the multiplier reached in one run (best counts; a goal in 2.5D, a spelt name in 3D), metres added up
   { id: "rum2", event: "rush_mult", target: 2, mode: "max", text: "qRushMult", reward: 40 },
   { id: "ru1k", event: "rush_metres", target: 1000, text: "qRushMetres", reward: 30 },
+  { id: "rd1", event: "rd_win", target: 1, text: "qRdWin", reward: 40 },
+  { id: "wm1", event: "wm_win", target: 1, text: "qWmWin", reward: 40 },
+  { id: "dz1", event: "dz_play", target: 1, text: "qDzPlay", reward: 30 },
+  { id: "pp1", event: "pp_play", target: 1, text: "qPpPlay", reward: 30 },
 ];
 export const ALL_DONE_BONUS = 50;
 
