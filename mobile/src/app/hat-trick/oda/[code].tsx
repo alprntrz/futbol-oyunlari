@@ -13,7 +13,7 @@ import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
-import { haptic } from "~/lib/haptics";
+import { useTurnCue } from "~/lib/haptics";
 import { useRecordMatch } from "~/lib/history";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
@@ -75,11 +75,7 @@ export default function HatTrickRoom() {
   useEffect(() => {
     const socket = getSocket();
     const apply = (r: HtRoom) => {
-      setRoom((prev) => {
-        // a move by the other phone: light tick
-        if (prev && r.board.filter(Boolean).length > prev.board.filter(Boolean).length) haptic.tap();
-        return r;
-      });
+      setRoom(r);
       setDeadline(Date.now() + r.remainingMs);
     };
     // events of another room (an older game this phone was in) are not this screen's
@@ -134,6 +130,7 @@ export default function HatTrickRoom() {
 
   const grid = useMemo(() => (room ? gridFromIds(room.grid) : null), [room?.grid]); // eslint-disable-line react-hooks/exhaustive-deps
   const me = room?.players.find((p) => p.id === myId);
+  useTurnCue(!!me && !!room?.started && room.turn === me.mark && !room.winner);
   const isHost = room?.players[0]?.id === myId;
   const turnMs = room?.turnMs ?? TURN_SECONDS * 1000;
   const timeLeft = Math.min(turnMs / 1000, Math.max(0, Math.ceil((deadline - now) / 1000)));

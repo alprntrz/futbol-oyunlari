@@ -11,7 +11,7 @@ import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { Text } from "~/components/Text";
 import { WaitingRoom } from "~/components/WaitingRoom";
 import { Button, Card, Icon, Page } from "~/components/ui";
-import { haptic } from "~/lib/haptics";
+import { useTurnCue } from "~/lib/haptics";
 import { useRecordMatch } from "~/lib/history";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
@@ -58,6 +58,7 @@ export default function PossessionRoom() {
 
   // each game in the room (a rematch deals a new board) pays once
   const myMark = room?.players.find((p) => p.id === myId)?.mark;
+  useTurnCue(!!myMark && !!room?.started && room.turn === myMark && !room.winner);
   useXpAward(
     !!room?.winner && !!myMark,
     room ? `pp-${code}-${room.board.slice(0, 4).join(",")}` : null,
@@ -76,10 +77,7 @@ export default function PossessionRoom() {
   useEffect(() => {
     const socket = getSocket();
     const apply = (r: PpRoom) => {
-      setRoom((prev) => {
-        if (prev && r.owners.filter(Boolean).length !== prev.owners.filter(Boolean).length) haptic.tap();
-        return r;
-      });
+      setRoom(r);
       setReceivedAt(Date.now());
     };
     const onUpdate = (r: PpRoom) => {

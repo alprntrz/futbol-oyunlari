@@ -153,7 +153,7 @@ export default function DuelDraft() {
                 {query.trim().length === 0 && (
                   <View style={styles.suggestHead}>
                     <Text style={[T.caption, { fontWeight: "700" }]}>{t("dzSuggested")}</Text>
-                    <Tap onPress={() => (haptic.tap(), setShuffle(shuffle + 1))} style={styles.shuffle} accessibilityLabel={t("dzShuffle")}>
+                    <Tap onPress={() => setShuffle(shuffle + 1)} style={styles.shuffle} accessibilityLabel={t("dzShuffle")}>
                       <Icon name="shuffle" size={13} color={C.greenDark} fallback="⇄" />
                       <Text style={styles.shuffleText}>{t("dzShuffle")}</Text>
                     </Tap>

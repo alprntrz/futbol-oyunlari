@@ -8,7 +8,6 @@ import { dailyMatch, dayNumber } from "@/lib/daily";
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { BRAND, ROZET } from "~/lib/brand";
 import { useDuel } from "~/lib/duel";
-import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
 
@@ -87,7 +86,7 @@ export function HomeBoard() {
           const ink = isDone ? "white" : C.text;
           return (
             <Animated.View key={x.key} entering={FadeInDown.delay(i * 50).duration(220)} style={styles.cell}>
-              <Tap onPress={() => (haptic.tap(), router.push(x.href))} style={[styles.tile, going && styles.tileGoing, isDone && styles.tileDone]} accessibilityLabel={x.title}>
+              <Tap onPress={() => router.push(x.href)} style={[styles.tile, going && styles.tileGoing, isDone && styles.tileDone]} accessibilityLabel={x.title}>
                 <View style={styles.tileTop}>
                   <Text style={[styles.tag, going && { color: "#713F12" }, isDone && { color: "#BBF7D0" }]}>
                     {upper(going ? t("boardGoing") : isDone ? t("boardFinished") : t("boardNew"))}
@@ -116,7 +115,7 @@ export function HomeBoard() {
 
       <Text style={styles.section}>{t("boardVersus")}</Text>
       <Animated.View style={pulseStyle}>
-      <Tap onPress={() => (haptic.press(), router.push("/oyna"))} style={[styles.versus, styles.versusNext]} accessibilityLabel={t("playOpponent")}>
+      <Tap onPress={() => router.push("/oyna")} style={[styles.versus, styles.versusNext]} accessibilityLabel={t("playOpponent")}>
         <View style={{ flex: 1, alignItems: "flex-start" }}>
           <Text style={styles.versusTitle}>{t("playOpponent")}</Text>
           <Text style={styles.versusSub}>{t("boardVersusSub")}</Text>
@@ -126,7 +125,7 @@ export function HomeBoard() {
         </View>
       </Tap>
       </Animated.View>
-      <Tap onPress={() => (haptic.tap(), router.push({ pathname: "/oyna", params: { with: "friend" } }))} style={styles.friend} accessibilityLabel={t("playWithFriend")}>
+      <Tap onPress={() => router.push({ pathname: "/oyna", params: { with: "friend" } })} style={styles.friend} accessibilityLabel={t("playWithFriend")}>
         <Icon name="person.2.fill" size={20} color={C.greenDark} fallback="👥" />
         <View style={{ flex: 1 }}>
           <Text style={styles.friendTitle}>{t("playWithFriend")}</Text>

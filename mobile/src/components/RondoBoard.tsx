@@ -19,12 +19,14 @@ import Animated, {
 import { searchPlayers } from "@/lib/tiki";
 
 import { RONDO } from "~/lib/brand";
-import { haptic } from "~/lib/haptics";
+import { haptic, useClockTicks, useTurnCue } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import type { RondoMatch } from "~/lib/rondoMatch";
 import { C, F, GAME, R, T, shadow } from "~/lib/theme";
 
 import { CriterionBadge } from "./HatTrickBoard";
+import { PopNumber } from "./motion";
 import { PlayerLine, PlayerToken } from "./PlayerRow";
 import { Text } from "./Text";
 import { Button, Icon, Tap } from "./ui";
@@ -59,16 +61,21 @@ export function RondoBoard({
     return () => clearInterval(id);
   }, [m.deadline]);
 
-  // a new name: to the bottom of the list, light tick for theirs
+  // a new name: to the bottom of the list, a cheer for my own
   const count = m.names.length;
   useEffect(() => {
     if (!count) return;
     list.current?.scrollToEnd({ animated: true });
-    if (!m.names[count - 1].mine) haptic.tap();
+    if (m.names[count - 1].mine) {
+      haptic.success();
+      play("correct");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
   useEffect(() => {
-    if (m.wrong) haptic.error();
+    if (!m.wrong) return;
+    haptic.error();
+    play("wrong");
   }, [m.wrong]);
   useEffect(() => {
     if (m.roundEnd) (m.roundEnd.won ? haptic.success : haptic.error)();
@@ -76,6 +83,10 @@ export function RondoBoard({
 
   const left = m.deadline ? Math.max(0, m.deadline - now) : 0;
   const secs = Math.ceil(left / 1000);
+  const pair = m.mode === "pair";
+  useClockTicks(m.deadline && !m.roundEnd && !m.over ? secs : null, pair || m.myTurn);
+  // the pair mode races (no turns), so only the one-club mode gets a "your turn" cue
+  useTurnCue(!pair && m.myTurn);
   const frac = m.turnMs ? Math.min(1, left / m.turnMs) : 0;
   const said = useMemo(() => new Set(m.names.map((n) => n.name)), [m.names]);
   const suggestions = useMemo(
@@ -83,7 +94,6 @@ export function RondoBoard({
     [input, m.myTurn],
   );
   const nameOf = (c: { tr: string; en: string }) => (locale === "tr" ? c.tr : c.en);
-  const pair = m.mode === "pair";
   const clubName = pair ? (m.pair ? `${nameOf(m.pair[0])} + ${nameOf(m.pair[1])}` : "…") : m.club ? nameOf(m.club) : "…";
 
   // the wrong banner belongs to the hand it happened in
@@ -179,9 +189,7 @@ export function RondoBoard({
           </Text>
         </View>
         {!m.roundEnd && !m.over && m.deadline > 0 && (
-          <Text style={[styles.secs, secs <= 5 && { color: C.red }]}>
-            {secs}s
-          </Text>
+          secs <= 5 ? <PopNumber value={`${secs}s`} style={[styles.secs, { color: C.red }]} /> : <Text style={styles.secs}>{secs}s</Text>
         )}
       </View>
       <View style={styles.bar}>
@@ -311,7 +319,7 @@ export function RondoBoard({
           <View style={styles.actions}>
             {m.myTurn && m.timeJokers > 0 && (
               <Tap
-                onPress={() => (haptic.tap(), m.useTime())}
+                onPress={() => (play("power"), m.useTime())}
                 style={styles.joker}
                 accessibilityRole="button"
                 accessibilityHint={t("jkNote")}

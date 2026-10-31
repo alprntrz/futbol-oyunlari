@@ -5,7 +5,6 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { Text } from "~/components/Text";
 import { Page, Tap } from "~/components/ui";
 import { BRAND, KIMIM, KOSU, RONDO, ROZET, TAKTIK } from "~/lib/brand";
-import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { C, F, GAME } from "~/lib/theme";
 
@@ -39,7 +38,7 @@ export default function Games() {
   // every game on one screen: a 2-column grid of compact tiles (art, name, who it's for)
   const card = (g: Game, i: number) => (
     <Animated.View key={g.title} entering={FadeInDown.delay(i * 30).duration(200)} style={styles.cell}>
-      <Tap onPress={() => (haptic.tap(), router.push(g.href))} style={[styles.card, { backgroundColor: g.bg }]} accessibilityLabel={`${g.title}. ${g.desc}`}>
+      <Tap onPress={() => router.push(g.href)} style={[styles.card, { backgroundColor: g.bg }]} accessibilityLabel={`${g.title}. ${g.desc}`}>
         <Image source={g.image} style={styles.art} />
         <Text style={[styles.name, { color: g.ink }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {g.title}

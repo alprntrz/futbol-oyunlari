@@ -18,6 +18,7 @@ import { openPage, PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
 import { deleteMyData, restartApp } from "~/lib/privacy";
 import { remindersDenied } from "~/components/ReminderAsk";
 import { remindersAvailable, setRemindersOn, useReminders } from "~/lib/reminders";
+import { haptic, hapticsOn, setHapticsOn } from "~/lib/haptics";
 import { play, setSoundsOn, soundsOn } from "~/lib/sound";
 import { C, T } from "~/lib/theme";
 
@@ -66,6 +67,7 @@ export default function SettingsTab() {
       },
     ]);
   const [sound, setSound] = useState(soundsOn() ? "on" : "off");
+  const [buzz, setBuzz] = useState(hapticsOn() ? "on" : "off");
   const reminders = useReminders();
   const plus = usePlus();
   const consentDone = useConsentDone();
@@ -107,6 +109,20 @@ export default function SettingsTab() {
           setSound(v);
           setSoundsOn(v === "on");
           if (v === "on") play("coin");
+        }}
+        options={[
+          { value: "on", label: t("soundOn") },
+          { value: "off", label: t("soundOff") },
+        ]}
+      />
+
+      <SectionLabel>{t("settingsHaptics")}</SectionLabel>
+      <Segmented
+        value={buzz}
+        onChange={(v) => {
+          setBuzz(v);
+          setHapticsOn(v === "on");
+          if (v === "on") haptic.success();
         }}
         options={[
           { value: "on", label: t("soundOn") },

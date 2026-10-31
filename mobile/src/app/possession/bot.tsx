@@ -11,6 +11,7 @@ import { PossessionBoard } from "~/components/PossessionBoard";
 import { Button, Page } from "~/components/ui";
 import { houseRef } from "~/lib/blocks";
 import { haptic } from "~/lib/haptics";
+import { play as playSound } from "~/lib/sound";
 import { other, type Mark } from "~/lib/hattrick";
 import { useRecordMatch } from "~/lib/history";
 import { useI18n } from "~/lib/i18n";
@@ -45,6 +46,11 @@ export default function PossessionHouse() {
   const [usedNames, setUsedNames] = useState<string[]>([]);
 
   const key = `pp-house-${ref}-${game}`;
+  // no Victory screen here: the result card gets a short cue of its own
+  useEffect(() => {
+    if (winner) playSound(winner === me ? "victory" : winner === "draw" ? "whistle" : "lose");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [winner]);
   useXpAward(!!winner, key, "pp", winner === "draw" ? XP.ppDraw : winner === me ? XP.ppWin : XP.ppLoss);
   const held = (m: Mark) => owners.filter((o) => o?.mark === m).length;
   useRecordMatch(!!winner, { key, game: "pp", opponent: nick, result: winner === "draw" ? "draw" : winner === me ? "win" : "loss", score: `${held(me)}–${held(rival)}` });
