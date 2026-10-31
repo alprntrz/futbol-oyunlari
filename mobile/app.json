@@ -21,7 +21,8 @@
       "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleDisplayName": "Tiktako"
+        "CFBundleDisplayName": "Tiktako",
+        "CFBundleLocalizations": ["tr", "en"]
       },
       "usesAppleSignIn": true
     },
