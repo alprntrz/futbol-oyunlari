@@ -20,11 +20,12 @@ export function GameActions({
   canSkip,
   disabled,
 }: {
-  draw: "sent" | "received" | null;
+  /** no draw offers when `onOfferDraw` is left out */
+  draw?: "sent" | "received" | null;
   /** pass the turn to the opponent; shown when given */
   onSkip?: () => void;
   canSkip?: boolean;
-  onOfferDraw: () => void;
+  onOfferDraw?: () => void;
   onReplyDraw?: (accept: boolean) => void;
   onForfeit: () => void;
   disabled?: boolean;
@@ -52,14 +53,14 @@ export function GameActions({
       )}
       <View style={styles.row}>
         {onSkip && <Button title={t("htSkip")} icon="forward.fill" kind="secondary" disabled={disabled || !canSkip} onPress={onSkip} style={styles.btn} />}
-        <Button
+        {onOfferDraw && <Button
           title={draw === "sent" ? t("htDrawSentShort") : t("htDrawShort")}
           icon="equal.circle"
           kind="secondary"
-          disabled={disabled || draw !== null}
+          disabled={disabled || !!draw}
           onPress={onOfferDraw}
           style={styles.btn}
-        />
+        />}
         <Button title={t("htForfeit")} icon="flag.fill" kind="danger" disabled={disabled} onPress={confirmForfeit} style={styles.btn} />
       </View>
     </View>

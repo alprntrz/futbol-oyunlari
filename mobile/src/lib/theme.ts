@@ -26,7 +26,8 @@ export const C = {
   redSoft: "#FEE2E2",
 
   tileCorrect: "#22A55A",
-  tilePresent: "#E9B10A",
+  // dark amber: white letters on it stay readable (3.6:1; #E9B10A was 1.95:1)
+  tilePresent: "#B7791F",
   tileAbsent: "#8D968F",
   key: "#E3E8E4",
 

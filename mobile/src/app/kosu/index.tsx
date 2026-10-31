@@ -5,6 +5,7 @@ import { ALL_CRITERIA } from "@/lib/tiki";
 
 import { ChoiceSheet, GameHub, HubSetting } from "~/components/GameHub";
 import { ClubShirt } from "~/components/HatTrickBoard";
+import { RushSteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
 import { KOSU } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
@@ -29,6 +30,7 @@ export default function RushHome() {
       image={KOSU.hero}
       bg={GAME.rush.bg}
       tagline={t("rushShort")}
+      rules={<RushSteps />}
       primary={{ label: t("rushPlay"), icon: "play.fill", fallback: "▶", onPress: () => router.push("/kosu/oyun") }}
       secondary={[]}
       settings={<HubSetting label={t("rushClub")} value={name(club)} onPress={() => setPicking(true)} />}

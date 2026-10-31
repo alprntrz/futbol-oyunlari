@@ -4,14 +4,14 @@ import { useState } from "react";
 import { Alert, View } from "react-native";
 
 import { PushSettings } from "~/components/PushSettings";
-import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, RondoPairSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
+import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, RondoPairSteps, RushSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented, SwitchRow } from "~/components/ui";
 import { deleteAccount, signOut, useAccount } from "~/lib/account";
 import { analyticsAvailable, setAnalyticsOn, useAnalyticsOn } from "~/lib/analytics";
 import { privacyOptionsAvailable, showPrivacyOptions, useConsentDone } from "~/lib/ads";
 import { purchasesAvailable, usePlus } from "~/lib/plus";
-import { BRAND, ROZET, TAKTIK, KIMIM, RONDO } from "~/lib/brand";
+import { BRAND, ROZET, TAKTIK, KIMIM, RONDO, KOSU } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
 import { openPage, PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
@@ -37,6 +37,7 @@ export default function SettingsTab() {
     { key: "mystery", title: t("myName"), image: BRAND.icon.mystery, steps: <MysterySteps /> },
     { key: "xi", title: t("missingXI"), image: BRAND.icon.practice, steps: <MissingXISteps /> },
     { key: "bingo", title: t("bingoName"), image: BRAND.icon.bingo, steps: <BingoSteps /> },
+    { key: "rush", title: "Dribbling Rush", image: KOSU.hero, steps: <RushSteps /> },
   ];
   const open = games.find((g) => g.key === sheet);
   const account = useAccount();

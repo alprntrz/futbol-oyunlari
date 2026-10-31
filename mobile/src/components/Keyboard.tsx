@@ -51,7 +51,7 @@ export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks
             );
           })}
           {ri === 2 && (
-            <Pressable onPress={() => press("DELETE")} style={({ pressed }) => [styles.key, { width: sideW }, pressed && styles.pressed]}>
+            <Pressable onPress={() => press("DELETE")} accessibilityRole="button" accessibilityLabel={t("keyDelete")} style={({ pressed }) => [styles.key, { width: sideW }, pressed && styles.pressed]}>
               <Icon name="delete.left" size={20} color={C.text} fallback="⌫" />
             </Pressable>
           )}

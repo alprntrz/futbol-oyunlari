@@ -135,6 +135,7 @@ export function Tap({ style, onPress, silent, ...rest }: PressableProps & { styl
     <Pressable
       accessibilityRole="button"
       {...rest}
+      hitSlop={rest.hitSlop ?? 8}
       accessibilityState={{ disabled: !!rest.disabled, ...rest.accessibilityState }}
       onPress={(e) => {
         if (!silent) haptic.press();
@@ -365,7 +366,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3 },
+  buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3, flexShrink: 1, textAlign: "center" },
   // small buttons sit in toolbars and under cards: they never stretch (in a column without a set height flexGrow would run to the bottom of the screen)
   buttonSmall: { flexGrow: 0, minHeight: 36, paddingHorizontal: 12, gap: 6, borderRadius: 12 },
   buttonTextSmall: { fontSize: 17 },
@@ -375,7 +376,7 @@ const styles = StyleSheet.create({
   rowText: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 14, paddingRight: 14 },
   rowDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   segmented: { flexDirection: "row", backgroundColor: C.key, borderRadius: 12, padding: 3 },
-  segment: { flex: 1, paddingVertical: 9, paddingHorizontal: 4, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  segment: { flex: 1, minHeight: 44, paddingVertical: 9, paddingHorizontal: 4, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   segmentActive: { backgroundColor: C.card, ...shadow, shadowOpacity: 0.1 },
   segmentText: { fontSize: 14, fontWeight: "700", color: C.text2 },
   chip: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: R.chip, paddingHorizontal: 10, paddingVertical: 4, alignSelf: "flex-start" },

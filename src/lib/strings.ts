@@ -786,7 +786,7 @@ export const dict = {
     qzCorrect: "Doğru",
     qzWrong: "Yanlış",
     qzStandings: "Sıralama",
-    qzPlace: ". oldun",
+    qzPlace: "{n} oldun",
     qzWinner: "Kazandın",
     qzPoints: "puan",
     qzRoomStarted: "Bu odada oyun başladı",
@@ -1067,6 +1067,14 @@ export const dict = {
     htFirstTo: "3 maç alan kazanır",
     htForfeitAsk: "Pes etmek istiyor musun?",
     htForfeitAskDesc: "Maç rakibine yazılır.",
+    leaveMatchAsk: "Maçtan çıkmak istiyor musun?",
+    leaveMatchDesc: "Çıkarsan maç yenilgi sayılır.",
+    leaveMatchGo: "Çık",
+    back: "Geri",
+    keyDelete: "Harfi sil",
+    tileCorrect: "doğru yerde",
+    tilePresent: "başka yerde",
+    tileAbsent: "isimde yok",
     htTheyForfeited: "Rakibin pes etti, kazandın",
     htYouForfeited: "Pes ettin",
     htNewGame: "Yeni maç",
@@ -2047,7 +2055,7 @@ export const dict = {
     qzCorrect: "Right",
     qzWrong: "Wrong",
     qzStandings: "Standings",
-    qzPlace: " place",
+    qzPlace: "{n} place",
     qzWinner: "You win",
     qzPoints: "pts",
     qzRoomStarted: "This room's game has already started",
@@ -2328,6 +2336,14 @@ export const dict = {
     htFirstTo: "First to 3 games wins",
     htForfeitAsk: "Forfeit this game?",
     htForfeitAskDesc: "The win goes to your opponent.",
+    leaveMatchAsk: "Leave the match?",
+    leaveMatchDesc: "Leaving counts as a loss.",
+    leaveMatchGo: "Leave",
+    back: "Back",
+    keyDelete: "Delete letter",
+    tileCorrect: "right spot",
+    tilePresent: "wrong spot",
+    tileAbsent: "not in name",
     htTheyForfeited: "Your opponent forfeited. You win",
     htYouForfeited: "You forfeited",
     htNewGame: "New game",
@@ -2530,3 +2546,10 @@ export const dict = {
 } as const;
 
 export type TKey = keyof (typeof dict)["tr"];
+
+/** A place as shown in text: "3." in Turkish, "3rd" in English (11th, 12th, 13th, 21st…). */
+export function ordinal(n: number, locale: Locale): string {
+  if (locale === "tr") return `${n}.`;
+  const teen = n % 100 >= 11 && n % 100 <= 13;
+  return `${n}${teen ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th")}`;
+}
