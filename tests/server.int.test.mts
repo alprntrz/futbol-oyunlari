@@ -408,3 +408,80 @@ test("Missing 11 race (web): a room opens", async () => {
   const r = await ask<{ ok?: boolean; code?: string; room?: { code: string } }>(a, "room:create", { nick: "a", difficulty: "normal", matchId: "1" });
   assert.ok(r.code || r.room?.code || r.ok);
 });
+
+/** a phone losing its connection without a goodbye (tunnel, app in the background) */
+const drop = (s: Socket) => {
+  s.io.reconnection(false);
+  s.io.engine.close();
+};
+
+test("Quiz: a dropped player keeps the seat and comes back into the running quiz", async () => {
+  const a = await client();
+  const b = await client({ rk: "QQQQQQQQQQQQQQQQQQQQ" });
+  const st = latest<{ phase: string; players: { id: string }[] }>(a, "qz:update");
+  const qs = quizQuestions(5, "players", "easy", seededRandom(5));
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "qz:create", { nick: "a", settings: { seconds: 15 }, questions: qs });
+  await ask(b, "qz:join", { code: c.room.code, nick: "b" });
+  a.emit("qz:start");
+  for (let i = 0; i < 40 && st.v?.phase !== "question"; i++) await wait(150);
+  const oldId = b.id;
+  drop(b);
+  await wait(400);
+  assert.equal(st.v?.players.length, 2, "the seat waits");
+  const b2 = await client({ rk: "QQQQQQQQQQQQQQQQQQQQ", prev: oldId });
+  const res = await ask<{ ok: boolean; room?: { phase: string; players: { id: string }[] } }>(b2, "qz:join", { code: c.room.code, nick: "b" });
+  assert.ok(res.ok, "back in");
+  assert.notEqual(res.room?.phase, "lobby");
+  assert.ok(res.room?.players.some((p) => p.id === b2.id));
+  a.emit("qz:leave");
+  b2.emit("qz:leave");
+});
+
+test("Lobby: a host who drops keeps the room for REJOIN_MS", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "ht:create", { nick: "a", grid: grid() });
+  drop(a);
+  await wait(400);
+  assert.ok((await ask<{ ok: boolean }>(b, "ht:join", { code: c.room.code, nick: "b" })).ok, "room still open");
+  b.emit("ht:leave", { code: c.room.code });
+});
+
+test("Pitch Chess lobby: a host who drops stays host, marked away", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  const st = latest<{ seats: { host: boolean; away: boolean }[] }>(b, "tt:state");
+  const c = await ask<{ ok: boolean; code: string }>(a, "tt:create", { pid: "hostpid01", nick: "a" });
+  assert.ok(c.ok);
+  assert.ok((await ask<{ ok: boolean }>(b, "tt:join", { code: c.code, pid: "guestpid01", nick: "b" })).ok);
+  drop(a);
+  await wait(500);
+  assert.equal(st.v?.seats.length, 2, "seat kept");
+  assert.ok(st.v?.seats[0].host && st.v.seats[0].away, "still host, away");
+  b.emit("tt:leave");
+});
+
+test("Card Duel: a rematch starts only once both players ask", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  const st = latest<{ game: number; round: number; deadline: number; over: boolean }>(a, "dz:update");
+  const theme = themeForDay(Math.floor(Date.now() / 86_400_000));
+  const ha = houseHand(theme, seededRandom(11));
+  const hb = houseHand(theme, seededRandom(12));
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "dz:create", { nick: "a", hand: ha });
+  assert.ok((await ask<{ ok: boolean }>(b, "dz:join", { code: c.room.code, nick: "b", hand: hb })).ok);
+  a.emit("dz:start");
+  for (let r = 0; r < 7; r++) {
+    for (let i = 0; i < 60 && !(st.v?.round === r && st.v.deadline); i++) await wait(100);
+    a.emit("dz:pick", { card: ha[r] });
+    b.emit("dz:pick", { card: hb[r] });
+  }
+  for (let i = 0; i < 30 && !st.v?.over; i++) await wait(100);
+  assert.ok(st.v?.over, "match over");
+  const game = st.v!.game;
+  a.emit("dz:rematch");
+  await wait(300);
+  assert.ok(st.v?.over && st.v.game === game, "one ask is not enough");
+  b.emit("dz:rematch");
+  await wait(300);
+  assert.ok(!st.v?.over && st.v?.game === game + 1, "both asked: new match");
+  a.emit("dz:leave");
+  b.emit("dz:leave");
+});

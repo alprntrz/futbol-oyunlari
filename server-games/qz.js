@@ -179,12 +179,38 @@ function sweep(alive) {
   }
 }
 
-/** This socket's qz:* handlers; `ctx.io` is the Socket.IO server. */
+/** each person in the room gets the room as they see it */
+function emitRoom(io, room) {
+  for (const p of room.players) if (!p.bot) io.sockets.sockets.get(p.id)?.emit("qz:update", qzPublic(room, p.id));
+}
+
+/**
+ * A phone back after a drop (server.js `welcomeBack`): its seat `prevId` in room `code`, if still
+ * there, moves to `socket` (answer, host and all). True when there was a seat to take back.
+ */
+function rejoin(io, prevId, socket, code) {
+  const room = qzRooms.get(code);
+  const seat = room?.players.find((p) => p.id === prevId);
+  if (!seat) return false;
+  if (prevId !== socket.id) {
+    seat.id = socket.id;
+    if (room.hostId === prevId) room.hostId = socket.id;
+    const answer = room.answers.get(prevId);
+    if (answer) {
+      room.answers.delete(prevId);
+      room.answers.set(socket.id, answer);
+    }
+    socket.data.qzCode = room.code;
+    socket.join("qz:" + room.code);
+  }
+  emitRoom(io, room);
+  return true;
+}
+
+/** This socket's qz:* handlers; `ctx.io` is the Socket.IO server, `ctx.dropLater` gives a dropped seat REJOIN_MS (server.js). */
 function attach(socket, ctx) {
-  const { io } = ctx;
-  const qzEmit = (room) => {
-    for (const p of room.players) if (!p.bot) io.sockets.sockets.get(p.id)?.emit("qz:update", qzPublic(room, p.id));
-  };
+  const { io, dropLater } = ctx;
+  const qzEmit = (room) => emitRoom(io, room);
   const qzClear = (room) => {
     clearTimeout(room.timer);
     room.botTimers.forEach(clearTimeout);
@@ -327,7 +353,7 @@ function attach(socket, ctx) {
     if (qzValidPid(pid)) socket.data.qzPid = pid;
     const room = qzRooms.get(String(code || "").toUpperCase());
     if (!room) return cb?.({ ok: false, error: "not_found" });
-    if (room.players.some((p) => p.id === socket.id)) return cb?.({ ok: true, room: qzPublic(room) });
+    if (room.players.some((p) => p.id === socket.id)) return cb?.({ ok: true, room: qzPublic(room, socket.id) });
     if (room.phase !== "lobby") return cb?.({ ok: false, error: "started" });
     if (room.players.length >= room.settings.maxPlayers) return cb?.({ ok: false, error: "full" });
     if (socket.data.qzCode) qzLeave();
@@ -478,7 +504,8 @@ function attach(socket, ctx) {
   });
 
   socket.on("qz:leave", qzLeave);
-  socket.on("disconnect", qzLeave);
+  // a dropped phone keeps its seat for REJOIN_MS (it misses the questions meanwhile)
+  socket.on("disconnect", (reason) => dropLater("qz", () => qzRooms.has(socket.data.qzCode), qzLeave)(reason));
 }
 
-module.exports = { id: "qz", rooms: qzRooms, attach, sweep };
+module.exports = { id: "qz", rooms: qzRooms, attach, sweep, rejoin };

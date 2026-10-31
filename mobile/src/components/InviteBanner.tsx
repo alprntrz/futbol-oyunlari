@@ -22,6 +22,8 @@ type Invite = { kind: "invite"; from: From; game: InviteGame; room: string } | {
 
 /** Banners hide on their own after this. */
 const SHOW_MS = 20_000;
+/** match and lobby screens (online rooms, house player, queues, same phone, Pitch Chess): no banner over them, Join would stack a second match */
+const IN_MATCH = /\/oda\/[^/]+$|\/(bot|rastgele|yerel)$|^\/taktik\/(lobi|oyun)$|^\/duello\/(mac|draft)$/;
 
 /**
  * A friend's invite (server.js `fr:invite`) drops in from the top while the app
@@ -61,7 +63,7 @@ export function InviteBanner() {
   }, [invite]);
 
   // already in that room (or the invite is for a signed-out phone): nothing to show
-  if (!invite || !account) return null;
+  if (!invite || !account || IN_MATCH.test(pathname)) return null;
   if (invite.kind === "invite" && pathname.includes(invite.room)) return null;
   const nick = invite.from?.nick || t("opponent");
 

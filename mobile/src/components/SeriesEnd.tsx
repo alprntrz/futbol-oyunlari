@@ -24,6 +24,7 @@ export function SeriesEnd({
   title,
   countTrophy = true,
   payXp = true,
+  xpKey,
 }: {
   over: boolean;
   won: boolean;
@@ -38,6 +39,8 @@ export function SeriesEnd({
   countTrophy?: boolean;
   /** false when the game pays its own XP (Rondo): only the ceremony is shown */
   payXp?: boolean;
+  /** this series' XP key (online: room + last grid), so a remount never pays it twice */
+  xpKey?: string;
 }) {
   const { t } = useI18n();
   const [trophies, setTrophies] = useState<number | null>(null);
@@ -64,8 +67,8 @@ export function SeriesEnd({
       questEvent("ht_series", 1);
       questEvent("ht_win", mine);
     }
-    if (payXp) awardXp(`ht-series-${Date.now()}`, "ht", countTrophy ? XP.htSeriesPlayed + mine * XP.htGameWin + (won ? XP.htSeriesWin : 0) : XP.sameScreen);
-  }, [over, won, countTrophy, payXp, mine]);
+    if (payXp) awardXp(xpKey ?? `ht-series-${Date.now()}`, "ht", countTrophy ? XP.htSeriesPlayed + mine * XP.htGameWin + (won ? XP.htSeriesWin : 0) : XP.sameScreen);
+  }, [over, won, countTrophy, payXp, mine, xpKey]);
 
   return (
     <Victory

@@ -30,10 +30,17 @@ export default function QuizRandom() {
 
   useEffect(() => {
     const socket = getSocket();
+    // backed out before the seat came: never pulled into the room afterwards
+    let cancelled = false;
+    let handedOver = false;
     const enqueue = async () => {
       setError(null);
-      socket.timeout(6000).emit("qz:queue", { nick: await loadNick(), pid: await loadPlayerId(), difficulty: level, tier: await loadTier(), questions: quizQuestions(10, "mixed", level) }, (err: Error | null, res?: { ok: boolean; code?: string }) => {
+      const [nick, pid, tier] = await Promise.all([loadNick(), loadPlayerId(), loadTier()]);
+      if (cancelled) return;
+      socket.timeout(6000).emit("qz:queue", { nick, pid, difficulty: level, tier, questions: quizQuestions(10, "mixed", level) }, (err: Error | null, res?: { ok: boolean; code?: string }) => {
+        if (cancelled) return;
         if (err || !res?.ok || !res.code) return setError(t("serverUnreachable"));
+        handedOver = true;
         router.replace({ pathname: "/bilgi/oda/[code]", params: { code: res.code, random: "1" } });
       });
     };
@@ -42,6 +49,9 @@ export default function QuizRandom() {
     if (socket.connected) enqueue();
     else socket.once("connect", enqueue);
     return () => {
+      cancelled = true;
+      // the room screen keeps the seat; otherwise give it up (sent after any qz:queue, so the server sees it last)
+      if (!handedOver) socket.emit("qz:leave");
       socket.off("connect_error", onError);
       socket.off("connect", enqueue);
     };

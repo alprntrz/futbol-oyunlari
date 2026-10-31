@@ -302,7 +302,12 @@ function Board({
               ))}
             </ScrollView>
             <View style={{ alignSelf: "stretch", gap: 8, marginTop: 8 }}>
-              {onAgain && <Button title={t(practice ? "dzAgain" : "dzRematch")} icon="arrow.clockwise" onPress={onAgain} />}
+              {onAgain &&
+                (m.askedAgain ? (
+                  <Text style={[T.body, { textAlign: "center" }]}>{t("waiting")}</Text>
+                ) : (
+                  <Button title={t(practice ? "dzAgain" : "dzRematch")} icon="arrow.clockwise" onPress={onAgain} />
+                ))}
               <Button title={t("close")} kind="secondary" onPress={() => router.back()} />
             </View>
           </Animated.View>
