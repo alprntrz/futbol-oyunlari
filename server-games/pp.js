@@ -3,7 +3,7 @@
 // server applies the move, runs both chess clocks and decides the result. server.js lists it in GAMES
 // (reconnect, room sweep, queue pairing, emotes, invites, Live Activity) and calls attach() per socket.
 const { cleanLook, plusOf } = require("../server-accounts");
-const { INTRO_MS, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf } = require("../server-core");
+const { INTRO_MS, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf, nameUsed } = require("../server-core");
 const { liveSend, liveTurnProps } = require("../server-live");
 
 const PP_HEXES = 31;
@@ -153,7 +153,7 @@ function attach(socket, ctx) {
       const hexes = Array.isArray(claims) ? [...new Set(claims)].filter((i) => Number.isInteger(i) && i >= 0 && i < PP_HEXES) : [];
       // The first claim is the chosen hex and must be neutral; the rest must touch it; the name must be new
       const touching = hexes.slice(1).every((i) => PP_NEIGHBOURS[hexes[0]].includes(i));
-      if (!hexes.length || hexes.length !== (claims?.length ?? 0) || !touching || room.owners[hexes[0]] || room.used.includes(player)) {
+      if (!hexes.length || hexes.length !== (claims?.length ?? 0) || !touching || room.owners[hexes[0]] || nameUsed(room.used, player)) {
         return socket.emit("pp:update", view(room));
       }
       const stolen = hexes.filter((i) => room.owners[i] && room.owners[i].mark !== me.mark).length;
