@@ -2,6 +2,7 @@ import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PLUS_FOREVER, PLUS_PERKS, type PlusPerk } from "@/lib/plus";
 
@@ -34,6 +35,7 @@ const MANAGE_URL = Platform.select({ ios: "https://apps.apple.com/account/subscr
  */
 export default function PlusScreen() {
   const { t, locale } = useI18n();
+  const insets = useSafeAreaInsets();
   const plus = usePlus();
   const available = purchasesAvailable();
   // null = still asking the store; [] = nothing to buy here
@@ -68,7 +70,10 @@ export default function PlusScreen() {
 
   const until = plus.until && plus.until < PLUS_FOREVER ? new Date(plus.until).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" }) : null;
 
+  const canBuy = !plus.active && !!offers && offers.length > 0;
+
   return (
+    <View style={{ flex: 1, backgroundColor: C.bg }}>
     <Page>
       {/* the hero carries the name (no repeated title); the modal gets a close button */}
       <Stack.Screen
@@ -85,7 +90,7 @@ export default function PlusScreen() {
       {/* Hero */}
       <View style={styles.hero}>
         <View style={styles.crown}>
-          <Icon name="crown.fill" size={40} color="#3B2A05" />
+          <Icon name="crown.fill" size={30} color="#3B2A05" />
         </View>
         <Text style={styles.heroTitle}>{t("plusName")}</Text>
         <Text style={styles.heroLine}>{t("plusTagline")}</Text>
@@ -102,7 +107,7 @@ export default function PlusScreen() {
         {PLUS_PERKS.map((p, i) => (
           <Animated.View key={p} entering={FadeInDown.delay(i * 40).duration(220)} style={[styles.perk, i > 0 && styles.divider]}>
             <View style={[styles.perkIcon, { backgroundColor: PERK_ICON[p].color + "1F" }]}>
-              <Icon name={PERK_ICON[p].icon} size={20} color={PERK_ICON[p].color} />
+              <Icon name={PERK_ICON[p].icon} size={18} color={PERK_ICON[p].color} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={T.headline}>{t(`plusPerk_${p}`)}</Text>
@@ -147,15 +152,6 @@ export default function PlusScreen() {
                   );
                 })}
               </View>
-              <Button
-                title={busy ? "…" : chosen && chosen.trialDays > 0 ? t("plusTrial").replace("{n}", String(chosen.trialDays)) : t("plusSubscribe")}
-                kind="gold"
-                icon="crown.fill"
-                disabled={busy || !chosen}
-                onPress={buy}
-                style={{ marginTop: 16 }}
-              />
-              <Text style={[T.caption, { textAlign: "center", marginTop: 10, lineHeight: 18 }]}>{t("plusLegal").replace("{store}", Platform.OS === "ios" ? "App Store" : "Google Play")}</Text>
             </>
           )}
         </>
@@ -170,27 +166,42 @@ export default function PlusScreen() {
         <Tap onPress={() => openPage(PRIVACY_URL, t("linkFailed"))}><Text style={styles.link}>{t("privacyPolicy")}</Text></Tap>
       </View>
     </Page>
+      {/* buy button + renewal terms stay on screen while the perks scroll (App Store 3.1.2: terms next to the button) */}
+      {canBuy && (
+        <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
+          <Button
+            title={busy ? "…" : chosen && chosen.trialDays > 0 ? t("plusTrial").replace("{n}", String(chosen.trialDays)) : t("plusSubscribe")}
+            kind="gold"
+            icon="crown.fill"
+            disabled={busy || !chosen}
+            onPress={buy}
+          />
+          <Text style={[T.caption, { textAlign: "center", marginTop: 8, fontSize: 11, lineHeight: 15 }]}>{t("plusLegal").replace("{store}", Platform.OS === "ios" ? "App Store" : "Google Play")}</Text>
+        </View>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  hero: { alignItems: "center", paddingTop: 8 },
-  crown: { width: 84, height: 84, borderRadius: 42, backgroundColor: "#FACC15", alignItems: "center", justifyContent: "center", ...shadow },
-  heroTitle: { fontFamily: F.black, fontSize: 36, color: C.text, marginTop: 14 },
+  hero: { alignItems: "center", paddingTop: 0 },
+  crown: { width: 60, height: 60, borderRadius: 30, backgroundColor: "#FACC15", alignItems: "center", justifyContent: "center", ...shadow },
+  heroTitle: { fontFamily: F.black, fontSize: 30, color: C.text, marginTop: 8 },
   heroLine: { ...T.body, fontSize: 16, textAlign: "center", marginTop: 2 },
   activePill: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6, marginTop: 12 },
   activeText: { color: C.greenDark, fontWeight: "800", fontSize: 14 },
-  perk: { flexDirection: "row", alignItems: "center", gap: 14, padding: 14 },
-  perkIcon: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  perk: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 10 },
+  perkIcon: { width: 34, height: 34, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   fair: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.greenSoft, borderRadius: 12, padding: 10, marginTop: 10 },
-  plans: { flexDirection: "row", gap: 10, marginTop: 24 },
+  plans: { flexDirection: "row", gap: 10, marginTop: 20 },
   plan: { flex: 1, backgroundColor: C.card, borderRadius: R.card, borderWidth: 2, borderColor: C.border, padding: 12, paddingTop: 18, alignItems: "center", gap: 2, minHeight: 124, ...shadow, shadowOpacity: 0.05 },
   planOn: { borderColor: C.green, backgroundColor: "#F3FBF5" },
   tag: { position: "absolute", top: -11, backgroundColor: C.key, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
   tagText: { fontSize: 11, fontWeight: "800", color: C.text2 },
   planName: { fontFamily: F.display, fontSize: 18, color: C.text },
   planPrice: { fontFamily: F.black, fontSize: 22, color: C.text, marginTop: 2 },
-  links: { alignItems: "center", gap: 12, marginTop: 28, marginBottom: 12 },
+  links: { alignItems: "center", gap: 12, marginTop: 24, marginBottom: 12 },
+  footer: { paddingHorizontal: 16, paddingTop: 10, backgroundColor: C.bg, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   link: { color: C.greenMid, fontWeight: "700", fontSize: 14 },
 });
