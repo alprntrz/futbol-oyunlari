@@ -19,10 +19,7 @@
         "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m",
         "EXPO_PUBLIC_ADMOB_REWARDED_IOS": "ca-app-pub-2321803679128648/8082034874",
         "EXPO_PUBLIC_ADMOB_INTERSTITIAL_IOS": "ca-app-pub-2321803679128648/6842647385",
-        "EXPO_PUBLIC_ADMOB_REWARDED_ANDROID": "",
-        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ANDROID": "",
-        "EXPO_PUBLIC_RC_IOS_KEY": "appl_kEfLaLdIbcwaJFFRoSIPtfRMvVI",
-        "EXPO_PUBLIC_RC_ANDROID_KEY": ""
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_kEfLaLdIbcwaJFFRoSIPtfRMvVI"
       },
       "channel": "preview",
       "android": {
@@ -40,10 +37,7 @@
         "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m",
         "EXPO_PUBLIC_ADMOB_REWARDED_IOS": "ca-app-pub-2321803679128648/8082034874",
         "EXPO_PUBLIC_ADMOB_INTERSTITIAL_IOS": "ca-app-pub-2321803679128648/6842647385",
-        "EXPO_PUBLIC_ADMOB_REWARDED_ANDROID": "",
-        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ANDROID": "",
-        "EXPO_PUBLIC_RC_IOS_KEY": "appl_kEfLaLdIbcwaJFFRoSIPtfRMvVI",
-        "EXPO_PUBLIC_RC_ANDROID_KEY": ""
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_kEfLaLdIbcwaJFFRoSIPtfRMvVI"
       },
       "channel": "production"
     },
