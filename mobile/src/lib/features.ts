@@ -34,7 +34,7 @@ export const HOME_LAYOUT: "list" | "fixtures" | "pitch" | "next" | "board" = "bo
  * Needs the native build with the "react-native-google-mobile-ads" plugin and the EXPO_PUBLIC_ADMOB_* /
  * EXPO_PUBLIC_RC_* values in eas.json; the privacy page must describe ads and purchases while this is on.
  */
-export const MONETIZE = false;
+export const MONETIZE = true;
 
 /**
  * Push notifications for signed-in players (lib/push.ts, server-push.js): friend invites, "X added you"
