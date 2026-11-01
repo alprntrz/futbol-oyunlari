@@ -1,7 +1,7 @@
 {
   "configVersion": 0,
   "apple": {
-    "version": "1.1",
+    "version": "1.2",
     "release": {
       "automaticRelease": true
     },
@@ -28,7 +28,7 @@
         "marketingUrl": "https://alprntrz.github.io/futbol-oyunlari/",
         "supportUrl": "https://alprntrz.github.io/futbol-oyunlari/support.html",
         "privacyPolicyUrl": "https://alprntrz.github.io/futbol-oyunlari/privacy.html",
-        "releaseNotes": "Tiktako's biggest update yet:\n\n• 5 new games: Rondo, Who Am I?, Card Duel, Pitch Chess and Dribbling Rush.\n• Hat-trick is now Tic-Tac-Toe, with two jokers every game (+15 seconds and a hint).\n• Optional Sign in with Apple or Google: friends and invites, a weekly league, leaderboards, and your progress on any phone.\n• XP, levels and ranks, daily quests, a 7-day reward calendar, badges and avatar frames.\n• Random opponents are now found in seconds.\n• Live matches on your Lock Screen, quick emotes, shareable result cards and an optional evening reminder.\n• Lost your connection? Get back into the match within 60 seconds.\n• Report and block players.\n• Saudi and Egyptian leagues."
+        "releaseNotes": "• Friend invites now arrive as notifications (signed-in players, optional).\n• Pitch Chess: draws, 33 seconds to plan, more varied house managers, item effects explained, a smarter \"Best line-up\", stars on the bench and who makes each synergy.\n• Game feel: last-second ticks, a your-turn cue, right/wrong sounds; turn haptics off in Settings.\n• Daily quests for Rondo, Who Am I?, Card Duel and Possession Play.\n• A warning before leaving an online match; steadier rejoining after a dropped connection.\n• Anonymous usage data (optional, Settings > Share usage data).\n• Bug fixes and improvements."
       },
       "tr": {
         "title": "Tiktako: Futbol Bilgi Oyunu",
@@ -53,7 +53,7 @@
         "marketingUrl": "https://alprntrz.github.io/futbol-oyunlari/",
         "supportUrl": "https://alprntrz.github.io/futbol-oyunlari/support.html",
         "privacyPolicyUrl": "https://alprntrz.github.io/futbol-oyunlari/privacy.html",
-        "releaseNotes": "Tiktako'nun en büyük güncellemesi:\n\n• 5 yeni oyun: Rondo, Ben Kimim?, Kart Düellosu, Taktik Tahtası ve Dribbling Rush.\n• Hat-trick'in yeni adı Tic-Tac-Toe; her oyunda iki joker (+15 saniye ve ipucu).\n• Apple ya da Google ile isteğe bağlı giriş: arkadaşlar ve davetler, haftalık lig, sıralamalar; ilerlemen telefon değiştirince de seninle.\n• XP, seviye ve rütbeler, günlük görevler, 7 günlük ödül takvimi, rozetler ve avatar çerçeveleri.\n• Rastgele rakip artık birkaç saniyede bulunuyor.\n• Kilit ekranında canlı maç, hızlı emojiler, sonuç kartı paylaşma ve isteğe bağlı akşam hatırlatması.\n• Bağlantın koparsa maça 60 saniye içinde geri dönebilirsin.\n• Oyuncuları şikayet etme ve engelleme.\n• Suudi Arabistan ve Mısır ligleri."
+        "releaseNotes": "• Arkadaş davetleri artık bildirimle geliyor (giriş yapanlar, isteğe bağlı).\n• Taktik Tahtası: beraberlik, plan için 33 saniye, daha çeşitli rakip menajerler, eşyaların ne işe yaradığı, daha akıllı \"En iyi diziliş\", yedekte yıldızlar ve sinerjiyi kimlerin sağladığı.\n• Oyun hissi: son saniye tıkırtıları, sıra sende uyarısı, doğru/yanlış sesleri; titreşimi Ayarlar'dan kapatabilirsin.\n• Rondo, Ben Kimim?, Kart Düellosu ve Possession Play için günlük görevler.\n• Online maçtan çıkarken uyarı; bağlantı kopunca odana daha sağlam geri dönüş.\n• Anonim kullanım verisi (isteğe bağlı, Ayarlar > Kullanım verisi paylaş).\n• Hata düzeltmeleri ve iyileştirmeler."
       },
       "ar-SA": {
         "title": "Tiktako: اسئلة كرة قدم",
@@ -77,7 +77,7 @@
         "marketingUrl": "https://alprntrz.github.io/futbol-oyunlari/",
         "supportUrl": "https://alprntrz.github.io/futbol-oyunlari/support.html",
         "privacyPolicyUrl": "https://alprntrz.github.io/futbol-oyunlari/privacy.html",
-        "releaseNotes": "أكبر تحديث لـ Tiktako حتى الآن:\n\n• 5 ألعاب جديدة: روندو، من أنا؟، مبارزة البطاقات، شطرنج الملعب ودريبلينغ رَش.\n• لعبة Hat-trick أصبح اسمها Tic-Tac-Toe، مع ورقتين مساعدتين في كل مباراة (+15 ثانية وتلميح).\n• تسجيل دخول اختياري عبر Apple أو Google: أصدقاء ودعوات، دوري أسبوعي، لوائح ترتيب، وتقدّمك معك على أي هاتف.\n• نقاط خبرة ومستويات ورُتب، مهام يومية، تقويم مكافآت لسبعة أيام، أوسمة وإطارات للصورة الرمزية.\n• المنافس العشوائي يُعثر عليه الآن خلال ثوانٍ.\n• المباراة المباشرة على شاشة القفل، رموز تعبيرية سريعة، مشاركة بطاقة النتيجة وتذكير مسائي اختياري.\n• انقطع الاتصال؟ عُد إلى المباراة خلال 60 ثانية.\n• الإبلاغ عن اللاعبين وحظرهم.\n• الدوري السعودي والدوري المصري."
+        "releaseNotes": "• دعوات الأصدقاء تصل الآن كإشعارات (للمسجلين، اختياري).\n• شطرنج الملعب: التعادل، 33 ثانية للتخطيط، مدربون منافسون أكثر تنوعًا، شرح تأثير العناصر، \"أفضل تشكيلة\" أذكى، النجوم على دكة البدلاء ومن يصنع كل تناغم.\n• إحساس اللعب: تكتكة الثواني الأخيرة، تنبيه دورك، أصوات الإجابة الصحيحة والخاطئة؛ يمكنك إيقاف الاهتزاز من الإعدادات.\n• مهام يومية لروندو ومن أنا؟ ومبارزة البطاقات والاستحواذ.\n• تحذير قبل مغادرة مباراة أونلاين؛ عودة أكثر ثباتًا بعد انقطاع الاتصال.\n• بيانات استخدام مجهولة (اختيارية، الإعدادات > مشاركة بيانات الاستخدام).\n• إصلاح أخطاء وتحسينات."
       }
     },
     "advisory": {
@@ -122,7 +122,7 @@
       "firstName": "Alperen",
       "lastName": "Terzi",
       "demoRequired": false,
-      "notes": "No login is required: every game can be played as a guest. Sign in with Apple / Google is optional (progress across phones, friends, weekly league, leaderboards); we request no name or e-mail. Settings > \"Delete my account and data\" deletes the account on our server and revokes Sign in with Apple.\n\nOnline modes (Tic-Tac-Toe, Card Duel, Football Quiz, Possession Play, Rondo, Who Am I?, Pitch Chess lobby) connect to our game server over HTTPS. When no other player is searching, random-opponent modes start a game against a computer opponent within a few seconds, so a game can always be played.\n\nUser content is limited to nicknames and a fixed set of emoji reactions; there is no free-text chat. Nicknames are filtered for offensive words on the server. Any opponent can be reported or blocked from the menu next to the emoji button during a match, and from the leaderboards, weekly league, quiz standings and friends list. Blocked players are kept out of the player's matches and invites (Settings > Blocked players). Nicknames reported by several players are hidden, and we review reports.\n\nLive Activities show an online match on the Lock Screen while the app is in the background. The evening reminder is a local notification and is off unless the player turns it on.\n\nPlayer and match data are names and statistics only: no club crests, logos or player photos; avatars and artwork are original.\n\nThere are no purchases, ads, analytics or tracking in this version.\n\nTo try online play alone: Games > Rondo > Find opponent; a game starts within a few seconds."
+      "notes": "No login is required: every game can be played as a guest. Sign in with Apple / Google is optional (progress across phones, friends, weekly league, leaderboards); we request no name or e-mail. Settings > \"Delete my account and data\" deletes the account on our server and revokes Sign in with Apple.\n\nOnline modes (Tic-Tac-Toe, Card Duel, Football Quiz, Possession Play, Rondo, Who Am I?, Pitch Chess lobby) connect to our game server over HTTPS. When no other player is searching, random-opponent modes start a game against a computer opponent within a few seconds, so a game can always be played.\n\nUser content is limited to nicknames and a fixed set of emoji reactions; there is no free-text chat. Nicknames are filtered for offensive words on the server. Any opponent can be reported or blocked from the menu next to the emoji button during a match, and from the leaderboards, weekly league, quiz standings and friends list. Blocked players are kept out of the player's matches and invites (Settings > Blocked players). Nicknames reported by several players are hidden, and we review reports.\n\nLive Activities show an online match on the Lock Screen while the app is in the background. The evening reminder is a local notification and is off unless the player turns it on.\n\nPlayer and match data are names and statistics only: no club crests, logos or player photos; avatars and artwork are original.\n\nThere are no purchases, ads or tracking. Anonymous usage analytics (PostHog, US; no account link, no IP, no replay) can be turned off in Settings > Share usage data. Signed-in players can allow push notifications for friend invites (Settings > Notifications); news pushes are opt-in and off by default.\n\nTo try online play alone: Games > Rondo > Find opponent; a game starts within a few seconds."
     }
   }
 }
