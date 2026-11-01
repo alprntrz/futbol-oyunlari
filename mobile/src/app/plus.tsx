@@ -1,13 +1,13 @@
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Linking, Platform, Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PLUS_FOREVER, PLUS_PERKS, type PlusPerk } from "@/lib/plus";
 
 import { Text } from "~/components/Text";
-import { Button, Card, Icon, Page, Tap } from "~/components/ui";
+import { Button, Card, Icon, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { openPage, PRIVACY_URL } from "~/lib/links";
@@ -71,10 +71,12 @@ export default function PlusScreen() {
   const until = plus.until && plus.until < PLUS_FOREVER ? new Date(plus.until).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" }) : null;
 
   const canBuy = !plus.active && !!offers && offers.length > 0;
+  const store = Platform.OS === "ios" ? "App Store" : "Google Play";
+  const planName = (p: PlusOffer["plan"]) => t(`plus${p[0].toUpperCase()}${p.slice(1)}` as "plusMonthly" | "plusYearly" | "plusLifetime");
 
+  // one screen: the middle scrolls on small phones, the buy button and its terms never leave the bottom (App Store 3.1.2)
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
-    <Page>
       {/* the hero carries the name (no repeated title); the modal gets a close button */}
       <Stack.Screen
         options={{
@@ -86,89 +88,87 @@ export default function PlusScreen() {
           ),
         }}
       />
-
-      {/* Hero */}
-      <View style={styles.hero}>
-        <View style={styles.crown}>
-          <Icon name="crown.fill" size={30} color="#3B2A05" />
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.body}>
+        <View style={styles.hero}>
+          <View style={styles.crown}>
+            <Icon name="crown.fill" size={24} color="#3B2A05" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.heroTitle}>{t("plusName")}</Text>
+            <Text style={styles.heroLine}>{t("plusTagline")}</Text>
+          </View>
         </View>
-        <Text style={styles.heroTitle}>{t("plusName")}</Text>
-        <Text style={styles.heroLine}>{t("plusTagline")}</Text>
         {plus.active && (
           <View style={styles.activePill}>
             <Icon name="checkmark.seal.fill" size={16} color={C.greenDark} />
             <Text style={styles.activeText}>{until ? `${t("plusActive")} · ${t("plusActiveUntil").replace("{date}", until)}` : `${t("plusActive")} · ${t("plusLifetime")}`}</Text>
           </View>
         )}
-      </View>
 
-      {/* Perks */}
-      <Card style={{ padding: 0, overflow: "hidden", marginTop: 16 }}>
-        {PLUS_PERKS.map((p, i) => (
-          <Animated.View key={p} entering={FadeInDown.delay(i * 40).duration(220)} style={[styles.perk, i > 0 && styles.divider]}>
-            <View style={[styles.perkIcon, { backgroundColor: PERK_ICON[p].color + "1F" }]}>
-              <Icon name={PERK_ICON[p].icon} size={18} color={PERK_ICON[p].color} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={T.headline}>{t(`plusPerk_${p}`)}</Text>
-              <Text style={[T.body, { fontSize: 14 }]}>{p === "noCap" && practice ? `${t(`plusPerkDesc_${p}`)} (${t("plusTodayCap").replace("{used}", String(practice.used)).replace("{cap}", practice.cap === Infinity ? "∞" : String(practice.cap))})` : t(`plusPerkDesc_${p}`)}</Text>
-            </View>
-          </Animated.View>
-        ))}
-      </Card>
-      <View style={styles.fair}>
-        <Icon name="shield.fill" size={16} color={C.greenDark} />
-        <Text style={[T.caption, { flex: 1, color: C.greenDark }]}>{t("plusFair")}</Text>
-      </View>
+        <Card style={{ padding: 0, overflow: "hidden", marginTop: 14 }}>
+          {PLUS_PERKS.map((p, i) => (
+            <Animated.View key={p} entering={FadeInDown.delay(i * 30).duration(200)} style={[styles.perk, i > 0 && styles.divider]}>
+              <View style={[styles.perkIcon, { backgroundColor: PERK_ICON[p].color + "1F" }]}>
+                <Icon name={PERK_ICON[p].icon} size={16} color={PERK_ICON[p].color} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.perkTitle} numberOfLines={1}>{t(`plusPerk_${p}`)}</Text>
+                <Text style={styles.perkDesc} numberOfLines={1}>{p === "noCap" && practice ? `${t(`plusPerkDesc_${p}`)} (${t("plusTodayCap").replace("{used}", String(practice.used)).replace("{cap}", practice.cap === Infinity ? "∞" : String(practice.cap))})` : t(`plusPerkDesc_${p}`)}</Text>
+              </View>
+            </Animated.View>
+          ))}
+        </Card>
+        <View style={styles.fair}>
+          <Icon name="shield.fill" size={14} color={C.greenDark} />
+          <Text style={[T.caption, { flex: 1, color: C.greenDark }]}>{t("plusFair")}</Text>
+        </View>
 
-      {/* Plans */}
-      {!plus.active && (
-        <>
-          {offers === null ? (
-            <ActivityIndicator style={{ marginTop: 28 }} color={C.green} />
+        {!plus.active &&
+          (offers === null ? (
+            <ActivityIndicator style={{ marginTop: 24 }} color={C.green} />
           ) : offers.length === 0 ? (
-            <Card style={{ marginTop: 20, alignItems: "center", gap: 10 }}>
+            <Card style={{ marginTop: 16, alignItems: "center", gap: 10 }}>
               <Text style={[T.body, { textAlign: "center" }]}>{t("plusUnavailable")}</Text>
               {__DEV__ && <Button title={t("plusSimulate")} kind="secondary" small onPress={() => simulatePlus(true)} />}
             </Card>
           ) : (
-            <>
-              <View style={styles.plans}>
-                {offers.map((o) => {
-                  const on = o.plan === pick;
-                  const tag = o.plan === "yearly" ? t("plusBest") : o.plan === "lifetime" ? t("plusOnce") : null;
-                  return (
-                    <Tap key={o.plan} onPress={() => (haptic.tap(), setPick(o.plan))} style={[styles.plan, on && styles.planOn]} accessibilityRole="radio" accessibilityState={{ selected: on }}>
-                      {tag && (
-                        <View style={[styles.tag, on && { backgroundColor: "#FACC15" }]}>
-                          <Text style={[styles.tagText, on && { color: "#3B2A05" }]}>{tag}</Text>
-                        </View>
-                      )}
-                      <Text style={[styles.planName, on && { color: C.greenDark }]}>{t(`plus${o.plan[0].toUpperCase()}${o.plan.slice(1)}` as "plusMonthly" | "plusYearly" | "plusLifetime")}</Text>
-                      <Text style={styles.planPrice}>{o.price}</Text>
-                      {o.perMonth && <Text style={T.caption}>{t("plusPerMonth").replace("{price}", o.perMonth)}</Text>}
-                      {o.trialDays > 0 && <Text style={[T.caption, { color: C.greenDark, fontWeight: "700" }]}>{t("plusTrial").replace("{n}", String(o.trialDays))}</Text>}
-                    </Tap>
-                  );
-                })}
-              </View>
-            </>
-          )}
-        </>
-      )}
+            <View style={styles.plans} accessibilityRole="radiogroup">
+              {offers.map((o) => {
+                const on = o.plan === pick;
+                const tag = o.plan === "yearly" ? t("plusBest") : o.plan === "lifetime" ? t("plusOnce") : null;
+                const sub = o.trialDays > 0 ? t("plusTrial").replace("{n}", String(o.trialDays)) : o.perMonth ? t("plusPerMonth").replace("{price}", o.perMonth) : null;
+                return (
+                  <Tap key={o.plan} onPress={() => (haptic.tap(), setPick(o.plan))} style={[styles.plan, on && styles.planOn]} accessibilityRole="radio" accessibilityState={{ selected: on }}>
+                    <View style={[styles.radio, on && styles.radioOn]}>{on && <View style={styles.radioDot} />}</View>
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                        <Text style={[styles.planName, on && { color: C.greenDark }]}>{planName(o.plan)}</Text>
+                        {tag && (
+                          <View style={[styles.tag, o.plan === "yearly" && { backgroundColor: "#FACC15" }]}>
+                            <Text style={[styles.tagText, o.plan === "yearly" && { color: "#3B2A05" }]}>{tag}</Text>
+                          </View>
+                        )}
+                      </View>
+                      {sub && <Text style={[T.caption, o.trialDays > 0 && { color: C.greenDark, fontWeight: "700" }]}>{sub}</Text>}
+                    </View>
+                    <Text style={styles.planPrice}>{o.price}</Text>
+                  </Tap>
+                );
+              })}
+            </View>
+          ))}
 
-      {/* Manage / restore / legal */}
-      <View style={styles.links}>
-        {plus.active && plus.source !== "dev" && <Tap onPress={() => Linking.openURL(MANAGE_URL)}><Text style={styles.link}>{t("plusManage")}</Text></Tap>}
-        {plus.active && plus.source === "dev" && __DEV__ && <Tap onPress={() => simulatePlus(false)}><Text style={styles.link}>{t("plusSimulateOff")}</Text></Tap>}
-        {available && <Tap onPress={restore} disabled={busy}><Text style={styles.link}>{t("plusRestore")}</Text></Tap>}
-        <Tap onPress={() => openPage(TERMS_URL, t("linkFailed"))}><Text style={styles.link}>{t("plusTerms")}</Text></Tap>
-        <Tap onPress={() => openPage(PRIVACY_URL, t("linkFailed"))}><Text style={styles.link}>{t("privacyPolicy")}</Text></Tap>
-      </View>
-    </Page>
-      {/* buy button + renewal terms stay on screen while the perks scroll (App Store 3.1.2: terms next to the button) */}
+        <View style={styles.links}>
+          {plus.active && plus.source !== "dev" && <Tap onPress={() => Linking.openURL(MANAGE_URL)}><Text style={styles.link}>{t("plusManage")}</Text></Tap>}
+          {plus.active && plus.source === "dev" && __DEV__ && <Tap onPress={() => simulatePlus(false)}><Text style={styles.link}>{t("plusSimulateOff")}</Text></Tap>}
+          {available && <Tap onPress={restore} disabled={busy} hitSlop={8}><Text style={styles.link}>{t("plusRestore")}</Text></Tap>}
+          <Tap onPress={() => openPage(TERMS_URL, t("linkFailed"))} hitSlop={8}><Text style={styles.link}>{t("plusTerms")}</Text></Tap>
+          <Tap onPress={() => openPage(PRIVACY_URL, t("linkFailed"))} hitSlop={8}><Text style={styles.link}>{t("privacyPolicy")}</Text></Tap>
+        </View>
+      </ScrollView>
+
       {canBuy && (
-        <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
+        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
           <Button
             title={busy ? "…" : chosen && chosen.trialDays > 0 ? t("plusTrial").replace("{n}", String(chosen.trialDays)) : t("plusSubscribe")}
             kind="gold"
@@ -176,7 +176,14 @@ export default function PlusScreen() {
             disabled={busy || !chosen}
             onPress={buy}
           />
-          <Text style={[T.caption, { textAlign: "center", marginTop: 8, fontSize: 11, lineHeight: 15 }]}>{t("plusLegal").replace("{store}", Platform.OS === "ios" ? "App Store" : "Google Play")}</Text>
+          {chosen && chosen.plan !== "lifetime" && (
+            <Text style={styles.billing}>
+              {chosen.trialDays > 0
+                ? t("plusAfterTrial").replace("{n}", String(chosen.trialDays)).replace("{price}", chosen.price)
+                : `${planName(chosen.plan)} · ${chosen.price}`}
+            </Text>
+          )}
+          <Text style={styles.legal}>{t("plusLegal").replace("{store}", store)}</Text>
         </View>
       )}
     </View>
@@ -184,24 +191,32 @@ export default function PlusScreen() {
 }
 
 const styles = StyleSheet.create({
-  hero: { alignItems: "center", paddingTop: 0 },
-  crown: { width: 60, height: 60, borderRadius: 30, backgroundColor: "#FACC15", alignItems: "center", justifyContent: "center", ...shadow },
-  heroTitle: { fontFamily: F.black, fontSize: 30, color: C.text, marginTop: 8 },
-  heroLine: { ...T.body, fontSize: 16, textAlign: "center", marginTop: 2 },
-  activePill: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6, marginTop: 12 },
+  body: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16, width: "100%", maxWidth: 560, alignSelf: "center" },
+  hero: { flexDirection: "row", alignItems: "center", gap: 12 },
+  crown: { width: 48, height: 48, borderRadius: 24, backgroundColor: "#FACC15", alignItems: "center", justifyContent: "center", ...shadow },
+  heroTitle: { fontFamily: F.black, fontSize: 26, color: C.text },
+  heroLine: { ...T.body, fontSize: 14 },
+  activePill: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.greenSoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6, marginTop: 12, alignSelf: "flex-start" },
   activeText: { color: C.greenDark, fontWeight: "800", fontSize: 14 },
-  perk: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 10 },
-  perkIcon: { width: 34, height: 34, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  perk: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 7 },
+  perkIcon: { width: 28, height: 28, borderRadius: 8, alignItems: "center", justifyContent: "center" },
+  perkTitle: { fontSize: 15, fontWeight: "700", color: C.text },
+  perkDesc: { fontSize: 12.5, color: C.text2 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
-  fair: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.greenSoft, borderRadius: 12, padding: 10, marginTop: 10 },
-  plans: { flexDirection: "row", gap: 10, marginTop: 20 },
-  plan: { flex: 1, backgroundColor: C.card, borderRadius: R.card, borderWidth: 2, borderColor: C.border, padding: 12, paddingTop: 18, alignItems: "center", gap: 2, minHeight: 124, ...shadow, shadowOpacity: 0.05 },
+  fair: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.greenSoft, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 7, marginTop: 8 },
+  plans: { gap: 8, marginTop: 14 },
+  plan: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: C.card, borderRadius: R.card, borderWidth: 2, borderColor: C.border, paddingHorizontal: 14, paddingVertical: 10, minHeight: 56 },
   planOn: { borderColor: C.green, backgroundColor: "#F3FBF5" },
-  tag: { position: "absolute", top: -11, backgroundColor: C.key, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
-  tagText: { fontSize: 11, fontWeight: "800", color: C.text2 },
-  planName: { fontFamily: F.display, fontSize: 18, color: C.text },
-  planPrice: { fontFamily: F.black, fontSize: 22, color: C.text, marginTop: 2 },
-  links: { alignItems: "center", gap: 12, marginTop: 24, marginBottom: 12 },
+  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: C.border, alignItems: "center", justifyContent: "center" },
+  radioOn: { borderColor: C.green },
+  radioDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: C.green },
+  tag: { backgroundColor: C.key, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 2 },
+  tagText: { fontSize: 10.5, fontWeight: "800", color: C.text2 },
+  planName: { fontFamily: F.display, fontSize: 17, color: C.text },
+  planPrice: { fontFamily: F.black, fontSize: 19, color: C.text },
+  links: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", columnGap: 18, rowGap: 8, marginTop: 16 },
+  link: { color: C.greenMid, fontWeight: "700", fontSize: 13 },
   footer: { paddingHorizontal: 16, paddingTop: 10, backgroundColor: C.bg, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
-  link: { color: C.greenMid, fontWeight: "700", fontSize: 14 },
+  billing: { textAlign: "center", marginTop: 8, fontSize: 13, fontWeight: "700", color: C.text },
+  legal: { textAlign: "center", marginTop: 4, fontSize: 10.5, lineHeight: 14, color: C.text2 },
 });
