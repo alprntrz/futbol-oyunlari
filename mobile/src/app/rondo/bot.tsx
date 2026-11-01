@@ -13,6 +13,7 @@ import { Page } from "~/components/ui";
 import { houseRef } from "~/lib/blocks";
 import { useRecordMatch } from "~/lib/history";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { useRondoHouse, type RondoMatch } from "~/lib/rondoMatch";
 import { useRondoPairHouse } from "~/lib/rondoPairHouse";
 import { C } from "~/lib/theme";
@@ -42,6 +43,8 @@ function PairHouse({ nick, refId }: { nick: string; refId: string }) {
 
 function HouseMatch({ m, nick, refId, title }: { m: RondoMatch; nick: string; refId: string; title: string }) {
   const emotes = useEmotes("rd", false);
+  // the house player looks like an online opponent: leaving asks the same way
+  useLeaveGuard(!m.over);
   useXpAward(m.over, m.key, "rd", m.won ? XP.rdWin : XP.rdLoss);
   useRecordMatch(m.over, { key: m.key, game: "rd", opponent: nick, result: m.won ? "win" : "loss", score: `${m.score.me}–${m.score.them}` });
 

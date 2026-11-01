@@ -516,7 +516,14 @@ export default function TaktikGame() {
           })()}
           {traits.length === 0 && me.augments.length === 0 && me.items.length === 0 && <Text style={styles.hint}>{t("ttkNoTraits")}</Text>}
         </View>
-        {sel?.kind === "item" && <Text style={[styles.hint, { marginBottom: 4 }]}>{t(`ttkId_${me.items[sel.index]}`)}</Text>}
+        {/* what a picked item (or the picked player's items) does */}
+        {(sel?.kind === "item" || !!selectedUnit?.items.length) && (
+          <Text style={styles.itemNote}>
+            {sel?.kind === "item"
+              ? `${t(`ttkI_${me.items[sel.index]}`)}: ${t(`ttkId_${me.items[sel.index]}`)}. ${t("ttkItemTap")}`
+              : selectedUnit!.items.map((it) => `${t(`ttkI_${it}`)}: ${t(`ttkId_${it}`)}`).join(" · ")}
+          </Text>
+        )}
       </View>
 
       {/* the pitch: big and flat, the spots on four lines, every player his shirt and his name */}
@@ -993,6 +1000,7 @@ const styles = StyleSheet.create({
   item: { width: 34, height: 28, borderRadius: R.chip, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
   itemOn: { backgroundColor: C.amberSoft, borderColor: C.amber },
   hint: { color: C.text3, fontSize: 12, textAlign: "center" },
+  itemNote: { color: C.text, fontSize: 13, fontWeight: "600", textAlign: "center", marginHorizontal: 12, marginBottom: 4 },
   plus: { position: "absolute", borderRadius: 10, borderWidth: 1.5, borderStyle: "dashed", borderColor: "rgba(255,255,255,0.75)", backgroundColor: "rgba(0,0,0,0.06)", alignItems: "center", justifyContent: "center" },
   plusLit: { borderColor: C.amber, backgroundColor: "rgba(245,158,11,0.2)" },
   plusText: { fontSize: 24, fontWeight: "300", color: "rgba(255,255,255,0.9)" },

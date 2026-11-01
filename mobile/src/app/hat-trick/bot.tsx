@@ -17,6 +17,7 @@ import { haptic, useTurnCue } from "~/lib/haptics";
 import { COMEBACK_SECONDS, NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
 import { dealGrid } from "~/lib/league";
 import { loadTier } from "~/lib/xp";
@@ -57,6 +58,8 @@ export default function HatTrickHouse() {
   // series score: follows the people, marks swap every game
   const [wins, setWins] = useState({ mine: 0, theirs: 0 });
   const seriesOver = wins.mine >= SERIES_TARGET || wins.theirs >= SERIES_TARGET;
+  // the house player looks like an online opponent: leaving asks the same way
+  useLeaveGuard(!seriesOver);
   const [startedAt] = useState(() => Date.now());
   useRecordMatch(seriesOver, {
     key: `ht-house-${startedAt}`,

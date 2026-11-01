@@ -15,6 +15,7 @@ import { play as playSound } from "~/lib/sound";
 import { other, type Mark } from "~/lib/hattrick";
 import { useRecordMatch } from "~/lib/history";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { claimsFor, CLOCK_SECONDS, generateBoard, HEX_COUNT, housePpMove, housePpThinkMs, resultOf, type PpCell } from "~/lib/possession";
 import { C } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
@@ -51,6 +52,8 @@ export default function PossessionHouse() {
     if (winner) playSound(winner === me ? "victory" : winner === "draw" ? "whistle" : "lose");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [winner]);
+  // the house player looks like an online opponent: leaving asks the same way
+  useLeaveGuard(!winner);
   useXpAward(!!winner, key, "pp", winner === "draw" ? XP.ppDraw : winner === me ? XP.ppWin : XP.ppLoss);
   const held = (m: Mark) => owners.filter((o) => o?.mark === m).length;
   useRecordMatch(!!winner, { key, game: "pp", opponent: nick, result: winner === "draw" ? "draw" : winner === me ? "win" : "loss", score: `${held(me)}–${held(rival)}` });

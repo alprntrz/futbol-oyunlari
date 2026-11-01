@@ -11,6 +11,7 @@ import { Page } from "~/components/ui";
 import { houseRef } from "~/lib/blocks";
 import { useRecordMatch } from "~/lib/history";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { useWmHouse } from "~/lib/whoamiMatch";
 import { C } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
@@ -24,6 +25,8 @@ export default function WhoAmIHouse() {
   const m = useWmHouse(nick, ref);
   const emotes = useEmotes("wm", false);
 
+  // the house player looks like an online opponent: leaving asks the same way
+  useLeaveGuard(!m.over);
   useXpAward(m.over, m.key, "wm", m.won ? XP.wmWin : m.draw ? XP.wmDraw : XP.wmLoss);
   useRecordMatch(m.over, { key: m.key, game: "wm", opponent: nick, result: m.won ? "win" : m.draw ? "draw" : "loss", score: `${m.hearts.me}–${m.hearts.them}` });
 

@@ -157,7 +157,9 @@ export function MatchView({ lobby, meId, onClose }: { lobby: Lobby; meId: number
                       {mine.drops.item && (
                         <View style={styles.dropItem}>
                           <ItemIcon id={mine.drops.item} size={24} />
-                          <Text style={T.headline}>{t(`ttkI_${mine.drops.item}`)}</Text>
+                          <Text style={T.headline}>
+                            {t(`ttkI_${mine.drops.item}`)}: {t(`ttkId_${mine.drops.item}`)}
+                          </Text>
                         </View>
                       )}
                     </View>

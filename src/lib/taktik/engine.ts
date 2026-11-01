@@ -315,29 +315,59 @@ export function autoArrange(m: Manager) {
     free.delete(0);
     placed++;
   }
-  const outfield = m.units.filter((u) => u.slot === null && u.pos !== "GK").sort((a, b) => value(b) - value(a));
-  // a back line first: about a third of the outfield spots go to defenders (real
-  // ones first, then whoever loses least out of position), so the team never
-  // plays without a defence
+  const outfield = m.units.filter((u) => u.slot === null && u.pos !== "GK");
+  // a back line: about a third of the outfield spots go to the defence, so the team never
+  // plays without one (real defenders first; whoever loses least out of position after that)
   const defTarget = Math.min(4, Math.ceil(Math.max(0, cap - 1) / 3));
-  const backs = [...outfield].sort((a, b) => value(b) * zoneFit(b.pos, "DEF") - value(a) * zoneFit(a.pos, "DEF"));
-  for (const u of backs.slice(0, defTarget)) {
-    const slot = ZONE_SLOTS("DEF").find((i) => free.has(i));
-    if (slot === undefined || placed >= cap) break;
+  const zones: Pos[] = ["DEF", "MID", "FWD"];
+  const room = zones.map((z) => ZONE_SLOTS(z).filter((i) => free.has(i)).length);
+  const fit = (u: Unit, z: Pos) => (u.items.includes("board") ? 1 : zoneFit(u.pos, z));
+  // Exact search over who plays where: every player is benched or put in one zone, at most
+  // the zone's free spots, as many as the cap allows, scoring value × fit on the pitch. A
+  // striker never drops into the back line (or a defender up front) while another line-up
+  // works: only when nothing else fills the pitch is `minFit` lowered. Small: ≤ 5 × 5 × 4
+  // zone counts per player.
+  const want = Math.min(cap - placed, outfield.length, room[0] + room[1] + room[2]);
+  const needDef = Math.min(defTarget, room[0], want);
+  type Best = { score: number; pick: number[] };
+  const search = (minFit: number) => {
+    const key = (c: number[]) => c.join(",");
+    let states = new Map<string, Best>([["0,0,0", { score: 0, pick: [] }]]);
+    for (const u of outfield) {
+      const next = new Map<string, Best>();
+      const keep = (k: string, b: Best) => {
+        const old = next.get(k);
+        if (!old || b.score > old.score) next.set(k, b);
+      };
+      for (const [k, b] of states) {
+        const c = k.split(",").map(Number);
+        keep(k, { score: b.score, pick: [...b.pick, -1] });
+        zones.forEach((z, zi) => {
+          if (fit(u, z) < minFit || c[zi] >= room[zi] || c[0] + c[1] + c[2] >= want) return;
+          const n = c.slice();
+          n[zi]++;
+          keep(key(n), { score: b.score + value(u) * fit(u, z), pick: [...b.pick, zi] });
+        });
+      }
+      states = next;
+    }
+    let best: Best | null = null;
+    for (const [k, b] of states) {
+      const c = k.split(",").map(Number);
+      if (c[0] + c[1] + c[2] !== want || c[0] < needDef) continue;
+      if (!best || b.score > best.score) best = b;
+    }
+    return best;
+  };
+  const best = search(0.7) ?? search(0);
+  outfield.forEach((u, i) => {
+    const zi = best?.pick[i] ?? -1;
+    if (zi < 0) return;
+    const slot = ZONE_SLOTS(zones[zi]).find((j) => free.has(j))!;
     u.slot = slot;
     free.delete(slot);
     placed++;
-  }
-  for (const u of outfield) {
-    if (u.slot !== null) continue;
-    if (placed >= cap) break;
-    const zones: Pos[] = [u.pos, ...NEAR[u.pos]];
-    const slot = zones.flatMap(ZONE_SLOTS).find((i) => free.has(i));
-    if (slot === undefined) continue;
-    u.slot = slot;
-    free.delete(slot);
-    placed++;
-  }
+  });
   // nobody in goal and room left: the weakest fielded-able player goes in
   if (!keeper && placed < cap && free.has(0)) {
     const stand = m.units.filter((u) => u.slot === null).sort((a, b) => value(a) - value(b))[0];
