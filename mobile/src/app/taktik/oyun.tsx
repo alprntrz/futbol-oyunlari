@@ -10,12 +10,12 @@ import { alive, bench, fieldCap, fielded, namesPlayer, priceOf, sellValue, xpToN
 import { INCOME, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, streakGold, XP_COST, type Pos } from "@/lib/taktik/rules";
 import { sheet } from "@/lib/taktik/sim";
 import { effectsOf, STYLES, type EffectKey, type TraitState } from "@/lib/taktik/traits";
-import type { Manager, ShopCard } from "@/lib/taktik/types";
+import type { Manager, ShopCard, Unit } from "@/lib/taktik/types";
 
 import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
 import { CLUB_KITS, ClubShirt } from "~/components/HatTrickBoard";
-import { COST_COLOR, ItemIcon, PosTag, clubCriterion, surname } from "~/components/taktik/Card";
+import { COST_COLOR, ItemIcon, PosTag, STAR_FRAME, clubCriterion, surname } from "~/components/taktik/Card";
 import { Jersey } from "~/components/Jersey";
 import { CoinFly } from "~/components/taktik/CoinFly";
 import { avatarsOf, LobbyIntro } from "~/components/taktik/LobbyIntro";
@@ -661,7 +661,11 @@ export default function TaktikGame() {
                 );
               const picked = sel?.kind === "unit" && sel.uid === u.uid;
               return (
-                <Tap key={u.uid} onPress={() => tapUnit(u.uid)} style={[styles.sub, { width: benchW, height: benchW * (dense ? 1.12 : 1.4), borderBottomColor: COST_COLOR[u.cost] }, picked && styles.subPicked]} accessibilityLabel={u.name}>
+                <Tap key={u.uid} onPress={() => tapUnit(u.uid)} style={[styles.sub, { width: benchW, height: benchW * (dense ? 1.12 : 1.4), borderBottomColor: COST_COLOR[u.cost] }, u.star > 1 && { borderColor: STAR_FRAME[u.star], borderWidth: 2 }, picked && styles.subPicked]} accessibilityLabel={`${u.name}, ${"★".repeat(u.star)}`}>
+                  {/* the star level, as on the pitch: two or three of the same player have become one */}
+                  <Text allowFontScaling={false} style={[styles.subStars, { color: STAR_FRAME[u.star] }]}>
+                    {"★".repeat(u.star)}
+                  </Text>
                   <Shirt club={u.club} size={benchW * (dense ? 0.52 : 0.68)} />
                   <Text style={styles.subName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
                     {surname(u.name)}
@@ -772,6 +776,19 @@ export default function TaktikGame() {
                 <Text style={T.headline}>{traitLabel(info)}</Text>
               </View>
               {traitDesc(info) ? <Text style={T.body}>{traitDesc(info)}</Text> : null}
+              {/* who brings it: the players on the pitch count, the bench ones would */}
+              {(() => {
+                const has = (u: Unit) => (info.kind === "club" ? u.club === info.id : info.kind === "country" ? u.country === info.id : u.badges.includes(info.id));
+                const names = (us: Unit[]) => [...new Set(us.filter(has).map((u) => surname(u.name)))].join(", ");
+                const on = names(fielded(me));
+                const off = names(bench(me));
+                return (
+                  <>
+                    {on ? <Text style={T.body}>{`${t("ttkTraitOn")}: ${on}`}</Text> : null}
+                    {off ? <Text style={[T.body, { color: C.text2 }]}>{`${t("ttkTraitBench")}: ${off}`}</Text> : null}
+                  </>
+                );
+              })()}
               {/* every step and exactly what it gives; the steps reached are lit */}
               <View style={{ gap: 6, marginTop: 2 }}>
                 {info.steps.map((n, i) => {
@@ -1034,6 +1051,7 @@ const styles = StyleSheet.create({
   subPicked: { backgroundColor: C.amberSoft, borderColor: C.amber },
   subEmpty: { alignItems: "center", justifyContent: "center", borderRadius: 10, borderWidth: 1.5, borderStyle: "dashed", borderColor: C.border },
   subName: { fontFamily: F.display, fontSize: 13, color: C.text, paddingHorizontal: 2 },
+  subStars: { position: "absolute", top: 1, right: 3, fontSize: 9, lineHeight: 11, fontWeight: "800" },
   subPos: { fontSize: 9, fontWeight: "800", color: C.text3 },
   levelLine: { flexDirection: "row", alignItems: "center", gap: 6 },
   levelTrack: { width: 54, height: 6, borderRadius: 3, backgroundColor: C.key, overflow: "hidden" },

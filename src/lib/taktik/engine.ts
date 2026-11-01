@@ -323,10 +323,13 @@ export function autoArrange(m: Manager) {
   const room = zones.map((z) => ZONE_SLOTS(z).filter((i) => free.has(i)).length);
   const fit = (u: Unit, z: Pos) => (u.items.includes("board") ? 1 : zoneFit(u.pos, z));
   // Exact search over who plays where: every player is benched or put in one zone, at most
-  // the zone's free spots, as many as the cap allows, scoring value × fit on the pitch. A
-  // striker never drops into the back line (or a defender up front) while another line-up
-  // works: only when nothing else fills the pitch is `minFit` lowered. Small: ≤ 5 × 5 × 4
-  // zone counts per player.
+  // the zone's free spots, as many as the cap allows, scoring value × fit on the pitch. The
+  // back line takes real defenders, and nobody plays two lines away from his own (a striker at
+  // the back, a defender up front), while another line-up works: only when nothing else fills
+  // the pitch are those limits lowered. Small: ≤ 5 × 5 × 4 zone counts per player.
+  // A real defender at the back outranks any score difference, so a midfielder only fills the
+  // back line once no defender is left on the bench.
+  const BACK_FIRST = 10_000;
   const want = Math.min(cap - placed, outfield.length, room[0] + room[1] + room[2]);
   const needDef = Math.min(defTarget, room[0], want);
   type Best = { score: number; pick: number[] };
@@ -346,7 +349,8 @@ export function autoArrange(m: Manager) {
           if (fit(u, z) < minFit || c[zi] >= room[zi] || c[0] + c[1] + c[2] >= want) return;
           const n = c.slice();
           n[zi]++;
-          keep(key(n), { score: b.score + value(u) * fit(u, z), pick: [...b.pick, zi] });
+          const back = z === "DEF" && u.pos === "DEF" ? BACK_FIRST : 0;
+          keep(key(n), { score: b.score + value(u) * fit(u, z) + back, pick: [...b.pick, zi] });
         });
       }
       states = next;

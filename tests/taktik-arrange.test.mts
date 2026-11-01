@@ -52,3 +52,24 @@ test("the pitch is still filled and there is a back line when only forwards are 
   assert.equal(units.filter((u) => u.slot !== null).length, 6);
   assert.ok(units.some((u) => zoneOf(u) === "DEF"));
 });
+
+test("a midfielder does not take a back-line spot while a defender sits on the bench", () => {
+  const units = squad(
+    [
+      ["GK", 1],
+      ["MID", 3],
+      ["MID", 3],
+      ["MID", 3],
+      ["MID", 3],
+      ["MID", 3],
+      ["FWD", 1],
+      ["DEF", 1],
+      ["DEF", 1],
+      ["DEF", 1],
+    ],
+    6
+  );
+  const midsAtBack = units.filter((u) => u.pos === "MID" && zoneOf(u) === "DEF").length;
+  const defsBenched = units.filter((u) => u.pos === "DEF" && u.slot === null).length;
+  assert.ok(!(midsAtBack > 0 && defsBenched > 0), `${midsAtBack} midfielder(s) at the back, ${defsBenched} defender(s) benched`);
+});
