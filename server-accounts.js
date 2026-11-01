@@ -20,7 +20,7 @@ const fs = require("fs");
 const path = require("path");
 const { DatabaseSync } = require("node:sqlite");
 const { refForUser, shownNick } = require("./server-refs");
-const { createPush } = require("./server-push");
+const { createPush, safeEqual } = require("./server-push");
 
 const DB_FILE = process.env.ACCOUNTS_DB || path.join(__dirname, "data", "accounts.db");
 const APPLE_AUD = (process.env.APPLE_AUDIENCES || "com.alprntrz.tiktako").split(",").map((s) => s.trim()).filter(Boolean);
@@ -340,12 +340,23 @@ function levelOf(xp) {
   return level;
 }
 
+// the boards are public: the sorted table is read at most once per BOARD_CACHE_MS per board
+const BOARD_CACHE_MS = 30_000;
+const boardCache = new Map();
+function boardRows(board, read) {
+  const hit = boardCache.get(board);
+  if (hit && Date.now() - hit.at < BOARD_CACHE_MS) return hit.rows;
+  const rows = read();
+  boardCache.set(board, { at: Date.now(), rows });
+  return rows;
+}
+
 /** Top 50 for a board ("xp" or a rated game), plus this user's row. */
 function leaderboard(board, me) {
   const top = [];
   let mine = null;
   if (board === "xp") {
-    const rows = db.prepare("SELECT id, nick, avatar, frame, xp FROM users WHERE xp > 0 ORDER BY xp DESC, created ASC").all();
+    const rows = boardRows("xp", () => db.prepare("SELECT id, nick, avatar, frame, xp FROM users WHERE xp > 0 ORDER BY xp DESC, created ASC").all());
     rows.forEach((r, i) => {
       const row = { rank: i + 1, ref: refForUser(r.id), nick: shownNick(refForUser(r.id), r.nick || "?"), avatar: r.avatar, frame: frameOf(r), value: r.xp, level: levelOf(r.xp), me: r.id === me };
       if (i < 50) top.push(row);
@@ -354,9 +365,11 @@ function leaderboard(board, me) {
     return { top, me: mine, total: rows.length };
   }
   if (!RATED.has(board)) return null;
-  const rows = db
-    .prepare("SELECT u.id, u.nick, u.avatar, u.frame, u.xp, r.rating, r.games, r.wins FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.game = ? AND r.games > 0 ORDER BY r.rating DESC, r.games DESC")
-    .all(board);
+  const rows = boardRows(board, () =>
+    db
+      .prepare("SELECT u.id, u.nick, u.avatar, u.frame, u.xp, r.rating, r.games, r.wins FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.game = ? AND r.games > 0 ORDER BY r.rating DESC, r.games DESC")
+      .all(board)
+  );
   rows.forEach((r, i) => {
     const row = { rank: i + 1, ref: refForUser(r.id), nick: shownNick(refForUser(r.id), r.nick || "?"), avatar: r.avatar, frame: frameOf(r), value: Math.round(r.rating), level: levelOf(r.xp), games: r.games, wins: r.wins, me: r.id === me };
     if (i < 50) top.push(row);
@@ -455,6 +468,9 @@ function leagueView(user) {
 /** `imported`: guest XP moving into the account (outside the daily cap, kept out of the week's league) */
 function addXp(user, key, game, amount, cap = MAX_AWARD, imported = false) {
   if (!GAMES.has(game) || typeof key !== "string" || !key) return false;
+  // the caller's row may be stale (parallel /xp requests each loaded it before their body came):
+  // read the totals again; node:sqlite is synchronous, so nothing runs between this read and the write
+  Object.assign(user, db.prepare("SELECT xp, by_game, xp_day, xp_today, league_tier, league_last FROM users WHERE id = ?").get(user.id));
   const day = today();
   if (user.xp_day !== day) {
     user.xp_day = day;
@@ -532,7 +548,7 @@ async function refreshPlus(userId, gap = PLUS_CHECK_GAP) {
  * call so RevenueCat doesn't retry forever on accounts we don't know (anonymous / deleted).
  */
 async function handleRcWebhook(req, res) {
-  if (!RC_WEBHOOK_AUTH || req.headers.authorization !== RC_WEBHOOK_AUTH) return send(res, 401, { error: "unauthorized" }), true;
+  if (!RC_WEBHOOK_AUTH || !safeEqual(req.headers.authorization || "", RC_WEBHOOK_AUTH)) return send(res, 401, { error: "unauthorized" }), true;
   let body;
   try {
     body = await readJson(req);

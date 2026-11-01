@@ -247,4 +247,4 @@ function createPush(db) {
   return { register, unregister, deleteUser, sendPush, hasCategory, handleAdmin };
 }
 
-module.exports = { createPush, invitePush, friendPush, isToken };
+module.exports = { createPush, invitePush, friendPush, isToken, safeEqual };

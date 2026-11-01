@@ -219,7 +219,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `components/ConnectionBanner.tsx` shows reconnecting / too late / opponent away in the three online match screens.
 - Report / block (Apple 1.2): `server-refs.js` gives each player an opaque `ref` (HMAC of account id or install id; the install id
   itself must never reach other phones) carried on room seats, boards, league, friends and quiz standings. `rep:send` appends to
-  /data/reports.jsonl (3 different reporters hide the nick as "Player"); phones keep their block list (`lib/blocks.ts`, sent in the
+  /data/reports.jsonl (capped at 5 MB; 3 different signed-in reporters hide the nick as "Player" for 30 days, guest reports are kept but don't count); phones keep their block list (`lib/blocks.ts`, sent in the
   handshake + `blk:set`) and `takePairs` / quiz rooms / invites skip blocked pairs. UI: `components/PlayerMenu.tsx`
   (`openPlayerMenu`, `PlayerMenuButton` beside the emote button; house players get a made-up `houseRef`), Settings > Blocked.
 - Health (server-app.js, lib/appHealth.ts): root `ErrorBoundary` (`components/AppError.tsx`) shows a friendly page and POSTs an
