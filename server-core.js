@@ -142,4 +142,16 @@ const critId = (x) => typeof x === "string" && x.length > 0 && x.length <= 48;
 /** a footballer's name as sent by a phone */
 const nameOf = (v) => (typeof v === "string" ? v.trim().slice(0, 60) : "");
 
-module.exports = { REJOIN_MS, INTRO_MS, setIo, socketOf, rateDuel, pairAllowsRating, tellElo, refById, seatRef, seatNick, blockedPair, CODE_ALPHABET, codeFor, cleanNick, TIER_WIDEN_MS, cleanTier, tierGap, takePairs, qzNick, critId, nameOf };
+/** a name's comparison key: case, accents and extra spaces don't make a different footballer ("Messi" = "messi" = "MESSİ") */
+const nameKey = (v) =>
+  String(v)
+    .toLocaleLowerCase("tr")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/\s+/g, " ")
+    .trim();
+/** whether `name` was already played in a room (`used` holds the names so far) */
+const nameUsed = (used, name) => used.some((u) => nameKey(u) === nameKey(name));
+
+module.exports = { REJOIN_MS, INTRO_MS, setIo, socketOf, rateDuel, pairAllowsRating, tellElo, refById, seatRef, seatNick, blockedPair, CODE_ALPHABET, codeFor, cleanNick, TIER_WIDEN_MS, cleanTier, tierGap, takePairs, qzNick, critId, nameOf, nameKey, nameUsed };

@@ -4,7 +4,7 @@
 // server.js lists it in GAMES (reconnect, room sweep, queue pairing, emotes, invites, Live
 // Activity) and calls attach() for every socket.
 const { cleanLook, plusOf } = require("../server-accounts");
-const { INTRO_MS, socketOf, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf } = require("../server-core");
+const { INTRO_MS, socketOf, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf, nameUsed } = require("../server-core");
 const { liveSend, liveTurnProps } = require("../server-live");
 const path = require("path");
 const { pathToFileURL } = require("node:url");
@@ -297,7 +297,7 @@ function attach(socket, ctx) {
       // A taken square is only allowed as a steal of the opponent's square
       const steal = !!taken && !!room.steals && taken.mark !== me.mark && room.steals[me.mark] > 0;
       // Bad square or a name already on the board: resync the sender only
-      if (!(i >= 0 && i < 9) || (taken && !steal) || room.used.includes(player)) {
+      if (!(i >= 0 && i < 9) || (taken && !steal) || nameUsed(room.used, player)) {
         return socket.emit("ht:update", view(room));
       }
       if (steal) room.steals[me.mark]--;

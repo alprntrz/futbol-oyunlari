@@ -160,6 +160,31 @@ test("Possession: the server works out the claimed hexes", async () => {
   assert.deepEqual(st.v?.owners.map((o, i) => (o ? i : -1)).filter((i) => i >= 0), [0]);
 });
 
+test("Possession: the same footballer in another spelling cannot be claimed twice", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  type Cell = { mark: string; name: string } | null;
+  const st = latest<{ turn: string; owners: Cell[] }>(a, "pp:update");
+  const board = Array.from({ length: 31 }, (_, i) => ["spain", "italy", "barcelona", "milan", "inter", "roma", "france", "brazil"][i % 8]);
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "pp:create", { nick: "a", board });
+  assert.ok(c.ok);
+  await ask(b, "pp:join", { code: c.room.code, nick: "b" });
+  a.emit("pp:start");
+  await wait(300);
+  a.emit("pp:move", { name: null });
+  await wait(200);
+  // O takes hex 0 ("spain") with a Spanish player
+  const p = GRID_PLAYERS.find((x) => criterionById("spain")!.test(x))!;
+  b.emit("pp:move", { name: p.name, claims: [0] });
+  await wait(200);
+  assert.equal(st.v?.owners[0]?.name, p.name);
+  assert.equal(st.v?.turn, "X");
+  // X replays the same footballer in capitals on another "spain" hex: refused, and the turn stays
+  a.emit("pp:move", { name: p.name.toUpperCase(), claims: [8] });
+  await wait(200);
+  assert.equal(st.v?.owners[8], null, "a used name in another case takes nothing");
+  assert.equal(st.v?.turn, "X", "a refused name does not pass the turn");
+});
+
 test("Tic-Tac-Toe: two queued players are paired", async () => {
   const [a, b] = await Promise.all([client(), client()]);
   const m = latest<{ code: string }>(a, "ht:matched");
