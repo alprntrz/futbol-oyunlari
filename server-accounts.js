@@ -674,13 +674,11 @@ async function handleAccountApi(req, res, cleanNick) {
     if (url === "/api/account/daily" && req.method === "POST") {
       const day = today();
       let gained = 0;
-      if (user.bonus_day !== day) {
-        // not a game: it adds to the total only
-        user.bonus_day = day;
-        user.xp += DAILY_BONUS;
-        db.prepare("UPDATE users SET bonus_day = ?, xp = ? WHERE id = ?").run(day, user.xp, user.id);
-        gained = DAILY_BONUS;
-      }
+      // not a game: it adds to the total only. One conditional update, so a second request
+      // (or an award landing at the same moment) can neither pay twice nor overwrite the total
+      const r = db.prepare("UPDATE users SET bonus_day = ?, xp = xp + ? WHERE id = ? AND (bonus_day IS NULL OR bonus_day != ?)").run(day, DAILY_BONUS, user.id, day);
+      if (r.changes) gained = DAILY_BONUS;
+      Object.assign(user, db.prepare("SELECT xp, bonus_day FROM users WHERE id = ?").get(user.id));
       return send(res, 200, { gained, user: publicUser(user) }), true;
     }
 
