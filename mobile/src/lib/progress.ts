@@ -2,6 +2,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Updates from "expo-updates";
 import { AppState } from "react-native";
 
+import { resetCosmetics } from "./cosmetics";
+import { resetDailyRewards } from "./dailyRewards";
+import { resetKosu } from "./kosu";
+import { resetPlayStreak } from "./playStreak";
+import { resetQuests } from "./quests";
+
 /**
  * Game progress that follows a signed-in player to a new phone (server-accounts.js PROGRESS_KEYS):
  * match history (opponents' names left out), play streak, trophies, Daily XI stats, the reward
@@ -132,10 +138,21 @@ export async function syncProgress(next: ProgressApi) {
   uploadSoon();
 }
 
-/** Signed out: stop sending. */
-export function stopProgress() {
+/**
+ * Signed out: stop sending, and the account's progress leaves the phone (stores' caches too), so
+ * the phone is a fresh guest and the next sign-in can't merge it into another account.
+ */
+export async function clearProgress() {
   api = null;
   lastSent = "";
+  if (timer) clearTimeout(timer);
+  timer = null;
+  await AsyncStorage.multiRemove([...KEYS]).catch(() => {});
+  resetQuests();
+  resetPlayStreak();
+  resetCosmetics();
+  resetDailyRewards();
+  resetKosu();
 }
 
 AppState.addEventListener("change", (s) => {

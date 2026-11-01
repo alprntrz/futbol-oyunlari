@@ -19,6 +19,13 @@ AsyncStorage.multiGet([CLUB_KEY, BEST_KEY])
   })
   .catch(() => {});
 
+/** Signed out (lib/progress.ts): back to the defaults; the keys are already gone. */
+export function resetKosu() {
+  club = "galatasaray";
+  best = 0;
+  ping();
+}
+
 function useStore<T>(read: () => T): T {
   const [v, setV] = useState(read);
   useEffect(() => {

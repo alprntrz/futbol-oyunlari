@@ -6,7 +6,7 @@ import { Platform } from "react-native";
 
 import { track } from "./analytics";
 import { applyServerPlus, initPlus, plusSignedOut, setPlusServerSync } from "./plus";
-import { stopProgress, syncProgress } from "./progress";
+import { clearProgress, syncProgress } from "./progress";
 import { loadAvatar, saveAvatar, type AvatarId } from "./avatar";
 import { loadNick, loadPlayerId, saveNick } from "./nick";
 import { setSessionToken, SOCKET_URL } from "./socket";
@@ -149,11 +149,15 @@ const progressApi = {
   put: (progress: Record<string, string>) => api("/progress", { method: "PUT", body: JSON.stringify({ progress }) }),
 };
 
+/** Back to guest (sign-out, account deleted, session gone): nothing of the account stays on the phone. */
 async function forget() {
-  stopProgress();
   token = null;
   await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => {});
   await AsyncStorage.removeItem(PENDING_KEY).catch(() => {});
+  // the account's progress and XP go too: the next sign-in (maybe someone else's) must not
+  // merge them in or import them as guest XP
+  await clearProgress();
+  await resetLocalXp();
   setAccount(null);
 }
 
@@ -284,7 +288,6 @@ export async function signOut() {
   }
   if (account?.provider === "google") await googleModule()?.GoogleSignin.signOut().catch(() => {});
   await forget();
-  await resetLocalXp();
   await plusSignedOut();
 }
 

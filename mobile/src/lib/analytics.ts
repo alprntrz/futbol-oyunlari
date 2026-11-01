@@ -58,6 +58,13 @@ function load() {
     .then(() => listeners.forEach((fn) => fn())));
 }
 
+/** No event may carry a link: the SDK adds `url` (a deep link such as tiktako://hat-trick/oda/<code>) to "Application Opened". */
+export function dropUrl<E extends { properties?: Record<string, unknown> }>(event: E): E {
+  if (!event.properties || !("url" in event.properties)) return event;
+  const { url: _url, ...properties } = event.properties;
+  return { ...event, properties };
+}
+
 function start() {
   if (client || !configured() || !on) return;
   try {
@@ -68,6 +75,8 @@ function start() {
       personProfiles: "never",
       disableGeoip: true,
       captureAppLifecycleEvents: true,
+      // "Application Opened" carries the launch link (Linking.getInitialURL), which can hold a room code
+      before_send: dropUrl,
       enableSessionReplay: false,
       preloadFeatureFlags: false,
       disableRemoteFeatureFlags: true,

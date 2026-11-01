@@ -18,6 +18,7 @@ import { PlayerMenuHost } from "~/components/PlayerMenu";
 import { useUpdateRequired } from "~/lib/appHealth";
 import { RatingAsk } from "~/lib/rating";
 import { RemindersSync } from "~/lib/reminders";
+import { RoomLinkWatch } from "~/lib/roomLink";
 import { initSentry, wrapRoot } from "~/lib/sentry";
 import { RewardScreen } from "~/components/RewardScreen";
 import { CapSheetHost } from "~/components/Rewarded";
@@ -103,6 +104,7 @@ function RootLayout() {
       <RemindersSync />
       <PushSync />
       <AnalyticsScreens />
+      <RoomLinkWatch />
       <RatingAsk />
       <PlayerMenuHost />
     </I18nProvider>
