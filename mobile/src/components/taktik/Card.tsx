@@ -1,5 +1,6 @@
 import { Image, StyleSheet, View } from "react-native";
 
+import { PLAYERS } from "@/data/players";
 import { ALL_CRITERIA } from "@/lib/tiki";
 import type { Cost, Pos } from "@/lib/taktik/rules";
 import type { ItemId, Unit } from "@/lib/taktik/types";
@@ -18,9 +19,31 @@ export const COST_COLOR: Record<Cost, string> = { 1: "#8D978F", 2: "#22A55A", 3:
 /** star level frame: bronze, silver, gold */
 export const STAR_FRAME = { 1: "#C9864A", 2: "#A3AFBB", 3: "#F2B705" } as const;
 
-export const surname = (name: string) => {
+const initialed = (name: string) => {
   const parts = name.trim().split(/\s+/);
-  return parts.length > 1 ? parts.slice(-1)[0] : parts[0];
+  return parts.length > 1 ? `${parts[0][0]}. ${parts.slice(-1)[0]}` : parts[0];
+};
+const lastName = (name: string) => name.trim().split(/\s+/).slice(-1)[0];
+/** names more than one player shares: "Esposito" ×10, "A. Esposito" ×3 */
+const shared = (key: (name: string) => string) => {
+  const seen = new Set<string>();
+  const out = new Set<string>();
+  for (const p of PLAYERS) {
+    const k = key(p.name);
+    if (seen.has(k)) out.add(k);
+    seen.add(k);
+  }
+  return out;
+};
+const SHARED_LAST = shared(lastName);
+const SHARED_INITIAL = shared(initialed);
+
+/** card name: the surname; "P. Esposito" when the surname is shared, the full name when that is too */
+export const surname = (name: string) => {
+  const last = lastName(name);
+  if (!SHARED_LAST.has(last)) return last;
+  const short = initialed(name);
+  return SHARED_INITIAL.has(short) ? name.trim() : short;
 };
 
 const CLUB = new Map(ALL_CRITERIA.filter((c) => c.kind === "club").map((c) => [c.id, c]));
