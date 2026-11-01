@@ -1,20 +1,32 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
+import { View } from "react-native";
+
+import { XP } from "@/lib/levels";
 
 import { PossessionBoard } from "~/components/PossessionBoard";
+import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { PlayerMenuButton } from "~/components/PlayerMenu";
+import { ConnectionBanner } from "~/components/ConnectionBanner";
+import { GameActions } from "~/components/GameActions";
 import { Text } from "~/components/Text";
 import { WaitingRoom } from "~/components/WaitingRoom";
 import { Button, Card, Icon, Page } from "~/components/ui";
-import { haptic } from "~/lib/haptics";
+import { useTurnCue } from "~/lib/haptics";
+import { useRecordMatch } from "~/lib/history";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
+import { GAME_ICON, useDuelActivity, useLivePush } from "~/lib/liveActivity";
 import { boardFromIds, boardToIds, claimsFor, generateBoard, type PpCell } from "~/lib/possession";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, T } from "~/lib/theme";
+import { useXpAward } from "~/lib/xp";
 
 interface PpPlayer {
   id: string;
+  ref?: string | null;
   nick: string;
   mark: Mark;
 }
@@ -27,7 +39,7 @@ interface PpRoom {
   /** ms left per player at the time of the update */
   clocks: Record<Mark, number>;
   winner: Mark | "draw" | null;
-  flash: { mark: Mark; reason: "wrong" | "timeout" | "claim"; name?: string; count?: number; stolen?: number } | null;
+  flash: { mark: Mark; reason: "wrong" | "timeout" | "claim" | "left"; name?: string; count?: number; stolen?: number } | null;
   used: string[];
   players: PpPlayer[];
 }
@@ -35,29 +47,50 @@ interface PpRoom {
 /** Online Possession Play room: waiting screen, then the shared hex board driven by the server. */
 export default function PossessionRoom() {
   const { t } = useI18n();
-  const params = useLocalSearchParams<{ code: string }>();
+  const emotes = useEmotes("pp", true);
+  const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
+  useLivePush("pp", code || null);
   const [room, setRoom] = useState<PpRoom | null>(null);
   const [receivedAt, setReceivedAt] = useState(() => Date.now());
   const [now, setNow] = useState(() => Date.now());
   const [error, setError] = useState<string | null>(null);
   const [peerLeft, setPeerLeft] = useState(false);
   const [myId, setMyId] = useState(() => getSocket().id ?? "");
+  const leave = useLeaveGuard(!!room?.started && !room.winner && !peerLeft);
+
+  // each game in the room (a rematch deals a new board) pays once
+  const myMark = room?.players.find((p) => p.id === myId)?.mark;
+  useTurnCue(!!myMark && !!room?.started && room.turn === myMark && !room.winner);
+  useXpAward(
+    !!room?.winner && !!myMark,
+    room ? `pp-${code}-${room.board.slice(0, 4).join(",")}` : null,
+    "pp",
+    room?.winner === "draw" ? XP.ppDraw : room?.winner === myMark ? XP.ppWin : XP.ppLoss
+  );
+  const held = (m?: string) => room?.owners.filter((o) => o?.mark === m).length ?? 0;
+  useRecordMatch(!!room?.winner && !!myMark, {
+    key: room ? `pp-${code}-${room.board.slice(0, 4).join(",")}` : "pp",
+    game: "pp",
+    opponent: room?.players.find((p) => p.id !== myId)?.nick || t("opponent"),
+    result: room?.winner === "draw" ? "draw" : room?.winner === myMark ? "win" : "loss",
+    score: `${held(myMark)}–${held(myMark === "X" ? "O" : "X")}`,
+  });
 
   useEffect(() => {
     const socket = getSocket();
     const apply = (r: PpRoom) => {
-      setRoom((prev) => {
-        if (prev && r.owners.filter(Boolean).length !== prev.owners.filter(Boolean).length) haptic.tap();
-        return r;
-      });
+      setRoom(r);
       setReceivedAt(Date.now());
     };
+    // events of another room (an older game this phone was in) are not this screen's
     const onUpdate = (r: PpRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(false);
       apply(r);
     };
     const onPeerLeft = (r: PpRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(true);
       apply(r);
     };
@@ -73,6 +106,7 @@ export default function PossessionRoom() {
       socket.off("pp:update", onUpdate);
       socket.off("pp:peer-left", onPeerLeft);
       socket.off("connect", onConnect);
+      socket.emit("pp:leave", { code });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
@@ -84,6 +118,26 @@ export default function PossessionRoom() {
   }, [room?.started, room?.winner]);
 
   const board = useMemo(() => (room ? boardFromIds(room.board) : null), [room?.board]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Lock Screen / Dynamic Island: whose move, the mover's chess clock, hexes held
+  const rival = room?.players.find((p) => p.id !== myId);
+  useDuelActivity(
+    room?.started && myMark
+      ? {
+          game: t("ppName"),
+          icon: GAME_ICON.pp,
+          me: myMark,
+          opponent: rival?.nick || t("opponent"),
+          turn: room.turn,
+          winner: room.winner,
+          matchOver: !!room.winner || peerLeft,
+          score: { X: room.owners.filter((o) => o?.mark === "X").length, O: room.owners.filter((o) => o?.mark === "O").length },
+          since: receivedAt,
+          deadline: receivedAt + room.clocks[room.turn],
+          path: `/possession/oda/${room.code}`,
+        }
+      : null
+  );
 
   if (error) {
     return (
@@ -125,51 +179,73 @@ export default function PossessionRoom() {
   const myTurn = !!me && room.turn === me.mark && !room.winner;
   const f = room.flash;
   const who = f ? nameOf(room.players.find((p) => p.mark === f.mark)) : "";
-  const flash = !f
+  // "left": the line above the board already says the opponent left
+  const flash = !f || f.reason === "left"
     ? null
     : f.reason === "claim"
       ? `${who}: ${f.name} +${f.count} ${t("ppClaimed")}${f.stolen ? `, ${f.stolen} ${t("ppStoleShort")}` : ""}`
       : `${who}: ${t(f.reason === "wrong" ? "ttWrong" : "ppTimeout")}`;
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: code }} />
-      {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
-      <PossessionBoard
-        board={board}
-        owners={room.owners}
-        usedNames={room.used}
-        turn={room.turn}
-        clocks={{ X: secs("X"), O: secs("O") }}
-        labels={labels}
-        canMove={myTurn && !peerLeft}
-        winner={room.winner}
-        winnerText={room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? t("htYouWin") : t("htYouLose")}
-        status={myTurn ? t("ppYourTurn") : t("htTheirTurn")}
-        flash={flash}
-        celebrate={room.winner === me?.mark}
-        onMove={(hex, player) => {
-          if (!me) return;
-          getSocket().emit(
-            "pp:move",
-            player ? { name: player.name, claims: claimsFor(hex, (c) => c.test(player), board, room.owners, me.mark) } : { name: null }
-          );
-        }}
-        footer={
-          room.winner ? (
-            isHost ? (
-              <Button
-                title={t("htRematch")}
-                icon="arrow.clockwise"
-                onPress={() => getSocket().emit("pp:rematch", { board: boardToIds(generateBoard()) })}
-                style={{ marginTop: 16 }}
-              />
+    <>
+      <Page>
+        {/* a friend room shows its code (to share); a random match the game's name */}
+        <Stack.Screen options={{ title: params.random ? t("ppName") : code, headerRight: () => (
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <PlayerMenuButton target={rival?.ref ? { ref: rival.ref, nick: rival.nick, game: "pp" } : null} color={C.text} bg="#EEF2EF" />
+                <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" />
+              </View>
+            ),
+          }}
+        />
+        {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
+        <PossessionBoard
+          board={board}
+          owners={room.owners}
+          usedNames={room.used}
+          turn={room.turn}
+          clocks={{ X: secs("X"), O: secs("O") }}
+          labels={labels}
+          canMove={myTurn && !peerLeft}
+          winner={room.winner}
+          winnerText={room.winner === "draw" ? t("ttDraw") : room.winner === me?.mark ? t("htYouWin") : t("htYouLose")}
+          status={myTurn ? t("ppYourTurn") : t("htTheirTurn")}
+          flash={flash}
+          celebrate={room.winner === me?.mark}
+          onMove={(hex, player) => {
+            if (!me) return;
+            getSocket().emit(
+              "pp:move",
+              player ? { name: player.name, claims: claimsFor(hex, (c) => c.test(player), board, room.owners, me.mark) } : { name: null }
+            );
+          }}
+          footer={
+            room.winner ? (
+              peerLeft ? null : isHost ? (
+                <Button
+                  title={t("htRematch")}
+                  icon="arrow.clockwise"
+                  onPress={() => getSocket().emit("pp:rematch", { board: boardToIds(generateBoard()) })}
+                  style={{ marginTop: 16 }}
+                />
+              ) : (
+                <Text style={[T.body, { textAlign: "center", marginTop: 16 }]}>{t("htWaitRematch")}</Text>
+              )
             ) : (
-              <Text style={[T.body, { textAlign: "center", marginTop: 16 }]}>{t("htWaitRematch")}</Text>
+              // pp:leave drops this seat (a loss), so the screen goes back with it
+              <GameActions
+                disabled={peerLeft}
+                onForfeit={() => {
+                  getSocket().emit("pp:leave", { code });
+                  leave();
+                }}
+              />
             )
-          ) : null
-        }
-      />
-    </Page>
+          }
+        />
+        <EmoteLayer e={emotes} top={4} />
+      </Page>
+      <ConnectionBanner game="pp" />
+    </>
   );
 }

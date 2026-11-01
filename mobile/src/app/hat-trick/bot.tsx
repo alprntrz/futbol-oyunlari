@@ -5,17 +5,22 @@ import { View } from "react-native";
 import type { Grid } from "@/lib/tiki";
 
 import { GameActions } from "~/components/GameActions";
+import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { PlayerMenuButton } from "~/components/PlayerMenu";
+import { houseRef } from "~/lib/blocks";
+import { C } from "~/lib/theme";
+import { useRecordMatch } from "~/lib/history";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard } from "~/components/HatTrickBoard";
 import { Button, Page } from "~/components/ui";
-import { haptic } from "~/lib/haptics";
-import { NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
+import { haptic, useTurnCue } from "~/lib/haptics";
+import { COMEBACK_SECONDS, NEXT_GAME_MS, other, resultOf, SERIES_TARGET, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { botMove, botTakesDraw, botThinkMs } from "~/lib/htBot";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
+import { GAME_ICON, useDuelActivity } from "~/lib/liveActivity";
 import { dealGrid } from "~/lib/league";
-
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const fakeCode = () => Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join("");
+import { loadTier } from "~/lib/xp";
 
 /**
  * Random-queue fallback when nobody else is searching. Mirrors the online room
@@ -23,9 +28,17 @@ const fakeCode = () => Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(
  */
 export default function HatTrickHouse() {
   const { t } = useI18n();
+  const emotes = useEmotes("ht", false);
   const params = useLocalSearchParams<{ nick?: string; league?: string }>();
   const nick = params.nick || t("opponent");
-  const [code] = useState(fakeCode);
+  // report / block work on the house player too (a made-up ref), like on anyone online
+  const [houseKey] = useState(() => houseRef(`${nick}-${Math.random()}`));
+
+  // the house player plays tighter against a higher rank
+  const [tier, setTier] = useState(0);
+  useEffect(() => {
+    loadTier().then(setTier);
+  }, []);
 
   const [me, setMe] = useState<Mark>("X");
   const rival = other(me);
@@ -36,19 +49,46 @@ export default function HatTrickHouse() {
   const [endReason, setEndReason] = useState<"forfeit" | "agreed" | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [deadline, setDeadline] = useState(() => Date.now() + TURN_SECONDS * 1000);
+  // this game's jokers (the same as online: one extra time, one hint) and a time joker's extra seconds this turn
+  const [jokers, setJokers] = useState({ time: 1, hint: 1 });
+  const [extra, setExtra] = useState(0);
   const [timeLeft, setTimeLeft] = useState(TURN_SECONDS);
   const [usedNames, setUsedNames] = useState<string[]>([]);
   const [drawSent, setDrawSent] = useState(false);
   // series score: follows the people, marks swap every game
   const [wins, setWins] = useState({ mine: 0, theirs: 0 });
   const seriesOver = wins.mine >= SERIES_TARGET || wins.theirs >= SERIES_TARGET;
+  // the house player looks like an online opponent: leaving asks the same way
+  useLeaveGuard(!seriesOver);
+  const [startedAt] = useState(() => Date.now());
+  useRecordMatch(seriesOver, {
+    key: `ht-house-${startedAt}`,
+    game: "ht",
+    opponent: nick,
+    result: wins.mine > wins.theirs ? "win" : "loss",
+    score: `${wins.mine}–${wins.theirs}`,
+  });
+  // comeback bonus, as online: whoever lost the last game gets longer turns
+  const [comeback, setComeback] = useState<"me" | "rival" | null>(null);
+  const turnSecondsOf = (m: Mark, meNow = me, cb = comeback) => TURN_SECONDS + ((cb === "me" ? meNow : cb === "rival" ? other(meNow) : null) === m ? COMEBACK_SECONDS : 0);
 
   const nameOf = (m: Mark) => (m === me ? t("you") : nick);
 
   const nextTurn = () => {
-    setTurn(other);
-    setDeadline(Date.now() + TURN_SECONDS * 1000);
-    setTimeLeft(TURN_SECONDS);
+    const next = other(turn);
+    setTurn(next);
+    setExtra(0);
+    setDeadline(Date.now() + turnSecondsOf(next) * 1000);
+    setTimeLeft(turnSecondsOf(next));
+  };
+
+  const useJoker = (kind: "time" | "hint") => {
+    if (turn !== me || winner || jokers[kind] <= 0) return;
+    setJokers((j) => ({ ...j, [kind]: j[kind] - 1 }));
+    if (kind === "time") {
+      setExtra((e) => e + 15);
+      setDeadline((d) => d + 15_000);
+    }
   };
 
   const end = (w: Winner, reason: typeof endReason = null) => {
@@ -56,8 +96,13 @@ export default function HatTrickHouse() {
     setEndReason(reason);
     setDrawSent(false);
     if (reason === "forfeit") setWins((s) => (w === me ? { ...s, mine: SERIES_TARGET } : { ...s, theirs: SERIES_TARGET }));
-    else if (w === me) setWins((s) => ({ ...s, mine: s.mine + 1 }));
-    else if (w === rival) setWins((s) => ({ ...s, theirs: s.theirs + 1 }));
+    else if (w === me) {
+      setWins((s) => ({ ...s, mine: s.mine + 1 }));
+      setComeback("rival");
+    } else if (w === rival) {
+      setWins((s) => ({ ...s, theirs: s.theirs + 1 }));
+      setComeback("me");
+    }
   };
 
   const skip = () => {
@@ -72,7 +117,6 @@ export default function HatTrickHouse() {
       setFlash(`${nameOf(turn)}: ${t("ttWrong")}`);
       return nextTurn();
     }
-    if (turn !== me) haptic.tap();
     setUsedNames((u) => [...u, name]);
     const next = board.slice();
     next[cell] = { mark: turn, name };
@@ -107,7 +151,7 @@ export default function HatTrickHouse() {
     const ms = botThinkMs();
     if (ms === null) return;
     const id = setTimeout(() => {
-      const move = botMove(grid, board, usedNames, rival);
+      const move = botMove(grid, board, usedNames, rival, tier);
       play(move.cell, move.name);
     }, ms);
     return () => clearTimeout(id);
@@ -123,12 +167,13 @@ export default function HatTrickHouse() {
         setDrawSent(false);
         setFlash(t("htDrawDeclined"));
       },
-      2500 + Math.random() * 4000
+      1200 + Math.random() * 1800
     );
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawSent]);
 
+  useTurnCue(turn === me && !winner);
   useEffect(() => {
     if (!winner) return;
     if (winner === me) haptic.success();
@@ -137,17 +182,24 @@ export default function HatTrickHouse() {
 
   // Like the online rematch: new grid, marks swap so the other side starts
   const rematch = () => {
-    if (seriesOver) setWins({ mine: 0, theirs: 0 });
+    const cb = seriesOver ? null : comeback;
+    if (seriesOver) {
+      setWins({ mine: 0, theirs: 0 });
+      setComeback(null);
+    }
     setGrid(dealGrid(params.league));
     setBoard(Array(9).fill(null));
     setUsedNames([]);
+    setJokers({ time: 1, hint: 1 });
+    setExtra(0);
     setMe(rival);
     setTurn("X");
     setWinner(null);
     setEndReason(null);
     setFlash(null);
-    setDeadline(Date.now() + TURN_SECONDS * 1000);
-    setTimeLeft(TURN_SECONDS);
+    // marks swap: this phone is `rival` from now on, and X moves first
+    setDeadline(Date.now() + turnSecondsOf("X", rival, cb) * 1000);
+    setTimeLeft(turnSecondsOf("X", rival, cb));
   };
 
   // next game of the series after a short look at the result
@@ -160,6 +212,20 @@ export default function HatTrickHouse() {
 
   const iWon = winner === me;
   const score = `${wins.mine} – ${wins.theirs}`;
+
+  // the house player's game looks like any online one, Live Activity included
+  useDuelActivity({
+    game: t("tikiTakaName"),
+    icon: GAME_ICON.ht,
+    me,
+    opponent: nick,
+    turn,
+    winner,
+    matchOver: seriesOver,
+    score: me === "X" ? { X: wins.mine, O: wins.theirs } : { X: wins.theirs, O: wins.mine },
+    since: deadline - turnSecondsOf(turn) * 1000,
+    deadline,
+  });
   const winnerText =
     endReason === "forfeit"
       ? t(iWon ? "htTheyForfeited" : "htYouForfeited")
@@ -171,7 +237,14 @@ export default function HatTrickHouse() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: code }} />
+      <Stack.Screen options={{ title: t("tikiTakaName"), headerRight: () => (
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <PlayerMenuButton target={{ ref: houseKey, nick, game: "ht" }} color={C.text} bg="#EEF2EF" />
+              <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" />
+            </View>
+          ),
+        }}
+      />
       <HatTrickBoard
         steals={null}
         usedNames={usedNames}
@@ -188,7 +261,11 @@ export default function HatTrickHouse() {
         winnerText={winnerText}
         winnerSub={seriesOver ? score : `${score}, ${t("htNextGame")}`}
         series={me === "X" ? { X: wins.mine, O: wins.theirs } : { X: wins.theirs, O: wins.mine }}
+        turnSeconds={turnSecondsOf(turn) + extra}
+        comeback={comeback === "me" ? me : comeback === "rival" ? rival : null}
         onMove={play}
+        jokers={jokers}
+        onJoker={useJoker}
         footer={
           winner && !seriesOver ? null : winner ? (
             <View style={{ marginTop: 18, gap: 10 }}>
@@ -207,6 +284,7 @@ export default function HatTrickHouse() {
         }
       />
       <SeriesEnd over={seriesOver} won={wins.mine >= SERIES_TARGET} mine={wins.mine} theirs={wins.theirs} onRematch={rematch} />
+      <EmoteLayer e={emotes} top={4} />
     </Page>
   );
 }

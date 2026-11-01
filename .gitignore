@@ -56,3 +56,38 @@ scripts/.cache/tm/
 
 # quiz levels/standings written by server.js
 /data
+# club-season squads for teammates (scripts/tiki-scrape-seasons.mjs), large and re-scrapable
+scripts/.cache/raw-seasons.json
+scripts/.cache/tm-coaches/
+scripts/.cache/raw-coaches.json
+scripts/.cache/raw-positions.json
+scripts/.cache/raw-wikidata.json
+
+# full-size card art originals (14 MB); the app copies live in mobile/assets/brand/taktik/aug
+/docs/design/taktik-card-art/originals/
+
+# full-size screen art (mockups and 1024 px parts); the app copies live in mobile/assets/brand/taktik/ui
+/docs/design/taktik-screen-art/
+/docs/design/taktik-screen-art-v2/*.png
+!/docs/design/taktik-screen-art-v2/preview-*.png
+/docs/design/taktik-pitch-art/
+/docs/design/taktik-match-art/*.png
+!/docs/design/taktik-match-art/preview-screens.png
+/docs/design/forma-art/jersey-*.png
+
+# Transfermarkt achievements pages + parsed honours (scripts/tiki-scrape-honours.mjs)
+scripts/.cache/tm-erfolge/
+scripts/.cache/raw-honours.json
+# Dribbling Rush full-size art (22 MB); the app copies live in mobile/assets/brand/kosu (scripts/kosu-assets.py)
+/docs/design/kosu-art/originals/
+/docs/design/rondo-art/originals/
+/docs/design/kimim-art/originals/
+/docs/design/kosu-art/preview-80px.png
+/docs/design/kosu-art/preview-character.png
+/docs/design/kosu-art/preview-run.gif
+
+# graphify knowledge graph (local)
+/graphify-out/
+
+# morning PostHog reports (scripts/posthog-report.mjs --out raporlar)
+raporlar/

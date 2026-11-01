@@ -1,0 +1,53 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "file": "jersey-crew.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "near_black_pixel_count": 23224,
+      "pure_black_pixel_count": 15244
+    },
+    {
+      "file": "jersey-vneck.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "near_black_pixel_count": 28082,
+      "pure_black_pixel_count": 18418
+    },
+    {
+      "file": "jersey-polo.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "near_black_pixel_count": 38715,
+      "pure_black_pixel_count": 1268
+    },
+    {
+      "file": "jersey-keeper.png",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "near_black_pixel_count": 24398,
+      "pure_black_pixel_count": 14264
+    }
+  ]
+}

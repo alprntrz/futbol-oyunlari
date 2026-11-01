@@ -2,7 +2,16 @@
   "expo": {
     "name": "Tiktako",
     "slug": "tiktako",
-    "version": "1.0.0",
+    "platforms": ["ios", "android"],
+    "version": "1.2.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5400971b-df0a-49b3-a040-59109e62fa30",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
     "orientation": "portrait",
     "icon": "./assets/brand/app-icon.png",
     "scheme": "tiktako",
@@ -13,8 +22,10 @@
       "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleDisplayName": "Tiktako"
-      }
+        "CFBundleDisplayName": "Tiktako",
+        "CFBundleLocalizations": ["tr", "en"]
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +36,12 @@
       "package": "com.alprntrz.tiktako",
       "permissions": [
         "android.permission.MODIFY_AUDIO_SETTINGS"
-      ]
+      ],
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -49,7 +65,57 @@
           "enableBackgroundPlayback": false
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-secure-store",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.360213444851-nj294lghif6tnt08rn7tb7i9u6sukkj4"
+        }
+      ],
+      "expo-apple-authentication",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Tiktako lets you pick a profile photo. It stays on your phone and is never uploaded.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ],
+      "./plugins/withUnity",
+      "./plugins/withTabsReentryFix",
+      "./plugins/withApsProduction",
+      [
+        "expo-widgets",
+        {
+          "enablePushNotifications": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "mode": "production",
+          "color": "#16A34A",
+          "icon": "./assets/brand/notification-icon.png"
+        }
+      ],
+      [
+        "@sentry/react-native",
+        {
+          "url": "https://sentry.io/",
+          "organization": "tiktako",
+          "project": "tiktako-app"
+        }
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

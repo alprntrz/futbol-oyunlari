@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import Svg, { Circle, ClipPath, Defs, G, Mask, Path, Polygon, Rect } from "react-native-svg";
+import Svg, { Circle, ClipPath, Defs, G, Mask, Path, Polygon, Rect, Text as SvgText } from "react-native-svg";
 
 // Simplified flat flags drawn on a 30×20 canvas (3:2), clipped to rounded
 // corners with a hairline edge. Emblems are reduced to simple shapes so the
@@ -202,12 +202,28 @@ const FLAGS: Record<string, React.ReactNode> = {
       <Path d="M0 0 L30 20 M30 0 L0 20" stroke="#FFFFFF" strokeWidth={3.4} />
     </>
   ),
+  // the inscription as a white band, the sword as a line under it
+  saudiarabia: (
+    <>
+      <Rect width={W} height={H} fill="#006C35" />
+      <Rect x={8} y={6} width={14} height={3.2} rx={1.2} fill="#FFFFFF" />
+      <Path d="M9 13 L21 13 M21 12 L22.5 13 L21 14" stroke="#FFFFFF" strokeWidth={1.1} fill="none" strokeLinejoin="round" />
+    </>
+  ),
+  // the eagle as a gold disc
+  egypt: (
+    <>
+      {hStripes(["#CE1126", "#FFFFFF", "#000000"])}
+      <Circle cx={15} cy={10} r={2.3} fill="#C09300" />
+    </>
+  ),
 };
 
 /** Flat country flag with rounded corners; falls back to a neutral tile. */
 export function Flag({ id, width = 36 }: { id: string; width?: number }) {
   const height = (width * H) / W;
-  const art = FLAGS[id];
+  // ("arab-…" country criteria use the plain country flag)
+  const art = FLAGS[id.replace(/^arab-/, "")];
   return (
     <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ width, height }}>
       <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
@@ -216,7 +232,17 @@ export function Flag({ id, width = 36 }: { id: string; width?: number }) {
             <Rect width={W} height={H} rx={3.2} />
           </ClipPath>
         </Defs>
-        <G clipPath="url(#flag)">{art ?? <Rect width={W} height={H} fill="#DDE3DF" />}</G>
+        <G clipPath="url(#flag)">
+          {art ?? (
+            <>
+              <Rect width={W} height={H} fill="#DDE3DF" />
+              {/* no flag drawn yet: the country's first three letters */}
+              <SvgText x={W / 2} y={H / 2 + 3.4} fontSize={9.5} fontWeight="800" fill="#4A5650" textAnchor="middle">
+                {id.slice(0, 3).toUpperCase()}
+              </SvgText>
+            </>
+          )}
+        </G>
         <Rect x={0.3} y={0.3} width={W - 0.6} height={H - 0.6} rx={3} fill="none" stroke="rgba(0,0,0,0.14)" strokeWidth={0.6} />
       </Svg>
     </View>

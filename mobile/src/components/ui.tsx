@@ -1,24 +1,127 @@
-import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import { MaterialSymbols_600SemiBold_Filled } from "@expo-google-fonts/material-symbols/600SemiBold_Filled";
+import { SymbolView, type AndroidSymbol, type SymbolViewProps } from "expo-symbols";
+import semiBold from "expo-symbols/androidWeights/semiBold";
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { haptic } from "~/lib/haptics";
-import { play } from "~/lib/sound";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
 import { Text } from "./Text";
 
 type SymbolName = SymbolViewProps["name"];
 
-/** SF Symbol on iOS with an emoji/text fallback elsewhere. */
+/**
+ * The Material Symbol drawn on Android for each SF Symbol the app uses (expo-symbols draws
+ * Material Symbols there). A name missing here falls back to the emoji / text.
+ */
+const MATERIAL: Record<string, AndroidSymbol> = {
+  "10.circle.fill": "filter_9_plus",
+  "20.circle.fill": "filter_9_plus",
+  "antenna.radiowaves.left.and.right": "sensors",
+  "arrow.clockwise": "refresh",
+  "arrow.down.circle.fill": "download",
+  "arrow.down": "arrow_downward",
+  "arrow.left.arrow.right": "swap_horiz",
+  "arrow.right": "arrow_forward",
+  "arrow.right.circle.fill": "arrow_circle_right",
+  "arrow.triangle.2.circlepath": "sync",
+  "arrow.up": "arrow_upward",
+  "arrow.up.right": "north_east",
+  "arrow.down.right": "south_east",
+  "arrow.uturn.left": "undo",
+  "bell.fill": "notifications",
+  heart: "favorite",
+  "heart.fill": "favorite",
+  "questionmark.bubble.fill": "contact_support",
+  "person.fill.questionmark": "person_search",
+  "ellipsis.circle": "more_horiz",
+  hourglass: "hourglass_top",
+  "wifi.slash": "wifi_off",
+  calendar: "event",
+  checkmark: "check",
+  "checkmark.circle.fill": "check_circle",
+  "checkmark.seal.fill": "verified",
+  "chevron.left": "chevron_left",
+  "chevron.right": "chevron_right",
+  clock: "schedule",
+  "clock.arrow.circlepath": "history",
+  "crown.fill": "workspace_premium",
+  "delete.left": "backspace",
+  "equal.circle": "drag_handle",
+  "exclamationmark.triangle.fill": "warning",
+  "face.smiling": "sentiment_satisfied",
+  "figure.run": "directions_run",
+  "flag.checkered": "sports_score",
+  "flag.fill": "flag",
+  "flame.circle.fill": "local_fire_department",
+  "flame.fill": "local_fire_department",
+  "forward.fill": "fast_forward",
+  "gift.fill": "redeem",
+  "hand.raised.fill": "front_hand",
+  "hand.tap.fill": "touch_app",
+  "hand.thumbsup.fill": "thumb_up",
+  "hexagon.fill": "hexagon",
+  "house.fill": "home",
+  iphone: "smartphone",
+  lightbulb: "lightbulb",
+  "lightbulb.fill": "lightbulb",
+  "lock.fill": "lock",
+  "lock.shield.fill": "encrypted",
+  magnifyingglass: "search",
+  "paperplane.fill": "send",
+  pencil: "edit",
+  "person.2.fill": "group",
+  "person.3.fill": "groups",
+  "person.crop.circle": "account_circle",
+  "person.fill": "person",
+  photo: "image",
+  "play.circle.fill": "play_circle",
+  "play.rectangle.fill": "smart_display",
+  "bolt.fill": "bolt",
+  infinity: "all_inclusive",
+  "archivebox.fill": "inventory_2",
+  "play.fill": "play_arrow",
+  plus: "add",
+  questionmark: "question_mark",
+  "questionmark.circle": "help",
+  "rectangle.portrait.and.arrow.right": "logout",
+  "rectangle.stack.fill": "stack",
+  "shield.fill": "shield",
+  "shoe.fill": "steps",
+  shuffle: "shuffle",
+  snowflake: "ac_unit",
+  soccerball: "sports_soccer",
+  sparkles: "auto_awesome",
+  "sportscourt.fill": "stadium",
+  "square.and.arrow.up": "ios_share",
+  "square.grid.2x2.fill": "grid_view",
+  "square.grid.3x3.fill": "apps",
+  "square.stack.fill": "layers",
+  "star.fill": "star",
+  "stopwatch.fill": "timer",
+  target: "target",
+  "textformat.abc": "abc",
+  "trophy.fill": "emoji_events",
+  "tshirt.fill": "apparel",
+  xmark: "close",
+  "xmark.circle.fill": "cancel",
+  "xmark.shield.fill": "gpp_bad",
+};
+
+/** the filled Material Symbols, for the SF Symbols that are filled ("….fill"), like iOS draws them */
+const FILLED = { name: "MaterialSymbols_600SemiBold_Filled", font: MaterialSymbols_600SemiBold_Filled };
+
+/** SF Symbol on iOS, the matching Material Symbol on Android, else the emoji/text fallback. */
 export function Icon({ name, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {
+  const android = typeof name === "string" ? MATERIAL[name] : undefined;
   return (
     <SymbolView
-      name={name}
+      name={typeof name === "string" ? (android ? { ios: name, android } : name) : name}
       size={size}
       tintColor={color}
-      weight="semibold"
+      weight={{ ios: "semibold", android: typeof name === "string" && name.includes(".fill") ? FILLED : semiBold }}
       fallback={<Text style={{ fontSize: size * 0.9, color }}>{fallback ?? "•"}</Text>}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
@@ -32,6 +135,7 @@ export function Tap({ style, onPress, silent, ...rest }: PressableProps & { styl
     <Pressable
       accessibilityRole="button"
       {...rest}
+      hitSlop={rest.hitSlop ?? 8}
       accessibilityState={{ disabled: !!rest.disabled, ...rest.accessibilityState }}
       onPress={(e) => {
         if (!silent) haptic.press();
@@ -49,7 +153,9 @@ export function Card({ children, style }: { children: React.ReactNode; style?: S
 /** Scrollable page on the grey background. */
 export function Page({ children, scroll = true, topInset = false }: { children: React.ReactNode; scroll?: boolean; topInset?: boolean }) {
   const insets = useSafeAreaInsets();
-  const pad = { paddingHorizontal: 16, paddingTop: topInset ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
+  // a scrolling page gets the status bar (and the tab bar) inset from iOS itself ("automatic"); only a fixed one adds it by hand
+  // (Android has no automatic inset: a tab page there pads below the status bar itself)
+  const pad = { paddingHorizontal: 16, paddingTop: topInset && (!scroll || Platform.OS === "android") ? insets.top + 12 : 12, paddingBottom: insets.bottom + 32 };
   if (!scroll) return <View style={[{ flex: 1, backgroundColor: C.bg }, pad]}>{children}</View>;
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
@@ -71,7 +177,7 @@ export function Page({ children, scroll = true, topInset = false }: { children: 
 }
 
 /** Darker shade of each button colour: the edge the face sits on. */
-const EDGE = { primary: "#0F7A35", secondary: "#D3DBD6", danger: "#F3B5B5", ghost: "transparent" } as const;
+const EDGE = { primary: "#0F7A35", secondary: "#D3DBD6", danger: "#F3B5B5", ghost: "transparent", gold: "#CA8A04" } as const;
 const DEPTH = 4;
 
 /**
@@ -83,19 +189,27 @@ export function Button({
   onPress,
   kind = "primary",
   icon,
+  left,
+  right,
+  small,
   disabled,
   style,
 }: {
   title: string;
   onPress: () => void;
-  kind?: "primary" | "secondary" | "danger" | "ghost";
+  kind?: "primary" | "secondary" | "danger" | "ghost" | "gold";
   icon?: SymbolName;
+  /** an image (or anything) before / after the title, e.g. a coin next to a price */
+  left?: React.ReactNode;
+  right?: React.ReactNode;
+  /** the compact size for toolbars and rows: lower face, thinner edge */
+  small?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
-  const bg = { primary: C.green, secondary: C.card, danger: C.redSoft, ghost: "transparent" }[kind];
-  const fg = { primary: "white", secondary: C.text, danger: C.red, ghost: C.text2 }[kind];
-  const depth = kind === "ghost" ? 0 : DEPTH;
+  const bg = { primary: C.green, secondary: C.card, danger: C.redSoft, ghost: "transparent", gold: "#FACC15" }[kind];
+  const fg = { primary: "white", secondary: C.text, danger: C.red, ghost: C.text2, gold: "#3B2A05" }[kind];
+  const depth = kind === "ghost" ? 0 : small ? 3 : DEPTH;
   // padding and height belong to the face; layout (margins, flex, width) to the outer edge
   const { padding, paddingHorizontal, paddingVertical, paddingLeft, paddingRight, paddingTop, paddingBottom, minHeight, ...outer } = StyleSheet.flatten(style) ?? {};
   const inner = Object.fromEntries(
@@ -109,12 +223,11 @@ export function Button({
       disabled={disabled}
       onPress={() => {
         haptic.press();
-        play("tap");
         onPress();
       }}
       // pressed: the face drops onto the edge (edge padding moves from below to above, behind the face)
       style={({ pressed }) => [
-        { borderRadius: R.button, backgroundColor: EDGE[kind] },
+        { borderRadius: small ? 12 : R.button, backgroundColor: EDGE[kind] },
         pressed && !disabled ? { paddingTop: depth, backgroundColor: "transparent" } : { paddingBottom: depth },
         disabled && { opacity: 0.45 },
         outer,
@@ -124,13 +237,16 @@ export function Button({
         <View
           style={[
             styles.button,
+            small && styles.buttonSmall,
             inner,
             { backgroundColor: bg },
             kind === "secondary" && { borderWidth: 1, borderColor: C.border },
           ]}
         >
-          {icon ? <Icon name={icon} size={17} color={fg} /> : null}
-          <Text style={[styles.buttonText, { color: fg }]}>{title}</Text>
+          {icon ? <Icon name={icon} size={small ? 14 : 17} color={fg} /> : null}
+          {left}
+          <Text style={[styles.buttonText, small && styles.buttonTextSmall, { color: fg }]}>{title}</Text>
+          {right}
         </View>
       )}
     </Pressable>
@@ -177,6 +293,27 @@ export function Row({
   );
 }
 
+/** List row with an on / off switch (Settings: notification categories, usage data). */
+export function SwitchRow({ title, subtitle, value, onChange, last }: { title: string; subtitle?: string; value: boolean; onChange: (on: boolean) => void; last?: boolean }) {
+  return (
+    <View style={[styles.rowText, { paddingLeft: 14 }, !last && styles.rowDivider]}>
+      <View style={{ flex: 1 }}>
+        <Text style={T.headline}>{title}</Text>
+        {subtitle ? <Text style={[T.body, { fontSize: 14, marginTop: 2 }]}>{subtitle}</Text> : null}
+      </View>
+      <Switch
+        value={value}
+        onValueChange={(v) => {
+          haptic.tap();
+          onChange(v);
+        }}
+        trackColor={{ true: C.green, false: undefined }}
+        accessibilityLabel={title}
+      />
+    </View>
+  );
+}
+
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return <Text style={[T.heading, { marginTop: 26, marginBottom: 10, marginLeft: 2 }]}>{children}</Text>;
 }
@@ -198,7 +335,9 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
             accessibilityState={{ selected: active }}
             style={[styles.segment, active && styles.segmentActive]}
           >
-            <Text style={[styles.segmentText, active && { color: C.text }]}>{o.label}</Text>
+            <Text style={[styles.segmentText, active && { color: C.text }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {o.label}
+            </Text>
           </Pressable>
         );
       })}
@@ -227,14 +366,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3 },
+  buttonText: { fontFamily: F.display, fontSize: 20, letterSpacing: 0.3, flexShrink: 1, textAlign: "center" },
+  // small buttons sit in toolbars and under cards: they never stretch (in a column without a set height flexGrow would run to the bottom of the screen)
+  buttonSmall: { flexGrow: 0, minHeight: 36, paddingHorizontal: 12, gap: 6, borderRadius: 12 },
+  buttonTextSmall: { fontSize: 17 },
   row: { flexDirection: "row", alignItems: "center", paddingLeft: 14, gap: 14 },
   badge: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   rowImage: { width: 44, height: 44, marginHorizontal: -2 },
   rowText: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 14, paddingRight: 14 },
   rowDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
-  segmented: { flexDirection: "row", backgroundColor: "#E8EBF0", borderRadius: 12, padding: 3 },
-  segment: { flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: "center" },
+  segmented: { flexDirection: "row", backgroundColor: C.key, borderRadius: 12, padding: 3 },
+  segment: { flex: 1, minHeight: 44, paddingVertical: 9, paddingHorizontal: 4, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   segmentActive: { backgroundColor: C.card, ...shadow, shadowOpacity: 0.1 },
   segmentText: { fontSize: 14, fontWeight: "700", color: C.text2 },
   chip: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: R.chip, paddingHorizontal: 10, paddingVertical: 4, alignSelf: "flex-start" },

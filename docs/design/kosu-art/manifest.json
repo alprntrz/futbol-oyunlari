@@ -1,0 +1,527 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "file": "originals/runner-run-1.png",
+      "label": "Koşu 1",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        260,
+        70,
+        752,
+        958
+      ]
+    },
+    {
+      "file": "originals/runner-run-2.png",
+      "label": "Koşu 2",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        269,
+        69,
+        758,
+        880
+      ]
+    },
+    {
+      "file": "originals/runner-run-3.png",
+      "label": "Koşu 3",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        350,
+        70,
+        758,
+        961
+      ]
+    },
+    {
+      "file": "originals/runner-run-4.png",
+      "label": "Koşu 4",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        251,
+        72,
+        783,
+        850
+      ]
+    },
+    {
+      "file": "originals/runner-jump.png",
+      "label": "Zıplama",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        224,
+        52,
+        827,
+        960
+      ]
+    },
+    {
+      "file": "originals/runner-slide.png",
+      "label": "Kayma",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        106,
+        236,
+        936,
+        904
+      ]
+    },
+    {
+      "file": "originals/runner-fall.png",
+      "label": "Takılma",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        113,
+        329,
+        981,
+        916
+      ]
+    },
+    {
+      "file": "originals/runner-goal.png",
+      "label": "Gol sevinci",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        202,
+        52,
+        835,
+        973
+      ]
+    },
+    {
+      "file": "originals/hero.png",
+      "label": "Giriş görseli",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        107,
+        167,
+        979,
+        928
+      ]
+    },
+    {
+      "file": "originals/obs-tackle.png",
+      "label": "Kayarak müdahale",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        98,
+        179,
+        917,
+        873
+      ]
+    },
+    {
+      "file": "originals/obs-wall.png",
+      "label": "Dört kişilik baraj",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1536,
+        1024
+      ],
+      "visible_bounds_alpha_8": [
+        98,
+        232,
+        926,
+        803
+      ]
+    },
+    {
+      "file": "originals/obs-defender.png",
+      "label": "Defansçı",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        117,
+        54,
+        909,
+        939
+      ]
+    },
+    {
+      "file": "originals/obs-referee.png",
+      "label": "Hakem",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1024,
+        1536
+      ],
+      "visible_bounds_alpha_8": [
+        283,
+        43,
+        727,
+        973
+      ]
+    },
+    {
+      "file": "originals/obs-cones.png",
+      "label": "Koniler",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1536,
+        1024
+      ],
+      "visible_bounds_alpha_8": [
+        107,
+        217,
+        965,
+        812
+      ]
+    },
+    {
+      "file": "originals/obs-sprinkler.png",
+      "label": "Fıskiye",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1312,
+        1199
+      ],
+      "visible_bounds_alpha_8": [
+        34,
+        127,
+        999,
+        889
+      ]
+    },
+    {
+      "file": "originals/obs-board.png",
+      "label": "Pano engeli",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1536,
+        1024
+      ],
+      "visible_bounds_alpha_8": [
+        15,
+        193,
+        1519,
+        827
+      ]
+    },
+    {
+      "file": "originals/pick-coin.png",
+      "label": "Altın",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1295,
+        1214
+      ],
+      "visible_bounds_alpha_8": [
+        125,
+        95,
+        900,
+        925
+      ]
+    },
+    {
+      "file": "originals/pick-boots.png",
+      "label": "Hız kramponları",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1402,
+        1122
+      ],
+      "visible_bounds_alpha_8": [
+        49,
+        130,
+        986,
+        875
+      ]
+    },
+    {
+      "file": "originals/pick-magnet.png",
+      "label": "Mıknatıs",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1312,
+        1199
+      ],
+      "visible_bounds_alpha_8": [
+        68,
+        101,
+        942,
+        893
+      ]
+    },
+    {
+      "file": "originals/pick-armband.png",
+      "label": "Kaptanlık bandı",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1312,
+        1199
+      ],
+      "visible_bounds_alpha_8": [
+        62,
+        179,
+        964,
+        813
+      ]
+    },
+    {
+      "file": "originals/pick-2x.png",
+      "label": "Çarpan rozeti",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        68,
+        70,
+        995,
+        914
+      ]
+    },
+    {
+      "file": "originals/field-tile.png",
+      "label": "Saha dilimi",
+      "width": 1024,
+      "height": 2048,
+      "mode": "RGBA",
+      "transparent": false,
+      "generated_size": [
+        887,
+        1774
+      ],
+      "visible_bounds_alpha_8": [
+        0,
+        0,
+        1024,
+        2048
+      ]
+    },
+    {
+      "file": "originals/stand-left.png",
+      "label": "Sol tribün",
+      "width": 1024,
+      "height": 2048,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        887,
+        1774
+      ],
+      "visible_bounds_alpha_8": [
+        263,
+        153,
+        717,
+        1879
+      ]
+    },
+    {
+      "file": "originals/stand-right.png",
+      "label": "Sağ tribün",
+      "width": 1024,
+      "height": 2048,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        887,
+        1774
+      ],
+      "visible_bounds_alpha_8": [
+        315,
+        152,
+        739,
+        1855
+      ]
+    },
+    {
+      "file": "originals/goal.png",
+      "label": "Kale",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1536,
+        1024
+      ],
+      "visible_bounds_alpha_8": [
+        32,
+        137,
+        1503,
+        880
+      ]
+    },
+    {
+      "file": "originals/keeper.png",
+      "label": "Kaleci",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        74,
+        63,
+        950,
+        947
+      ]
+    },
+    {
+      "file": "originals/ball.png",
+      "label": "Top",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        66,
+        71,
+        954,
+        968
+      ]
+    },
+    {
+      "file": "originals/hud-distance.png",
+      "label": "Mesafe ikonu",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1536,
+        1024
+      ],
+      "visible_bounds_alpha_8": [
+        41,
+        259,
+        987,
+        769
+      ]
+    },
+    {
+      "file": "originals/hud-goal.png",
+      "label": "Gol sayacı ikonu",
+      "width": 1024,
+      "height": 1024,
+      "mode": "RGBA",
+      "transparent": true,
+      "generated_size": [
+        1254,
+        1254
+      ],
+      "visible_bounds_alpha_8": [
+        37,
+        197,
+        1007,
+        857
+      ]
+    }
+  ]
+}

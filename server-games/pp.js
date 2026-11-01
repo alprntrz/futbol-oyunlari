@@ -1,0 +1,296 @@
+// Possession Play online (pp:*, 31 hexes). The host's phone deals the board (criterion ids). The
+// server judges the named footballer and works out which hexes he claims (same player list and rule
+// as the phones, src/lib/tiki.ts + mobile/src/lib/possession.ts), runs both chess clocks and decides the result. server.js lists it in GAMES
+// (reconnect, room sweep, queue pairing, emotes, invites, Live Activity) and calls attach() per socket.
+const { cleanLook, plusOf } = require("../server-accounts");
+const { INTRO_MS, rateDuel, codeFor, cleanNick, cleanTier, seatRef, seatNick, critId, nameOf, nameUsed } = require("../server-core");
+const { liveSend, liveTurnProps } = require("../server-live");
+const path = require("path");
+const { pathToFileURL } = require("node:url");
+
+/** the criteria and player list, once loaded (server-taktik.js registers the "@/" resolver they need) */
+let TIKI = null;
+import(pathToFileURL(path.join(__dirname, "..", "src", "lib", "tiki.ts")).href)
+  .then((m) => (TIKI = m))
+  .catch((e) => console.error("tiki rules:", e?.message));
+
+const PP_HEXES = 31;
+const PP_CLOCK_MS = 120_000;
+/** code -> possession room */
+const rooms = new Map();
+/** players waiting for a random opponent: { socket, nick, board, tier, since, pair } */
+let queue = [];
+
+function ppResult(owners) {
+  if (!owners.every(Boolean)) return null;
+  const x = owners.filter((o) => o.mark === "X").length;
+  return x === PP_HEXES - x ? "draw" : x > PP_HEXES - x ? "X" : "O";
+}
+
+function view(room) {
+  const clocks = { ...room.clocks };
+  if (room.started && !room.winner && room.turnStart) clocks[room.turn] = Math.max(0, clocks[room.turn] - (Date.now() - room.turnStart));
+  return {
+    code: room.code,
+    board: room.board,
+    started: room.started,
+    owners: room.owners,
+    turn: room.turn,
+    clocks,
+    winner: room.winner,
+    flash: room.flash,
+    used: room.used,
+    players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark })),
+  };
+}
+
+function newRoom(code, board, players) {
+  return {
+    code,
+    board,
+    started: false,
+    owners: Array(PP_HEXES).fill(null),
+    turn: "X",
+    clocks: { X: PP_CLOCK_MS, O: PP_CLOCK_MS },
+    turnStart: null,
+    timer: null,
+    winner: null,
+    flash: null,
+    used: [],
+    players,
+  };
+}
+
+/** Possession hexes that touch (same rule as NEIGHBOURS in mobile/src/lib/possession.ts) */
+const PP_ROWS = [4, 5, 4, 5, 4, 5, 4];
+const PP_NEIGHBOURS = (() => {
+  const pos = PP_ROWS.flatMap((len, r) => Array.from({ length: len }, (_, c) => [r, c]));
+  const at = (r, c) => (r < 0 || r >= PP_ROWS.length || c < 0 || c >= PP_ROWS[r] ? -1 : PP_ROWS.slice(0, r).reduce((a, b) => a + b, 0) + c);
+  return pos.map(([r, c]) => {
+    const adj = PP_ROWS[r] === 5 ? [c - 1, c] : [c, c + 1];
+    return [at(r, c - 1), at(r, c + 1), ...adj.map((cc) => at(r - 1, cc)), ...adj.map((cc) => at(r + 1, cc))].filter((i) => i >= 0);
+  });
+})();
+
+// a board comes from a phone and goes to the other phone: short criterion ids only
+const ppBoardOk = (b) => Array.isArray(b) && b.length === PP_HEXES && b.every((id) => critId(id) && (!TIKI || !!TIKI.criterionById(id)));
+
+/**
+ * The hexes a move takes, judged by the server: the chosen hex plus every touching hex the
+ * footballer also fits that isn't already the mover's (claimsFor in mobile/src/lib/possession.ts).
+ * null = the name isn't a footballer who fits the chosen hex.
+ */
+function ppClaims(room, hex, name, mark) {
+  const crit = (i) => TIKI.criterionById(room.board[i]);
+  const p = TIKI.matchPlayers(name).find((x) => x.name === name && crit(hex)?.test(x));
+  if (!p) return null;
+  return [hex, ...PP_NEIGHBOURS[hex].filter((n) => room.owners[n]?.mark !== mark && crit(n)?.test(p))];
+}
+
+/** The Live Activity of an away phone: whose turn, the mover's clock, hexes held */
+function live(room) {
+  if (!room.started) return;
+  const held = (m) => room.owners.filter((o) => o?.mark === m).length;
+  liveSend("pp", room, (p, opp, s) =>
+    liveTurnProps(p, opp, s, {
+      turn: room.turn,
+      winner: room.winner,
+      matchOver: true,
+      score: `X ${held("X")} – ${held("O")} O`,
+      endsAt: room.turnStart ? room.turnStart + room.clocks[room.turn] : 0,
+      since: room.turnStart ?? 0,
+    })
+  );
+}
+
+/** This socket's pp:* handlers; `ctx` as in server-games/wm.js. */
+function attach(socket, ctx) {
+  const { io, dropLater, matchQueues } = ctx;
+  const ppEmit = (room) => {
+    io.to("pp:" + room.code).emit("pp:update", view(room));
+    live(room);
+  };
+
+  // Start the current player's clock; when it runs out they lose
+  const ppStartTurn = (room) => {
+    clearTimeout(room.timer);
+    room.turnStart = Date.now();
+    room.timer = setTimeout(() => {
+      if (room.winner || !rooms.has(room.code)) return;
+      room.clocks[room.turn] = 0;
+      room.flash = { mark: room.turn, reason: "timeout" };
+      room.winner = room.turn === "X" ? "O" : "X";
+      room.turnStart = null;
+      rateDuel("pp", room, room.winner);
+      ppEmit(room);
+    }, room.clocks[room.turn]);
+  };
+
+  const ppJoinRoom = (s, room) => {
+    s.data.ppCode = room.code;
+    s.join("pp:" + room.code);
+  };
+
+  socket.on("pp:create", ({ nick, board }, cb) => {
+    if (!ppBoardOk(board)) return cb?.({ ok: false, error: "bad_board" });
+    leaveRoom(socket);
+    const room = newRoom(codeFor(rooms), board, [{ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark: "X" }]);
+    rooms.set(room.code, room);
+    ppJoinRoom(socket, room);
+    cb?.({ ok: true, room: view(room) });
+  });
+
+  socket.on("pp:join", ({ code, nick }, cb) => {
+    const room = rooms.get(String(code || "").toUpperCase());
+    if (!room) return cb?.({ ok: false, error: "not_found" });
+    if (socket.data.ppCode !== room.code) leaveRoom(socket);
+    if (!room.players.some((p) => p.id === socket.id)) {
+      if (room.players.length >= 2) return cb?.({ ok: false, error: "full" });
+      const mark = room.players[0]?.mark === "X" ? "O" : "X";
+      room.players.push({ id: socket.id, uid: socket.data.uid, nick: cleanNick(nick), mark });
+    }
+    ppJoinRoom(socket, room);
+    ppEmit(room);
+    cb?.({ ok: true, room: view(room) });
+  });
+
+  socket.on("pp:start", () => {
+    const room = rooms.get(socket.data.ppCode);
+    if (!room || room.started || room.players.length < 2 || room.players[0].id !== socket.id) return;
+    room.started = true;
+    ppStartTurn(room);
+    ppEmit(room);
+  });
+
+  // claims = hexes the named footballer takes (null name = wrong answer)
+  socket.on("pp:move", ({ name, claims }) => {
+    const room = rooms.get(socket.data.ppCode);
+    if (!room || !room.started || room.winner) return;
+    const me = room.players.find((p) => p.id === socket.id);
+    // not your turn (a screen showing an old state): resync the sender
+    if (!me || me.mark !== room.turn) return socket.emit("pp:update", view(room));
+    room.clocks[me.mark] = Math.max(0, room.clocks[me.mark] - (Date.now() - room.turnStart));
+    const player = nameOf(name);
+    let hexes = [];
+    if (player) {
+      hexes = Array.isArray(claims) ? [...new Set(claims)].filter((i) => Number.isInteger(i) && i >= 0 && i < PP_HEXES) : [];
+      // The first claim is the chosen hex and must be neutral; the rest must touch it; the name must be new
+      const touching = hexes.slice(1).every((i) => PP_NEIGHBOURS[hexes[0]].includes(i));
+      if (!hexes.length || hexes.length !== (claims?.length ?? 0) || !touching || room.owners[hexes[0]] || nameUsed(room.used, player)) {
+        return socket.emit("pp:update", view(room));
+      }
+      // the server decides what the footballer takes; rules still loading → trust the phone, as before
+      if (TIKI) hexes = ppClaims(room, hexes[0], player, me.mark) ?? [];
+    }
+    if (player && !hexes.length) {
+      // a name that doesn't fit the hex counts as a wrong guess
+      room.flash = { mark: me.mark, reason: "wrong" };
+    } else if (player) {
+      const stolen = hexes.filter((i) => room.owners[i] && room.owners[i].mark !== me.mark).length;
+      for (const i of hexes) room.owners[i] = { mark: me.mark, name: player };
+      room.used.push(player);
+      room.flash = { mark: me.mark, reason: "claim", name: player, count: hexes.length, stolen };
+      room.winner = ppResult(room.owners);
+    } else {
+      room.flash = { mark: me.mark, reason: "wrong" };
+    }
+    if (room.winner) {
+      clearTimeout(room.timer);
+      room.turnStart = null;
+      rateDuel("pp", room, room.winner);
+    } else {
+      room.turn = room.turn === "X" ? "O" : "X";
+      ppStartTurn(room);
+    }
+    ppEmit(room);
+  });
+
+  socket.on("pp:rematch", ({ board }) => {
+    const room = rooms.get(socket.data.ppCode);
+    if (!room || !room.winner || room.players.length < 2 || room.players[0].id !== socket.id || !ppBoardOk(board)) return;
+    const players = room.players.map((p) => ({ ...p, mark: p.mark === "X" ? "O" : "X" }));
+    Object.assign(room, newRoom(room.code, board, players), { started: true });
+    ppStartTurn(room);
+    ppEmit(room);
+  });
+
+  const ppPair = (waiting, other) => {
+    const room = newRoom(codeFor(rooms), waiting.board, [
+      { id: waiting.socket.id, uid: waiting.socket.data.uid, nick: waiting.nick, mark: "X", tier: waiting.tier, ...waiting.look },
+      { id: other.socket.id, uid: other.socket.data.uid, nick: other.nick, mark: "O", tier: other.tier, ...other.look },
+    ]);
+    for (const s of [waiting.socket, other.socket]) leaveRoom(s);
+    rooms.set(room.code, room);
+    ppJoinRoom(waiting.socket, room);
+    ppJoinRoom(other.socket, room);
+    const look = (p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null });
+    io.to("pp:" + room.code).emit("pp:matched", { code: room.code, players: room.players.map(look) });
+    // the phones show the VS intro first; X's clock starts after it
+    setTimeout(() => {
+      if (!rooms.has(room.code) || room.started || room.players.length < 2) return;
+      room.started = true;
+      ppStartTurn(room);
+      ppEmit(room);
+    }, INTRO_MS);
+  };
+
+  socket.on("pp:queue", ({ nick, board, tier, avatar, frame }) => {
+    if (!ppBoardOk(board)) return;
+    leaveRoom(socket);
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+    queue.push({ socket, nick: cleanNick(nick), board, tier: cleanTier(tier), look: cleanLook({ avatar, frame }, cleanTier(tier), plusOf(socket.data.uid)), since: Date.now(), pair: ppPair });
+    matchQueues();
+  });
+
+  socket.on("pp:unqueue", () => {
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+  });
+
+  /** Takes socket `s` out of its room (as ht.js): a room left empty is deleted with its clock, and
+   *  walking out of a live game loses it: the one who stays wins and sees the result. */
+  function leaveRoom(s) {
+    const room = rooms.get(s.data.ppCode);
+    s.leave("pp:" + s.data.ppCode);
+    s.data.ppCode = null;
+    if (!room) return;
+    const leaver = room.players.find((p) => p.id === s.id);
+    const live = !!leaver && room.started && !room.winner && room.players.length === 2;
+    if (live) {
+      room.winner = leaver.mark === "X" ? "O" : "X";
+      room.flash = { mark: leaver.mark, reason: "left" };
+      rateDuel("pp", room, room.winner);
+    }
+    room.players = room.players.filter((p) => p.id !== s.id);
+    clearTimeout(room.timer);
+    room.turnStart = null;
+    if (room.players.length === 0) {
+      rooms.delete(room.code);
+    } else {
+      if (!room.winner) room.started = false;
+      io.to("pp:" + room.code).emit("pp:peer-left", view(room));
+    }
+  }
+  const ppDrop = () => {
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+    leaveRoom(socket);
+  };
+  // the room screen closing: only its own room (a late leave never ends the next game)
+  socket.on("pp:leave", ({ code }) => {
+    if (typeof code === "string" && code === socket.data.ppCode) ppDrop();
+  });
+  socket.on("disconnect", (reason) => {
+    queue = queue.filter((w) => w.socket.id !== socket.id);
+    const room = rooms.get(socket.data.ppCode);
+    dropLater("pp", () => !!room && room.started && !room.winner && room.players.length === 2, ppDrop)(reason);
+  });
+}
+
+module.exports = {
+  id: "pp",
+  rooms,
+  view,
+  live,
+  queue: () => queue,
+  setQueue: (q) => (queue = q),
+  attach,
+};

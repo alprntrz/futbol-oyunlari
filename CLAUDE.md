@@ -12,9 +12,23 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
   use `npm run build && npm start`.
 - `npx tsc --noEmit` and `npm run lint` must stay at 0 errors (lint has 9 known
   warnings, explained in README → Doğrulama). CI runs both plus `npm run build`.
-- No automated tests: verify UI changes in a browser (play a round; reload to check
-  saved progress; two tabs for the online race).
+- `npm test` (node:test, `tests/*.test.mts`, CI runs it): pure game rules, the engines, and a snapshot that the
+  daily puzzles (grid, Missing 11 match, Card Duel) did not reshuffle; update its hashes only on purpose. UI changes
+  are still verified by hand (simulator / browser).
 - Node 22.18+ (`.nvmrc` = 24): the data scripts import `.ts` files directly.
+
+## Game server layout
+
+`server.js` is the HTTP / Next server plus the shared Socket.IO plumbing (guarded handlers, reconnect, room
+sweep, matchmaking, report / block, invites, emotes, Live Activity tokens). Each online game is its own file in
+`server-games/` (`ht.js` Tic-Tac-Toe, `pp.js` Possession, `dz.js` Card Duel, `rd.js` Rondo, `wm.js` Who Am I?,
+`qz.js` Quiz, `race.js` web Missing 11 race; Pitch Chess stays in `server-taktik.js`). Shared helpers (nicks, rank
+pairing `takePairs` / `tierGap`, room codes `codeFor`, refs, `rateDuel` / `tellElo`, `INTRO_MS`) are in
+`server-core.js`; Live Activity building blocks in `server-live.js`. The two-player games export
+`{ id, rooms, view, queue, setQueue, pairOk?, invitable?, live?, attach(socket, ctx) }` and are listed in `GAMES` in
+server.js, which drives reconnect, sweep, queues, emotes and invites: a new two-player game is one file + one line
+there. "server.js" below means this whole set. Plan / history: `docs/server-bolme-plani.md`. `npm test` starts the
+server (`tests/server.int.test.mts`) and plays every online game; it must pass after any server change.
 
 ## Mobile app (`mobile/`), released as Tiktako
 
@@ -28,41 +42,240 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
 - UI strings live in `src/lib/strings.ts` (used by both apps).
 - `cd mobile && npx expo start --ios` (Expo Go on the simulator). Online play
   talks to `server.js`; set `EXPO_PUBLIC_SOCKET_URL` (default `http://localhost:3000`).
+- Hat-trick is shown to players as "Tic-Tac-Toe" (v1.1 rename; code, routes and `ht:*` keep the old name).
 - Online mode in the app is Hat-trick only (`ht:*` socket events in `server.js`, incl. `ht:queue` matchmaking:
-  server owns turn, 45 s clock and result; the host's phone deals the grid as
-  criterion ids; a queue match gets `HT_INTRO_MS` before X's clock for the VS screen,
-  after 20 s an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
+  server owns turn, 45 s clock and result and judges every name against the square (`htJudge`: tiki.ts
+  `validateCell`; a name that doesn't fit is a wrong guess); the host's phone deals the grid as
+  criterion ids (unknown ids are refused); a queue match gets `INTRO_MS` (server-core.js) before X's clock for the VS screen,
+  after 3–6 s (`houseAfterMs`, lib/matchmaking.ts) an empty queue falls back to a local house bot, `mobile/src/lib/htBot.ts`, that
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
-  `ht:forfeit` end games early; a match is a series, first to `HT_TARGET` = 3 game wins,
+  `ht:forfeit` (concedes the whole series) end early; a match is a series, first to `HT_TARGET` = 3 game wins,
+  the loser of the last game gets `HT_COMEBACK_MS` = +10 s a turn,
   wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
+- Saudi / Egyptian leagues ("sa", "eg"): `ARAB_CRITERIA` in tiki.ts (ids "arab-…", never in ALL_CRITERIA so seeded daily
+  grids / Bingo / Mystery / Pitch Chess don't change), players in `src/data/players-arab.ts` ← `ONLY=arab-… FROM=2000 node
+  scripts/tiki-scrape-squads.mjs` → `scripts/arab-build-players.mjs`; answers search `GRID_PLAYERS` (PLAYERS + those). Phones send
+  caps "arab"; `canDraw` (server-games/ht.js) keeps such grids from older apps.
 - Leagues (`src/lib/leagues.ts`): Hat-trick grids per league (`leagueGrid`, only that league's
   clubs plus countries/honours; leagues need 3+ clubs in tiki CLUBS); the pick lives in
   `mobile/src/lib/league.ts` and rooms/queue carry `league`. Missing 11 categories (`XI_CATEGORIES`)
   filter matches by tag/competition.
-- Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): questions are generated from the shared
-  data by `src/lib/quiz.ts` on the creator's phone and sent with answers; the server hides answers
-  until the reveal, runs the clock and scores (`qzPoints` in server.js mirrors `quizPoints`: 10 → 5
-  by speed). Random rooms (`qz:queue`) start after 15 s and fill up with house players.
+- Football Quiz (`qz:*`, screens in `mobile/src/app/bilgi/`): the server deals the questions itself with
+  `src/lib/quiz.ts` (`qzDeal`, 5 / 10 / 15 like the app offers), so no phone holds the answers; the set a
+  phone still sends is only used while those rules load. The server hides answers
+  until the reveal, runs the clock and scores (`qzPoints` in server-games/qz.js mirrors `quizPoints`: 10 → 5
+  by speed). Random rooms (`qz:queue`) start after 8 s (`QZ_FILL_MS`) and fill up with house players.
   Levels/standings: phones send a random install id (`pid`, `loadPlayerId` in `mobile/src/lib/nick.ts`);
   at full time the server adds XP (points + 10 + podium bonus) to `data/quiz-stats.json` (gitignored;
   `QZ_STATS_FILE` overrides) and emits `qz:progress`; `qz:profile` / `qz:standings` read it. House
-  players never get a record. On a real deployment that file needs a persistent disk (or a database).
+  players never get a record.
+  Difficulty (`QuizDifficulty` easy/normal/hard in quiz.ts): fame-ranked player pools (honours + classic-match
+  starts) and match pools (finals → big games → all); hard adds exact scores. Random rooms match per level
+  (`qzOpen[level]`); the pick is `useQuizDifficulty` (mobile/src/lib/quizLevel.ts). Home's `QuickPlay` card
+  starts a random game (Hat-trick / Quiz / Possession, last choice remembered). On a real deployment that file needs a persistent disk (or a database).
 - Release: `docs/release/` (checklist, App Store metadata). Public pages (privacy, support) live
-  in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no
-  analytics/ads/tracking SDKs, no IP logging, quiz record = random id + nick + counts only, and
-  Settings > Delete my data (`qz:forget` + local wipe). Keep them true when adding anything.
+  in `site/` and deploy with `.github/workflows/pages.yml`. Privacy promises made there: no ads/tracking SDKs
+  (1.2 brings back the AdMob / RevenueCat sections from tag `monetization-full`), analytics only the anonymous PostHog
+  events below (no identify, opt-out in Settings), push token stored only for signed-in phones that allowed it,
+  no IP logging, quiz record = random id + nick + counts only, and Settings > Delete my data (`qz:forget` + local wipe).
+  Keep them true when adding anything. The site deploys from `main` only.
+- Push (v1.2, `PUSH` in features.ts): `server-push.js` (table `push_tokens` on the accounts db: Expo token, platform, lang,
+  invites / friends / news switches, ≤5 per account; Expo push API in batches of 100, DeviceNotRegistered drops the token
+  from tickets and receipts). `POST/DELETE /api/account/push`; `/signout` takes `pushToken`; account deletion removes them.
+  server.js pushes `fr:invite` (category invites) and "added you" (friends) when the friend has no socket or all sockets
+  sent `app:state` inactive, skipping senders their phone blocked (`lastBlocks`, in memory). News: `POST /api/admin/push`
+  (Bearer `PUSH_ADMIN_TOKEN`, off without it) → `scripts/push-news.mjs`; news is opt-in (Apple 4.5.4). Tests stub Expo via
+  `PUSH_ENDPOINT` (`tests/push.int.test.mts`). App: `lib/push.ts` (registers only when permission is already granted;
+  `askPush` from `PushAsk` on the Friends screen or the switches in `PushSettings`; `PushSync` in the root layout also
+  opens tapped pushes via `lib/invites.ts`); no-op in Expo Go or when `getExpoPushTokenAsync` fails (Android needs FCM v1
+  credentials on EAS). Local reminders (`lib/reminders.ts`) are separate and stay guest-friendly.
+- Analytics (v1.2, `ANALYTICS`): `lib/analytics.ts`, PostHog US cloud, project 684160 (`EXPO_PUBLIC_POSTHOG_KEY`, optional `_HOST`; off in
+  `__DEV__` and without a key; not in eas.json yet: eas-cli rejects empty values). personProfiles "never", never
+  identify, GeoIP off, no replay / touch autocapture / flags / surveys / error tracking, lifecycle events on, storage in
+  AsyncStorage (Delete my data wipes the id; the off switch survives). Only the typed events in `track()` (screen = route
+  pattern from `useSegments`, game_finished via `onXpAward` + `isGameAward`, onboarding_done, signed_in, share_tapped,
+  push_permission). Never add nick, account / install id, friend or room codes or free text. Settings > Share usage data.
+  The PostHog project must have "Discard client IP data" on.
+- Accounts (v1.1, optional): Sign in with Apple / Google; `server-accounts.js` (node:sqlite, `ACCOUNTS_DB`,
+  `/api/account/*`) verifies the provider token and stores only provider + opaque sub, nick, avatar,
+  XP — never name or e-mail (no scopes requested). App side `mobile/src/lib/account.ts` (session in
+  SecureStore, awards queued to `/xp`, daily +20 bonus, `DELETE /api/account` + Apple revoke).
+  Env/secrets: `APPLE_AUDIENCES`, `GOOGLE_CLIENT_IDS`, `APPLE_TEAM_ID/KEY_ID/PRIVATE_KEY`;
+  app: `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` + the reversed id as `iosUrlScheme` in app.json.
+- Game feel (v1.1, from a Duolingo study): `components/Combo.tsx` (`useCombo`, `ComboChip`, `ComboBurst` at
+  3/5/8/…; Missing 11 + Quiz), `components/RewardScreen.tsx` (awards with `stats` open a "Claim XP" screen
+  instead of the toast; mounted in the root layout), daily quests `lib/quests.ts` (3/day from different
+  games, `questEvent` / `useQuestOnce`), 7-day reward calendar `lib/dailyRewards.ts` (fixed amounts, no
+  random chests). Both pay XP as source "bonus". Home shows `HomeStatus` (level, play streak `lib/playStreak.ts`, gift that claims the day), `TodayPuzzles`
+  (grid / Daily XI / Bingo read from their screens' save keys; the grid's big card folds into a row once done) + `QuestsCard`;
+  the 7-day `DailyRewardCard` lives on Profile.
+- Ranks (v1.1): `RANKS` / `rankOf` in `src/lib/levels.ts` name the level bands (Amateur → Legend, bronze/silver/gold
+  steps; `components/Rank.tsx`). The rank index is the matchmaking tier: `ht:queue`, `pp:queue`, `qz:queue` carry `tier`
+  (`loadTier` in lib/xp.ts); `takePairs` / `tierGap` (server-core.js) pair the same rank first and widen every `TIER_WIDEN_MS`
+  (a 1 s sweep, `matchQueues`). Quiz random rooms are keyed `difficulty:tier` in `qzOpen`.
+- Friends (v1.1, signed-in): `friends` table + `users.friend_code` in server-accounts.js (`/api/account/friends`
+  GET/POST {code}/DELETE /:code; added both ways, max 100). Presence = any socket with that `uid`; `fr:invite`
+  {to: friend code, game: "ht", room} → `fr:invited` on the friend's sockets (3 s rate limit); adding someone sends them `fr:added` (`setFriendAdded`). App: `app/arkadaslar.tsx`,
+  `components/InviteBanner.tsx` (root layout; keeps a socket open while signed in). Friends see nick, avatar, level, online only.
+- Caps: the app sends `caps` in the socket handshake (lib/socket.ts `CAPS`); "mate" / "coach" = can draw "played with" /
+  "managed by" criteria (`MATE_CRITERIA`, `COACH_CRITERIA`, `withLink` in tiki.ts; data `src/data/teammates.ts`,
+  `src/data/coaches.ts` ← `scripts/tiki-scrape-seasons.mjs` + `scripts/tiki-scrape-coaches.mjs` →
+  `scripts/tiki-build-teammates.mjs` / `tiki-build-coaches.mjs`). server.js keeps such grids away from phones that
+  can't draw them (`canDraw`, `htAllKnowMates`). Daily grids never get them (seeded, unchanged).
+  Each star / coach is "g" (world-class) or "l" (local) in the builders: the all-clubs grid (`dealGrid(... "all")`) only
+  deals "g" ones; a league grid deals anyone who was at that league's clubs. Dealt and league grids aim for club × club
+  squares (`generateGrid(rand, { clubPairs: true })`, `leagueGrid`); the seeded daily grid keeps the old rule.
+- Live Activities: `LIVE_ACTIVITIES` (mobile/src/lib/features.ts) + "expo-widgets" plugin (enablePushNotifications; `plugins/withApsProduction`
+  sets aps-environment = production, so com.alprntrz.tiktako needs the Push Notifications capability). While the app is in the background
+  server.js updates the activity over APNs (`server-live.js`, secrets APNS_KEY / APNS_KEY_ID + APPLE_TEAM_ID; off without them): phones send
+  `la:token` {game, token, strings} from online ht / pp / dz screens (`useLivePush`) and `app:state`; the turn coming back carries an alert. App Groups
+  (group.com.alprntrz.tiktako) is enabled by hand on both App IDs; EAS can't sync that capability, so iOS builds run
+  with `EXPO_NO_CAPABILITY_SYNC=1`.
+- Weekly league (Duolingo-style): server-accounts.js `league_members` (week, user, tier, group of ≤30) filled by `addXp`
+  (`leagueAdd`), settled lazily per user on the next request (`settleLeague`: top min(7, ⅓ of the group) up, bottom 5 down
+  in groups of 12+; result in `users.league_last` shown once). GET `/api/account/league`, POST `/league/seen`. Leagues bronze →
+  diamond (`LEAGUES`). Screen `mobile/src/app/lig.tsx`, row on Home (`HomeBoard`). Signed-in only; no house players.
+- Ratings (v1.1): Elo per online game (`ht` series, `qz` by placement, `pp`), signed-in humans only.
+  The app sends its session token in the socket handshake (`setSessionToken` in lib/socket.ts);
+  server.js stores `uid` on each player and calls `recordResult` (server-accounts.js). Leaving a live
+  Hat-trick series / Possession game counts as a loss. Boards: `GET /api/account/leaderboard?board=xp|ht|qz|pp`,
+  screen `mobile/src/app/siralamalar.tsx`.
+- XP and levels (v1.1): every game pays XP through `awardXp` / `useXpAward` in `mobile/src/lib/xp.ts`
+  (local, AsyncStorage `xp-v1`); amounts in `XP` and the curve in `levelOf`, both in `src/lib/levels.ts`.
+  Each award has a unique key so a game never pays twice; unlimited modes pass `practice` (daily cap).
+  The "+XP" toast (`XpToast`, root layout) waits while a `Victory` modal is open. The Stats tab is now
+  Profile (`app/(tabs)/istatistik.tsx` + `ProfileCard`): nickname, preset 3D avatar (`lib/avatar.ts`, art in `mobile/assets/brand/avatar/`, 256 px, trimmed and bottom-aligned; ids are stored on accounts, keep them stable) or an optional profile photo (`lib/photo.ts`, `<Avatar me />`; stays on the phone, never uploaded — the privacy page promises it), level.
 - Reward moments: `Victory.tsx` (ceremony) with art from `docs/design/oyun-hissi-brief.md`
   → `python3 scripts/reward-assets.py <dir>` → `mobile/assets/brand/odul/` (`REWARD` in brand.ts).
   Sounds are synthesised by `python3 scripts/game-sounds.py` → `mobile/assets/sounds/`, played via
   `play()` in `mobile/src/lib/sound.ts` (expo-audio; respects the silent switch; toggle in Settings).
+- Taktik Tahtası / Pitch Chess online (`tt:*`, server-taktik.js): Start opens a lobby (`app/taktik/lobi.tsx`, host + up to 4 friends
+  invited with `fr:invite` game "tt"); alone it plays solo on the phone. Online the server runs the engine (loads `src/lib/taktik`
+  .ts through its own "@/" resolver), the clock, matches and gold; phones send moves `tt:act` = `src/lib/taktik/ops.ts` (`applyOp`,
+  shared by phone and server, arguments checked there) and get `tt:state`. `mobile/src/lib/taktik.ts` holds solo or online state
+  (`play(op)`, guesses deterministic moves at once). A dropped manager has 60 s (`TT_REJOIN_MS`), then a house manager takes the seat.
+- Taktik Tahtası / Pitch Chess (auto battler, solo vs 7 house managers or the online lobby above; docs/design/taktik-tahtasi.md): engine in
+  `src/lib/taktik/` (pure; `rules.ts` numbers, `pool.ts` cards from every player, `traits.ts`, `sim.ts` deterministic match,
+  `engine.ts`, `bot.ts`), per-player main club / position `src/data/taktik.ts` ← `scripts/taktik-build.mjs` (from
+  raw-seasons + `scripts/taktik-scrape-positions.mjs`). Balance: `node --import ./scripts/lib/alias.mjs mobile/scripts/taktik-sim.mts`.
+  App: `mobile/src/lib/taktik.ts` (saved lobby), screens `app/taktik/{index,oyun}.tsx` (the game screen is "use no memo"),
+  `components/taktik/`. XP source "tt" (server-accounts GAMES too).
+- Kart Düellosu / Card Duel (docs/design/kart-duellosu.md): draft 7 cards (budget 15, gold 3 / silver 2 / bronze 1 by fame) under
+  the day's theme, then 7 stat rounds (higher wins; "lower wins" questions in red). Rules `src/lib/duel.ts` (pure); numbers
+  `src/data/duel.ts` + `server-data/duel-cards.json` ← `scripts/duel-fetch-wikidata.mjs` (Wikidata, CC0, matched by Transfermarkt id
+  P2446) → `scripts/duel-build.mjs` (never hand-edit). Online `dz:*` in server-games/dz.js (server deals questions, hides picks, 20 s clock,
+  judges, Elo board "dz"); house player / daily / practice run on the phone (`mobile/src/lib/duelMatch.ts`). Screens `app/duello/`.
+- Dribbling Rush (endless runner, docs/design/futbol-kosu.md) is 3D in Unity: project `unity/DribblingRush` (rules
+  `RushEngine.cs` = port of `src/lib/kosu/engine.ts`, keep both in step; `RushBuild.Parity` compares; the 3D rules only (`extras`, on in C#,
+  `newRun(seed, answers, true, words)` in TS, so Rush2D keeps the old game): dugouts with A-frame-board ramps and roofs (`blocks`),
+  the groundsman's mower driving at you, jet and spring boots, softer moves, no goals / questions but letters spelling footballers'
+  names (`src/lib/kosu/names.ts`; a finished name = bonus, ×+1, a free jet); the referee chases after a bump; optional ChatGPT
+  textures in `Assets/Resources/Art` (docs/design/kosu-3d-brief.md)), world built in code
+  (no imported models; the camera never yaws and the world bends away under the horizon, `RushCurve.cginc` shared by the three
+  shaders, so long pieces use `Look.LongCube` / `Look.GridQuad`; the look's rules are in futbol-kosu.md → "Sahne"), embedded with @azesmway/react-native-unity (`plugins/withUnity.js`). `./unity/build.sh ios|android|shots`
+  writes `mobile/unity/builds/` (gitignored, uploaded to EAS by the root `.easignore`, which repeats both .gitignores; keep
+  them in step). The app screen `components/kosu/Rush3D.tsx` keeps HUD / question / result / XP / sounds; builds without
+  Unity (Expo Go, older store builds) get `Rush2D.tsx` (`hasUnity()`, lib/unity.ts). Unity changes need a native build (no OTA).
+  See unity/README.md.
+- Quick emotes (`components/Emotes.tsx`): a fixed emoji set, no free text, relayed by server.js `em:send` → `em:recv` to the other
+  player of the ht / pp / dz room (1.5 s rate limit); the house player answers sometimes. Recent matches on Profile
+  (`lib/history.ts`, local only, last 30; `useRecordMatch` in the Tic-Tac-Toe, Possession and Card Duel screens).
+- Cosmetics (`lib/cosmetics.ts`, local only, earned never bought): avatar frames per rank (`FRAMES`, drawn by `FrameRing`
+  with react-native-svg; `<Avatar me />` wears the chosen / best one, picker in Edit profile) and 12 badges (`loadBadges`,
+  `components/Badges.tsx`; progress from XP, play streak, trophies and `history.ts` totals). Badge art brief:
+  `docs/design/rozet-brief.md` → `python3 scripts/badge-assets.py <dir>` → `mobile/assets/brand/rozet/`.
+  Others see the frame: `users.frame` (the pick, '' = auto) in server-accounts.js, `frameOf` checks it against the rank from XP and
+  goes out with friends, leaderboards and invites; random queues (ht / pp / dz) carry `avatar` + `frame` (`loadMyLook`, checked
+  by `cleanLook` against the sent tier); house players get `houseLook(tier)`.
 - Kombine (football match-3, shelved: no entry in the Games tab, routes kept): rules in `mobile/src/lib/kombine/engine.ts` (pure, no React; the
   board UI only animates the phases `swap()` returns), levels in `levels.ts`. After changing
   rules or levels run `node mobile/scripts/kombine-sim.mts` and keep the win rates on target.
   The match screen opts out of React Compiler memoization because the engine mutates `game`.
-  Possession Play uses `pp:*` (same pattern, two chess clocks;
-  the mover's phone computes claimed hexes). Football Bingo is offline (daily
-  seeded card, `mobile/src/lib/bingo.ts`). The Missing 11 race (`room:*`, `race:*`) is still served for
+  Possession Play uses `pp:*` (same pattern, two chess clocks; random queue → house player after 3–6 s (`app/possession/bot.tsx`,
+  `housePpMove` in lib/possession.ts), a queue match starts X's clock after `INTRO_MS` for the VS intro;
+  the server judges the name and works out the claimed hexes itself, `ppClaims`, same rule as `claimsFor`). Football Bingo is offline (daily
+  seeded card, `mobile/src/lib/bingo.ts`; `/bingo?practice=1` deals unsaved random cards, XP under the practice cap). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
+- Android (started 2026-10-17): `Icon` (ui.tsx) maps every SF Symbol to a Material Symbol (`MATERIAL`; filled font for
+  ".fill" names) — add new icons there too; tabs pass `md` icons (Android tints tab icons); `Page topInset` pads under the
+  status bar on Android; Pitch Chess handles the hardware back (`BackHandler`). Google sign-in on Android needs
+  `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (the project's Web client; also in the server's GOOGLE_CLIENT_IDS) plus an Android
+  OAuth client (package + signing SHA-1). No Apple sign-in / Live Activities there. Emulator: `~/Library/Android/sdk`, AVD Pixel8.
+- Sharing / reminders / first launch (v1.1): `components/ShareCard.tsx` (`useShareCard`: draws a 1080×1350 result card off
+  screen, snaps it with react-native-view-shot and shares it with the emoji text + `SHARE_URL`; no nick or avatar on it; Android
+  sends the text) in the daily grid, Daily XI (`ResultCard`), Bingo, Mystery and Dribbling Rush. `lib/reminders.ts`: local
+  notifications only (expo-notifications, no push token): 19:00 for the next 7 days, skipped on a played day, re-planned by
+  `RemindersSync` (root layout); asked once on Home (`ReminderAsk`) after a finished game, toggle in Settings. `app/onboarding.tsx`:
+  one screen, shown to new installs only (no XP and no `onboarded-v1`), "Solve your first grid" opens today's grid.
+  Rating: `lib/rating.ts` (`RatingAsk`, root layout) calls expo-store-review's system sheet (stars in the app) after the first
+  finished game once Victory / reward screens close, then at most every 60 days; no own "Do you like it?" step (Apple 5.6.1).
+  `isGameAward` (lib/xp.ts) = a finished game, Dribbling Rush's "bonus" + "run-" keys included (play streak uses it too).
+- Dropped connections: server.js turns on Socket.IO connection state recovery (`REJOIN_MS` = 60 s): a phone back within that
+  keeps its socket id, rooms and socket.data and gets the missed events. A live ht / pp / dz / rd / wm seat that drops (`dropLater`) waits
+  REJOIN_MS (the other player gets `peer:away`) before the old leave logic (loss) runs; leaving on purpose drops at once.
+  Behind Fly's proxy a phone is usually back before the server notices the old socket die, so recovery fails: the app then
+  sends its old id (`prev`) and a per-run random key (`rk`, lib/socket.ts; only the server sees it) and `welcomeBack` hands the
+  seats to the new socket (`seat:back`). Ping 10 s / timeout 10 s.
+  `components/ConnectionBanner.tsx` shows reconnecting / too late / opponent away in the three online match screens.
+- Report / block (Apple 1.2): `server-refs.js` gives each player an opaque `ref` (HMAC of account id or install id; the install id
+  itself must never reach other phones) carried on room seats, boards, league, friends and quiz standings. `rep:send` appends to
+  /data/reports.jsonl (capped at 5 MB; 3 different signed-in reporters hide the nick as "Player" for 30 days, guest reports are kept but don't count); phones keep their block list (`lib/blocks.ts`, sent in the
+  handshake + `blk:set`) and `takePairs` / quiz rooms / invites skip blocked pairs. UI: `components/PlayerMenu.tsx`
+  (`openPlayerMenu`, `PlayerMenuButton` beside the emote button; house players get a made-up `houseRef`), Settings > Blocked.
+- Health (server-app.js, lib/appHealth.ts): root `ErrorBoundary` (`components/AppError.tsx`) shows a friendly page and POSTs an
+  anonymous report to /api/app/crash (→ /data/crashes.jsonl, capped); `/api/app/version` returns `MIN_APP_VERSION` (Fly env) and an
+  older app shows "Update needed" (raise it only once the new version is live in both stores).
+- Sentry (crash reports, `mobile/src/lib/sentry.ts`, project tiktako/tiktako-app): errors only (no tracing / replay / screenshots),
+  `beforeSend` drops user, request and console breadcrumbs; on only in release builds with `EXPO_PUBLIC_SENTRY_DSN` (eas.json). Source
+  maps upload during EAS builds and `npm run ota` when `SENTRY_AUTH_TOKEN` is set (EAS env secret / shell). The privacy page and
+  store privacy answers describe it; keep them true if you widen what it sends.
+- OTA (expo-updates, channel "production", runtimeVersion = app version): JS/asset-only fixes ship with `npm run ota -- "msg"` in
+  mobile/ (scripts/ota.mjs injects eas.json's production EXPO_PUBLIC_* env; never run a bare `eas update`). Only builds made after
+  expo-updates was added (1.1, build 23+) receive them; native changes still need a store build.
+- Progress sync (signed-in): `lib/progress.ts` merges the account's blob (server-accounts.js `users.progress`, GET/PUT
+  /api/account/progress, whitelist `PROGRESS_KEYS`, history uploaded without opponents) into AsyncStorage at sign-in / start and
+  restarts once if anything came back; uploads a few seconds later and on background. Add a key in both lists (never photo,
+  blocks or the install id) and say so on the privacy page.
+- Rondo (`rd:*`, rules `src/lib/rondo.ts`): a club comes up, the two take turns naming someone who played there (15 s, first turn
+  20 s); out of time loses the round, first to 2. The server deals the clubs (`RONDO_CLUBS`: 60+ well-known players) and judges every
+  name (`judgeRondo`; loads rondo.ts through server-taktik's "@/" resolver); a wrong name goes back only to the mover (`rd:wrong`).
+  Queue falls back to the house player after 3–6 s (`useRondoHouse` in `lib/rondoMatch.ts`, same shape as `useRondoOnline`); Elo board
+  "rd", XP source "rd". Screens `app/rondo/`, board `components/RondoBoard.tsx`. Second mode "pair" = Two-Club Duel (`RondoMode`, picked on
+  the hub, `lib/rondoMode.ts`): the server deals club pairs with 4+ well-known shared players (`RONDO_PAIRS`, `dealRondoPairs`), both race,
+  the first right name takes the hand (`judgeRondoPair`; a miss locks that box `RONDO_PAIR_MISS_MS`), 20 s a hand, nobody = no hand, first to
+  `target` hands (2/3/4 = best of 3/5/7, `rd:create {mode, target}`; the queue plays best of 5 and pairs only same-mode players, `pairOk`);
+  every hand ends with the best-known fits (`rondoPairAnswers`). House player `useRondoPairHouse` (lib/rondoPairHouse.ts). Same Elo / XP "rd". Art: `docs/design/rondo-brief.md` →
+  `python3 scripts/rondo-assets.py docs/design/rondo-art/originals` → `mobile/assets/brand/rondo/` (`RONDO` in brand.ts).
+- Jokers (fair by design: the same for both players each game / match, never bought, never saved): Tic-Tac-Toe online +
+  house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
+  well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50
+  per match (`qz:joker`, the server picks the two wrong options for that player only); Rondo one +10 s per match (`rd:joker`).
+- Elo farming guard: the same two accounts get at most `PAIR_RATED_PER_DAY` = 3 rated games per game per UTC day
+  (`pairAllowsRating`, server-core.js; in memory). Guest XP brought into an account at first sign-in is capped at
+  `GUEST_IMPORT_CAP` = 10 000 in total. Card Duel online hands must fit the theme of the server's day ±1.
+- Rating change: `recordResult` returns uid → { rating, delta }; `tellElo` (server-core.js) emits `elo` to each rated player's socket
+  (ht / pp / dz / qz / rd); `components/EloToast.tsx` (root layout) shows "+18 · Tic-Tac-Toe 1034" after the victory screens close.
+- Who Am I? (`wm:*`, rules `src/lib/whoami.ts`): one hidden player (`WM_POOL`, 400 well-known) for both; turns of a yes / no
+  question from a fixed menu (club, country, league, position, honour, birth decade; `wmCleanQuestion` / `wmAnswer`) or a guess.
+  The server picks the player, answers, and sends the name only once it's over. Both see every answer; a wrong guess costs 1 of
+  3 lives, 25 s a move, 24 moves then a draw. House player `useWmHouse` (lib/whoamiMatch.ts, `wmHouseMove` narrows the fits);
+  screens `app/kimim/`, board `components/WhoAmIBoard.tsx`; Elo board / XP "wm". Art: `docs/design/kimim-brief.md` →
+  `python3 scripts/kimim-assets.py docs/design/kimim-art/originals` → `mobile/assets/brand/kimim/` (`KIMIM` in brand.ts). Mystery Player (`gizli.tsx`) stays the solo one.
+- Money (v1.2, docs/release/monetization.md; `MONETIZE` in lib/features.ts turns it all off; **off in 1.1**, native SDKs
+  unlinked by `mobile/react-native.config.js` + `expo.autolinking.exclude`, full state at tag `monetization-full`): opt-in **rewarded ads**
+  (`lib/ads.ts`, Google AdMob via react-native-google-mobile-ads; consent = UMP `gatherConsent` + iOS ATT, content rating PG)
+  buy only *practice*: lift the practice-XP cap (+`AD_RULES.capLiftXp`, 2/day; `onCapHit` in lib/xp.ts → `CapSheetHost`),
+  repair a streak broken yesterday (`repairStreak`, 1/30 days), double the daily gift (`doubleDaily`); one **interstitial**
+  after a finished solo game only (`SOLO_KEY` award keys), never in the first 3 days, ≤2/session, 4 min apart, never over a
+  clock. **Tiktako Plus** (`lib/plus.ts`, RevenueCat react-native-purchases; entitlement `plus`, products in
+  `src/lib/plus.ts`): no interstitials, no practice cap, 30-day archive of the daily puzzles (`app/arsiv.tsx`; the three daily
+  screens take `?day=` via `lib/archive.ts` and redirect to `/plus` without Plus), free streak repair, the "plus" frame
+  (cosmetics FRAMES rank 99; server `frameOf` / `cleanLook(…, plus)` check it against `users.plus_until`). Paywall
+  `app/plus.tsx` (yearly default, store prices, restore, legal lines). Server: `users.plus_until` written only from
+  RevenueCat (`POST /api/account/plus/sync` REST check with `REVENUECAT_SECRET`; `POST /api/rc/webhook` with
+  `REVENUECAT_WEBHOOK_AUTH`), never from the phone. Fair by design: nothing bought or watched touches a match (jokers, lives,
+  clocks, Elo). Ad unit ids / RC keys live in eas.json `EXPO_PUBLIC_ADMOB_*` / `EXPO_PUBLIC_RC_*` (dev builds use Google's
+  test units; a store build without ids shows no ads). Needs a native build. Privacy page describes ads + purchases.
 - `npx tsc --noEmit` and `npx expo lint` in `mobile/` must stay at 0; CI runs both.
 - After any dependency change in `mobile/` (incl. `npx expo install`), run
   `npx npm@latest install --package-lock-only` there: older npm drops the `@emnapi/*`
@@ -75,6 +288,15 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   originals are not committed.
 
 ## Conventions that are easy to break
+
+- server.js wraps every socket handler (`socket.on` in the connection handler): payload `{}` when missing, ack only if a
+  function, a thrown error is logged, 60+ events in 5 s drops the socket. Validate anything a phone sends that reaches the
+  other phone (`htGridOk`, `ppBoardOk`, `nameOf`, whole-number cells, touching hexes via `PP_NEIGHBOURS`). Accounts cap game
+  XP at `DAILY_XP_CAP` per UTC day; guest XP imports once per account.
+- App UI: each game's colour pair is `GAME` in `mobile/src/lib/theme.ts` (Games tab, hubs, Play online picker); rules live
+  in `components/HowTo.tsx` (`*Steps`, also listed in Settings); a dark screen sets the light status bar with
+  `FocusStatusBar` (never a bare `<StatusBar>`); don't repeat the header title as a big title on the page; a walkthrough
+  (`useTour`) must not run over a live clock (freeze it, or `autoStart = false` online).
 
 - `Match.lineup` is ordered by `FORMATIONS[formation]` slots in
   `src/lib/formations.ts`, GK first; a back four is `[GK, RB, RCB, LCB, LB]` —

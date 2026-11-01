@@ -1,20 +1,26 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Share, StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import Animated, { Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
+import { XP } from "@/lib/levels";
 import { searchPlayers, type Criterion } from "@/lib/tiki";
 
+import { PlayerLine, PlayerToken } from "~/components/PlayerRow";
 import { SOFT_IN } from "~/components/motion";
 import { CriterionBadge } from "~/components/HatTrickBoard";
+import { useShareCard, type Mark } from "~/components/ShareCard";
 import { Text } from "~/components/Text";
-import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/components/ui";
+import { Button, Card, Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
+import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { compare, findPlayer, MAX_GUESSES, mysteryForDay, randomMystery, START_CLUES, type Clue, type Puzzle } from "~/lib/mystery";
 import { C, F, R, T } from "~/lib/theme";
+import { useQuestOnce } from "~/lib/quests";
+import { useXpAward } from "~/lib/xp";
 
 type Mode = "daily" | "free";
 interface Run {
@@ -33,6 +39,7 @@ const OPEN = new Keyframe({
 /** Mystery Player: name the footballer from clues that open one at a time. */
 export default function MysteryPlayer() {
   const { t, locale } = useI18n();
+  const { share: shareCard, card: shareView } = useShareCard();
   const day = useMemo(() => dayNumber(), []);
   const daily = useMemo(() => mysteryForDay(day), [day]);
   const [mode, setMode] = useState<Mode>("daily");
@@ -49,6 +56,20 @@ export default function MysteryPlayer() {
   const over = won || left <= 0;
   const open = over ? puzzle.clues.length : Math.min(START_CLUES + spent, puzzle.clues.length);
   const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+
+  // the daily puzzle pays once a day; free puzzles count towards the practice cap
+  useXpAward(
+    over,
+    mode === "daily" ? `mystery-${day}` : `mystery-free-${day}-${answer.name}`,
+    "mystery",
+    won ? XP.mysteryWin + Math.max(0, MAX_GUESSES - spent) * XP.mysteryPerSpareGuess : XP.mysteryLoss,
+    {
+      practice: mode === "free",
+      title: won ? t("rwSolved") : t("rwDone"),
+      stats: [{ label: t("rwTries"), value: won ? `${spent}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`, tone: won ? "green" : "coral" }],
+    }
+  );
+  useQuestOnce(over && won, mode === "daily" ? `mystery-${day}` : `mystery-free-${day}-${answer.name}`, [["mystery_solve", 1]]);
   const suggestions = useMemo(() => (input.trim().length >= 2 ? searchPlayers(input).slice(0, 5) : []), [input]);
 
   // Today's run survives leaving the screen
@@ -66,8 +87,13 @@ export default function MysteryPlayer() {
   const guess = (name: string) => {
     if (over || run.guesses.includes(name)) return;
     setInput("");
-    if (name === answer.name) haptic.success();
-    else haptic.error();
+    if (name === answer.name) {
+      haptic.success();
+      play("correct");
+    } else {
+      haptic.error();
+      play("wrong");
+    }
     update({ ...run, guesses: [...run.guesses, name] });
   };
 
@@ -84,7 +110,15 @@ export default function MysteryPlayer() {
 
   const share = () => {
     const marks = run.guesses.map((g) => (g === answer.name ? "🟩" : "🟥")).join("") + "⬜".repeat(run.hints);
-    Share.share({ message: `${t("myName")} #${day % 1000}\n${marks}\n${won ? `${spent}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`}` });
+    const score = won ? `${spent}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`;
+    shareCard({
+      game: "my",
+      name: t("myName"),
+      tag: `#${day % 1000}`,
+      rows: [[...run.guesses.map((g): Mark => (g === answer.name ? "ok" : "miss")), ...Array.from({ length: run.hints }, (): Mark => "empty")]],
+      score,
+      text: `${t("myName")} #${day % 1000}\n${marks}\n${score}`,
+    });
   };
 
   const clueText = (c: Clue) =>
@@ -95,17 +129,6 @@ export default function MysteryPlayer() {
   return (
     <Page>
       <Stack.Screen options={{ title: t("myName") }} />
-      <Segmented
-        value={mode}
-        onChange={(m) => {
-          setMode(m);
-          setInput("");
-        }}
-        options={[
-          { value: "daily", label: t("myDaily") },
-          { value: "free", label: t("myFree") },
-        ]}
-      />
 
       <View style={styles.head}>
         <Text style={T.title}>{mode === "daily" ? t("myDailyTitle") : t("myFree")}</Text>
@@ -160,7 +183,10 @@ export default function MysteryPlayer() {
             )}
             <View style={{ flexDirection: "row", gap: 10, alignSelf: "stretch", marginTop: 6 }}>
               {mode === "daily" ? (
-                <Button title={t("share")} icon="square.and.arrow.up" onPress={share} style={{ flex: 1 }} />
+                <>
+                  <Button title={t("myAnother")} icon="arrow.clockwise" onPress={() => (setMode("free"), nextFree())} style={{ flex: 1 }} />
+                  <Button title={t("share")} icon="square.and.arrow.up" kind="secondary" onPress={share} style={{ flex: 1 }} />
+                </>
               ) : (
                 <Button title={t("myNext")} icon="arrow.clockwise" onPress={nextFree} style={{ flex: 1 }} />
               )}
@@ -193,7 +219,8 @@ export default function MysteryPlayer() {
                   const tried = run.guesses.includes(p.name);
                   return (
                     <Tap key={p.name} disabled={tried} onPress={() => guess(p.name)} style={[styles.suggestion, i > 0 && styles.divider, tried && { opacity: 0.4 }]}>
-                      <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                      <PlayerToken p={p} />
+                      <PlayerLine p={p} />
                       {tried && <Icon name="xmark" size={13} color={C.text3} fallback="×" />}
                     </Tap>
                   );
@@ -244,6 +271,7 @@ export default function MysteryPlayer() {
           <Text style={[T.caption, { marginTop: 8 }]}>{t("myFeedbackHint")}</Text>
         </>
       )}
+      {shareView}
     </Page>
   );
 }
@@ -265,7 +293,7 @@ const styles = StyleSheet.create({
   inputWrap: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 12 },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
   suggestions: { marginTop: 8, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, overflow: "hidden" },
-  suggestion: { flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 12 },
+  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   guess: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 10 },
   hit: { width: 30, height: 26, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: C.bg, opacity: 0.45 },

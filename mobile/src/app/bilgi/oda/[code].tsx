@@ -1,48 +1,66 @@
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, Share, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, Share, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn, FadeOut, FadeOutUp, Keyframe, SlideInDown, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
-import { quizQuestions, type QuizCategory } from "@/lib/quiz";
+import { quizQuestions, type QuizCategory, type QuizDifficulty } from "@/lib/quiz";
+import { XP } from "@/lib/levels";
+import { ordinal } from "@/lib/strings";
 
+import { openPlayerMenu } from "~/components/PlayerMenu";
+import { Avatar as PlayerAvatar } from "~/components/Avatar";
+import { ComboBurst, ComboChip } from "~/components/Combo";
+import { PopNumber } from "~/components/motion";
 import { GrassPattern } from "~/components/GrassPattern";
 import { Victory } from "~/components/Victory";
 import { LevelProgress, type QuizProfile } from "~/components/QuizLevel";
-import { RunningPlayer } from "~/components/RunningPlayer";
+import { QueueRing } from "~/components/QueueRing";
 import { goBack, NIGHT, StadiumHeader, NightStatusBar, type Runner } from "~/components/StadiumHeader";
 import { Text } from "~/components/Text";
 import { Icon, Tap } from "~/components/ui";
 import { REWARD } from "~/lib/brand";
-import { haptic } from "~/lib/haptics";
+import { haptic, useClockTicks } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { loadNick, loadPlayerId } from "~/lib/nick";
 import { getSocket } from "~/lib/socket";
 import { C, F } from "~/lib/theme";
+import { questEvent } from "~/lib/quests";
+import { awardXp } from "~/lib/xp";
 
 type L = { tr: string; en: string };
 interface QzPlayer {
   id: string;
+  ref?: string | null;
   nick: string;
   score: number;
   answered: boolean;
   choice: number | null;
   gained: number;
+  /** 50/50 jokers left (only on this phone's own row) */
+  fifty?: number;
 }
+/** a random room starts this long after it opens (server.js QZ_FILL_MS) */
+const QZ_FILL_MS = 15_000;
+
 interface QzRoom {
   code: string;
   random: boolean;
   hostId: string;
-  settings: { seconds: number; maxPlayers: number; category: QuizCategory };
+  settings: { seconds: number; maxPlayers: number; category: QuizCategory; difficulty?: QuizDifficulty };
   phase: "lobby" | "intro" | "question" | "reveal" | "done";
   index: number;
   total: number;
   question: { text: L; context: L | null; options: L[] } | null;
   answer: number | null;
+  /** each option's number at the reveal ("who scored more?") */
+  values?: L[] | null;
   remainingMs: number;
+  /** random room still filling: ms until it starts anyway (null otherwise; older servers send none) */
+  startsInMs?: number | null;
   players: QzPlayer[];
 }
 
@@ -59,7 +77,9 @@ function avatarColor(name: string) {
   return `hsl(${h % 360}, 50%, 45%)`;
 }
 
-function Avatar({ name, size = 30, ring = "white" }: { name: string; size?: number; ring?: string }) {
+/** A player in the room: your own avatar (photo / preset) for you, a coloured initial for the others. */
+function Avatar({ name, size = 30, ring = "white", me }: { name: string; size?: number; ring?: string; me?: boolean }) {
+  if (me) return <PlayerAvatar id={null} me size={size} ring={ring} />;
   return (
     <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, backgroundColor: avatarColor(name), borderColor: ring }]}>
       <Text allowFontScaling={false} style={[styles.avatarText, { fontSize: size * 0.42 }]}>
@@ -114,9 +134,13 @@ function TimerRing({ fraction, seconds, low }: { fraction: number; seconds: numb
           transform="rotate(-90 22 22)"
         />
       </Svg>
-      <Text allowFontScaling={false} style={[styles.ringText, low && { color: WRONG }]}>
-        {seconds}
-      </Text>
+      {low ? (
+        <PopNumber value={seconds} style={[styles.ringText, { color: WRONG }]} />
+      ) : (
+        <Text allowFontScaling={false} style={styles.ringText}>
+          {seconds}
+        </Text>
+      )}
     </View>
   );
 }
@@ -127,22 +151,32 @@ export default function QuizRoom() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
+  const { width } = useWindowDimensions();
   const [room, setRoom] = useState<QzRoom | null>(null);
+  /** when a random room starts anyway (local ms), for the countdown ring */
+  const [startsAt, setStartsAt] = useState<number | null>(null);
   const [deadline, setDeadline] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [error, setError] = useState<string | null>(null);
   const [myId, setMyId] = useState(() => getSocket().id ?? "");
   const [picked, setPicked] = useState<number | null>(null);
+  // a 50/50: the question it was used on and the two options it took away
+  const [fifty, setFifty] = useState<{ index: number; remove: number[] } | null>(null);
   const [copied, setCopied] = useState(false);
   const [ceremonyClosed, setCeremonyClosed] = useState(false);
   const lastPhase = useRef("");
   const [progress, setProgress] = useState<{ gained: number; before: QuizProfile; after: QuizProfile } | null>(null);
+  // run of right answers this game; the game's tallies feed the reward screen
+  const [combo, setCombo] = useState(0);
+  const tally = useRef({ combo: 0, best: 0, correct: 0, asked: 0, score: 0 });
 
   useEffect(() => {
     const socket = getSocket();
     const apply = (r: QzRoom) => {
       setRoom(r);
       setDeadline(Date.now() + r.remainingMs);
+      // the search ring's clock: set once per room, so updates don't make it jump
+      if (r.startsInMs != null) setStartsAt((at) => at ?? Date.now() + r.startsInMs!);
       const key = `${r.phase}-${r.index}`;
       if (key === lastPhase.current) return;
       lastPhase.current = key;
@@ -150,34 +184,61 @@ export default function QuizRoom() {
       if (r.phase === "intro") {
         setProgress(null);
         setCeremonyClosed(false);
+        tally.current = { combo: 0, best: 0, correct: 0, asked: 0, score: 0 };
+        setCombo(0);
         play("start");
       }
       if (r.phase === "reveal") {
         const me = r.players.find((p) => p.id === socket.id);
+        const tl = tally.current;
+        tl.asked++;
+        tl.score = me?.score ?? tl.score;
         if (me?.choice === r.answer) {
           haptic.success();
           play("correct");
+          tl.correct++;
+          tl.combo++;
+          tl.best = Math.max(tl.best, tl.combo);
+          questEvent("qz_correct", 1);
+          if (tl.combo >= 2) questEvent("combo", tl.combo);
         } else {
           haptic.error();
           play("wrong");
+          tl.combo = 0;
         }
+        setCombo(tl.combo);
       }
     };
-    const onConnect = () => setMyId(socket.id ?? "");
+    const join = () =>
+      Promise.all([loadNick(), loadPlayerId()]).then(([nick, pid]) =>
+        socket.emit("qz:join", { code, nick, pid }, (res: { ok: boolean; error?: string; room?: QzRoom }) => {
+          if (res.ok && res.room) apply(res.room);
+          else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
+        })
+      );
+    // back after a drop: the server kept the seat for a minute (or the quiz went on without us: an error, not a frozen question)
+    const onConnect = () => {
+      setMyId(socket.id ?? "");
+      join();
+    };
     const onProgress = (p: { gained: number; before: QuizProfile; after: QuizProfile }) => {
       setProgress(p);
+      // the same XP also counts towards the overall level (the server's game count keys it)
+      const tl = tally.current;
+      awardXp(`qz-${code}-${p.after.games}`, "qz", p.gained + tl.best * XP.comboStep, {
+        stats: [
+          { label: t("rwCorrect"), value: `${tl.correct}/${tl.asked}`, tone: "green" },
+          { label: t("rwBestCombo"), value: `x${tl.best}`, tone: "amber" },
+          { label: t("rwPoints"), value: String(tl.score), tone: "blue" },
+        ],
+      });
       // the level-up sting comes after the ceremony's own sounds
       if (p.after.level > p.before.level) setTimeout(() => (haptic.success(), play("levelup")), 2300);
     };
     socket.on("qz:progress", onProgress);
     socket.on("qz:update", apply);
     socket.on("connect", onConnect);
-    Promise.all([loadNick(), loadPlayerId()]).then(([nick, pid]) =>
-      socket.emit("qz:join", { code, nick, pid }, (res: { ok: boolean; error?: string; room?: QzRoom }) => {
-        if (res.ok && res.room) apply(res.room);
-        else setError(res.error === "full" ? t("roomFull") : res.error === "started" ? t("qzRoomStarted") : t("roomNotFound"));
-      })
-    );
+    join();
     return () => {
       socket.emit("qz:leave");
       socket.off("qz:progress", onProgress);
@@ -189,13 +250,7 @@ export default function QuizRoom() {
 
   const ticking = room?.phase === "question" || room?.phase === "intro" || room?.phase === "reveal";
   // clock ticks through the last five seconds of a question (until you've answered)
-  const secLeft = room?.phase === "question" ? Math.ceil(Math.max(0, deadline - now) / 1000) : 0;
-  const lastTick = useRef(0);
-  useEffect(() => {
-    if (room?.phase !== "question" || picked !== null || secLeft < 1 || secLeft > 5 || secLeft === lastTick.current) return;
-    lastTick.current = secLeft;
-    play("tick");
-  }, [secLeft, room?.phase, picked]);
+  useClockTicks(room?.phase === "question" ? Math.ceil(Math.max(0, deadline - now) / 1000) : null, picked === null);
   useEffect(() => {
     if (!ticking) return;
     const id = setInterval(() => setNow(Date.now()), 100);
@@ -208,7 +263,8 @@ export default function QuizRoom() {
   const standings = room ? [...room.players].sort((a, b) => b.score - a.score) : [];
   const maxScore = (room?.total ?? 10) * 10;
   const runners: Runner[] | undefined =
-    room && room.phase !== "done"
+    // the race along the stand starts with the questions (in the lobby everyone would sit on the edge)
+    room && (room.phase === "question" || room.phase === "reveal")
       ? room.players.map((p) => ({
           id: p.id,
           name: p.nick || "?",
@@ -224,6 +280,21 @@ export default function QuizRoom() {
       <Icon name="chevron.left" size={18} color={NIGHT.ink} fallback="‹" />
     </Pressable>
   );
+
+  // report / block the others (house players too: they carry a made-up ref), not over a live question
+  const others = (room?.players ?? []).filter((p) => p.id !== myId && p.ref);
+  const playersMenu =
+    room && room.phase !== "question" && room.phase !== "reveal" && others.length > 0 ? (
+      <Pressable
+        onPress={() => openPlayerMenu(others.map((p) => ({ ref: p.ref as string, nick: p.nick, game: "qz" })))}
+        style={[styles.leave, { top: insets.top + 6, left: undefined, right: 12 }]}
+        accessibilityRole="button"
+        accessibilityLabel={t("pmMenu")}
+        hitSlop={8}
+      >
+        <Icon name="ellipsis.circle" size={18} color={NIGHT.ink} fallback="…" />
+      </Pressable>
+    ) : null;
 
   let body: React.ReactNode = null;
 
@@ -245,10 +316,38 @@ export default function QuizRoom() {
     body = (
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24, gap: 14 }} showsVerticalScrollIndicator={false}>
         {room.random ? (
-          <Animated.View entering={FadeIn.duration(250)} style={{ alignItems: "center", gap: 6, paddingVertical: 8 }}>
-            <RunningPlayer shirt={NIGHT.kit.shirt} shorts={NIGHT.kit.shorts} />
+          <Animated.View entering={FadeIn.duration(250)} style={{ alignItems: "center", gap: 4, paddingTop: 4 }}>
             <Text style={styles.big}>{t("qzSearching")}</Text>
-            <Text style={styles.sub}>{t("qzSearchingDesc")}</Text>
+            <Text style={[styles.sub, { marginBottom: 6 }]}>{t("qzSearchingDesc")}</Text>
+            {/* the countdown ring with everyone who's in around it, like the reference game's match screen */}
+            <QueueRing
+              endsAt={startsAt}
+              totalMs={QZ_FILL_MS}
+              filled={room.players.length}
+              max={room.settings.maxPlayers}
+              color={NIGHT.accent}
+              track={NIGHT.accentSoft}
+              ink={NIGHT.ink}
+              size={Math.min(330, width - 40)}
+              seats={Array.from({ length: room.settings.maxPlayers }, (_, i) => {
+                const p = room.players[i];
+                return {
+                  key: p?.id ?? `empty-${i}`,
+                  node: p ? (
+                    <Animated.View entering={FadeIn.duration(220)} style={styles.ringSeat}>
+                      <Avatar name={p.nick || "?"} size={48} ring={p.id === myId ? NIGHT.accent : "white"} me={p.id === myId} />
+                      <Text style={[styles.seatName, styles.ringName]} numberOfLines={1}>
+                        {nameOf(p)}
+                      </Text>
+                    </Animated.View>
+                  ) : (
+                    <View style={styles.ringSeat}>
+                      <View style={styles.emptySeat} />
+                    </View>
+                  ),
+                };
+              })}
+            />
           </Animated.View>
         ) : (
           <Animated.View entering={FadeIn.duration(250)} style={[styles.card, { alignItems: "center", gap: 10 }]}>
@@ -263,12 +362,13 @@ export default function QuizRoom() {
             <WideButton title={t("shareCode")} kind="ghost" icon="square.and.arrow.up" onPress={() => Share.share({ message: `${t("qzInvite")} ${code}` })} />
           </Animated.View>
         )}
+        {!room.random && (
         <View style={styles.seats}>
           {Array.from({ length: room.settings.maxPlayers }, (_, i) => {
             const p = room.players[i];
             return p ? (
               <Animated.View key={p.id} entering={ZoomIn.duration(220)} style={styles.seat}>
-                <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} />
+                <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} me={p.id === myId} />
                 <Text style={styles.seatName} numberOfLines={1}>
                   {nameOf(p)}
                 </Text>
@@ -281,6 +381,7 @@ export default function QuizRoom() {
             );
           })}
         </View>
+        )}
         {!room.random &&
           (isHost ? (
             <>
@@ -304,7 +405,7 @@ export default function QuizRoom() {
         <View style={[styles.seats, { marginTop: 18 }]}>
           {room.players.map((p, i) => (
             <Animated.View key={p.id} entering={ZoomIn.delay(150 + i * 90).duration(220)} style={styles.seat}>
-              <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} />
+              <Avatar name={p.nick || "?"} size={46} ring={p.id === myId ? NIGHT.accent : "white"} me={p.id === myId} />
               <Text style={styles.seatName} numberOfLines={1}>
                 {nameOf(p)}
               </Text>
@@ -315,12 +416,12 @@ export default function QuizRoom() {
     );
   } else if (room?.phase === "done") {
     const place = standings.findIndex((p) => p.id === myId) + 1;
-    const placeText = place === 1 ? t("qzWinner") : locale === "tr" ? `${place}${t("qzPlace")}` : `${place}${["st", "nd", "rd"][place - 1] ?? "th"}${t("qzPlace")}`;
+    const placeText = place === 1 ? t("qzWinner") : t("qzPlace").replace("{n}", ordinal(place, locale));
     const isHost = room.hostId === myId;
     const podium = [standings[1], standings[0], standings[2]];
     body = (
       <View style={{ flex: 1 }}>
-        <Animated.View entering={SlideInDown.springify().damping(17).mass(0.9)} style={styles.podiumCard}>
+        <Animated.View entering={SlideInDown.duration(280)} style={styles.podiumCard}>
           <Text style={styles.podiumTitle}>{placeText}</Text>
           <View style={styles.podium}>
             {podium.map((p, k) =>
@@ -328,7 +429,7 @@ export default function QuizRoom() {
                 <View key={p.id} style={[styles.podiumSpot, { marginTop: k === 1 ? 0 : 26 }]}>
                   <Text style={styles.podiumRank}>{k === 1 ? 1 : k === 0 ? 2 : 3}.</Text>
                   {/* gold ring for you: the accent green would vanish on the green podium */}
-                  <Avatar name={p.nick || "?"} size={k === 1 ? 64 : 52} ring={p.id === myId ? "#FACC15" : "white"} />
+                  <Avatar name={p.nick || "?"} size={k === 1 ? 64 : 52} ring={p.id === myId ? "#FACC15" : "white"} me={p.id === myId} />
                   <Text style={styles.podiumName} numberOfLines={1}>
                     {nameOf(p)}
                   </Text>
@@ -366,7 +467,7 @@ export default function QuizRoom() {
           {params.random ? (
             <RoundButton icon="arrow.clockwise" label={t("htNewGame")} onPress={() => router.replace("/bilgi/rastgele")} />
           ) : isHost ? (
-            <RoundButton icon="arrow.clockwise" label={t("htRematch")} onPress={() => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category) })} />
+            <RoundButton icon="arrow.clockwise" label={t("htRematch")} onPress={() => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category, room.settings.difficulty ?? "normal") })} />
           ) : (
             <View style={{ alignItems: "center", width: 120 }}>
               <Text style={[styles.sub, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
@@ -420,25 +521,30 @@ export default function QuizRoom() {
             const bg = right ? RIGHT : wrong ? WRONG : chosen ? PICKED : "white";
             const onColour = NIGHT.light && (right || wrong || chosen);
             const pickers = others.filter((p) => p.choice === i);
+            const gone = !reveal && fifty?.index === room.index && fifty.remove.includes(i);
             return (
               <Animated.View key={`${room.index}-${i}`} entering={OPTION_IN(i)} exiting={OPTION_OUT(i)}>
                 <Tap
-                  disabled={reveal || picked !== null}
+                  disabled={reveal || picked !== null || gone}
                   onPress={() => {
                     setPicked(i);
-                    haptic.press();
                     getSocket().emit("qz:answer", { choice: i });
                   }}
-                  style={[styles.option, { backgroundColor: bg }, bg !== "white" && { borderColor: bg }]}
+                  style={[styles.option, { backgroundColor: bg }, bg !== "white" && { borderColor: bg }, gone && { opacity: 0.25 }]}
                   accessibilityLabel={tx(o)}
                 >
-                  <Text style={[styles.optionText, onColour && { color: "white" }]} numberOfLines={2}>
+                  <Text style={[styles.optionText, onColour && { color: "white" }, reveal && !!room.values && { paddingRight: 30 }]} numberOfLines={2}>
                     {tx(o)}
                   </Text>
+                  {reveal && room.values?.[i] && (
+                    <Animated.Text entering={FadeIn.duration(200)} style={[styles.optionValue, onColour && { color: "white" }]}>
+                      {tx(room.values[i])}
+                    </Animated.Text>
+                  )}
                 </Tap>
                 {mine === i && me && (
                   <Animated.View entering={ZoomIn.duration(180)} style={styles.myPick}>
-                    <Avatar name={me.nick || "?"} size={30} ring={NIGHT.accent} />
+                    <Avatar name={me.nick || "?"} size={30} ring={NIGHT.accent} me />
                   </Animated.View>
                 )}
                 <View style={styles.theirPicks}>
@@ -457,6 +563,25 @@ export default function QuizRoom() {
             );
           })}
         </View>
+
+        {!reveal && picked === null && (me?.fifty ?? 0) > 0 && fifty?.index !== room.index && (
+          <Animated.View entering={FadeIn.duration(200)} style={{ alignItems: "center", marginTop: 16 }}>
+            <Tap
+              onPress={() => {
+                play("power");
+                getSocket().emit("qz:joker", { kind: "fifty" }, (res?: { ok: boolean; index: number; remove: number[] }) => {
+                  if (res?.ok) setFifty({ index: res.index, remove: res.remove });
+                });
+              }}
+              style={styles.fifty}
+              accessibilityRole="button"
+              accessibilityHint={t("jkNote")}
+            >
+              <Text style={styles.fiftyText}>{t("jkFifty")}</Text>
+              <Text style={styles.fiftyCount}>×{me?.fifty}</Text>
+            </Tap>
+          </Animated.View>
+        )}
 
         {reveal && (me?.choice == null || me.choice !== room.answer) && (
           <Animated.View entering={FadeIn.delay(200).duration(200)} style={{ alignItems: "center", marginTop: 16 }}>
@@ -482,12 +607,19 @@ export default function QuizRoom() {
       </Svg>
       {/* the pitch shows once the questions start */}
       {(room?.phase === "question" || room?.phase === "reveal") && <GrassPattern />}
+      {(room?.phase === "question" || room?.phase === "reveal") && (
+        <View pointerEvents="none" style={[styles.comboSlot, { top: insets.top + HEADER - 34 }]}>
+          <ComboChip combo={combo} />
+        </View>
+      )}
+      <ComboBurst combo={combo} />
       {room?.phase !== "done" ? (
         <Animated.View exiting={FadeOutUp.duration(350)} style={StyleSheet.absoluteFill} pointerEvents="none">
           <StadiumHeader runners={runners} height={HEADER} />
         </Animated.View>
       ) : null}
       {leave}
+      {playersMenu}
       <View style={[styles.content, { paddingTop: room?.phase === "done" ? insets.top + 56 : insets.top + HEADER + 6 }]}>{body}</View>
       {room?.phase === "done" && <QuizCeremony room={room} myId={myId} progress={progress} closed={ceremonyClosed} onClose={() => setCeremonyClosed(true)} random={!!params.random} />}
     </View>
@@ -544,6 +676,9 @@ const styles = StyleSheet.create({
 
   seats: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 14 },
   seat: { width: 62, alignItems: "center", gap: 6 },
+  // a seat on the search ring: the avatar is centred on its spot, the name hangs below it
+  ringSeat: { width: 62, height: 62, alignItems: "center", justifyContent: "center" },
+  ringName: { position: "absolute", top: 58, width: 80, textAlign: "center" },
   seatName: { fontSize: 12, fontWeight: "700", color: NIGHT.ink, maxWidth: 62 },
   emptySeat: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderStyle: "dashed", borderColor: NIGHT.ink3 },
 
@@ -563,9 +698,14 @@ const styles = StyleSheet.create({
 
   option: { borderRadius: 999, borderWidth: NIGHT.light ? 1 : 0, borderColor: NIGHT.line, minHeight: 52, paddingHorizontal: 44, paddingVertical: 10, alignItems: "center", justifyContent: "center" },
   optionText: { fontSize: 16, fontWeight: "800", color: C.text, textAlign: "center" },
+  fifty: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 18, paddingVertical: 9, borderRadius: 999, backgroundColor: NIGHT.raised, borderWidth: 1, borderColor: NIGHT.line },
+  fiftyText: { fontFamily: F.display, fontSize: 18, color: NIGHT.ink },
+  fiftyCount: { fontSize: 12, fontWeight: "800", color: NIGHT.ink, opacity: 0.6 },
+  optionValue: { position: "absolute", right: 14, fontFamily: F.black, fontSize: 17, color: C.text2 },
   myPick: { position: "absolute", left: -6, top: -8 },
   theirPicks: { position: "absolute", right: -6, top: -8, flexDirection: "row" },
   pointsUp: { position: "absolute", right: 34, top: -26 },
+  comboSlot: { position: "absolute", right: 16, zIndex: 5 },
   pointsUpText: { fontFamily: F.black, fontSize: 30, color: NIGHT.gold, textShadowColor: NIGHT.light ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.35)", textShadowRadius: 4 },
   verdict: { fontFamily: F.black, fontSize: 26 },
 
@@ -613,7 +753,7 @@ function QuizCeremony({
   const place = standings.findIndex((p) => p.id === myId) + 1;
   const me = standings[place - 1];
   const won = place === 1;
-  const placeTitle = won ? t("vcWon") : locale === "tr" ? `${place}. OLDUN` : `${place}${["ST", "ND", "RD"][place - 1] ?? "TH"} PLACE`;
+  const placeTitle = won ? t("vcWon") : t("qzPlace").replace("{n}", ordinal(place, locale)).toUpperCase();
   const levelled = !!progress && progress.after.level > progress.before.level;
   const isHost = room.hostId === myId;
 
@@ -635,7 +775,7 @@ function QuizCeremony({
         random
           ? { title: t("htNewGame"), icon: "play.fill", onPress: () => router.replace("/bilgi/rastgele") }
           : isHost
-            ? { title: t("htRematch"), icon: "arrow.clockwise", onPress: () => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category) }) }
+            ? { title: t("htRematch"), icon: "arrow.clockwise", onPress: () => getSocket().emit("qz:rematch", { questions: quizQuestions(room.total, room.settings.category, room.settings.difficulty ?? "normal") }) }
             : { title: t("vcContinue"), onPress: onClose }
       }
       secondary={random || isHost ? { title: t("vcSeeTable"), onPress: onClose } : undefined}

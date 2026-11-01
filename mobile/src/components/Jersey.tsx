@@ -11,6 +11,14 @@ import { Text } from "./Text";
  * silhouette tinted with the body colour, a sleeve mask tinted with the sleeve
  * colour, and neutral grey folds multiplied on top. The number is text.
  */
+/** light enough that white trim would vanish on it */
+function isLight(hex: string) {
+  const h = hex.replace("#", "");
+  if (h.length < 6) return false;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+  return 0.299 * r + 0.587 * g + 0.114 * b > 170;
+}
+
 export function Jersey({
   body,
   sleeves,
@@ -22,6 +30,7 @@ export function Jersey({
   faded,
   hideNumber,
   pattern,
+  trim,
   size = 54,
 }: {
   body: string;
@@ -35,6 +44,8 @@ export function Jersey({
   hideNumber?: boolean;
   /** Torso pattern over the body colour: `bands` alternating stripes (body colour first) */
   pattern?: { color: string; bands: number; horizontal?: boolean };
+  /** collar and cuffs; by default the stripe colour, else white on a dark shirt and near-black on a light one */
+  trim?: string;
   size?: number;
 }) {
   const layers = BRAND.jersey[variant];
@@ -53,9 +64,12 @@ export function Jersey({
         </MaskedView>
       )}
       <Image source={layers.sleeves} style={[StyleSheet.absoluteFill, fill, { tintColor: sleeves }]} />
+      <Image source={layers.trim} style={[StyleSheet.absoluteFill, fill, { tintColor: trim ?? pattern?.color ?? (isLight(body) ? "#1F2937" : "#FFFFFF") }]} />
       <View style={[StyleSheet.absoluteFill, { mixBlendMode: "multiply" }]}>
         <Image source={layers.shade} style={fill} />
       </View>
+      {/* the sheen of the cloth */}
+      <Image source={layers.gloss} style={[StyleSheet.absoluteFill, fill, { opacity: 0.55 }]} />
       {!hideNumber && <View style={[StyleSheet.absoluteFill, styles.numberWrap]}>
         <Text
           allowFontScaling={false}

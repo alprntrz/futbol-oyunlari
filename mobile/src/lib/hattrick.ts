@@ -1,4 +1,4 @@
-import { ALL_CRITERIA, type Grid } from "@/lib/tiki";
+import { criterionById, type Grid } from "@/lib/tiki";
 
 /** Hat-trick (3×3 criteria grid) rules shared by the same-phone and online modes. */
 export type Mark = "X" | "O";
@@ -14,7 +14,9 @@ export const TURN_SECONDS = 45;
 export const SERIES_TARGET = 3;
 export type Series = Record<Mark, number>;
 /** pause on the result before the next game of a series deals in */
-export const NEXT_GAME_MS = 1800;
+export const NEXT_GAME_MS = 2000;
+/** comeback bonus: the loser of the last game gets this many extra seconds per turn (server.js HT_COMEBACK_MS) */
+export const COMEBACK_SECONDS = 10;
 
 export const LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -45,6 +47,6 @@ export function resultOf(board: (HtCell | null)[]): Winner {
 export const gridToIds = (g: Grid) => ({ rows: g.rows.map((c) => c.id), cols: g.cols.map((c) => c.id) });
 
 export function gridFromIds(ids: { rows: string[]; cols: string[] }): Grid {
-  const by = (id: string) => ALL_CRITERIA.find((c) => c.id === id)!;
+  const by = (id: string) => criterionById(id)!;
   return { rows: ids.rows.map(by), cols: ids.cols.map(by) };
 }

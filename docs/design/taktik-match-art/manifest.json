@@ -1,0 +1,65 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "file": "screen-live.png",
+      "width": 1320,
+      "height": 2868,
+      "mode": "RGB",
+      "generated_size": [
+        851,
+        1847
+      ]
+    },
+    {
+      "file": "pitch-full.png",
+      "width": 1320,
+      "height": 2000,
+      "mode": "RGB",
+      "generated_size": [
+        1020,
+        1542
+      ]
+    },
+    {
+      "file": "ball-top.png",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "generated_size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "file": "screen-opening.png",
+      "width": 1320,
+      "height": 2868,
+      "mode": "RGB",
+      "generated_size": [
+        851,
+        1848
+      ]
+    },
+    {
+      "file": "screen-goal.png",
+      "width": 1320,
+      "height": 2868,
+      "mode": "RGB",
+      "generated_size": [
+        851,
+        1847
+      ]
+    },
+    {
+      "file": "screen-result.png",
+      "width": 1320,
+      "height": 2868,
+      "mode": "RGB",
+      "generated_size": [
+        851,
+        1847
+      ]
+    }
+  ]
+}

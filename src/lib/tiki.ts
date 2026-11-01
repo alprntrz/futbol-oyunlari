@@ -1,9 +1,14 @@
 import { PLAYERS, type GridPlayer } from "@/data/players";
+import { BORN } from "@/data/born";
+import { HONOURS, type HonourId } from "@/data/honours";
+import { ARAB_LINKS, ARAB_PLAYERS } from "@/data/players-arab";
+import { COACHES } from "@/data/coaches";
+import { TEAMMATES } from "@/data/teammates";
 import { normalizeAnswer } from "./wordle";
 
 /** A row/column criterion. `test` decides whether a player satisfies it. */
 export interface Criterion {
-  kind: "club" | "country" | "badge";
+  kind: "club" | "country" | "badge" | "mate" | "coach";
   id: string;
   tr: string;
   en: string;
@@ -107,6 +112,170 @@ export const ALL_CRITERIA: Criterion[] = [
   ...BADGES.map((b) => ({ kind: "badge" as const, id: b.id, tr: b.tr, en: b.en, icon: b.icon, test: (p: GridPlayer) => !!p.badges?.includes(b.id) })),
 ];
 
+/**
+ * Saudi and Egyptian clubs, and those two countries: only in their own league grids
+ * (leagues.ts "sa" / "eg"), never in ALL_CRITERIA, so seeded daily grids and the
+ * other games stay as they were. Ids start "arab-": the server deals such grids only
+ * to apps that know them (caps "arab"). Players: src/data/players-arab.ts.
+ */
+const ARAB_CLUBS: { id: string; tr: string; en: string; short: string; c1: string; c2: string }[] = [
+  { id: "arab-hilal", tr: "Al-Hilal", en: "Al-Hilal", short: "HIL", c1: "#0055a5", c2: "#ffffff" },
+  { id: "arab-nassr", tr: "Al-Nassr", en: "Al-Nassr", short: "NAS", c1: "#ffd200", c2: "#1c2c5b" },
+  { id: "arab-ittihad", tr: "Al-Ittihad", en: "Al-Ittihad", short: "ITT", c1: "#ffd100", c2: "#000000" },
+  { id: "arab-ahlisa", tr: "Al-Ahli", en: "Al-Ahli", short: "AHL", c1: "#00843d", c2: "#ffffff" },
+  { id: "arab-ahly", tr: "Al Ahly", en: "Al Ahly", short: "AHY", c1: "#c8102e", c2: "#ffffff" },
+  { id: "arab-zamalek", tr: "Zamalek", en: "Zamalek", short: "ZAM", c1: "#ffffff", c2: "#c8102e" },
+  { id: "arab-pyramids", tr: "Pyramids", en: "Pyramids", short: "PYR", c1: "#0a2240", c2: "#5dade2" },
+];
+export const ARAB_CRITERIA: Criterion[] = [
+  ...ARAB_CLUBS.map((c) => ({ kind: "club" as const, ...c, test: (p: GridPlayer) => p.clubs.includes(c.id) })),
+  { kind: "country", id: "arab-saudiarabia", tr: "Suudi Arabistan", en: "Saudi Arabia", icon: "🇸🇦", test: (p: GridPlayer) => p.country === "saudiarabia" },
+  { kind: "country", id: "arab-egypt", tr: "Mısır", en: "Egypt", icon: "🇪🇬", test: (p: GridPlayer) => p.country === "egypt" },
+];
+
+/**
+ * Tic-Tac-Toe answers: PLAYERS with their Saudi / Egyptian clubs added, plus the players who
+ * only played there. For the classic criteria nothing changes (the extra players have none
+ * of those clubs or honours), so every seeded grid stays solvable exactly as before.
+ */
+export const GRID_PLAYERS: GridPlayer[] = [...PLAYERS.map((p) => (ARAB_LINKS[p.name] ? { ...p, clubs: [...p.clubs, ...ARAB_LINKS[p.name]] } : p)), ...ARAB_PLAYERS];
+
+/**
+ * Honours with counts and birth decades ("2+ Champions League titles", "World Cup top scorer", "Born in the 1990s"…): src/data/honours.ts
+ * (scripts/tiki-scrape-honours.mjs → tiki-build-honours.mjs) and
+ * src/data/born.ts. Not in ALL_CRITERIA (seeded daily grids stay as they were); `withHonour`
+ * swaps one into a dealt grid. Ids "hon-…": the server deals them only to apps with caps "hon".
+ */
+const HONOUR_LOOK: Record<HonourId, { tr: string; en: string; icon: string; league?: string }> = {
+  ucl2: { tr: "2+ Şampiyonlar Ligi", en: "2+ Champions League titles", icon: "⭐" },
+  uclTop: { tr: "ŞL gol kralı", en: "Champions League top scorer", icon: "👟" },
+  wcTop: { tr: "Dünya Kupası gol kralı", en: "World Cup top scorer", icon: "👟" },
+  euroTop: { tr: "Avrupa Şampiyonası gol kralı", en: "Euros top scorer", icon: "👟" },
+  en3: { tr: "3+ Premier Lig şampiyonluğu", en: "3+ Premier League titles", icon: "🏅", league: "en" },
+  es3: { tr: "3+ La Liga şampiyonluğu", en: "3+ La Liga titles", icon: "🏅", league: "es" },
+  it3: { tr: "3+ Serie A şampiyonluğu", en: "3+ Serie A titles", icon: "🏅", league: "it" },
+  de3: { tr: "3+ Bundesliga şampiyonluğu", en: "3+ Bundesliga titles", icon: "🏅", league: "de" },
+  fr3: { tr: "3+ Ligue 1 şampiyonluğu", en: "3+ Ligue 1 titles", icon: "🏅" },
+  pt3: { tr: "3+ Portekiz ligi şampiyonluğu", en: "3+ Portuguese league titles", icon: "🏅", league: "pt" },
+  tr3: { tr: "3+ Süper Lig şampiyonluğu", en: "3+ Süper Lig titles", icon: "🏅", league: "tr" },
+};
+const DAY0 = Date.UTC(1900, 0, 1);
+/** birth year by player name (PLAYERS order in born.ts) */
+const BORN_YEAR = new Map<string, number>();
+PLAYERS.forEach((p, i) => {
+  const code = BORN.slice(i * 3, i * 3 + 3);
+  if (code && code !== "000") BORN_YEAR.set(p.name, new Date(DAY0 + parseInt(code, 36) * 86400000).getUTCFullYear());
+});
+const DECADES = [1970, 1980, 1990, 2000];
+export const HONOUR_CRITERIA: Criterion[] = [
+  ...(Object.keys(HONOUR_LOOK) as HonourId[])
+    .filter((k) => (HONOURS[k]?.length ?? 0) >= 6)
+    .map((k) => {
+      const names = new Set(HONOURS[k]);
+      const look = HONOUR_LOOK[k];
+      return { kind: "badge" as const, id: `hon-${k}`, tr: look.tr, en: look.en, icon: look.icon, test: (p: GridPlayer) => names.has(p.name) };
+    }),
+  ...DECADES.map((d) => ({
+    kind: "badge" as const,
+    id: `hon-born${d}`,
+    tr: d === 2000 ? "2000'lerde doğdu" : `${String(d).slice(2)}'lerde doğdu`,
+    en: `Born in the ${d === 2000 ? "2000" : String(d).slice(2)}s`,
+    icon: "🎂",
+    test: (p: GridPlayer) => {
+      const y = BORN_YEAR.get(p.name);
+      return y !== undefined && y >= d && y < d + 10;
+    },
+  })),
+];
+/** the league a title criterion belongs to (its league grids prefer it) */
+const HONOUR_LEAGUE = new Map(Object.entries(HONOUR_LOOK).map(([k, v]) => [`hon-${k}`, v.league]));
+
+/**
+ * Swap one country / honour line of a dealt grid for an honour or birth-decade criterion
+ * (`chance` of the time), keeping every square answerable. Club lines stay. A league grid
+ * (`league`) prefers that league's title criterion.
+ */
+export function withHonour(grid: Grid, rand: () => number = Math.random, chance = 0.5, league?: string, allow?: (c: Criterion) => boolean): Grid {
+  if (!HONOUR_CRITERIA.length || rand() >= chance) return grid;
+  if ([...grid.rows, ...grid.cols].some((c) => c.id.startsWith("hon-"))) return grid;
+  // league titles only in their own league's grid (or the all-clubs grid); the rest anywhere
+  const pool = HONOUR_CRITERIA.filter((c) => {
+    if (allow && !allow(c)) return false;
+    const lg = HONOUR_LEAGUE.get(c.id);
+    return !lg || !league || league === "all" || lg === league;
+  });
+  const own = pool.filter((c) => !!league && HONOUR_LEAGUE.get(c.id) === league);
+  // the league's own titles first, then the other honours, birth decades last (a third of the time first)
+  const born = (c: Criterion) => c.id.startsWith("hon-born");
+  const rest = shuffle(pool.filter((c) => !own.includes(c)), rand);
+  const order = [...shuffle(own, rand), ...(rand() < 0.33 ? [...rest.filter(born), ...rest.filter((c) => !born(c))] : [...rest.filter((c) => !born(c)), ...rest.filter(born)])];
+  const lines = shuffle(["r0", "r1", "r2", "c0", "c1", "c2"], rand);
+  for (const hon of order.slice(0, 16)) {
+    for (const line of lines) {
+      const i = Number(line[1]);
+      const kept = line[0] === "r" ? grid.rows : grid.cols;
+      const cross = line[0] === "r" ? grid.cols : grid.rows;
+      if (kept[i].kind === "club") continue;
+      if (!cross.every((c) => cellSolvable(hon, c))) continue;
+      const next = kept.map((c, k) => (k === i ? hon : c));
+      return line[0] === "r" ? { rows: next, cols: grid.cols } : { rows: grid.rows, cols: next };
+    }
+  }
+  return grid;
+}
+
+/**
+ * "Played with X": club teammates of a star (src/data/teammates.ts). Not in
+ * ALL_CRITERIA, so seeded grids (daily) and other games stay as they were;
+ * `withLink` swaps one into a dealt grid. Ids are "mate-…".
+ */
+export const MATE_CRITERIA: Criterion[] = TEAMMATES.map((m) => {
+  const mates = new Set(m.mates);
+  return { kind: "mate" as const, id: `mate-${m.id}`, tr: `${m.name} ile oynadı`, en: `Played with ${m.name}`, short: m.name, test: (p: GridPlayer) => mates.has(p.name) };
+});
+
+/** "Managed by X": players a famous coach had at a criteria club (src/data/coaches.ts). Ids are "coach-…". */
+export const COACH_CRITERIA: Criterion[] = COACHES.map((m) => {
+  const players = new Set(m.players);
+  return { kind: "coach" as const, id: `coach-${m.id}`, tr: `Hocası ${m.name}`, en: `Managed by ${m.name}`, short: m.name, test: (p: GridPlayer) => players.has(p.name) };
+});
+
+/** The "people" criteria (played with / managed by) that `withLink` can deal in, with where they belong. */
+const LINKS: { c: Criterion; global: boolean; clubs: string[] }[] = [
+  ...TEAMMATES.map((m, i) => ({ c: MATE_CRITERIA[i], global: m.global, clubs: m.clubs })),
+  ...COACHES.map((m, i) => ({ c: COACH_CRITERIA[i], global: m.global, clubs: m.clubs })),
+];
+const LINK_CRITERIA = LINKS.map((l) => l.c);
+const isLink = (c: Criterion) => c.kind === "mate" || c.kind === "coach";
+
+const BY_ID = new Map([...ALL_CRITERIA, ...ARAB_CRITERIA, ...HONOUR_CRITERIA, ...LINK_CRITERIA].map((c) => [c.id, c]));
+/** Any criterion by id, "played with" ones included (online grids travel as ids). */
+export const criterionById = (id: string): Criterion | undefined => BY_ID.get(id);
+
+/**
+ * Maybe (`chance`) swap one row or column of a grid for a "played with" star or a
+ * "managed by" coach, keeping every square solvable. At most one such line per
+ * grid. `leagueClubs`: a league grid gets the names who were at that league's
+ * clubs (local ones too); without it only world-class names are dealt.
+ */
+export function withLink(grid: Grid, rand: () => number = Math.random, chance = 0.5, leagueClubs?: string[], allow?: (c: Criterion) => boolean): Grid {
+  if (!LINKS.length || rand() >= chance) return grid;
+  if ([...grid.rows, ...grid.cols].some(isLink)) return grid;
+  const pool = LINKS.filter((l) => (leagueClubs?.length ? l.clubs.some((c) => leagueClubs.includes(c)) : l.global) && (!allow || allow(l.c))).map((l) => l.c);
+  const lines = shuffle(["r0", "r1", "r2", "c0", "c1", "c2"], rand);
+  for (const link of shuffle(pool, rand).slice(0, 12)) {
+    for (const line of lines) {
+      const i = Number(line[1]);
+      const cross = line[0] === "r" ? grid.cols : grid.rows;
+      const kept = line[0] === "r" ? grid.rows : grid.cols;
+      if (!cross.every((c) => cellSolvable(link, c))) continue;
+      const next = kept.map((c, k) => (k === i ? link : c));
+      return line[0] === "r" ? { rows: next, cols: grid.cols } : { rows: grid.rows, cols: next };
+    }
+  }
+  return grid;
+}
+
 /** All normalized answer forms accepted for a player (full name + surname + aliases). */
 function acceptedForms(p: GridPlayer): Set<string> {
   const forms = new Set<string>();
@@ -123,18 +292,18 @@ function acceptedForms(p: GridPlayer): Set<string> {
   }
   return forms;
 }
-const FORMS = new Map<GridPlayer, Set<string>>(PLAYERS.map((p) => [p, acceptedForms(p)]));
+const FORMS = new Map<GridPlayer, Set<string>>(GRID_PLAYERS.map((p) => [p, acceptedForms(p)]));
 
 /** Players whose accepted answer forms include the (normalized) guess. */
 export function matchPlayers(guess: string): GridPlayer[] {
   const g = normalizeAnswer(guess);
   if (!g) return [];
-  return PLAYERS.filter((p) => FORMS.get(p)!.has(g));
+  return GRID_PLAYERS.filter((p) => FORMS.get(p)!.has(g));
 }
 
 /** Normalized haystack (name + aliases, letters only) for substring search. */
 const HAYSTACK = new Map<GridPlayer, string>(
-  PLAYERS.map((p) => [p, [p.name, ...(p.aliases ?? [])].map(normalizeAnswer).join("|")])
+  GRID_PLAYERS.map((p) => [p, [p.name, ...(p.aliases ?? [])].map(normalizeAnswer).join("|")])
 );
 
 /**
@@ -146,7 +315,7 @@ export function searchPlayers(query: string, limit = 8): GridPlayer[] {
   if (q.length < 2) return [];
   const starts: GridPlayer[] = [];
   const contains: GridPlayer[] = [];
-  for (const p of PLAYERS) {
+  for (const p of GRID_PLAYERS) {
     const h = HAYSTACK.get(p)!;
     if (h.split("|").some((s) => s.startsWith(q))) starts.push(p);
     else if (h.includes(q)) contains.push(p);
@@ -156,7 +325,7 @@ export function searchPlayers(query: string, limit = 8): GridPlayer[] {
 
 /** Does any DB player satisfy both criteria? (for solvability checks) */
 export function cellSolvable(a: Criterion, b: Criterion): boolean {
-  return PLAYERS.some((p) => a.test(p) && b.test(p));
+  return GRID_PLAYERS.some((p) => a.test(p) && b.test(p));
 }
 
 /**
@@ -179,9 +348,14 @@ function shuffle<T>(a: T[], rand: () => number = Math.random): T[] { const r = [
  * criteria total, and no country×country cells (a player has one nationality).
  */
 /** `rand` lets callers seed the grid (e.g. one shared daily grid). */
-export function generateGrid(rand: () => number = Math.random): Grid {
+export function generateGrid(rand: () => number = Math.random, opts: { clubPairs?: boolean; allow?: (c: Criterion) => boolean } = {}): Grid {
+  // dealt grids: most of the time at least one club × club square (seeded daily grids keep the old rule)
+  const wantPair = !!opts.clubPairs && rand() < 0.7;
+  // the player's categories (clubs always): a clubs-only board can't mix kinds
+  const pool = opts.allow ? ALL_CRITERIA.filter((c) => c.kind === "club" || opts.allow!(c)) : ALL_CRITERIA;
+  const oneKind = new Set(pool.map((c) => c.kind)).size < 2;
   for (let attempt = 0; attempt < 400; attempt++) {
-    const shuffled = shuffle(ALL_CRITERIA, rand);
+    const shuffled = shuffle(pool, rand);
     const rows = shuffled.slice(0, 3);
     const cands = shuffled
       .slice(3)
@@ -191,12 +365,30 @@ export function generateGrid(rand: () => number = Math.random): Grid {
     if ([...rows, ...cols].filter((x) => x.kind === "badge").length > 2) continue;
     // avoid the whole board being one kind (nicer variety)
     const kinds = new Set([...rows, ...cols].map((x) => x.kind));
-    if (kinds.size < 2) continue;
+    if (kinds.size < 2 && !oneKind) continue;
+    if (wantPair && attempt < 300 && !(rows.some((c) => c.kind === "club") && cols.some((c) => c.kind === "club"))) continue;
     return { rows, cols };
   }
   const by = (id: string) => ALL_CRITERIA.find((c) => c.id === id)!;
   return { rows: [by("realmadrid"), by("barcelona"), by("brazil")], cols: [by("milan"), by("inter"), by("chelsea")] };
 }
+
+/**
+ * Grid categories a player can switch off (Tic-Tac-Toe hub → Categories); clubs always stay.
+ * trophies = World Cup / UCL / Ballon d'Or / Euros and the honour counts, top scorers;
+ * wildcard = birth decades; teammates = "played with"; managers = "managed by".
+ */
+export type GridCategory = "countries" | "trophies" | "teammates" | "managers" | "wildcard";
+export const GRID_CATEGORIES: GridCategory[] = ["countries", "trophies", "teammates", "managers", "wildcard"];
+export function categoryOf(c: Criterion): GridCategory | "clubs" {
+  if (c.kind === "club") return "clubs";
+  if (c.kind === "country") return "countries";
+  if (c.kind === "mate") return "teammates";
+  if (c.kind === "coach") return "managers";
+  return c.id.startsWith("hon-born") ? "wildcard" : "trophies";
+}
+/** a criterion filter for the categories switched on (undefined: all on) */
+export const allowOf = (on: GridCategory[]) => (on.length >= GRID_CATEGORIES.length ? undefined : (c: Criterion) => { const k = categoryOf(c); return k === "clubs" || on.includes(k); });
 
 /** Small deterministic PRNG (mulberry32) for seeded grids. */
 export function seededRandom(seed: number): () => number {

@@ -11,34 +11,71 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
+import { AppErrorScreen, UpdateRequired } from "~/components/AppError";
+import { EloToast } from "~/components/EloToast";
+import { InviteBanner } from "~/components/InviteBanner";
+import { PlayerMenuHost } from "~/components/PlayerMenu";
+import { useUpdateRequired } from "~/lib/appHealth";
+import { RatingAsk } from "~/lib/rating";
+import { RemindersSync } from "~/lib/reminders";
+import { RoomLinkWatch } from "~/lib/roomLink";
+import { initSentry, wrapRoot } from "~/lib/sentry";
+import { RewardScreen } from "~/components/RewardScreen";
+import { CapSheetHost } from "~/components/Rewarded";
+import { XpToast } from "~/components/XpToast";
+import { AdsHost } from "~/lib/ads";
+import { initAccount } from "~/lib/account";
+import { AnalyticsScreens, initAnalytics } from "~/lib/analytics";
+import { PushSync } from "~/lib/push";
+import "~/lib/playStreak"; // counts finished games from app start
 import { ONBOARDING } from "~/lib/features";
 import { I18nProvider } from "~/lib/i18n";
 import { initSounds } from "~/lib/sound";
+import { loadXp } from "~/lib/xp";
 import { C, F } from "~/lib/theme";
 
+initSentry();
 SplashScreen.preventAutoHideAsync();
 
+// a screen that throws shows a friendly page (and sends an anonymous report) instead of a white screen
+export const ErrorBoundary = AppErrorScreen;
+
 /** Tabs live in (tabs); every game screen is pushed full-screen on top. */
-export default function RootLayout() {
+export default wrapRoot(RootLayout);
+
+function RootLayout() {
   const [loaded] = useFonts({
     BarlowCondensed_600SemiBold,
     BarlowCondensed_800ExtraBold,
     BarlowCondensed_800ExtraBold_Italic,
     BarlowCondensed_900Black,
   });
+  const updateFrom = useUpdateRequired();
 
   useEffect(() => {
     if (!loaded) return;
     SplashScreen.hideAsync();
     initSounds();
-    // Onboarding (app/onboarding.tsx) is held back for v2 (lib/features.ts)
+    // anonymous usage events, unless turned off in Settings (lib/analytics.ts)
+    initAnalytics();
+    // restore the account session (if any), sync XP, pay the daily sign-in bonus
+    initAccount();
+    // Onboarding (app/onboarding.tsx): new installs only (no XP yet), so players updating from 1.0 never see it
     if (ONBOARDING)
-      AsyncStorage.getItem("onboarded-v1").then((done) => {
-        if (!done) router.push("/onboarding");
+      Promise.all([AsyncStorage.getItem("onboarded-v1"), loadXp()]).then(([done, xp]) => {
+        if (!done && xp.xp === 0) router.push("/onboarding");
       });
   }, [loaded]);
 
   if (!loaded) return null;
+
+  if (updateFrom !== null)
+    return (
+      <I18nProvider>
+        <StatusBar style="dark" />
+        <UpdateRequired store={updateFrom} />
+      </I18nProvider>
+    );
 
   return (
     <I18nProvider>
@@ -55,7 +92,21 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false, presentation: "fullScreenModal", animation: "fade" }} />
+        <Stack.Screen name="oyna" options={{ headerShown: false, presentation: "fullScreenModal", animation: "slide_from_bottom" }} />
+        <Stack.Screen name="plus" options={{ presentation: "modal" }} />
       </Stack>
+      <AdsHost />
+      <CapSheetHost />
+      <RewardScreen />
+      <XpToast />
+      <EloToast />
+      <InviteBanner />
+      <RemindersSync />
+      <PushSync />
+      <AnalyticsScreens />
+      <RoomLinkWatch />
+      <RatingAsk />
+      <PlayerMenuHost />
     </I18nProvider>
   );
 }

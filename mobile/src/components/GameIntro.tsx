@@ -10,15 +10,15 @@ import { MissingXISteps } from "./HowTo";
 import { Text } from "./Text";
 import { Button, Card, SectionLabel, Segmented } from "./ui";
 
-/** Pre-game screen: what this mode is, how to play, difficulty, Start. */
-export function GameIntro({ title, subtitle, onStart }: { title: string; subtitle: string; onStart: (d: Difficulty) => void }) {
+/** Pre-game screen: what this mode is, how to play, difficulty, Start (the title is in the header). */
+export function GameIntro({ subtitle, onStart }: { subtitle: string; onStart: (d: Difficulty) => void }) {
   const { t } = useI18n();
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
 
   return (
     <View style={{ width: "100%" }}>
-      <Text style={T.title}>{title}</Text>
-      <Text style={[T.body, { marginTop: 4 }]}>{subtitle}</Text>
+      {/* the screen's header already carries the title */}
+      <Text style={T.body}>{subtitle}</Text>
 
       <SectionLabel>{t("howToPlay")}</SectionLabel>
       <Card style={{ padding: 20 }}>

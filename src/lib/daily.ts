@@ -18,9 +18,23 @@ function scramble(n: number): number {
 }
 
 export function dailyMatch(date = new Date()): { match: Match; day: number } {
-  const day = dayNumber(date);
+  return dailyMatchFor(dayNumber(date));
+}
+
+/** The daily match of a given day number (the archive opens past days). */
+export function dailyMatchFor(day: number): { match: Match; day: number } {
   const match = MATCHES[scramble(day) % MATCHES.length];
   return { match, day };
+}
+
+/** The local calendar date (midnight) whose `dayNumber` is `day`; the inverse of dayNumber. */
+export function dateOfDay(day: number): Date {
+  const guess = new Date(day * 86_400_000 + 12 * 3_600_000);
+  const d = new Date(guess.getFullYear(), guess.getMonth(), guess.getDate());
+  // dayNumber floors local midnight in UTC terms, so a time zone east of UTC lands a day early
+  while (dayNumber(d) < day) d.setDate(d.getDate() + 1);
+  while (dayNumber(d) > day) d.setDate(d.getDate() - 1);
+  return d;
 }
 
 export function randomMatch(excludeId?: string, pool: Match[] = MATCHES): Match {

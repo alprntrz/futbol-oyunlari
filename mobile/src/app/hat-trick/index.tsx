@@ -1,87 +1,78 @@
-import { Stack } from "expo-router";
+import { router } from "expo-router";
+import { useState } from "react";
 
-import { LEAGUES, type LeagueId } from "@/lib/leagues";
+import { PLAYERS_SEASON, PLAYERS_UPDATED } from "@/data/players";
+import { LEAGUES, leagueById, type LeagueId } from "@/lib/leagues";
+import { GRID_CATEGORIES } from "@/lib/tiki";
 
-import { HelpButton } from "~/components/HelpButton";
-import { LeaguePicker } from "~/components/LeaguePicker";
+import { ChoiceSheet, GameHub, HubSetting, ToggleSheet } from "~/components/GameHub";
 import { TikiSteps } from "~/components/HowTo";
-import { ModeGrid, type Mode } from "~/components/ModeGrid";
+import { LeagueBadge } from "~/components/LeaguePicker";
 import { Text } from "~/components/Text";
-import { Card, Page, SectionLabel } from "~/components/ui";
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
-import { useHtLeague } from "~/lib/league";
-import { C, T } from "~/lib/theme";
+import { useHtCategories, useHtLeague } from "~/lib/league";
+import { useArchiveOpen } from "~/lib/plus";
+import { GAME, T } from "~/lib/theme";
 
-/** Hat-trick hub: four ways to play. */
+/** Tic-Tac-Toe: one big Find opponent; friend / same phone / solo below; the league is a setting. */
 export default function HatTrickHome() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [league, setLeague] = useHtLeague();
-  const modes: Mode[] = [
-    {
-      icon: "person.2.fill",
-      fallback: "👥",
-      title: t("htFriend"),
-      desc: t("htFriendDesc"),
-      href: "/hat-trick/oda",
-      image: BRAND.mode.friend,
-      color: C.greenMid,
-      soft: C.greenSoft,
-    },
-    {
-      icon: "antenna.radiowaves.left.and.right",
-      fallback: "📡",
-      title: t("htRandom"),
-      desc: t("htRandomDesc"),
-      href: "/hat-trick/rastgele",
-      image: BRAND.mode.random,
-      color: C.blue,
-      soft: C.blueSoft,
-    },
-    {
-      icon: "iphone",
-      fallback: "📱",
-      title: t("htSame"),
-      desc: t("htSameDesc"),
-      href: "/hat-trick/yerel",
-      image: BRAND.mode.same,
-      color: C.coral,
-      soft: C.coralSoft,
-    },
-    {
-      icon: "person.fill",
-      fallback: "👤",
-      title: t("htSolo"),
-      desc: t("htSoloDesc"),
-      href: "/hat-trick/tek",
-      image: BRAND.mode.solo,
-      color: "#B7791F",
-      soft: C.amberSoft,
-    },
-  ];
+  const [picking, setPicking] = useState(false);
+  const [cats, setCats] = useHtCategories();
+  const [pickingCats, setPickingCats] = useState(false);
+  const archive = useArchiveOpen();
+  const catsLabel = cats.length >= GRID_CATEGORIES.length ? t("htCategoriesAll") : `${cats.length + 1}/${GRID_CATEGORIES.length + 1}`;
+  const name = (l: (typeof LEAGUES)[number]) => (locale === "tr" ? l.name.tr : l.name.en);
 
   return (
-    <Page>
-      <Stack.Screen
-        options={{
-          title: t("tikiTakaName"),
-          headerRight: () => <HelpButton game="tiki" />,
-        }}
+    <GameHub
+      title={t("tikiTakaName")}
+      image={BRAND.icon.tiki}
+      bg={GAME.ht.bg}
+      tagline={t("tikiTakaTagline")}
+      primary={{ label: t("playFind"), icon: "play.fill", fallback: "▶", onPress: () => router.push("/hat-trick/rastgele") }}
+      secondary={[
+        { label: t("htFriend"), icon: "person.2.fill", fallback: "👥", onPress: () => router.push("/hat-trick/oda") },
+        { label: t("htSame"), icon: "iphone", fallback: "📱", onPress: () => router.push("/hat-trick/yerel") },
+        { label: t("htSolo"), icon: "person.fill", fallback: "👤", onPress: () => router.push("/hat-trick/tek") },
+        ...(archive ? [{ label: t("archiveTitle"), icon: "archivebox.fill" as const, fallback: "🗄", onPress: () => router.push("/arsiv") }] : []),
+      ]}
+      settings={
+        <>
+          <HubSetting label={t("htLeague")} value={name(leagueById(league))} onPress={() => setPicking(true)} />
+          <HubSetting label={t("htCategories")} value={catsLabel} onPress={() => setPickingCats(true)} />
+        </>
+      }
+      rules={<TikiSteps />}
+    >
+      <ChoiceSheet
+        visible={picking}
+        title={t("htLeague")}
+        value={league}
+        options={LEAGUES.map((l) => ({ value: l.id, label: name(l), left: <LeagueBadge item={l} size={30} /> }))}
+        onPick={(id) => setLeague(id as LeagueId)}
+        onClose={() => setPicking(false)}
       />
-      <Text style={T.title}>{t("tikiTakaName")}</Text>
-      <Text style={[T.body, { marginTop: 4 }]}>{t("tikiTakaTagline")}</Text>
-
-      {/* the league applies to every mode below (the daily single-player grid stays all clubs) */}
-      <SectionLabel>{t("htLeague")}</SectionLabel>
-      <LeaguePicker items={LEAGUES} value={league} onChange={(id) => setLeague(id as LeagueId)} />
-
-      <SectionLabel>{t("htModes")}</SectionLabel>
-      <ModeGrid modes={modes} />
-
-      <SectionLabel>{t("howToPlay")}</SectionLabel>
-      <Card style={{ padding: 20 }}>
-        <TikiSteps />
-      </Card>
-    </Page>
+      <ToggleSheet
+        visible={pickingCats}
+        title={t("htCategories")}
+        hint={t("htCategoriesHint")}
+        value={cats}
+        options={[
+          { value: "clubs" as const, label: t("htCat_clubs"), hint: t("htCatD_clubs"), locked: true },
+          ...GRID_CATEGORIES.map((c) => ({ value: c, label: t(`htCat_${c}`), hint: t(`htCatD_${c}`) })),
+        ]}
+        onChange={(v) => setCats(v.filter((c): c is (typeof GRID_CATEGORIES)[number] => c !== "clubs"))}
+        onClose={() => setPickingCats(false)}
+      />
+      {/* when the squads were last scraped, so players know new transfers are in */}
+      <Text style={[T.caption, { textAlign: "center", marginTop: 16 }]}>
+        {t("htDataUpdated")
+          .replace("{date}", new Date(`${PLAYERS_UPDATED}T12:00:00`).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" }))
+          .replace("{season}", `${PLAYERS_SEASON}/${String(PLAYERS_SEASON + 1).slice(2)}`)}
+      </Text>
+    </GameHub>
   );
 }

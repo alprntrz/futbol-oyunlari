@@ -1,16 +1,20 @@
 import { PLAYERS, type GridPlayer } from "@/data/players";
+import { GRID_PLAYERS } from "@/lib/tiki";
 import type { Grid } from "@/lib/tiki";
 
 import { LINES, type HtCell, type Mark } from "./hattrick";
 
-/** Players a bot "knows": the better-known part of the list, so its answers look human. */
-const KNOWN = PLAYERS.slice(0, 2500);
+/**
+ * Players a bot "knows": the better-known part of the list, so its answers look human
+ * (with their Saudi / Egyptian clubs), plus the best-travelled players of those leagues.
+ */
+const KNOWN = [...GRID_PLAYERS.slice(0, 2500), ...GRID_PLAYERS.slice(PLAYERS.length, PLAYERS.length + 400)];
 
 /** Every player who fits a square, best known first. */
 export function answersFor(grid: Grid, cell: number): GridPlayer[] {
   const row = grid.rows[Math.floor(cell / 3)];
   const col = grid.cols[cell % 3];
-  return PLAYERS.filter((p) => row.test(p) && col.test(p));
+  return GRID_PLAYERS.filter((p) => row.test(p) && col.test(p));
 }
 
 /**
@@ -41,9 +45,10 @@ function finishing(board: (HtCell | null)[], mark: Mark, open: number[]): number
 /**
  * The bot's move: win if it can, block if it must, otherwise prefer the centre.
  * It plays a little loose on purpose (sometimes a random square, sometimes a wrong
- * answer), so a decent player can beat it. `name` null means a wrong guess.
+ * answer), so a decent player can beat it; looser against a low rank (`tier`, rankOf index).
+ * `name` null means a wrong guess.
  */
-export function botMove(grid: Grid, board: (HtCell | null)[], used: string[], me: Mark): { cell: number; name: string | null } {
+export function botMove(grid: Grid, board: (HtCell | null)[], used: string[], me: Mark, tier = 0): { cell: number; name: string | null } {
   const taken = new Set(used);
   const options = (cell: number) => KNOWN.filter((p) => !taken.has(p.name) && grid.rows[Math.floor(cell / 3)].test(p) && grid.cols[cell % 3].test(p));
   const open = board.map((c, i) => (c ? -1 : i)).filter((i) => i >= 0);
@@ -52,11 +57,11 @@ export function botMove(grid: Grid, board: (HtCell | null)[], used: string[], me
 
   const random = pool[Math.floor(Math.random() * pool.length)];
   const cell =
-    Math.random() < 0.25
+    Math.random() < Math.max(0.05, 0.35 - 0.04 * tier)
       ? random
       : (finishing(board, me, pool) ?? finishing(board, me === "X" ? "O" : "X", pool) ?? (pool.includes(4) ? 4 : random));
 
   const fits = options(cell);
-  if (!fits.length || Math.random() < 0.15) return { cell, name: null };
+  if (!fits.length || Math.random() < Math.max(0.03, 0.22 - 0.03 * tier)) return { cell, name: null };
   return { cell, name: fits[Math.floor(Math.random() * Math.min(fits.length, 12))].name };
 }

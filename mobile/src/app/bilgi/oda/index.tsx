@@ -1,7 +1,8 @@
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { quizQuestions, type QuizCategory } from "@/lib/quiz";
+import { quizQuestions, type QuizCategory, type QuizDifficulty } from "@/lib/quiz";
 
 import { OnlineLobby } from "~/components/OnlineLobby";
 import { Text } from "~/components/Text";
@@ -16,6 +17,8 @@ export default function QuizLobby() {
   const [count, setCount] = useState("10");
   const [seconds, setSeconds] = useState("15");
   const [category, setCategory] = useState<QuizCategory>("mixed");
+  const { zorluk } = useLocalSearchParams<{ zorluk?: string }>();
+  const [difficulty, setDifficulty] = useState<QuizDifficulty>(zorluk === "easy" || zorluk === "hard" ? zorluk : "normal");
 
   const row = (label: string, node: React.ReactNode) => (
     <View style={{ gap: 6 }}>
@@ -29,8 +32,8 @@ export default function QuizLobby() {
       game="qz"
       title={t("qzName")}
       createPayload={() => ({
-        settings: { maxPlayers: Number(maxPlayers), seconds: Number(seconds), category },
-        questions: quizQuestions(Number(count), category),
+        settings: { maxPlayers: Number(maxPlayers), seconds: Number(seconds), category, difficulty },
+        questions: quizQuestions(Number(count), category, difficulty),
       })}
       roomHref={(code) => ({ pathname: "/bilgi/oda/[code]", params: { code } })}
       createOptions={
@@ -43,6 +46,18 @@ export default function QuizLobby() {
           {row(
             t("qzSeconds"),
             <Segmented value={seconds} onChange={setSeconds} options={["10", "15", "20"].map((v) => ({ value: v, label: `${v} ${t("qzSecShort")}` }))} />
+          )}
+          {row(
+            t("qzDifficulty"),
+            <Segmented
+              value={difficulty}
+              onChange={setDifficulty}
+              options={[
+                { value: "easy", label: t("qzEasy") },
+                { value: "normal", label: t("qzNormal") },
+                { value: "hard", label: t("qzHard") },
+              ]}
+            />
           )}
           {row(
             t("qzCategory"),

@@ -1,0 +1,106 @@
+{
+  "direction": "Light minimal UI with soft clay 3D objects",
+  "assets": [
+    {
+      "id": "screen-preparation",
+      "w": 1320,
+      "h": 2868,
+      "transparent": false,
+      "prompt": "Use case: ui-mockup. Create a complete mobile football auto-battler preparation screen in portrait 1320x2868 pixels (440x956 logical points), edge-to-edge artwork without phone frame. This is an entirely NEW LIGHT design direction. The visual language is minimal flat learning-app UI combined with soft 3D clay game objects. Background is very pale grey-green #F1F4F1, white panels, text dark #0E1A14. Interface chrome has FLAT solid colours and no gradients, textures, glossy bevels, glow or cast shadows. Buttons have a thick darker BOTTOM EDGE ONLY to convey pressability, rounded 14pt corners and bold rounded sans-serif typography like Duolingo. Game OBJECTS alone have soft toy-like 3D satin clay lighting: green pitch tile, shirts on cards, heart, coin, flame, football. No dark green page background. Colour palette: #16A34A green with #0F7A35 lower button edge; #FACC15 yellow with #CA8A04 lower edge ONLY on main kickoff button; red #F43F5E, gold #F59E0B, blue #2563EB. Generous calm white spacing. No people, faces, logos, club crests, sponsors or mascot.\nEVERYTHING visible on ONE screen; no scrolling, tabs or extra pages. Turkish text, smallest text 11pt (=33px), readable surnames. Buttons and important touch targets at least44pt.\nLayout top to bottom:\n1. White flat header roughly100pt tall: back arrow on left, \"Aşama 2-1\" centered, compact small 3D counters heart \"86\", coin \"14\", flame \"3\" on right or compact second header row. Underneath a THICK GREEN progress bar with round ends and dark label \"Maça 22 sn\". NO yellow countdown.\n2. One strip of EXACTLY EIGHT small circular generic shirt-icon manager avatars, no faces, thin green health bars underneath, first avatar highlighted with a green ring. No bulky containing panel.\n3. HERO central field, biggest region about360pt tall: slightly tilted soft rounded 3D TOY football-pitch tile with bright striped green grass, small top and bottom goals. EXACTLY TWELVE slots in four rows: THREE FW on top, FOUR MF in second, FOUR DF in third, ONE GK at bottom. FIVE filled cards total: top-center \"Hauge\" FW, second-row \"Kaya\" MF and \"Silva\" MF, third-row \"Demir\" DF, bottom \"Rossi\" GK. Each small cream-white 3D player card shows a plain or striped shirt, bold readable surname, tiny flag, position badge, 1–3 gold stars and a cost-coloured BOTTOM EDGE (grey/green/blue/purple/gold). No faces or club crests. Remaining SEVEN slots are translucent sockets with white DASHED outlines and the appropriate FW/MF/DF/GK label. Immediately UNDER the pitch, two small flat white pills with pale grey borders: \"5/5 sahada\" and star-wand icon + \"En iyi diziliş\".\n4. One row of compact WHITE pill chips: tiny 3D bus + \"Savunma +%25\"; shirt + \"2/3\" active chip filled GREEN; flag + \"2/3\" inactive white chip with grey border. Keep chips small and flat.\n5. Bench: EXACTLY EIGHT small pale grey rounded sockets in ONE row. Two occupied by mini shirt cards named \"Can\" and \"Ece\", six empty. No dark panel.\n6. One short information line above shop: \"+7 altın · maaş 5 · faiz 1\" in dark grey.\n7. Shop on white: EXACTLY FIVE equal player cards in one row, named \"Hauge\", \"Kaya\", \"Silva\", \"Rossi\", and one purple mystery scout card showing golden magnifying glass, no player. Small \"2/3\" badge at TOP LEFT of Hauge card, \"0/3\" on others. Under EACH card a flat pale price pill with 3D coin and prices respectively1,2,3,4,5.\n8. Bottom actions: two chunky FLAT secondary buttons in one row, WHITE/GREY \"↻ Yenile · 2\" and BLUE \"Seviye 3 · XP al 4\" with a thin light progress bar inside. Their depth is ONLY a darker bottom strip. Under them one broad full-width YELLOW button reading exactly \"Maça çık\" with a small 3D football, dark bold text and dark yellow bottom edge. One short bottom safe area.\nDo not add sale buttons in this normal state. No dark panels, no glossy UI chrome, no floating currency offers, no giant header, no noisy game decoration. Only field and game object sprites have gentle 3D rendering. Preserve the exact 3/4/4/1 field-row counts and 8/8/5 managers/bench/shop counts.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-5fa58da8-c4ea-48cf-a97f-ccf2c3786957.png",
+      "edit_prompts": [
+        "Use case: precise-object-edit. Edit the supplied LIGHT preparation screen. Flatten the UI CHROME only: use a single uniform solid blue #2563EB across the entire XP button face, solid yellow #FACC15 across the entire kickoff button face, solid white/grey for reroll and pills. No gradients, gloss, highlights or cast shadows on any buttons, chips or progress bars; only a thick darker bottom edge on buttons. Keep the 3D rendering and soft shadows of the GAME OBJECTS (pitch, player cards, shirts, icons) unchanged. Preserve the off-white background, header, all Turkish wording and counts: 8 managers, 12 slots in 3/4/4/1 formation, 5 occupied field cards, 8 bench slots and 5 shop cards. Keep exact full portrait layout, no crop, no device frame. All current action labels remain exactly the same, including 'Seviye 3 · XP al 4' and 'Maça çık'. Normal state, no card selection and no red sell button. Target1320x2868.",
+        "Make one tiny targeted correction to this exact normal preparation screen mockup. Restore a thin horizontal XP progress bar inside the blue bottom-right button, underneath the text 'Seviye 3 · XP al 4'. Use a short pale blue track with about 40 percent white fill, leaving comfortable padding. Preserve the exact flat solid blue button face and dark blue bottom edge. Keep all other pixels, layout, Turkish labels, colors, card counts and objects visually unchanged. No selected cards, no sell button. Final portrait full-screen mockup."
+      ]
+    },
+    {
+      "id": "ui-heart",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. A chunky raspberry-red heart, colour #F43F5E, softly rounded inflated clay form, plain simple silhouette.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-42136d8d-4290-46c1-acde-b6c516be5938.png"
+    },
+    {
+      "id": "ui-coin",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. A single thick golden-orange coin #F59E0B with a small simple football embossed on its face. Soft satin golden clay material, gently bevelled circular edge, slight three-quarter angle. No currency symbols or text.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-eade5884-bffe-47d0-826b-af6589d48461.png"
+    },
+    {
+      "id": "ui-flame",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. A small orange clay flame with a warm pale yellow inner flame, simple two-layer rounded silhouette, no extra sparks or smoke.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-9f125713-667e-41c5-bae0-02c592247019.png"
+    },
+    {
+      "id": "ui-stopwatch",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. A small yellow-orange stopwatch, rounded chunky case, cream dial with two simple dark hands, one short push button on top. Blank dial with NO numerals and NO lettering.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-e7cbf816-a369-49d4-98b7-837b4ef0e21a.png"
+    },
+    {
+      "id": "ui-ball",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. One small classic black-and-white association football, soft rounded clay construction, bold simple panels, slight soft contact shadow, no motion lines, no decorations.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-3b29bdd9-216d-45ac-9f6e-946a7f395049.png"
+    },
+    {
+      "id": "ui-wand",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. A short muted green magic wand with a YELLOW FIVE-POINT STAR TIP and exactly TWO small yellow sparkles beside the tip. Diagonal, rounded chunky clay shape. Star tip clearly recognizable. No gem-shaped tip, no hand.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-2c1670c3-67c3-4207-b941-6c99d45002ec.png"
+    },
+    {
+      "id": "ui-reroll",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. Two curved arrows forming a circle, pale light grey-green #AFC5B4, matte clay finish, broad rounded arrowheads, empty transparent center. Soft low-contrast secondary-action icon, not saturated green.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-4995bbfe-bcb0-47e3-b0a7-74ca43e888c9.png"
+    },
+    {
+      "id": "ui-xp",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. A chunky blue #2563EB upward arrow in front of a SMALL pale golden star. Arrow dominates, rounded clay geometry, simple compact silhouette, no text.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-d5ff5d19-4ec6-4917-83ca-25c7dcec9744.png"
+    },
+    {
+      "id": "ui-scout",
+      "w": 1024,
+      "h": 1024,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. Square PNG 1024x1024. A small purple blank card with rounded corners and a big golden magnifying glass on it. Soft matte-glossy clay style, simple undecorated card with no ornate frame or metallic trim, no writing or symbols. Purple and warm golden-orange, readable at small size.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-848e51dd-cb2f-4d21-b063-3d58cf4dde6a.png"
+    },
+    {
+      "id": "pitch-toy",
+      "w": 1320,
+      "h": 1100,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: standalone game object for a light minimal football auto-battler interface. Soft 3D toy-like object, matte-glossy CLAY look, rounded chunky forms, smooth satin finish, warm top-left light, gentle soft contact shadow under object only. Bright clean colours that sit well on a WHITE background. Subdued highlights, NOT reflective metallic chrome or glass, no glow, no bloom, no neon. Actual transparent PNG background. Single centered cohesive object with 8% clear margin, fully visible, no text, letters, numbers, logos, crests, sponsors, people or faces. PNG 1320x1100, landscape aspect ratio 6:5. A small toy football pitch viewed from above at a slight tilt around 25 degrees from vertical overhead. The playing direction is TOP to BOTTOM, with a small WHITE GOAL centered on each of the TOP AND BOTTOM short ends. Soft rounded edges and a shallow thick green base like a board-game tile; the entire tile, both goals and its subtle contact shadow fit completely inside the canvas with 8% transparent margin. Bright fresh striped grass in alternating greens, fine quiet turf texture, precise white football markings including boundary, horizontal halfway line, centre circle, penalty and goal areas at top and bottom. Slightly squashed board-game proportions to fit the canvas. No players, ball, stadium, UI, text or logos. Transparent outside the self-contained board. Calm soft clay/toy rendering designed for white background, no dark vignette, no glowing grass.",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-aad00ddf-68c6-478e-870c-5ee17d23408a.png"
+    },
+    {
+      "id": "screen-selected",
+      "w": 1320,
+      "h": 2868,
+      "transparent": false,
+      "prompt": "Use case: precise-object-edit. Produce the SELECTED PLAYER state of this LIGHT preparation screen. Flatten the UI CHROME only: use a single uniform solid blue #2563EB across the entire XP button face, solid yellow #FACC15 across the entire kickoff button face, solid white/grey for reroll and pills. No gradients, gloss, highlights or cast shadows on any buttons, chips or progress bars; only a thick darker bottom edge on buttons. Keep the 3D rendering and soft shadows of the GAME OBJECTS (pitch, player cards, shirts, icons) unchanged. Preserve the off-white background, header, all Turkish wording and counts: 8 managers, 12 slots in 3/4/4/1 formation, 5 occupied field cards, 8 bench slots and 5 shop cards. Keep exact full portrait layout, no crop, no device frame. Select the TOP-CENTRE FIELD player card named Hauge: lift it slightly and add a clear GREEN #16A34A outline, with a subtle object-only lift shadow. IMPORTANT: replace ALL THREE bottom action buttons (reroll, XP and yellow kickoff) with ONE SINGLE wide RED #F43F5E chunky button labelled EXACTLY 'Sat · 2', dark-red bottom edge, bold white rounded text and a small gold coin icon. There must be NO 'Yenile', NO XP button and NO yellow 'Maça çık' button anywhere in this selected-state screen. Keep the shop, bench, field and chips visible and unchanged. Leave pale background breathing room around the one contextual sell button. No other selected cards. Target1320x2868.",
+      "reference_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-da63216d-22e6-482d-be6a-67d90d133da1.png",
+      "generated_path": "/Users/alpi/.codex/generated_images/01a1461e-d7b1-7170-84a7-41be97b8603a/exec-12311feb-dc5b-4dc7-bc4e-fad8e7a44848.png"
+    }
+  ]
+}

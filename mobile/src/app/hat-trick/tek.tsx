@@ -1,20 +1,27 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack } from "expo-router";
+import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, ScrollView, Share, StyleSheet, TextInput, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 
-import { PLAYERS, type GridPlayer } from "@/data/players";
+import type { GridPlayer } from "@/data/players";
 import { dayNumber } from "@/lib/daily";
-import { generateGrid, searchPlayers, seededRandom, type Criterion } from "@/lib/tiki";
+import { XP } from "@/lib/levels";
+import { generateGrid, GRID_PLAYERS, searchPlayers, seededRandom, withHonour, withLink, type Criterion } from "@/lib/tiki";
 
+import { PlayerLine, PlayerToken } from "~/components/PlayerRow";
 import { CriterionBadge } from "~/components/HatTrickBoard";
 import { HelpButton } from "~/components/HelpButton";
+import { useShareCard } from "~/components/ShareCard";
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, SectionLabel, Segmented, Tap } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
+import { categoryFilter } from "~/lib/league";
+import { archiveDay } from "~/lib/archive";
+import { usePlus } from "~/lib/plus";
 import { C, F, R, shadow, T } from "~/lib/theme";
+import { useXpAward } from "~/lib/xp";
 
 const TIME_LIMIT = 180;
 const key = (day: number) => `hattrick-box-${day}`;
@@ -29,7 +36,7 @@ interface Run {
 
 const POP = new Keyframe({
   0: { opacity: 0, transform: [{ scale: 0.6 }] },
-  55: { opacity: 1, transform: [{ scale: 1.12 }] },
+  55: { opacity: 1, transform: [{ scale: 1.04 }] },
   100: { opacity: 1, transform: [{ scale: 1 }] },
 }).duration(260);
 
@@ -43,8 +50,22 @@ const surname = (name: string) => name.trim().split(/\s+/).slice(-1)[0];
  */
 export default function HatTrickSolo() {
   const { t, locale } = useI18n();
-  const day = dayNumber();
-  const grid = useMemo(() => generateGrid(seededRandom(day * 7919 + 17)), [day]);
+  const { share: shareCard, card: shareView } = useShareCard();
+  // ?day=N: a past day's grid from the archive (Plus); otherwise today's
+  const past = archiveDay(useLocalSearchParams<{ day?: string }>().day);
+  const plus = usePlus().active;
+  const day = past ?? dayNumber();
+  // null = today's shared grid (saved); a number = an extra random grid after it (not saved)
+  const [seed, setSeed] = useState<number | null>(null);
+  // today's grid stays plain (same for everyone, saved); extra grids may get a "played with" / "managed by" line
+  const grid = useMemo(() => {
+    const rand = seededRandom(seed ?? day * 7919 + 17);
+    // today's grid keeps the old rule (same grid as before the update); extra grids get club pairs
+    if (seed === null) return generateGrid(rand);
+    // extra grids follow the player's categories (hub → Categories)
+    const allow = categoryFilter();
+    return withHonour(withLink(generateGrid(rand, { clubPairs: true, allow }), rand, 0.5, undefined, allow), rand, 0.45, undefined, allow);
+  }, [day, seed]);
   const [run, setRun] = useState<Run | null | undefined>(undefined);
   const [limit, setLimit] = useState<"3" | "none">("3");
   const [query, setQuery] = useState("");
@@ -54,7 +75,7 @@ export default function HatTrickSolo() {
   const cellCriteria = (i: number): [Criterion, Criterion] => [grid.rows[Math.floor(i / 3)], grid.cols[i % 3]];
   // How many (player, square) answers exist, for the "% of all answers" score
   const totalAnswers = useMemo(
-    () => Array.from({ length: 9 }, (_, i) => cellCriteria(i)).reduce((n, [r, c]) => n + PLAYERS.filter((p) => r.test(p) && c.test(p)).length, 0),
+    () => Array.from({ length: 9 }, (_, i) => cellCriteria(i)).reduce((n, [r, c]) => n + GRID_PLAYERS.filter((p) => r.test(p) && c.test(p)).length, 0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [grid]
   );
@@ -66,8 +87,8 @@ export default function HatTrickSolo() {
   }, [day]);
 
   useEffect(() => {
-    if (run) AsyncStorage.setItem(key(day), JSON.stringify(run)).catch(() => {});
-  }, [run, day]);
+    if (run && seed === null) AsyncStorage.setItem(key(day), JSON.stringify(run)).catch(() => {});
+  }, [run, day, seed]);
 
   // Clock: tick while a timed run is live, end it at zero
   useEffect(() => {
@@ -90,11 +111,31 @@ export default function HatTrickSolo() {
 
   const suggestions = useMemo(() => searchPlayers(query, 6), [query]);
 
+  // today's grid pays once a day; extra grids count towards the practice cap
+  const placed = run ? run.cells.reduce((n, c) => n + c.length, 0) : 0;
+  const soloBoxes = run ? run.cells.filter((c) => c.length > 0).length : 0;
+  useXpAward(!!run?.finished, seed === null ? `ht-solo-${day}` : `ht-solo-x-${seed}`, "ht", Math.min(XP.htSoloCap, placed * XP.htSoloPerPlayer), {
+    practice: seed !== null,
+    title: t("rwGrid"),
+    stats: [
+      { label: t("rwSquares"), value: `${soloBoxes}/9`, tone: "green" },
+      { label: t("rwPlayers"), value: String(placed), tone: "amber" },
+    ],
+  });
+
+  if (past !== null && !plus) return <Redirect href="/plus" />;
   if (run === undefined) return <Page>{null}</Page>;
 
   const start = () => {
     haptic.press();
     setRun({ cells: Array.from({ length: 9 }, () => []), limit: limit === "3", deadline: limit === "3" ? Date.now() + TIME_LIMIT * 1000 : null, finished: false });
+  };
+
+  const newGrid = () => {
+    haptic.press();
+    setQuery("");
+    setSeed(Math.floor(Math.random() * 1e9));
+    setRun({ cells: Array.from({ length: 9 }, () => []), limit: run?.limit ?? limit === "3", deadline: (run?.limit ?? limit === "3") ? Date.now() + TIME_LIMIT * 1000 : null, finished: false });
   };
 
   const pick = (p: GridPlayer) => {
@@ -124,9 +165,9 @@ export default function HatTrickSolo() {
   if (!run) {
     return (
       <Page>
-        <Stack.Screen options={{ title: t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
-        <Text style={T.title}>{t("htSolo")}</Text>
-        <Text style={[T.body, { marginTop: 6 }]}>{t("bbIntro")}</Text>
+        <Stack.Screen options={{ title: past !== null ? `${t("htSolo")} #${day % 1000}` : t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
+        {/* the header already names the mode */}
+        <Text style={T.body}>{t("bbIntro")}</Text>
         <View style={styles.tipRow}>
           <Icon name="lightbulb.fill" size={16} color={C.amber} fallback="💡" />
           <Text style={[T.body, { flex: 1, fontSize: 14 }]}>{t("bbTip")}</Text>
@@ -159,12 +200,21 @@ export default function HatTrickSolo() {
   const share = () => {
     const squares = run.cells.map((c) => (c.length ? "🟩" : "⬜"));
     const rows = [0, 1, 2].map((r) => squares.slice(r * 3, r * 3 + 3).join("")).join("\n");
-    Share.share({ message: `${t("bbShareText")} #${day % 1000}\n${rows}\n${boxes}/9\n${players} ${t("bbPlayers")}, %${percent}` });
+    shareCard({
+      game: "ht",
+      name: "Tic-Tac-Toe",
+      tag: seed === null ? `#${day % 1000}` : undefined,
+      rows: [0, 1, 2].map((r) => run.cells.slice(r * 3, r * 3 + 3).map((c) => (c.length ? "ok" : "empty"))),
+      labels: [0, 1, 2].map((r) => run.cells.slice(r * 3, r * 3 + 3).map((c) => (c.length ? String(c.length) : ""))),
+      score: `${boxes}/9`,
+      detail: `${players} ${t("bbPlayers")}, %${percent}`,
+      text: `${t("bbShareText")} #${day % 1000}\n${rows}\n${boxes}/9\n${players} ${t("bbPlayers")}, %${percent}`,
+    });
   };
 
   return (
     <Page>
-      <Stack.Screen options={{ title: t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
+      <Stack.Screen options={{ title: past !== null ? `${t("htSolo")} #${day % 1000}` : t("htSolo"), headerRight: () => <HelpButton game="tiki" /> }} />
 
       {/* Score strip */}
       <Card style={styles.strip}>
@@ -213,7 +263,8 @@ export default function HatTrickSolo() {
               ) : (
                 suggestions.map((p, i) => (
                   <Tap key={p.name} onPress={() => pick(p)} style={[styles.suggestion, i > 0 && styles.divider]}>
-                    <Text style={[T.headline, { fontSize: 15 }]}>{p.name}</Text>
+                    <PlayerToken p={p} />
+                    <PlayerLine p={p} />
                   </Tap>
                 ))
               )}
@@ -285,10 +336,16 @@ export default function HatTrickSolo() {
               <Text style={T.caption}>{t("bbOfAll")}</Text>
             </View>
           </View>
-          <Button title={t("share")} icon="square.and.arrow.up" onPress={share} style={{ alignSelf: "stretch", marginTop: 8 }} />
-          <Text style={[T.caption, { marginTop: 8 }]}>{t("htSoloComeBackLine")}</Text>
+          <Button title={t("ttNewGrid")} icon="arrow.clockwise" onPress={newGrid} style={{ alignSelf: "stretch", marginTop: 8 }} />
+          {seed === null && (
+            <>
+              <Button title={t("share")} icon="square.and.arrow.up" kind="secondary" onPress={share} style={{ alignSelf: "stretch", marginTop: 8 }} />
+              <Text style={[T.caption, { marginTop: 8, textAlign: "center" }]}>{t("htSoloExtraLine")}</Text>
+            </>
+          )}
         </Card>
       )}
+      {shareView}
     </Page>
   );
 }
@@ -302,7 +359,7 @@ const styles = StyleSheet.create({
   inputWrap: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, paddingHorizontal: 12 },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
   suggestions: { position: "absolute", top: 66, left: 0, right: 0, maxHeight: 260, backgroundColor: C.card, borderRadius: R.button, borderWidth: 1, borderColor: C.border, ...shadow, shadowOpacity: 0.15 },
-  suggestion: { paddingHorizontal: 14, paddingVertical: 12 },
+  suggestion: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingVertical: 9 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.border },
   toast: { marginTop: 10, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12, alignSelf: "center" },
   grid: { width: "100%", gap: 6, marginTop: 14 },

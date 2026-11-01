@@ -1,0 +1,21 @@
+DRIBBLING RUSH — GÖRSEL TESLİM
+
+29 ayrı kaynak PNG, en az 1024 px, RGBA. Saha opak; diğer 28 görsel şeffaf.
+Üretim aracı: yerleşik imagegen. Üretim ve düzenleme promptları prompts.json içinde.
+Boyutlar ve alpha sınırları manifest.json; kenar ölçümleri qa.json içinde.
+
+ÖNİZLEMELER
+preview-all.png: tüm set.
+preview-character.png: 8 karakter pozu.
+preview-80px.png: küçük boyutta okunabilirlik.
+preview-run.gif: dört koşu karesi, kare başına 110 ms; oyun içi test değildir.
+
+İÇE AKTARIM NOTLARI
+- runner-run-1..4 aynı kare tuvaliyle dışa aktarıldı. Kareleri ayrı ayrı merkezleyerek kırpmak gövde/top konumunda sıçrama yaratabilir. Ortak tuval ve kayıt noktasını koruyun; oyun içinde ayak temasını ayrıca kontrol edin.
+- Kaynak minimum boyutu için tribünler 1024x2048, top 1024x1024 teslim edildi. Hedef boyutlar brief'teki 512x1024 ve 512x512'ye küçültülebilir.
+- Beyaz/gri kumaşlar ışık ve gölge içerir; renk değiştirirken yalnızca forma/şort maskesini boyayın. Ten, saç, top ve kramponları kapsayan genel renk filtresi kullanmayın. Gri kumaştaki sıcak ışık nedeniyle her pikselde R=G=B değildir.
+
+AÇIK KALAN KONTROL
+field-tile.png üst ve alt kenarı ikinci üretimde yaklaştırıldı, ancak birebir piksel eşleşmesi testini geçmedi (ortalama RGBA farkı 6.28/255). Bu dosya kesin seamless olarak onaylanmış değildir; üretimde kullanılmadan önce kenar eşleme gerekir.
+Tribün dosyalarının ilk/son satırları şeffaf ve eşit; bu kontrol tek başına tribün modüllerinin aralıksız geometrik devamını kanıtlamaz. Tekrarlı modüller arasında görünür boşluk vardır.
+Bu teslim görsel kaynak setidir. İçe aktarma betiği çalıştırılmadı, uygulama değiştirilmedi ve oyun içinde animasyon testi yapılmadı.

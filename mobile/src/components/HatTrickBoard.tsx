@@ -3,18 +3,20 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import Animated, { Keyframe } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { playerInfo } from "@/lib/playerInfo";
 import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
 
-import { haptic } from "~/lib/haptics";
+import { haptic, useClockTicks } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { answersFor } from "~/lib/htBot";
 import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { C, F, R, shadow, T } from "~/lib/theme";
 
+import { initials, PlayerLine, PlayerToken } from "./PlayerRow";
 import { Flag } from "./Flag";
 import { Jersey } from "./Jersey";
-import { Confetti, SmoothBar, SOFT_IN, softIn } from "./motion";
+import { Confetti, PopNumber, SmoothBar, SOFT_IN, softIn } from "./motion";
 import { Text } from "./Text";
 import { Button, Card, Icon, Tap } from "./ui";
 
@@ -23,15 +25,6 @@ export const MARK: Record<Mark, { color: string; soft: string }> = {
   O: { color: C.coral, soft: C.coralSoft },
 };
 
-function initials(name: string) {
-  const t = name.trim().split(/\s+/);
-  return ((t[0]?.[0] ?? "") + (t.length > 1 ? t[t.length - 1][0] : "")).toUpperCase();
-}
-function avatarColor(name: string) {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return `hsl(${h % 360}, 45%, 48%)`;
-}
 
 export type Kit = { body: string; sleeves: string; pattern?: { color: string; bands: number; horizontal?: boolean } };
 const stripes = (color: string, bands = 7) => ({ color, bands });
@@ -79,10 +72,29 @@ export function ClubShirt({ c, size = 30 }: { c: Criterion; size?: number }) {
 export function CriterionBadge({ c, size = 30 }: { c: Criterion; size?: number }) {
   if (c.kind === "club") return <ClubShirt c={c} size={size} />;
   if (c.kind === "country") return <Flag id={c.id} width={size * 1.35} />;
+  if (c.kind === "mate" || c.kind === "coach") return <PersonBadge c={c} size={size} />;
   return (
     <Text allowFontScaling={false} style={{ fontSize: size * 0.8 }}>
       {c.icon}
     </Text>
+  );
+}
+
+/** "Played with" star (green disc, handshake) or "managed by" coach (navy disc, clipboard): initials. */
+function PersonBadge({ c, size }: { c: Criterion; size: number }) {
+  const coach = c.kind === "coach";
+  const words = (c.short ?? c.en).split(/\s+/);
+  const initials = (words.length > 1 ? words[0][0] + words[words.length - 1][0] : words[0].slice(0, 2)).toUpperCase();
+  const d = size * 1.15;
+  return (
+    <View style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: coach ? "#1F3B8C" : C.greenMid, alignItems: "center", justifyContent: "center" }}>
+      <Text allowFontScaling={false} style={{ fontFamily: F.black, fontSize: d * 0.42, lineHeight: d * 0.5, color: "white" }}>
+        {initials}
+      </Text>
+      <Text allowFontScaling={false} style={{ position: "absolute", right: -d * 0.12, bottom: -d * 0.1, fontSize: d * 0.38 }}>
+        {coach ? "📋" : "🤝"}
+      </Text>
+    </View>
   );
 }
 
@@ -118,6 +130,10 @@ export function HatTrickBoard({
   sheetCaption,
   steals,
   usedNames,
+  jokers = null,
+  onJoker,
+  turnSeconds = TURN_SECONDS,
+  comeback = null,
 }: {
   grid: Grid;
   board: (HtCell | null)[];
@@ -135,6 +151,10 @@ export function HatTrickBoard({
   winnerSub?: string;
   /** game wins in this series, per mark (series play only) */
   series?: Record<Mark, number> | null;
+  /** full length of the current turn (the comeback player's are longer) */
+  turnSeconds?: number;
+  /** mark with the comeback bonus this game (+10 s a turn) */
+  comeback?: Mark | null;
   onMove: (cell: number, name: string | null) => void;
   footer?: React.ReactNode;
   /** replaces the X/O turn card (single player) */
@@ -145,6 +165,9 @@ export function HatTrickBoard({
   steals?: Record<Mark, number> | null;
   /** every name played this game, including ones stolen off the board */
   usedNames?: string[];
+  /** jokers left this game (both players get the same; null = none in this mode) */
+  jokers?: { time: number; hint: number } | null;
+  onJoker?: (kind: "time" | "hint") => void;
 }) {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
@@ -153,6 +176,8 @@ export function HatTrickBoard({
   const [review, setReview] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [confetti, setConfetti] = useState(0);
+  // a hint joker: initials and position of a well-known answer for that square
+  const [hint, setHint] = useState<{ cell: number; text: string } | null>(null);
   // Explicit cell sizes keep header and board columns exactly aligned
   const [gridW, setGridW] = useState(0);
   const cellW = gridW ? (gridW - 3 * 6) / 4.1 : 0;
@@ -186,7 +211,7 @@ export function HatTrickBoard({
     if (openCell === null || !guess) return;
     const player = validateCell(guess, grid.rows[Math.floor(openCell / 3)], grid.cols[openCell % 3], used);
     if (player) {
-      haptic.press();
+      haptic.success();
       play("correct");
     } else {
       haptic.error();
@@ -197,7 +222,19 @@ export function HatTrickBoard({
     setInput("");
   };
 
+  const useHint = () => {
+    if (openCell === null || !jokers?.hint) return;
+    const answer = answersFor(grid, openCell).find((p) => !used.has(p.name));
+    if (!answer) return;
+    const { pos } = playerInfo(answer);
+    haptic.tap();
+    play("power");
+    setHint({ cell: openCell, text: [initials(answer.name).split("").join(". ") + ".", pos ? t(`posName_${pos}`) : null].filter(Boolean).join(" · ") });
+    onJoker?.("hint");
+  };
+
   const low = timeLeft <= 10;
+  useClockTicks(winner ? null : timeLeft, canMove);
   const row = openCell !== null ? grid.rows[Math.floor(openCell / 3)] : null;
   const col = openCell !== null ? grid.cols[openCell % 3] : null;
 
@@ -246,13 +283,20 @@ export function HatTrickBoard({
                       ))}
                     </View>
                   )}
-                  {active && <Text style={styles.playerTime}>{timeLeft}s</Text>}
+                  {comeback === m && !winner && (
+                    <View style={[styles.comebackBadge, { backgroundColor: active ? "rgba(255,255,255,0.25)" : "#FFF4CC" }]} accessibilityLabel={t("htComeback")}>
+                      <Text allowFontScaling={false} style={[styles.comebackText, { color: active ? "white" : "#8A5A00" }]}>
+                        +10
+                      </Text>
+                    </View>
+                  )}
+                  {active && (timeLeft <= 5 ? <PopNumber value={`${timeLeft}s`} style={styles.playerTime} /> : <Text style={styles.playerTime}>{timeLeft}s</Text>)}
                 </View>
               );
             })}
           </View>
           <View style={{ marginTop: 12 }}>
-            <SmoothBar fraction={timeLeft / TURN_SECONDS} color={low ? C.red : MARK[turn].color} />
+            <SmoothBar fraction={timeLeft / turnSeconds} color={low ? C.red : MARK[turn].color} />
           </View>
           {/* the turn line and any message cross-fade when they change */}
           <Animated.View key={`${turn}-${status}`} entering={SOFT_IN}>
@@ -337,28 +381,36 @@ export function HatTrickBoard({
 
       <AnswersSheet grid={grid} cell={review} placed={review !== null ? board[review] : null} onClose={() => setReview(null)} />
 
-      <Modal visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
+      <Modal statusBarTranslucent navigationBarTranslucent visible={openCell !== null} transparent animationType="slide" onRequestClose={() => setOpenCell(null)}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={() => setOpenCell(null)} />
           <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
             <View style={styles.grabber} />
-            {row && col && (
-              <View style={styles.pair}>
-                <View style={styles.chip}>
-                  <CriterionBadge c={row} size={22} />
-                  <Text style={styles.chipText}>{label(row)}</Text>
-                </View>
-                <Icon name="plus" size={14} color={C.text3} fallback="+" />
-                <View style={styles.chip}>
-                  <CriterionBadge c={col} size={22} />
-                  <Text style={styles.chipText}>{label(col)}</Text>
-                </View>
-              </View>
-            )}
+            {row && col && <CriteriaPair row={row} col={col} color={MARK[turn].color} />}
             <Text style={[T.caption, { textAlign: "center", marginVertical: 12, color: MARK[turn].color, fontWeight: "700" }]}>
               {sheetCaption ??
                 `${openCell !== null && board[openCell] ? `${t("htSteals")}: ${board[openCell]!.name}` : `${turn}, ${t("ttYourGuess")}`}  ${timeLeft}s`}
             </Text>
+            {jokers && canMove && (
+              <View style={styles.jokers}>
+                <Tap disabled={!jokers.time} onPress={() => (play("power"), onJoker?.("time"))} style={[styles.joker, !jokers.time && { opacity: 0.4 }]} accessibilityRole="button">
+                  <Icon name="stopwatch.fill" size={15} color={C.blue} />
+                  <Text style={styles.jokerText}>{t("jkTime")}</Text>
+                  <Text style={styles.jokerCount}>×{jokers.time}</Text>
+                </Tap>
+                <Tap disabled={!jokers.hint || hint?.cell === openCell} onPress={useHint} style={[styles.joker, (!jokers.hint || hint?.cell === openCell) && { opacity: 0.4 }]} accessibilityRole="button">
+                  <Icon name="lightbulb.fill" size={15} color={C.amber} />
+                  <Text style={styles.jokerText}>{t("jkHint")}</Text>
+                  <Text style={styles.jokerCount}>×{jokers.hint}</Text>
+                </Tap>
+              </View>
+            )}
+            {hint && hint.cell === openCell && (
+              <View style={styles.hintBox}>
+                <Icon name="lightbulb.fill" size={14} color={C.amber} />
+                <Text style={styles.hintText}>{hint.text}</Text>
+              </View>
+            )}
             <View style={styles.inputWrap}>
               <Icon name="magnifyingglass" size={16} color={C.text3} fallback="🔎" />
               <TextInput
@@ -386,12 +438,8 @@ export function HatTrickBoard({
                       onPress={() => submit(p.name)}
                       style={[styles.suggestion, i > 0 && styles.suggestionDivider, used.has(p.name) && { opacity: 0.4 }]}
                     >
-                      <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
-                        <Text allowFontScaling={false} style={styles.avatarText}>
-                          {initials(p.name)}
-                        </Text>
-                      </View>
-                      <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                      <PlayerToken p={p} />
+                      <PlayerLine p={p} />
                       {used.has(p.name) && <Icon name="checkmark" size={14} color={C.text3} fallback="✓" />}
                     </Tap>
                   ))
@@ -410,34 +458,52 @@ export function HatTrickBoard({
   );
 }
 
+/**
+ * The two things a square asks for, above the keyboard: one tile each (badge, name,
+ * what kind of criterion it is) joined by a round "and" in the mover's colour.
+ */
+function CriteriaPair({ row, col, color }: { row: Criterion; col: Criterion; color: string }) {
+  const { t, locale } = useI18n();
+  const kind = (c: Criterion) => t(c.kind === "club" ? "critClub" : c.kind === "country" ? "critCountry" : c.kind === "mate" ? "critMate" : c.kind === "coach" ? "critCoach" : "critBadge");
+  const tile = (c: Criterion) => (
+    <View style={styles.critTile}>
+      <View style={styles.critBadge}>
+        <CriterionBadge c={c} size={34} />
+      </View>
+      <Text style={styles.critName} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
+        {locale === "tr" ? c.tr : c.en}
+      </Text>
+      <Text style={styles.critKind}>{kind(c)}</Text>
+    </View>
+  );
+  return (
+    <View style={styles.critRow} accessible accessibilityLabel={`${locale === "tr" ? row.tr : row.en} ${t("critAnd")} ${locale === "tr" ? col.tr : col.en}`}>
+      {tile(row)}
+      {tile(col)}
+      <View style={[styles.critJoin, { backgroundColor: color }]} pointerEvents="none">
+        <Icon name="plus" size={16} color="white" fallback="+" />
+      </View>
+    </View>
+  );
+}
+
 /** After a game: who could have gone in a square. Best-known players first. */
 function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: number | null; placed: HtCell | null; onClose: () => void }) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const all = useMemo(() => (cell === null ? [] : answersFor(grid, cell)), [grid, cell]);
   if (cell === null) return null;
   const row = grid.rows[Math.floor(cell / 3)];
   const col = grid.cols[cell % 3];
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
   // the name actually played here goes first, then the best-known others
   const shown = [...all.filter((p) => p.name === placed?.name), ...all.filter((p) => p.name !== placed?.name)].slice(0, 8);
 
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={onClose}>
+    <Modal statusBarTranslucent navigationBarTranslucent visible transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={{ flex: 1, backgroundColor: "rgba(11,18,32,0.35)" }} onPress={onClose} />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.grabber} />
-        <View style={styles.pair}>
-          <View style={styles.chip}>
-            <CriterionBadge c={row} size={22} />
-            <Text style={styles.chipText}>{label(row)}</Text>
-          </View>
-          <Icon name="plus" size={14} color={C.text3} fallback="+" />
-          <View style={styles.chip}>
-            <CriterionBadge c={col} size={22} />
-            <Text style={styles.chipText}>{label(col)}</Text>
-          </View>
-        </View>
+        <CriteriaPair row={row} col={col} color={C.greenMid} />
         <Text style={[T.caption, { textAlign: "center", marginVertical: 12 }]}>
           {all.length === 0 ? t("htNoAnswers") : `${all.length} ${t("htAnswersCount")}`}
         </Text>
@@ -447,12 +513,8 @@ function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: numbe
               const mine = placed?.name === p.name;
               return (
                 <View key={p.name} style={[styles.suggestion, i > 0 && styles.suggestionDivider]}>
-                  <View style={[styles.avatar, { backgroundColor: avatarColor(p.name) }]}>
-                    <Text allowFontScaling={false} style={styles.avatarText}>
-                      {initials(p.name)}
-                    </Text>
-                  </View>
-                  <Text style={[T.headline, { flex: 1, fontSize: 15 }]}>{p.name}</Text>
+                  <PlayerToken p={p} />
+                  <PlayerLine p={p} />
                   {mine && placed && (
                     <Text style={[styles.placedTag, { color: MARK[placed.mark].color, backgroundColor: MARK[placed.mark].soft }]}>{placed.mark}</Text>
                   )}
@@ -468,6 +530,12 @@ function AnswersSheet({ grid, cell, placed, onClose }: { grid: Grid; cell: numbe
 }
 
 const styles = StyleSheet.create({
+  jokers: { flexDirection: "row", gap: 8, justifyContent: "center", marginBottom: 10 },
+  joker: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, backgroundColor: C.bg, borderWidth: 1, borderColor: C.border },
+  jokerText: { fontFamily: F.display, fontSize: 16, color: C.text },
+  jokerCount: { fontSize: 12, fontWeight: "800", color: C.text3 },
+  hintBox: { flexDirection: "row", alignItems: "center", gap: 8, alignSelf: "center", backgroundColor: C.amberSoft, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 7, marginBottom: 10 },
+  hintText: { fontFamily: F.display, fontSize: 17, color: "#92400E" },
   reviewHint: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12 },
   suggestionsStatic: { borderRadius: R.button, borderWidth: 1, borderColor: C.border, overflow: "hidden" },
   placedTag: { fontFamily: F.black, fontSize: 16, borderRadius: 8, paddingHorizontal: 8, overflow: "hidden" },
@@ -478,6 +546,8 @@ const styles = StyleSheet.create({
   playerName: { flexShrink: 1, fontSize: 14, fontWeight: "700" },
   pips: { flexDirection: "row", gap: 3 },
   pip: { width: 8, height: 8, borderRadius: 4, borderWidth: 1.5 },
+  comebackBadge: { borderRadius: 7, paddingHorizontal: 5, paddingVertical: 1 },
+  comebackText: { fontFamily: F.display, fontSize: 13 },
   stealBadge: { flexDirection: "row", alignItems: "center", gap: 2, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 2 },
   stealCount: { fontFamily: F.display, fontSize: 14, lineHeight: 16 },
   playerTime: { color: "white", fontFamily: F.display, fontSize: 24, lineHeight: 34, fontVariant: ["tabular-nums"] },
@@ -493,9 +563,25 @@ const styles = StyleSheet.create({
   cellName: { color: C.text, fontSize: 9, fontWeight: "600", textAlign: "center" },
   sheet: { backgroundColor: C.card, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 16, paddingTop: 8 },
   grabber: { alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "#D5DAE1", marginBottom: 14 },
-  pair: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, flexWrap: "wrap" },
-  chip: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.bg, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
-  chipText: { color: C.text, fontWeight: "700", fontSize: 14 },
+  critRow: { flexDirection: "row", gap: 10, alignItems: "stretch" },
+  critTile: { flex: 1, alignItems: "center", gap: 4, backgroundColor: C.bg, borderRadius: 18, paddingVertical: 12, paddingHorizontal: 10 },
+  critBadge: { height: 40, justifyContent: "center" },
+  critName: { fontFamily: F.display, fontSize: 18, lineHeight: 20, color: C.text, textAlign: "center" },
+  critKind: { fontSize: 10, fontWeight: "800", letterSpacing: 1, color: C.text3 },
+  critJoin: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    width: 34,
+    height: 34,
+    marginLeft: -17,
+    marginTop: -17,
+    borderRadius: 17,
+    borderWidth: 3,
+    borderColor: C.card,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   inputWrap: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: C.bg, borderRadius: R.button, paddingHorizontal: 12 },
   input: { flex: 1, paddingVertical: 13, fontSize: 16, color: C.text },
   suggestions: { maxHeight: 230, marginTop: 10, borderRadius: R.button, borderWidth: 1, borderColor: C.border },

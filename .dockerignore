@@ -10,3 +10,6 @@
 /scripts
 *.tsbuildinfo
 /.env*
+/tests
+/unity
+/.claude

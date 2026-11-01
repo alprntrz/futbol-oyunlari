@@ -3,18 +3,19 @@ import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from "expo-aud
 
 /** Game sound effects (synthesised by scripts/game-sounds.py). */
 const SOURCES = {
-  tap: require("../../assets/sounds/tap.wav"),
   pop: require("../../assets/sounds/pop.wav"),
   coin: require("../../assets/sounds/coin.wav"),
   correct: require("../../assets/sounds/correct.wav"),
   wrong: require("../../assets/sounds/wrong.wav"),
   whoosh: require("../../assets/sounds/whoosh.wav"),
   stamp: require("../../assets/sounds/stamp.wav"),
-  tick: require("../../assets/sounds/tick.wav"),
   victory: require("../../assets/sounds/victory.wav"),
   lose: require("../../assets/sounds/lose.wav"),
   levelup: require("../../assets/sounds/levelup.wav"),
   start: require("../../assets/sounds/start.wav"),
+  whistle: require("../../assets/sounds/whistle.wav"),
+  goal: require("../../assets/sounds/goal.wav"),
+  power: require("../../assets/sounds/power.wav"),
 } as const;
 export type SoundName = keyof typeof SOURCES;
 
@@ -37,7 +38,7 @@ export function initSounds() {
   for (const name of Object.keys(SOURCES) as SoundName[]) {
     try {
       const p = createAudioPlayer(SOURCES[name]);
-      p.volume = name === "tap" || name === "tick" ? 0.5 : 0.8;
+      p.volume = 0.8;
       players[name] = p;
     } catch {}
   }

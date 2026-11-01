@@ -91,9 +91,6 @@ def save(name, samples, gain=0.9):
     print(name, f"{len(samples) / SR:.2f}s")
 
 
-# button press: short wooden pop
-save("tap", mix((0, tone(520, 0.07, partials=MARIMBA, decay=0.02, glide=0.4)), (0, noise(0.03, 0.15, 0.5, 0.2))), 0.55)
-
 # a reward card lands: bubbly pop going up
 save("pop", tone(660, 0.12, partials=((1, 1.0), (2, 0.3)), decay=0.04, glide=0.9), 0.7)
 
@@ -111,9 +108,6 @@ save("whoosh", noise(0.32, 0.6, 0.02, 0.35, attack=0.12, decay=0.12), 0.45)
 
 # title stamp: low thump plus a little click
 save("stamp", mix((0, tone(110, 0.25, decay=0.06, glide=-0.5)), (0, noise(0.05, 0.3, 0.6, 0.3))), 0.85)
-
-# clock running out
-save("tick", tone(1400, 0.05, partials=((1, 1.0), (2.7, 0.2)), decay=0.012), 0.45)
 
 # victory fanfare: brassy arpeggio, held chord, sparkle on top
 arp = [("C5", 0.0), ("E5", 0.11), ("G5", 0.22)]
@@ -134,3 +128,25 @@ save("levelup", mix(*tracks), 0.85)
 
 # get ready / match start whistle-ish blip
 save("start", mix((0, tone(note("A5"), 0.12, partials=BELL, decay=0.05)), (0.14, tone(note("A6"), 0.35, partials=BELL, decay=0.12))), 0.7)
+
+# ── Dribbling Rush (big moments only)
+
+# referee's whistle: two short trilled blasts (foul, the run is over)
+def whistle(sec, vol=0.45):
+    n = int(SR * sec)
+    out, ph = [], 0.0
+    for i in range(n):
+        t = i / SR
+        f = 2900 * (1 + 0.035 * math.sin(2 * math.pi * 38 * t))  # the pea's trill
+        ph += 2 * math.pi * f / SR
+        env = min(1.0, t / 0.01) * min(1.0, (sec - t) / 0.03)
+        out.append((math.sin(ph) + 0.25 * math.sin(2 * ph)) * env * vol + random.uniform(-1, 1) * 0.04 * env)
+    return out
+save("whistle", mix((0, whistle(0.16)), (0.22, whistle(0.42))), 0.75)
+
+# goal: the net's thump, then a crowd roar that swells and settles
+roar = noise(1.6, vol=0.5, lo=0.05, hi=0.35, attack=0.18, decay=0.9)
+save("goal", mix((0, tone(90, 0.22, vol=0.6, decay=0.07, glide=-0.4)), (0, noise(0.12, 0.35, 0.5, 0.2)), (0.08, roar), (0.1, tone(note("C6"), 0.25, vol=0.25, partials=BELL, decay=0.08)), (0.2, tone(note("G6"), 0.45, vol=0.25, partials=BELL, decay=0.15))), 0.85)
+
+# power-up: a quick rising sparkle
+save("power", mix(*[(i * 0.045, tone(note(n), 0.22, vol=0.4, partials=BELL, decay=0.07)) for i, n in enumerate(["E5", "G5", "B5", "E6", "G6"])]), 0.7)

@@ -4,8 +4,9 @@ import { Image, Modal, Pressable, ScrollView, StyleSheet, View, type ImageSource
 import { evaluateGuess } from "@/lib/wordle";
 
 import { BRAND } from "~/lib/brand";
+import { hasUnity } from "~/lib/unity";
 import { useI18n } from "~/lib/i18n";
-import { C, T } from "~/lib/theme";
+import { C, F, T } from "~/lib/theme";
 
 import { Tile } from "./LetterTile";
 import { Text } from "./Text";
@@ -121,8 +122,95 @@ export function TikiSteps() {
       <Rule image={BRAND.how.grid} title={t("tikiTakaName")} desc={t("ttStep1")} />
       <Rule image={BRAND.how.namePlayer} title={t("ttPlaceholder").replace("…", "")} desc={t("ttStep2")} />
       <Rule image={BRAND.how.threeRow} title="X O" desc={t("ttStep3")} />
+      <Text style={T.caption}>{t("jkRuleHt")}</Text>
     </View>
   );
+}
+
+/** Rules as numbered steps, for games without step art. */
+export function NumberedRules({ items, note }: { items: string[]; note?: string }) {
+  return (
+    <View style={{ gap: 12 }}>
+      {items.map((text, i) => (
+        <View key={i} style={styles.numbered}>
+          <View style={styles.num}>
+            <Text style={styles.numText}>{i + 1}</Text>
+          </View>
+          <Text style={[T.body, { flex: 1 }]}>{text}</Text>
+        </View>
+      ))}
+      {note ? <Text style={T.caption}>{note}</Text> : null}
+    </View>
+  );
+}
+
+export function QuizSteps() {
+  const { t } = useI18n();
+  return (
+    <View style={{ gap: 16 }}>
+      <Rule image={BRAND.how.questions} desc={t("qzRule1")} />
+      <Rule image={BRAND.how.speed} desc={t("qzRule2")} />
+      <Rule image={BRAND.how.players} desc={t("qzRule3")} />
+      <Text style={T.caption}>{t("jkRuleQz")}</Text>
+    </View>
+  );
+}
+
+export function PossessionSteps() {
+  const { t } = useI18n();
+  return (
+    <View style={{ gap: 16 }}>
+      <Rule image={BRAND.how.clock} desc={t("ppRule1")} />
+      <Rule image={BRAND.how.hexes} desc={t("ppRule2")} />
+    </View>
+  );
+}
+
+export function DuelSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("dzRule1"), t("dzRule2"), t("dzRule3"), t("dzRule4")]} note={t("dzDataNote")} />;
+}
+
+export function TaktikSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("ttkRule1"), t("ttkRule2"), t("ttkRule3"), t("ttkRule4"), t("ttkRule5"), t("ttkRule6")]} />;
+}
+
+export function RondoSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("rdRule1"), t("rdRule2"), t("rdRule3")]} note={t("jkRuleRd")} />;
+}
+
+/** The two-club duel's rules (a Rondo mode); `target` = hands to win. */
+export function RondoPairSteps({ target = 3 }: { target?: number }) {
+  const { t } = useI18n();
+  return (
+    <View style={{ gap: 10 }}>
+      <Text style={styles.subTitle}>{t("rdModePair")}</Text>
+      <NumberedRules items={[t("rdPairRule1"), t("rdPairRule2"), t("rdPairRule3").replace("{n}", String(target))]} />
+    </View>
+  );
+}
+
+export function WhoAmISteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("wmRule1"), t("wmRule2"), t("wmRule3")]} />;
+}
+
+export function BingoSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("bingoRule1"), t("bingoRule2")]} />;
+}
+
+/** Dribbling Rush: the 3D game's controls (or the 2D one's on builds without Unity), one step per " · " part. */
+export function RushSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={t(hasUnity() ? "rushHow3D" : "rushHow").split(" · ")} />;
+}
+
+export function MysterySteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("myIntro")]} />;
 }
 
 /** Native page sheet with a title and a Close action. */
@@ -152,5 +240,9 @@ const styles = StyleSheet.create({
   legend: { flexDirection: "row", flexWrap: "wrap", gap: 16 },
   legendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
   legendDot: { width: 14, height: 14, borderRadius: 4 },
+  numbered: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
+  num: { width: 24, height: 24, borderRadius: 12, backgroundColor: C.greenSoft, alignItems: "center", justifyContent: "center" },
+  numText: { fontFamily: F.display, fontSize: 14, color: C.greenDark },
   sheetHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 20 },
+  subTitle: { fontFamily: F.display, fontSize: 19, color: C.text },
 });

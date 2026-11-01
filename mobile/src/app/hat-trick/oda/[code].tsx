@@ -5,21 +5,28 @@ import { Share, StyleSheet, View } from "react-native";
 
 
 import { GameActions } from "~/components/GameActions";
+import { EmoteButton, EmoteLayer, useEmotes } from "~/components/Emotes";
+import { PlayerMenuButton } from "~/components/PlayerMenu";
 import { SeriesEnd } from "~/components/SeriesEnd";
 import { HatTrickBoard, MARK } from "~/components/HatTrickBoard";
+import { ConnectionBanner } from "~/components/ConnectionBanner";
 import { Text } from "~/components/Text";
 import { WaitingAnimation } from "~/components/WaitingAnimation";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
-import { haptic } from "~/lib/haptics";
+import { useTurnCue } from "~/lib/haptics";
+import { useRecordMatch } from "~/lib/history";
 import { gridFromIds, gridToIds, NEXT_GAME_MS, TURN_SECONDS, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
+import { useLeaveGuard } from "~/lib/leaveGuard";
 import { dealGrid } from "~/lib/league";
+import { GAME_ICON, useDuelActivity, useLivePush } from "~/lib/liveActivity";
 import { getNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
 import { C, F, T } from "~/lib/theme";
 
 interface HtPlayer {
   id: string;
+  ref?: string | null;
   nick: string;
   mark: Mark;
 }
@@ -30,7 +37,8 @@ interface HtRoom {
   board: (HtCell | null)[];
   turn: Mark;
   winner: Winner;
-  flash: { mark: Mark; reason: "wrong" | "timeout" | "declined" | "skip" } | null;
+  flash: { mark: Mark; reason: "wrong" | "timeout" | "declined" | "skip" | "joker"; joker?: "time" | "hint" } | null;
+  jokers?: Record<Mark, { time: number; hint: number }>;
   remainingMs: number;
   steals: Record<Mark, number> | null;
   used: string[];
@@ -41,15 +49,22 @@ interface HtRoom {
   /** game wins per mark this series; `over` once someone reaches `target` */
   series: { X: number; O: number; target: number; over: boolean };
   league: string;
+  /** this turn's full length; mark with the comeback bonus this game */
+  turnMs?: number;
+  comeback?: Mark | null;
+  /** every phone here knows "played with" criteria (server.js htAllKnowMates) */
+  mates?: boolean;
   players: HtPlayer[];
 }
 
 /** Online Hat-trick room: waiting screen, then the shared board driven by the server. */
 export default function HatTrickRoom() {
   const { t } = useI18n();
+  const emotes = useEmotes("ht", true);
   // `random` is set when the room came from the random queue: offer a new match after the game
   const params = useLocalSearchParams<{ code: string; random?: string }>();
   const code = (params.code ?? "").toUpperCase();
+  useLivePush("ht", code || null);
   const [room, setRoom] = useState<HtRoom | null>(null);
   const [deadline, setDeadline] = useState(0);
   const [now, setNow] = useState(() => Date.now());
@@ -61,18 +76,17 @@ export default function HatTrickRoom() {
   useEffect(() => {
     const socket = getSocket();
     const apply = (r: HtRoom) => {
-      setRoom((prev) => {
-        // a move by the other phone: light tick
-        if (prev && r.board.filter(Boolean).length > prev.board.filter(Boolean).length) haptic.tap();
-        return r;
-      });
+      setRoom(r);
       setDeadline(Date.now() + r.remainingMs);
     };
+    // events of another room (an older game this phone was in) are not this screen's
     const onUpdate = (r: HtRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(false);
       apply(r);
     };
     const onPeerLeft = (r: HtRoom) => {
+      if (r.code !== code) return;
       setPeerLeft(true);
       apply(r);
     };
@@ -91,6 +105,7 @@ export default function HatTrickRoom() {
       socket.off("ht:update", onUpdate);
       socket.off("ht:peer-left", onPeerLeft);
       socket.off("connect", onConnect);
+      socket.emit("ht:leave", { code });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
@@ -104,18 +119,55 @@ export default function HatTrickRoom() {
 
   // Between games of a series the host's phone deals the next grid after a short pause
   const seriesOver = room?.series?.over ?? false;
+  useLeaveGuard(!!room?.started && !seriesOver && !peerLeft);
   const hostHere = room?.players[0]?.id === myId;
   const roomLeague = room?.league;
+  // an older app in the room can't draw "played with" criteria
+  const roomMates = room?.mates !== false;
   useEffect(() => {
     if (!room?.winner || seriesOver || !hostHere || peerLeft) return;
-    const id = setTimeout(() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(roomLeague)) }), NEXT_GAME_MS);
+    const id = setTimeout(() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(roomLeague, roomMates)) }), NEXT_GAME_MS);
     return () => clearTimeout(id);
-  }, [room?.winner, seriesOver, hostHere, peerLeft, roomLeague]);
+  }, [room?.winner, seriesOver, hostHere, peerLeft, roomLeague, roomMates]);
 
   const grid = useMemo(() => (room ? gridFromIds(room.grid) : null), [room?.grid]); // eslint-disable-line react-hooks/exhaustive-deps
   const me = room?.players.find((p) => p.id === myId);
+  useTurnCue(!!me && !!room?.started && room.turn === me.mark && !room.winner);
   const isHost = room?.players[0]?.id === myId;
-  const timeLeft = Math.min(TURN_SECONDS, Math.max(0, Math.ceil((deadline - now) / 1000)));
+  const turnMs = room?.turnMs ?? TURN_SECONDS * 1000;
+  const timeLeft = Math.min(turnMs / 1000, Math.max(0, Math.ceil((deadline - now) / 1000)));
+  const opponent = room?.players.find((p) => p.id !== myId);
+  // the series for Profile's recent matches
+  const mineWon = me && room?.series ? room.series[me.mark] : 0;
+  const theirsWon = me && room?.series ? room.series[me.mark === "X" ? "O" : "X"] : 0;
+  // one series in this room: its last grid (XP and Profile's recent matches)
+  const seriesKey = `ht-${code}-${[...(room?.grid?.rows ?? []), ...(room?.grid?.cols ?? [])].join(",")}`;
+  useRecordMatch(seriesOver && !!me, {
+    key: seriesKey,
+    game: "ht",
+    opponent: opponent?.nick || t("opponent"),
+    result: mineWon > theirsWon ? "win" : mineWon < theirsWon ? "loss" : "draw",
+    score: `${mineWon}–${theirsWon}`,
+  });
+
+  // Lock Screen / Dynamic Island: whose turn, the clock, the series score
+  useDuelActivity(
+    room?.started && me
+      ? {
+          game: t("tikiTakaName"),
+          icon: GAME_ICON.ht,
+          me: me.mark,
+          opponent: opponent?.nick || t("opponent"),
+          turn: room.turn,
+          winner: room.winner,
+          matchOver: !!room.series?.over || peerLeft,
+          score: { X: room.series?.X ?? 0, O: room.series?.O ?? 0 },
+          since: deadline - turnMs,
+          deadline,
+          path: `/hat-trick/oda/${code}`,
+        }
+      : null
+  );
 
   const copy = async () => {
     await Clipboard.setStringAsync(code);
@@ -196,7 +248,11 @@ export default function HatTrickRoom() {
       ? f.mark === me?.mark
         ? t("htDrawDeclined")
         : null
-      : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.reason === "wrong" ? "ttWrong" : f.reason === "skip" ? "htSkipped" : "ttTimeout")}`;
+      : f.reason === "joker"
+        ? f.mark === me?.mark
+          ? null
+          : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.joker === "time" ? "jkUsedTime" : "jkUsedHint")}`
+        : `${nameOf(room.players.find((p) => p.mark === f.mark))}: ${t(f.reason === "wrong" ? "ttWrong" : f.reason === "skip" ? "htSkipped" : "ttTimeout")}`;
   const iWon = room.winner === me?.mark;
   const series = room.series;
   const score = me ? `${series[me.mark]} – ${series[me.mark === "X" ? "O" : "X"]}` : "";
@@ -213,57 +269,74 @@ export default function HatTrickRoom() {
   const draw = !room.drawOffer || !me ? null : room.drawOffer === me.mark ? "sent" : "received";
 
   return (
-    <Page>
-      <Stack.Screen options={{ title: code }} />
-      {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
-      <HatTrickBoard
-        steals={room.steals}
-        usedNames={room.used}
-        grid={grid}
-        board={room.board}
-        turn={room.turn}
-        winner={room.winner}
-        timeLeft={timeLeft}
-        labels={labels}
-        canMove={myTurn && !peerLeft}
-        status={myTurn ? t("htYourTurn") : t("htTheirTurn")}
-        flash={flash}
-        celebrate={iWon && series.over}
-        winnerText={winnerText}
-        winnerSub={winnerSub}
-        series={series}
-        onMove={(cell, name) => getSocket().emit("ht:move", { cell, name })}
-        footer={
-          room.winner && !series.over ? null : room.winner ? (
-            <View style={{ marginTop: 18, gap: 10 }}>
-              {isHost ? (
-                <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league)) })} />
-              ) : (
-                <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
-              )}
-              {params.random && <Button title={t("htNewGame")} kind="secondary" icon="play.fill" onPress={() => router.replace("/hat-trick/rastgele")} />}
-            </View>
-          ) : (
-            <GameActions
-              draw={draw}
-              disabled={peerLeft}
-              onOfferDraw={() => getSocket().emit("ht:draw-offer")}
-              onReplyDraw={(accept) => getSocket().emit("ht:draw-reply", { accept })}
-              onForfeit={() => getSocket().emit("ht:forfeit")}
-              onSkip={() => getSocket().emit("ht:skip")}
-              canSkip={myTurn}
-            />
-          )
-        }
-      />
-      <SeriesEnd
-        over={series.over}
-        won={iWon}
-        mine={me ? series[me.mark] : 0}
-        theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
-        onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league)) }) : null}
-      />
-    </Page>
+    <>
+      <Page>
+        {/* a friend room shows its code (to share); a random match the game's name */}
+        <Stack.Screen options={{ title: params.random ? t("tikiTakaName") : code, headerRight: () => (
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <PlayerMenuButton target={opponent?.ref ? { ref: opponent.ref, nick: opponent.nick, game: "ht" } : null} color={C.text} bg="#EEF2EF" />
+                <EmoteButton e={emotes} color={C.text} bg="#EEF2EF" />
+              </View>
+            ),
+          }}
+        />
+        {peerLeft && <Text style={[T.body, { color: C.red, textAlign: "center", marginBottom: 10 }]}>{t("htPeerLeft")}</Text>}
+        <HatTrickBoard
+          steals={room.steals}
+          usedNames={room.used}
+          grid={grid}
+          board={room.board}
+          turn={room.turn}
+          winner={room.winner}
+          timeLeft={timeLeft}
+          labels={labels}
+          canMove={myTurn && !peerLeft}
+          status={myTurn ? t("htYourTurn") : t("htTheirTurn")}
+          flash={flash}
+          celebrate={iWon && series.over}
+          winnerText={winnerText}
+          winnerSub={winnerSub}
+          series={series}
+          turnSeconds={(room.turnMs ?? TURN_SECONDS * 1000) / 1000}
+          comeback={room.comeback ?? null}
+          onMove={(cell, name) => getSocket().emit("ht:move", { cell, name })}
+          jokers={me && room.jokers ? room.jokers[me.mark] : null}
+          onJoker={(kind) => getSocket().emit("ht:joker", { kind })}
+          footer={
+            room.winner && !series.over ? null : room.winner ? (
+              <View style={{ marginTop: 18, gap: 10 }}>
+                {isHost ? (
+                  <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) })} />
+                ) : (
+                  <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
+                )}
+                {params.random && <Button title={t("htNewGame")} kind="secondary" icon="play.fill" onPress={() => router.replace("/hat-trick/rastgele")} />}
+              </View>
+            ) : (
+              <GameActions
+                draw={draw}
+                disabled={peerLeft}
+                onOfferDraw={() => getSocket().emit("ht:draw-offer")}
+                onReplyDraw={(accept) => getSocket().emit("ht:draw-reply", { accept })}
+                onForfeit={() => getSocket().emit("ht:forfeit")}
+                onSkip={() => getSocket().emit("ht:skip")}
+                canSkip={myTurn}
+              />
+            )
+          }
+        />
+        <SeriesEnd
+          xpKey={`${seriesKey}-series`}
+          over={series.over}
+          won={iWon}
+          mine={me ? series[me.mark] : 0}
+          theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
+          onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) }) : null}
+        />
+        <EmoteLayer e={emotes} top={4} />
+      </Page>
+      <ConnectionBanner game="ht" />
+    </>
   );
 }
 
