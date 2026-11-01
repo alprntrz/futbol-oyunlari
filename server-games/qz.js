@@ -10,7 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const { recordResult } = require("../server-accounts");
 const { refForSocket, shownNick } = require("../server-refs");
-const { tellElo, codeFor, cleanNick, cleanTier, tierGap, seatRef, seatNick, qzNick } = require("../server-core");
+const { tellElo, codeFor, cleanNick, cleanTier, tierGap, seatRef, seatNick, qzNick, pairAllowsRating } = require("../server-core");
 const { pathToFileURL } = require("node:url");
 
 /** the question generator, once loaded (server-taktik.js registers the "@/" resolver it needs) */
@@ -126,6 +126,9 @@ function qzPublic(room, viewer) {
 const QZ_STATS_FILE = process.env.QZ_STATS_FILE || path.join(__dirname, "..", "data", "quiz-stats.json");
 /** pid -> { nick, xp, points, games, wins, week, weekXp } */
 let qzStats = {};
+// qz:standings is public: the sorted table is rebuilt at most once per STANDINGS_CACHE_MS ("all" / a week → rows)
+const STANDINGS_CACHE_MS = 30_000;
+const standingsCache = new Map();
 try {
   qzStats = JSON.parse(fs.readFileSync(QZ_STATS_FILE, "utf8"));
 } catch {}
@@ -441,13 +444,16 @@ function attach(socket, ctx) {
       if (last && last.score === p.score) last.ids.push(p.uid);
       else places.push({ score: p.score, ids: [p.uid] });
     }
-    tellElo("qz", rated, recordResult("qz", places.map((x) => x.ids)));
+    // the same accounts get at most PAIR_RATED_PER_DAY rated quizzes together (server-core.js); one spent pair leaves the room unrated
+    const uids = rated.map((p) => p.uid);
+    if (uids.every((a, i) => uids.slice(i + 1).every((b) => pairAllowsRating("qz", a, b)))) tellElo("qz", rated, recordResult("qz", places.map((x) => x.ids)));
   };
 
   // "Delete my data" in the app: drop this player's quiz record for good
   socket.on("qz:forget", ({ pid } = {}, cb) => {
     if (!qzValidPid(pid)) return cb?.({ ok: false });
     delete qzStats[pid];
+    standingsCache.clear();
     qzSaveStats();
     cb?.({ ok: true });
   });
@@ -461,10 +467,16 @@ function attach(socket, ctx) {
   socket.on("qz:standings", ({ pid, period } = {}, cb) => {
     const week = qzWeek();
     const weekly = period === "week";
-    const rows = Object.entries(qzStats)
-      .map(([id, st]) => ({ id, nick: st.nick || "?", level: qzLevel(st.xp).level, xp: weekly ? (st.week === week ? st.weekXp : 0) : st.xp, points: st.points, wins: st.wins }))
-      .filter((r) => r.xp > 0)
-      .sort((a, b) => b.xp - a.xp);
+    const key = weekly ? week : "all";
+    let hit = standingsCache.get(key);
+    if (!hit || Date.now() - hit.at > STANDINGS_CACHE_MS) {
+      const sorted = Object.entries(qzStats)
+        .map(([id, st]) => ({ id, nick: st.nick || "?", level: qzLevel(st.xp).level, xp: weekly ? (st.week === week ? st.weekXp : 0) : st.xp, points: st.points, wins: st.wins }))
+        .filter((r) => r.xp > 0)
+        .sort((a, b) => b.xp - a.xp);
+      standingsCache.set(key, (hit = { at: Date.now(), rows: sorted }));
+    }
+    const rows = hit.rows;
     const mine = rows.findIndex((r) => r.id === pid);
     // the install id never leaves the server: rows carry its ref (report / block) instead
     const strip = ({ id, ...r }, i) => {

@@ -541,3 +541,91 @@ test("Card Duel: a rematch starts only once both players ask", async () => {
   a.emit("dz:leave");
   b.emit("dz:leave");
 });
+
+/** Accounts with session tokens, written straight into the server's accounts.db. */
+function addAccounts(pairs: [string, string][]) {
+  // (node:sqlite has no type declarations in this project's @types/node)
+  const { DatabaseSync } = require("node:sqlite") as { DatabaseSync: new (file: string) => { prepare: (sql: string) => { run: (...v: unknown[]) => void }; close: () => void } };
+  const db = new DatabaseSync(join(DATA, "accounts.db"));
+  for (const [u, t] of pairs) {
+    db.prepare("INSERT INTO users (id, provider, sub, nick, avatar, created) VALUES (?,?,?,?,?,?)").run(u, "apple", "s" + u, u, "striker", Date.now());
+    db.prepare("INSERT INTO sessions (hash, user_id, created) VALUES (?,?,?)").run(createHash("sha256").update(t).digest("hex"), u, Date.now());
+  }
+  db.close();
+}
+
+test("XP: parallel /xp requests can't pass the daily cap, in the total or the week's league", async () => {
+  addAccounts([["uxp", "tokXP"]]);
+  const http = require("node:http") as typeof import("node:http");
+  const { port } = new globalThis.URL(URL);
+  // every request is in (user row loaded) before any body arrives
+  const reqs = Array.from({ length: 20 }, (_, i) => {
+    const r = http.request({ port, method: "POST", path: "/api/account/xp", headers: { authorization: "Bearer tokXP", "content-type": "application/json" } });
+    const done = new Promise<void>((ok) => r.on("response", (res) => (res.resume(), res.on("end", ok))));
+    r.flushHeaders();
+    return { r, i, done };
+  });
+  await wait(300);
+  for (const { r, i } of reqs) r.end(JSON.stringify({ awards: [{ key: `par-${i}`, game: "qz", amount: 200 }] }));
+  await Promise.all(reqs.map((x) => x.done));
+  const { DatabaseSync } = require("node:sqlite") as { DatabaseSync: new (file: string) => { prepare: (sql: string) => { get: (...v: unknown[]) => Record<string, number> }; close: () => void } };
+  const db = new DatabaseSync(join(DATA, "accounts.db"));
+  const u = db.prepare("SELECT xp, xp_today FROM users WHERE id = ?").get("uxp");
+  const league = db.prepare("SELECT SUM(xp) AS xp FROM league_members WHERE user_id = ?").get("uxp");
+  db.close();
+  assert.equal(u.xp, 3000);
+  assert.equal(u.xp_today, 3000);
+  assert.equal(league.xp, 3000);
+});
+
+test("Card Duel: leaving a live match is rated at most 3 times a day for the same two accounts", async () => {
+  addAccounts([["udz1", "tokDZ1"], ["udz2", "tokDZ2"]]);
+  const [a, b] = await Promise.all([client({ token: "tokDZ1" }), client({ token: "tokDZ2" })]);
+  let elos = 0;
+  a.on("elo", () => elos++);
+  const theme = themeForDay(Math.floor(Date.now() / 86_400_000));
+  const ha = houseHand(theme, seededRandom(21));
+  const hb = houseHand(theme, seededRandom(22));
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "dz:create", { nick: "a", hand: ha });
+  for (let i = 0; i < 5; i++) {
+    assert.ok((await ask<{ ok: boolean }>(b, "dz:join", { code: c.room.code, nick: "b", hand: hb })).ok);
+    a.emit("dz:start");
+    await wait(150);
+    b.emit("dz:leave");
+    await wait(150);
+  }
+  assert.equal(elos, 3);
+  a.emit("dz:leave");
+});
+
+test("Quiz: the same two accounts get at most 3 rated quizzes a day", async () => {
+  addAccounts([["uqz1", "tokQZ1"], ["uqz2", "tokQZ2"]]);
+  // four rooms at once, each player on its own socket per room
+  let elos = 0;
+  const answer = (s: Socket) => s.on("qz:update", (v: { phase: string }) => v.phase === "question" && s.emit("qz:answer", { choice: 0 }));
+  const done: Promise<void>[] = [];
+  for (let i = 0; i < 4; i++) {
+    const [a, b] = await Promise.all([client({ token: "tokQZ1" }), client({ token: "tokQZ2" })]);
+    a.on("elo", () => elos++);
+    answer(a);
+    answer(b);
+    const qs = quizQuestions(5, "players", "easy", seededRandom(30 + i));
+    const c = await ask<{ ok: boolean; room: { code: string } }>(a, "qz:create", { nick: "a", settings: { seconds: 15 }, questions: qs });
+    await ask(b, "qz:join", { code: c.room.code, nick: "b" });
+    done.push(new Promise((ok) => a.on("qz:update", (v: { phase: string }) => v.phase === "done" && ok())));
+    a.emit("qz:start");
+  }
+  await Promise.all(done);
+  await wait(300);
+  assert.equal(elos, 3);
+});
+
+test("Reports: a guest's report is kept but marked as not signed in", async () => {
+  const s = await client({ pid: "reporterguest01" });
+  const target = createHash("sha256").update("x").digest("hex").slice(0, 16);
+  assert.ok((await ask<{ ok: boolean }>(s, "rep:send", { ref: target, reason: "nick" })).ok);
+  await wait(200);
+  const { readFileSync } = require("node:fs") as typeof import("node:fs");
+  const line = readFileSync(join(DATA, "reports.jsonl"), "utf8").trim().split("\n").map((l) => JSON.parse(l)).find((r) => r.ref === target);
+  assert.equal(line?.signed, false);
+});

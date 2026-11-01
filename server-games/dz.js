@@ -275,7 +275,7 @@ function attach(socket, ctx) {
     if (leaver && room.started && !room.over && room.players.length === 2 && !room.rated) {
       const stay = room.players.find((p) => p !== leaver);
       room.rated = true;
-      if (leaver.uid && stay?.uid) tellElo("dz", room.players, recordResult("dz", [[stay.uid], [leaver.uid]]));
+      if (leaver.uid && stay?.uid && pairAllowsRating("dz", stay.uid, leaver.uid)) tellElo("dz", room.players, recordResult("dz", [[stay.uid], [leaver.uid]]));
     }
     room.players = room.players.filter((p) => p.id !== socket.id);
     clearTimeout(room.timer);

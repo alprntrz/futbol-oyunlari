@@ -175,11 +175,11 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
       socket.data.blocks = cleanBlocks(refs);
       if (socket.data.uid) lastBlocks.set(socket.data.uid, socket.data.blocks);
     });
-    // report a player (their nickname, cheating, other): one every 5 s
+    // report a player (their nickname, cheating, other): one every 5 s; only signed-in reports count toward hiding a nick
     socket.on("rep:send", (p, cb) => {
       if (Date.now() - (socket.data.lastReport ?? 0) < 5000) return cb?.({ ok: false, error: "slow" });
       socket.data.lastReport = Date.now();
-      cb?.({ ok: addReport(socket.data.ref, p) });
+      cb?.({ ok: addReport(socket.data.ref, p, !!socket.data.uid) });
     });
 
     // Losing the connection in a live match or a lobby nobody started yet (the host switched apps):
