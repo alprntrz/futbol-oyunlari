@@ -16,7 +16,13 @@
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com",
         "EXPO_PUBLIC_SENTRY_DSN": "https://5a52ab1960987f908d7504c85b0c9e85@o4512279603773440.ingest.us.sentry.io/4512279621009408",
         "SENTRY_ALLOW_FAILURE": "true",
-        "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m"
+        "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m",
+        "EXPO_PUBLIC_ADMOB_REWARDED_IOS": "ca-app-pub-2321803679128648/8082034874",
+        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_IOS": "ca-app-pub-2321803679128648/6842647385",
+        "EXPO_PUBLIC_ADMOB_REWARDED_ANDROID": "",
+        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ANDROID": "",
+        "EXPO_PUBLIC_RC_IOS_KEY": "",
+        "EXPO_PUBLIC_RC_ANDROID_KEY": ""
       },
       "channel": "preview",
       "android": {
@@ -31,7 +37,13 @@
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "360213444851-kr9qvf0f7kei3n36bu8a2qq1sp9e6lu1.apps.googleusercontent.com",
         "EXPO_PUBLIC_SENTRY_DSN": "https://5a52ab1960987f908d7504c85b0c9e85@o4512279603773440.ingest.us.sentry.io/4512279621009408",
         "SENTRY_ALLOW_FAILURE": "true",
-        "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m"
+        "EXPO_PUBLIC_POSTHOG_KEY": "phc_p9N3afnWZZaazgmrEJLfCAqxHT7nXnrkUny4HesHww4m",
+        "EXPO_PUBLIC_ADMOB_REWARDED_IOS": "ca-app-pub-2321803679128648/8082034874",
+        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_IOS": "ca-app-pub-2321803679128648/6842647385",
+        "EXPO_PUBLIC_ADMOB_REWARDED_ANDROID": "",
+        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ANDROID": "",
+        "EXPO_PUBLIC_RC_IOS_KEY": "",
+        "EXPO_PUBLIC_RC_ANDROID_KEY": ""
       },
       "channel": "production"
     },
