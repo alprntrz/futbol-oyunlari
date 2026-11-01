@@ -19,10 +19,25 @@ const setIo = (server) => (io = server);
 /** a connected socket by id (a seat's `id`), or undefined */
 const socketOf = (id) => io?.sockets.sockets.get(id);
 
+/** rated games the same two accounts may play in one game per UTC day (more would let a pair trade wins) */
+const PAIR_RATED_PER_DAY = 3;
+/** "game:day:uidA:uidB" -> rated games so far (in memory; a restart only forgives a few) */
+const pairRated = new Map();
+function pairAllowsRating(game, a, b) {
+  const day = new Date().toISOString().slice(0, 10);
+  const key = [game, day, ...[a, b].sort()].join(":");
+  const n = pairRated.get(key) ?? 0;
+  if (n >= PAIR_RATED_PER_DAY) return false;
+  if (pairRated.size > 50_000) for (const k of pairRated.keys()) if (!k.includes(`:${day}:`)) pairRated.delete(k);
+  pairRated.set(key, n + 1);
+  return true;
+}
+
 /** Rate a two-player result (marks): winner first, or a draw. Guests (no uid) aren't rated. */
 function rateDuel(game, room, winnerMark) {
   const [a, b] = room.players;
   if (!a?.uid || !b?.uid) return;
+  if (!pairAllowsRating(game, a.uid, b.uid)) return;
   if (winnerMark === "draw") return tellElo(game, room.players, recordResult(game, [[a.uid, b.uid]]));
   const w = room.players.find((p) => p.mark === winnerMark);
   const l = room.players.find((p) => p.mark !== winnerMark);
@@ -139,4 +154,4 @@ const nameKey = (v) =>
 /** whether `name` was already played in a room (`used` holds the names so far) */
 const nameUsed = (used, name) => used.some((u) => nameKey(u) === nameKey(name));
 
-module.exports = { REJOIN_MS, INTRO_MS, setIo, socketOf, rateDuel, tellElo, refById, seatRef, seatNick, blockedPair, CODE_ALPHABET, codeFor, cleanNick, TIER_WIDEN_MS, cleanTier, tierGap, takePairs, qzNick, critId, nameOf, nameKey, nameUsed };
+module.exports = { REJOIN_MS, INTRO_MS, setIo, socketOf, rateDuel, pairAllowsRating, tellElo, refById, seatRef, seatNick, blockedPair, CODE_ALPHABET, codeFor, cleanNick, TIER_WIDEN_MS, cleanTier, tierGap, takePairs, qzNick, critId, nameOf, nameKey, nameUsed };

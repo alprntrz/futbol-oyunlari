@@ -1,5 +1,6 @@
-// Football Quiz online (qz:*; Bilgi Yarışı, up to 5 players). The creator's phone deals the
-// questions (generated from the shared data by src/lib/quiz.ts, answers included). The server keeps
+// Football Quiz online (qz:*; Bilgi Yarışı, up to 5 players). The server deals the questions itself
+// (src/lib/quiz.ts, the same generator the phones have), so no phone ever holds the answers; the
+// questions a phone sends are only used while those rules are still loading. The server keeps
 // the answers to itself until the reveal, runs the clock and the scoring, and keeps levels and
 // standings per install id. Random rooms fill up with house players (nicknames, human-ish timing)
 // when not enough people are searching. Not in server.js's GAMES (not a two-player room); server.js
@@ -10,6 +11,15 @@ const path = require("path");
 const { recordResult } = require("../server-accounts");
 const { refForSocket, shownNick } = require("../server-refs");
 const { tellElo, codeFor, cleanNick, cleanTier, tierGap, seatRef, seatNick, qzNick } = require("../server-core");
+const { pathToFileURL } = require("node:url");
+
+/** the question generator, once loaded (server-taktik.js registers the "@/" resolver it needs) */
+let QUIZ = null;
+import(pathToFileURL(path.join(__dirname, "..", "src", "lib", "quiz.ts")).href)
+  .then((m) => (QUIZ = m))
+  .catch((e) => console.error("quiz rules:", e?.message));
+/** room lengths the app offers (bilgi/oda/index.tsx) */
+const QZ_COUNTS = [5, 10, 15];
 
 const QZ_MAX = 5;
 const QZ_INTRO_MS = 2000;
@@ -53,6 +63,18 @@ function qzValidQuestions(qs) {
         q.answer < 4
     )
   );
+}
+
+/**
+ * The questions a room plays: dealt by the server in the room's category and level, as many as the
+ * phone asked for (rounded to a length the app offers). Rules still loading → the phone's set.
+ */
+function qzDeal(phoneQuestions, settings) {
+  if (!QUIZ) return phoneQuestions;
+  const want = phoneQuestions.length;
+  const count = QZ_COUNTS.reduce((a, b) => (Math.abs(b - want) < Math.abs(a - want) ? b : a));
+  const dealt = QUIZ.quizQuestions(count, settings.category, settings.difficulty);
+  return dealt.length ? dealt : phoneQuestions;
 }
 
 function qzSettings(s) {
@@ -296,7 +318,8 @@ function attach(socket, ctx) {
     if (qzValidPid(pid)) socket.data.qzPid = pid;
     if (!qzValidQuestions(questions)) return cb?.({ ok: false, error: "bad_questions" });
     if (socket.data.qzCode) qzLeave();
-    const room = qzNewRoom(socket, nick, qzSettings(settings), questions, false);
+    const st = qzSettings(settings);
+    const room = qzNewRoom(socket, nick, st, qzDeal(questions, st), false);
     cb?.({ ok: true, room: qzPublic(room) });
   });
 
@@ -341,7 +364,8 @@ function attach(socket, ctx) {
       if (open.players.length >= open.settings.maxPlayers) qzBegin(open);
       return;
     }
-    const room = qzNewRoom(socket, nick, qzSettings({ difficulty: level }), questions, true);
+    const st = qzSettings({ difficulty: level });
+    const room = qzNewRoom(socket, nick, st, qzDeal(questions, st), true);
     room.tier = myTier;
     qzOpen[`${level}:${myTier}`] = room.code;
     // a few others "find" the room while it waits
@@ -445,11 +469,11 @@ function attach(socket, ctx) {
     if (room) qzAnswer(room, socket.id, Number(choice));
   });
 
-  // Same people, new questions (from the host's phone)
+  // Same people, new questions (dealt by the server, as many as last time)
   socket.on("qz:rematch", ({ questions }) => {
     const room = qzRooms.get(socket.data.qzCode);
     if (!room || room.hostId !== socket.id || room.phase !== "done" || !qzValidQuestions(questions)) return;
-    room.questions = questions;
+    room.questions = qzDeal(questions, room.settings);
     qzBegin(room);
   });
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { houseRondoAnswer, houseRondoThinkMs, judgeRondo, dealRondo, rondoClubById, RONDO_FIRST_TURN_MS, RONDO_TARGET, RONDO_TURN_MS, type RondoVerdict } from "@/lib/rondo";
+import { houseRondoAnswer, houseRondoThinkMs, judgeRondo, dealRondo, rondoClubById, rondoPairClubs, RONDO_FIRST_TURN_MS, RONDO_MAX_ROUNDS, RONDO_TARGET, RONDO_TURN_MS, type RondoMode, type RondoVerdict } from "@/lib/rondo";
 import type { Criterion } from "@/lib/tiki";
 
 import { getNick } from "./raceSession";
@@ -13,15 +13,24 @@ import { getSocket } from "./socket";
  */
 export interface RondoMatch {
   ready: boolean;
+  /** "club": take turns on one club; "pair": race on two clubs */
+  mode: RondoMode;
+  /** rounds (hands) to win, and the most a match can have */
+  target: number;
+  maxRounds: number;
   club: Criterion | null;
+  /** pair mode: the two clubs of this hand */
+  pair: [Criterion, Criterion] | null;
   round: number;
   score: { me: number; them: number };
+  /** club mode: my turn; pair mode: I may answer now (not locked after a miss) */
   myTurn: boolean;
   /** names said this round, oldest first */
   names: { mine: boolean; name: string }[];
   deadline: number;
   turnMs: number;
-  roundEnd: { won: boolean; reason: "timeout" | "forfeit" } | null;
+  /** `won` null: nobody took the hand (pair mode timeout); `name` who took it with, `answers` the best-known fits */
+  roundEnd: RondoRoundEnd | null;
   over: boolean;
   won: boolean;
   opponent: { nick: string; ref: string | null } | null;
@@ -39,18 +48,31 @@ export interface RondoMatch {
   rematch: (() => void) | null;
 }
 
+export interface RondoRoundEnd {
+  won: boolean | null;
+  reason: "timeout" | "forfeit" | "answer";
+  name?: string;
+  answers?: string[];
+}
+
 type Mark = "X" | "O";
 interface ServerRoom {
   code: string;
+  mode?: RondoMode;
+  target?: number;
   started: boolean;
   round: number;
   club: string | null;
+  pair?: string | null;
   score: Record<Mark, number>;
   turn: Mark;
   remainingMs: number;
   turnMs: number;
   names: { mark: Mark; name: string }[];
-  roundEnd: { winner: Mark; reason: "timeout" | "forfeit" } | null;
+  locked?: Record<Mark, number>;
+  roundEnd: { winner: Mark | null; reason: "timeout" | "forfeit" | "answer"; name?: string; answers?: string[] } | null;
+  /** pair mode: over with no winner (both idle for a few hands) */
+  ended?: boolean;
   winner: Mark | null;
   jokers?: Record<Mark, { time: number }>;
   players: { id: string; ref?: string | null; nick: string; mark: Mark }[];
@@ -65,6 +87,9 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
   const [myId, setMyId] = useState(() => getSocket().id ?? "");
   const [wrong, setWrong] = useState<RondoMatch["wrong"]>(null);
   const [games, setGames] = useState(0);
+  // pair mode: my box is locked until then after a miss
+  const [lockedUntil, setLockedUntil] = useState<Record<Mark, number>>({ X: 0, O: 0 });
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     const socket = getSocket();
@@ -74,6 +99,9 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
         return r;
       });
       setDeadline(r.remainingMs ? Date.now() + r.remainingMs : 0);
+      const at = Date.now();
+      setNow(at);
+      setLockedUntil({ X: r.locked?.X ? at + r.locked.X : 0, O: r.locked?.O ? at + r.locked.O : 0 });
     };
     const onUpdate = (r: ServerRoom) => {
       setPeerLeft(false);
@@ -91,7 +119,7 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
     socket.on("connect", onConnect);
     socket.emit("rd:join", { code, nick: getNick() }, (res: { ok: boolean; error?: string; room?: ServerRoom }) => {
       if (res.ok && res.room) apply(res.room);
-      else setError(res.error === "full" ? "full" : "not_found");
+      else setError(res.error === "full" ? "full" : res.error === "update" ? "update" : "not_found");
     });
     return () => {
       socket.off("rd:update", onUpdate);
@@ -106,20 +134,33 @@ export function useRondoOnline(code: string): RondoMatch & { room: ServerRoom | 
   const mark = me?.mark ?? "X";
   const other: Mark = mark === "X" ? "O" : "X";
   const isHost = room?.players[0]?.id === myId;
+  const mode: RondoMode = room?.mode === "pair" ? "pair" : "club";
+  const target = room?.target ?? RONDO_TARGET;
+  const lockLeft = Math.max(0, lockedUntil[mark] - now);
+  useEffect(() => {
+    if (lockLeft <= 0) return;
+    const id = setTimeout(() => setNow(Date.now()), lockLeft);
+    return () => clearTimeout(id);
+  }, [lockLeft]);
+  const live = !!room?.started && !room.roundEnd && !room.winner && !room.ended;
   return {
     room,
     error,
     myId,
     ready: !!room?.started,
+    mode,
+    target,
+    maxRounds: target * 2 - 1,
     club: room?.club ? (rondoClubById(room.club) ?? null) : null,
+    pair: room?.pair ? rondoPairClubs(room.pair) : null,
     round: room?.round ?? 0,
     score: { me: room?.score[mark] ?? 0, them: room?.score[other] ?? 0 },
-    myTurn: !!room && room.turn === mark && !room.roundEnd && !room.winner,
+    myTurn: live && (mode === "pair" ? lockLeft <= 0 : room!.turn === mark),
     names: (room?.names ?? []).map((n) => ({ mine: n.mark === mark, name: n.name })),
     deadline,
     turnMs: room?.turnMs || RONDO_TURN_MS,
-    roundEnd: room?.roundEnd ? { won: room.roundEnd.winner === mark, reason: room.roundEnd.reason } : null,
-    over: !!room?.winner,
+    roundEnd: room?.roundEnd ? { won: room.roundEnd.winner === null ? null : room.roundEnd.winner === mark, reason: room.roundEnd.reason, name: room.roundEnd.name, answers: room.roundEnd.answers } : null,
+    over: !!room?.winner || !!room?.ended,
     won: room?.winner === mark,
     opponent: them ? { nick: them.nick, ref: them.ref ?? null } : null,
     peerLeft,
@@ -200,7 +241,11 @@ export function useRondoHouse(nick: string, ref: string): RondoMatch {
 
   return {
     ready: true,
+    mode: "club",
+    target: RONDO_TARGET,
+    maxRounds: RONDO_MAX_ROUNDS,
     club: rondoClubById(clubs[round]) ?? null,
+    pair: null,
     round,
     score,
     myTurn: myTurn && !roundEnd && !over,

@@ -23,6 +23,7 @@ export function SeriesEnd({
   rematchTitle,
   title,
   countTrophy = true,
+  payXp = true,
 }: {
   over: boolean;
   won: boolean;
@@ -35,6 +36,8 @@ export function SeriesEnd({
   title?: string;
   /** false on a shared phone: nobody's trophy to count */
   countTrophy?: boolean;
+  /** false when the game pays its own XP (Rondo): only the ceremony is shown */
+  payXp?: boolean;
 }) {
   const { t } = useI18n();
   const [trophies, setTrophies] = useState<number | null>(null);
@@ -61,8 +64,8 @@ export function SeriesEnd({
       questEvent("ht_series", 1);
       questEvent("ht_win", mine);
     }
-    awardXp(`ht-series-${Date.now()}`, "ht", countTrophy ? XP.htSeriesPlayed + mine * XP.htGameWin + (won ? XP.htSeriesWin : 0) : XP.sameScreen);
-  }, [over, won, countTrophy, mine]);
+    if (payXp) awardXp(`ht-series-${Date.now()}`, "ht", countTrophy ? XP.htSeriesPlayed + mine * XP.htGameWin + (won ? XP.htSeriesWin : 0) : XP.sameScreen);
+  }, [over, won, countTrophy, payXp, mine]);
 
   return (
     <Victory

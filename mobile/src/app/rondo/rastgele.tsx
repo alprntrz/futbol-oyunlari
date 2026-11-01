@@ -1,6 +1,8 @@
-import { router, Stack } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+
+import { cleanRondoMode } from "@/lib/rondo";
 
 import { MatchIntro } from "~/components/MatchIntro";
 import { Text } from "~/components/Text";
@@ -26,9 +28,12 @@ type Mark = "X" | "O";
 /** Random opponent: wait in the server queue, show the VS intro, then the match (or the house player). */
 export default function RondoRandom() {
   const { t } = useI18n();
+  const params = useLocalSearchParams<{ mode?: string }>();
+  const [mode] = useState(() => cleanRondoMode(params.mode));
+  const title = mode === "pair" ? t("rdModePair") : "Rondo";
   const [error, setError] = useState<string | null>(null);
   const [matched, setMatched] = useState<Matched | null>(null);
-  useSearchActivity("Rondo", GAME_ICON.rd, !matched);
+  useSearchActivity(title, GAME_ICON.rd, !matched);
 
   useEffect(() => {
     if (matched) return;
@@ -49,7 +54,7 @@ export default function RondoRandom() {
     const onError = () => setError(t("serverUnreachable"));
     const enqueue = async () => {
       setError(null);
-      socket.emit("rd:queue", { nick: await loadNick(), tier: await loadTier(), ...(await loadMyLook()) });
+      socket.emit("rd:queue", { nick: await loadNick(), tier: await loadTier(), mode, ...(await loadMyLook()) });
     };
     socket.on("rd:matched", onMatched);
     socket.on("connect_error", onError);
@@ -77,7 +82,7 @@ export default function RondoRandom() {
     const me: Mark = matched.kind === "room" ? matched.me : "X";
     return (
       <Page>
-        <Stack.Screen options={{ title: "Rondo" }} />
+        <Stack.Screen options={{ title }} />
         <MatchIntro
           me={{ name: t("you"), mark: me }}
           opponent={{ name: matched.opponent, mark: me === "X" ? "O" : "X", tier: matched.tier }}
@@ -85,7 +90,7 @@ export default function RondoRandom() {
             router.replace(
               matched.kind === "room"
                 ? { pathname: "/rondo/oda/[code]", params: { code: matched.code, random: "1" } }
-                : { pathname: "/rondo/bot", params: { nick: matched.opponent } }
+                : { pathname: "/rondo/bot", params: { nick: matched.opponent, mode } }
             )
           }
         />
