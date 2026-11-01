@@ -30,6 +30,21 @@ const refs = require("../server-refs.js") as {
   isRef: (v: unknown) => boolean;
 };
 
+const core = require("../server-core.js") as {
+  nameKey: (v: unknown) => string;
+  nameUsed: (used: string[], name: string) => boolean;
+};
+
+test("a name counts as used whatever its case, accents or spacing", () => {
+  const used = ["Messi", "Di  Maria", "Ödegaard"];
+  assert.equal(core.nameUsed(used, "MESSİ"), true);
+  assert.equal(core.nameUsed(used, "messi"), true);
+  assert.equal(core.nameUsed(used, "di maria"), true);
+  assert.equal(core.nameUsed(used, "Odegaard"), true);
+  assert.equal(core.nameUsed(used, "Neymar"), false);
+  assert.equal(core.nameUsed([], "Messi"), false);
+});
+
 test("a ref is stable, opaque and never the install id", () => {
   const a = refs.refForSocket(null, "installid123456");
   assert.equal(a, refs.refForSocket(null, "installid123456"));

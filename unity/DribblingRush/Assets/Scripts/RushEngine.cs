@@ -152,7 +152,8 @@ namespace Rush
                 uint t = rng;
                 t = (t ^ (t >> 15)) * (t | 1u);
                 t ^= t + (t ^ (t >> 7)) * (t | 61u);
-                return (t ^ (t >> 14)) / 4294967296f;
+                // divide in double like engine.ts, then keep it below 1: a float can round 0.99999998 up to 1.0
+                return Math.Min((float)((t ^ (t >> 14)) / 4294967296.0), 0.99999994f);
             }
         }
 
