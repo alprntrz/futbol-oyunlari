@@ -38,7 +38,7 @@ BİLGİ YARIŞI
 5 kişiye kadar online yarış: 10 soru, 4 şık. Hızlı ve doğru olan kazanır. Kolay, normal ya da zor seç; haftalık puan durumunda yüksel.
 
 POSSESSION PLAY
-Altıgen sahada rakibinin bölgesini çal; iki satranç saatiyle oynanır.
+Altıgen sahada rakibinden bölge kazan; iki satranç saatiyle oynanır.
 
 TEK BAŞINA
 Eksik 11 (her gün tarihi bir maçın ilk 11'i), Gizli Oyuncu, Futbol Bingo ve Dribbling Rush.
@@ -47,10 +47,15 @@ ARKADAŞLAR VE LİG
 Rastgele rakip birkaç saniyede bulunur. Google ile giriş yaparsan: arkadaş ekle ve odana davet et, haftalık ligde yüksel, her online oyunun sıralamasında yerini gör, ilerlemen telefon değiştirince de seninle gelsin. Seviye ve rütbe, günlük görevler, rozetler ve avatar çerçeveleri.
 
 ADİL OYUN
-Jokerler iki oyuncu için de aynı. Satın alınacak hiçbir şey yok.
+Jokerler iki oyuncu için de aynı. Satın aldığın ya da izlediğin hiçbir şey maçı değiştirmez: parayla joker, can ya da puan yok.
+
+TIKTAKO PLUS (İSTEĞE BAĞLI)
+Ara reklam yok, günlük antrenman XP sınırı yok, günlük bulmacaların 30 günlük arşivi, ücretsiz seri onarma ve Plus avatar çerçevesi. Aylık ya da yıllık otomatik yenilenen abonelik (yıllık plan 7 gün ücretsiz denemeyle başlar) veya tek seferlik ömür boyu satın alma. Ücret Google Play hesabından alınır. Abonelik iptal edilmezse otomatik yenilenir; Google Play > Ödemeler ve abonelikler bölümünden yönetebilir ya da iptal edebilirsin.
+Kullanım Koşulları: https://alprntrz.github.io/futbol-oyunlari/terms.html
+Gizlilik Politikası: https://alprntrz.github.io/futbol-oyunlari/privacy.html
 
 GİZLİLİK
-Hesap isteğe bağlı; reklam ve takip yok. Bir oyuncuyu şikayet edebilir ya da engelleyebilirsin. İstediğin an Ayarlar'dan hesabını ve tüm verilerini silebilirsin.
+Hesap isteğe bağlı. Oyun ücretsizdir ve reklam gösterir: izlemeyi kendin seçtiğin ödüllü reklamlar ve tek kişilik oyundan sonra ara sıra bir reklam. Gereken bölgelerde önce onay sorulur. Bir oyuncuyu şikayet edebilir ya da engelleyebilirsin. İstediğin an Ayarlar'dan hesabını ve tüm verilerini silebilirsin.
 
 ### English (en-US)
 
@@ -81,7 +86,7 @@ FOOTBALL QUIZ
 Online quiz for up to 5 players: 10 questions, 4 options. Fast and right wins. Pick easy, normal or hard and climb the weekly standings.
 
 POSSESSION PLAY
-Steal your rival's ground on a hex pitch, played on two chess clocks.
+Win ground from your rival on a hex pitch, played on two chess clocks.
 
 SOLO
 Missing 11 (a classic match's starting XI every day), Mystery Player, Football Bingo and Dribbling Rush.
@@ -90,10 +95,15 @@ FRIENDS AND LEAGUES
 A random opponent is found in seconds. Sign in with Google to add friends and invite them to your room, climb the weekly league, see your place on each online game's leaderboard, and keep your progress when you change phones. Levels and ranks, daily quests, badges and avatar frames.
 
 FAIR PLAY
-Jokers are the same for both players. There is nothing to buy.
+Jokers are the same for both players. Nothing you buy or watch changes a match: no paid jokers, lives or rating.
+
+TIKTAKO PLUS (OPTIONAL)
+No interstitial ads, no daily practice XP cap, a 30-day archive of the daily puzzles, free streak repair and the Plus avatar frame. Choose a monthly or yearly auto-renewable subscription (the yearly plan starts with a 7-day free trial) or a one-time lifetime purchase. Payment is charged to your Google Play account. A subscription renews automatically unless cancelled; manage or cancel it in Google Play > Payments & subscriptions.
+Terms of Use: https://alprntrz.github.io/futbol-oyunlari/terms.html
+Privacy Policy: https://alprntrz.github.io/futbol-oyunlari/privacy.html
 
 PRIVACY
-Account optional; no ads, no tracking. You can report or block any player, and delete your account and all your data from Settings at any time.
+Account optional. The game is free and shows ads: rewarded ads you choose to watch, and an occasional ad after a solo game. Consent is asked first where required. You can report or block any player, and delete your account and all your data from Settings at any time.
 
 ### العربية (ar)
 
@@ -102,7 +112,7 @@ Account optional; no ads, no tracking. You can report or block any player, and d
 **وصف قصير (80):**
 إكس-أو بأسماء اللاعبين، روندو، من أنا؟، مسابقة والمزيد. العب مع أصدقائك.
 
-**الوصف الكامل:** App Store'un Arapça metni (`mobile/store.config.json` → `ar-SA`), "Apple أو Google" yerine "Google" yazılarak.
+**الوصف الكامل:** App Store'un Arapça metni (`mobile/store.config.json` → `ar-SA`); "Apple أو Google" yerine "Google", Apple Hesabı / App Store yerine Google Play, EULA bağlantısı yerine `https://alprntrz.github.io/futbol-oyunlari/terms.html`, "إذن التتبّع" ifadesi çıkarılarak.
 
 ## Grafikler
 
@@ -114,13 +124,13 @@ Account optional; no ads, no tracking. You can report or block any player, and d
 
 **Gizlilik politikası:** https://alprntrz.github.io/futbol-oyunlari/privacy.html
 
-**Reklamlar:** Uygulamada reklam yok (1.1; 1.2'de reklam gelince "Evet").
+**Reklamlar:** Evet (1.2: AdMob ödüllü ve geçiş reklamları).
 
 **Uygulama erişimi:** Tüm işlevler kısıtlama olmadan kullanılabilir (giriş isteğe bağlı; misafir olarak her oyun oynanır).
 
 **İçerik derecelendirmesi (IARC anketi):** Kategori "Oyun". Şiddet, korku, cinsellik, küfür, uyuşturucu, kumar: **Hayır**.
 Kullanıcılar etkileşime giriyor mu: **Evet** (online maçlar; takma adlar başkalarına görünür, serbest metin mesajlaşma yok, sadece sabit emoji tepkileri).
-Kullanıcı konumu paylaşılıyor mu: Hayır. Dijital satın alma: Hayır. Beklenen sonuç: PEGI 3 / Herkes.
+Kullanıcı konumu paylaşılıyor mu: Hayır. Dijital satın alma: Evet (1.2: Tiktako Plus). Beklenen sonuç: PEGI 3 / Herkes.
 
 **Hedef kitle:** 13 yaş ve üstü (13-15, 16-17, 18+). Çocuklara yönelik değil (Aileler programına girmiyor; 13 altı seçilirse ek politika gerekir).
 
@@ -164,7 +174,7 @@ Analitik artık **var**; yukarıdaki "hiçbiri reklam/analitik için değil" cü
 | Cihaz veya diğer kimlikler | PostHog'un rastgele cihaz kimliği (hesaba bağlanmaz; reklam kimliği değil) | İsteğe bağlı (aynı ayar) | Analiz |
 | Cihaz veya diğer kimlikler | Expo push token (giriş yapıp bildirimlere izin verende hesaba bağlı) | İsteğe bağlı | Uygulama işlevselliği (arkadaş daveti, arkadaş ekleme, isteğe bağlı haberler) |
 
-- "Paylaşılıyor mu?": **Hayır**. PostHog (veri işleyen, AB bölgesi) ve Expo (650 Industries) hizmet sağlayıcı; Play'e göre
+- "Paylaşılıyor mu?": **Hayır**. PostHog (veri işleyen, ABD bölgesi) ve Expo (650 Industries) hizmet sağlayıcı; Play'e göre
   paylaşım sayılmaz.
 - "Geçici olarak mı işleniyor?": Hayır (PostHog olayları saklanıyor).
 - Silme: Ayarlar → Verilerimi sil cihaz kimliğini siler; hesap silme push token'larını siler.

@@ -25,7 +25,7 @@ const PERK_ICON: Record<PlusPerk, { icon: IconName; color: string }> = {
   frame: { icon: "crown.fill", color: "#CA8A04" },
 };
 
-const TERMS_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/";
+const TERMS_URL = Platform.select({ ios: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/", android: "https://alprntrz.github.io/futbol-oyunlari/terms.html" })!;
 const MANAGE_URL = Platform.select({ ios: "https://apps.apple.com/account/subscriptions", android: "https://play.google.com/store/account/subscriptions" })!;
 
 /**
