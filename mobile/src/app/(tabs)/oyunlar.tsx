@@ -4,7 +4,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Text } from "~/components/Text";
 import { Page, Tap } from "~/components/ui";
-import { BRAND, KIMIM, KOSU, RONDO, ROZET, TAKTIK } from "~/lib/brand";
+import { BRAND, KIMIM, KOSU, NOKTA, RONDO, ROZET, TAKTIK } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
 import { C, F, GAME } from "~/lib/theme";
 
@@ -24,6 +24,7 @@ export default function Games() {
     { title: t("ppName"), desc: t("ppShort"), who: t("play1v1"), image: BRAND.icon.possession, ...GAME.pp, href: "/possession" },
     { title: "Rondo", desc: t("rdShort"), who: t("play1v1"), image: RONDO.icon, ...GAME.rd, href: "/rondo" },
     { title: t("wmName"), desc: t("wmShort"), who: t("play1v1"), image: KIMIM.icon, ...GAME.wm, href: "/kimim" },
+    { title: t("spName"), desc: t("spShort"), who: t("play1v1"), image: NOKTA.icon, ...GAME.sp, href: "/nokta" },
     // (a lobby with friends, or alone against house managers)
     { title: t("ttkName"), desc: t("ttkShort"), who: t("playUpTo8"), image: TAKTIK.hero, ...GAME.tt, href: "/taktik" },
   ];

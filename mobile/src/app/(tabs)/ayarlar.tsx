@@ -4,14 +4,14 @@ import { useState } from "react";
 import { Alert, View } from "react-native";
 
 import { PushSettings } from "~/components/PushSettings";
-import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, RondoPairSteps, RushSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
+import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, RondoPairSteps, RushSteps, SpotSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
 import { Text } from "~/components/Text";
 import { Card, Page, Row, SectionLabel, Segmented, SwitchRow } from "~/components/ui";
 import { deleteAccount, signOut, useAccount } from "~/lib/account";
 import { analyticsAvailable, setAnalyticsOn, useAnalyticsOn } from "~/lib/analytics";
 import { privacyOptionsAvailable, showPrivacyOptions, useConsentDone } from "~/lib/ads";
 import { purchasesAvailable, usePlus } from "~/lib/plus";
-import { BRAND, ROZET, TAKTIK, KIMIM, RONDO, KOSU } from "~/lib/brand";
+import { BRAND, ROZET, TAKTIK, KIMIM, NOKTA, RONDO, KOSU } from "~/lib/brand";
 import { ONBOARDING } from "~/lib/features";
 import { useI18n } from "~/lib/i18n";
 import { openPage, PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
@@ -34,6 +34,7 @@ export default function SettingsTab() {
     { key: "rd", title: "Rondo", image: RONDO.icon, steps: <RondoSteps /> },
     { key: "rdp", title: t("rdModePair"), image: RONDO.icon, steps: <RondoPairSteps /> },
     { key: "wm", title: t("wmName"), image: KIMIM.icon, steps: <WhoAmISteps /> },
+    { key: "sp", title: t("spName"), image: NOKTA.icon, steps: <SpotSteps /> },
     { key: "taktik", title: t("ttkName"), image: TAKTIK.hero, steps: <TaktikSteps /> },
     { key: "mystery", title: t("myName"), image: BRAND.icon.mystery, steps: <MysterySteps /> },
     { key: "xi", title: t("missingXI"), image: BRAND.icon.practice, steps: <MissingXISteps /> },

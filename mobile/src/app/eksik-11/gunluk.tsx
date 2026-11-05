@@ -61,12 +61,14 @@ function DailyGame({ match, day, difficulty, saved }: { match: Match; day: numbe
   const { slots, gaveUp, progress } = game;
   // keyed by day: reopening a finished day pays nothing more
   const { combo, best } = useCombo(progress.totalGuesses, progress.solved);
-  useXpAward(progress.done, `xi-daily-${day}`, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0) + best * XP.comboStep + XP.xiDailyBonus, {
+  // giving up pays nothing and moves no quest
+  const finished = progress.done && !gaveUp;
+  useXpAward(finished, `xi-daily-${day}`, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0) + best * XP.comboStep + XP.xiDailyBonus, {
     
     title: progress.won ? t("rwFullXi") : t("rwDone"),
     stats: xiStats(t, progress.solved, progress.totalGuesses, best),
   });
-  useQuestOnce(progress.done, `xi-daily-${day}`, [
+  useQuestOnce(finished, `xi-daily-${day}`, [
     ["xi_finish", 1],
     ["xi_players", progress.solved],
   ]);

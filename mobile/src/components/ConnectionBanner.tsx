@@ -10,7 +10,7 @@ import { C, F, shadow } from "~/lib/theme";
 import { Text } from "./Text";
 import { Icon } from "./ui";
 
-type Game = "ht" | "pp" | "dz" | "rd" | "wm";
+type Game = "ht" | "pp" | "dz" | "rd" | "wm" | "sp";
 
 /**
  * Live online match, a pill at the bottom: says when this phone lost the server ("reconnecting…"), when it came back

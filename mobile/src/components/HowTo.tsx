@@ -197,6 +197,11 @@ export function WhoAmISteps() {
   return <NumberedRules items={[t("wmRule1"), t("wmRule2"), t("wmRule3")]} />;
 }
 
+export function SpotSteps() {
+  const { t } = useI18n();
+  return <NumberedRules items={[t("spRule1"), t("spRule2"), t("spRule3")]} />;
+}
+
 export function BingoSteps() {
   const { t } = useI18n();
   return <NumberedRules items={[t("bingoRule1"), t("bingoRule2")]} />;

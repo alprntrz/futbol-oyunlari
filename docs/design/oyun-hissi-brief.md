@@ -39,7 +39,6 @@ hacimli ödül görselleri. Bu brief ChatGPT görsel üretimi içindir.
 | `reward-series.png` | "Seri skoru" kartı | A checkered finish flag on a short pole, crossed with a football, cheerful. |
 | `reward-games.png` | "Aldığın oyun" kartı | A green rosette ribbon badge with a white tick in the middle. |
 | `chest-football.png` | (ileride) günlük hediye | A small treasure chest shaped like a football kit bag, closed, gold trim, green body. Also a second version with the lid open and a warm glow. |
-| `bg-stars.png` | Zafer ekranı arka planı (döşeme) | A seamless tile of very faint lighter-green stars and small football shapes on pitch green #15803D, low contrast, for a subtle background pattern. Export 512×512, seamless edges, NOT transparent. |
 | `level-badge.png` | Seviye rozeti (sayı üstüne yazılır) | A gold shield badge with a soft gem inset at the top, empty flat centre for a number. |
 
 ## Animasyon notları (kodla yapılacak, görsel gerekmez)

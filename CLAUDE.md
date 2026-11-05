@@ -22,7 +22,7 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
 `server.js` is the HTTP / Next server plus the shared Socket.IO plumbing (guarded handlers, reconnect, room
 sweep, matchmaking, report / block, invites, emotes, Live Activity tokens). Each online game is its own file in
 `server-games/` (`ht.js` Tic-Tac-Toe, `pp.js` Possession, `dz.js` Card Duel, `rd.js` Rondo, `wm.js` Who Am I?,
-`qz.js` Quiz, `race.js` web Missing 11 race; Pitch Chess stays in `server-taktik.js`). Shared helpers (nicks, rank
+`qz.js` Quiz, `sp.js` The Spot, `race.js` web Missing 11 race; Pitch Chess stays in `server-taktik.js`). Shared helpers (nicks, rank
 pairing `takePairs` / `tierGap`, room codes `codeFor`, refs, `rateDuel` / `tellElo`, `INTRO_MS`) are in
 `server-core.js`; Live Activity building blocks in `server-live.js`. The two-player games export
 `{ id, rooms, view, queue, setQueue, pairOk?, invitable?, live?, attach(socket, ctx) }` and are listed in `GAMES` in
@@ -51,7 +51,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
   `ht:forfeit` (concedes the whole series) end early; a match is a series, first to `HT_TARGET` = 3 game wins,
   the loser of the last game gets `HT_COMEBACK_MS` = +10 s a turn,
-  wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
+  wins kept per player id; the host's phone deals the next game via `ht:rematch`; after a finished series either player asks (`ht:rematch-ask`, cap "rematch"), the other answers `ht:rematch-reply` and the phone that says yes deals; older apps keep the host's instant rematch; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
 - Saudi / Egyptian leagues ("sa", "eg"): `ARAB_CRITERIA` in tiki.ts (ids "arab-…", never in ALL_CRITERIA so seeded daily
   grids / Bingo / Mystery / Pitch Chess don't change), players in `src/data/players-arab.ts` ← `ONLY=arab-… FROM=2000 node
   scripts/tiki-scrape-squads.mjs` → `scripts/arab-build-players.mjs`; answers search `GRID_PLAYERS` (PLAYERS + those). Phones send
@@ -254,6 +254,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `target` hands (2/3/4 = best of 3/5/7, `rd:create {mode, target}`; the queue plays best of 5 and pairs only same-mode players, `pairOk`);
   every hand ends with the best-known fits (`rondoPairAnswers`). House player `useRondoPairHouse` (lib/rondoPairHouse.ts). Same Elo / XP "rd". Art: `docs/design/rondo-brief.md` →
   `python3 scripts/rondo-assets.py docs/design/rondo-art/originals` → `mobile/assets/brand/rondo/` (`RONDO` in brand.ts).
+- The Spot / Beyaz Nokta (`sp:*`, server-games/sp.js, rules `src/lib/spot.ts`, docs/design/beyaz-nokta.md): one-on-one penalties, both pick a side in secret (same side = save), 5 each then
+  sudden death, 8 s a pick; picks stay on the server until both are in; a rematch needs both. House player `useSpotHouse` (lib/spotMatch.ts, same shape as `useSpotOnline`); screens `app/nokta/`,
+  board `components/SpotBoard.tsx` (flat transforms only: no perspective / rotateY next to sibling views, iOS sorts them in 3D). Elo board / XP "sp". Art is a stand-in from `scripts/nokta-assets.py`.
 - Jokers (fair by design: the same for both players each game / match, never bought, never saved): Tic-Tac-Toe online +
   house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
   well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50

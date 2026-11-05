@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Image, Modal, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
 import Animated, {
   FadeIn,
   Easing,
@@ -22,6 +22,7 @@ import { C, F } from "~/lib/theme";
 import { onOverlay, onXpAward, setRewardOpen, type XpAward, type XpStat } from "~/lib/xp";
 
 import { Confetti, useCountUp } from "./motion";
+import { RewardBackdrop } from "./RewardBackdrop";
 import { LevelBadge } from "./QuizLevel";
 import { useRankName } from "./Rank";
 import { Text } from "./Text";
@@ -65,7 +66,6 @@ export function RewardScreen() {
 function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
   const [claimed, setClaimed] = useState(false);
   const [confetti, setConfetti] = useState(0);
   const levelled = award.after.level > award.before.level;
@@ -117,8 +117,7 @@ function RewardModal({ award, onDone }: { award: XpAward; onDone: () => void }) 
   return (
     <Modal visible animationType="fade" transparent statusBarTranslucent onRequestClose={onDone}>
       <View style={[styles.screen, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 20 }]}>
-        {/* explicit size: absoluteFill on an Image misrenders in RN */}
-        <Image source={REWARD.stars} style={{ position: "absolute", top: 0, left: 0, width, height, opacity: 0.6 }} resizeMode="cover" />
+        <RewardBackdrop color={C.greenDark} glow={C.greenMid} />
         <View style={{ flex: 1 }} />
 
         <View style={styles.hero}>

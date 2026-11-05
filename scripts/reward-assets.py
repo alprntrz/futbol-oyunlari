@@ -30,6 +30,3 @@ for name, size in SIZES.items():
     im.save(OUT / f"{name}.png", optimize=True)
     print(name, im.size)
 
-bg = Image.open(SRC / "bg-stars.png").convert("RGB").resize((256, 256), Image.LANCZOS)
-bg.save(OUT / "bg-stars.png", optimize=True)
-print("bg-stars", bg.size)
