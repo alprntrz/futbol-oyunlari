@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Updates from "expo-updates";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { I18nManager } from "react-native";
+import { DevSettings, I18nManager } from "react-native";
 
 import { dict, localeOfTag, type Locale, type TKey } from "@/lib/strings";
 
@@ -35,7 +35,8 @@ async function syncDirection(locale: Locale) {
   await AsyncStorage.setItem(RTL_TRIED, target);
   I18nManager.allowRTL(rtl);
   I18nManager.forceRTL(rtl);
-  await Updates.reloadAsync();
+  if (__DEV__) DevSettings.reload(); // reloadAsync does nothing in a debug build
+  else await Updates.reloadAsync();
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {

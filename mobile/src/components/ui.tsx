@@ -29,6 +29,7 @@ const MATERIAL: Record<string, AndroidSymbol> = {
   "arrow.right.circle.fill": "arrow_circle_right",
   "arrow.triangle.2.circlepath": "sync",
   "arrow.up": "arrow_upward",
+  "arrow.up.left": "north_west",
   "arrow.up.right": "north_east",
   "arrow.down.right": "south_east",
   "arrow.uturn.left": "undo",
@@ -121,6 +122,7 @@ const MIRRORED: Record<string, SymbolName> = {
   "chevron.right": "chevron.left",
   "arrow.right": "arrow.left",
   "arrow.left": "arrow.right",
+  "arrow.up.right": "arrow.up.left",
 };
 
 export function Icon({ name: given, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {

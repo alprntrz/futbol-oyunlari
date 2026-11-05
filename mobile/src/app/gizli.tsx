@@ -20,7 +20,7 @@ import { haptic } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { compare, findPlayer, MAX_GUESSES, mysteryForDay, randomMystery, START_CLUES, type Clue, type Puzzle } from "~/lib/mystery";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, R, T } from "~/lib/theme";
 import { useQuestOnce } from "~/lib/quests";
 import { useXpAward } from "~/lib/xp";
 
@@ -209,7 +209,7 @@ export default function MysteryPlayer() {
               autoCorrect={false}
               autoCapitalize="words"
               returnKeyType="done"
-              style={styles.input}
+              style={[styles.input, INPUT_ALIGN]}
             />
           </View>
           {input.trim().length >= 2 && (

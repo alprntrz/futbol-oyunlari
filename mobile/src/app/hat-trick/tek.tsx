@@ -22,7 +22,7 @@ import { useI18n } from "~/lib/i18n";
 import { categoryFilter } from "~/lib/league";
 import { archiveDay } from "~/lib/archive";
 import { usePlus } from "~/lib/plus";
-import { C, F, R, shadow, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, R, shadow, T } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
 const TIME_LIMIT = 180;
@@ -253,7 +253,7 @@ export default function HatTrickSolo() {
                 autoCorrect={false}
                 autoCapitalize="words"
                 returnKeyType="done"
-                style={styles.input}
+                style={[styles.input, INPUT_ALIGN]}
               />
             </View>
             <Button title={t("bbFinish")} kind="secondary" onPress={finish} style={{ minHeight: 48 }} />

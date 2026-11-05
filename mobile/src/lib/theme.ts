@@ -51,6 +51,9 @@ export const F = I18nManager.isRTL
 /** Boards, pitches and letter rows keep their shape in Arabic: put this on their root view. */
 export const LTR = { direction: "ltr" } as const;
 
+/** Text inputs align by the phone's language, not the one picked in the app; RN swaps "left" to the right in RTL. */
+export const INPUT_ALIGN = I18nManager.isRTL ? ({ textAlign: "left" } as const) : null;
+
 /** Each game's own colour pair (soft background, dark ink): Games tab, game hubs, the Play online picker. */
 export const GAME = {
   ht: { bg: "#DBEAFE", ink: "#1E3A8A" },

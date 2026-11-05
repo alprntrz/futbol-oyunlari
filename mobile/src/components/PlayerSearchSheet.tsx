@@ -7,7 +7,7 @@ import { latinGuess, searchPlayers } from "@/lib/playersAr";
 import { matchPlayers } from "@/lib/tiki";
 
 import { useI18n } from "~/lib/i18n";
-import { C, R, T } from "~/lib/theme";
+import { C, INPUT_ALIGN, R, T } from "~/lib/theme";
 
 import { PlayerLine, PlayerToken } from "./PlayerRow";
 import { Text } from "./Text";
@@ -85,7 +85,7 @@ export function PlayerSearchSheet({
               autoCorrect={false}
               autoCapitalize="words"
               returnKeyType="done"
-              style={styles.input}
+              style={[styles.input, INPUT_ALIGN]}
             />
           </View>
           {input.trim().length >= 2 && (

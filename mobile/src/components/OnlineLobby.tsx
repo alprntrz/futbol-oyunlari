@@ -8,7 +8,7 @@ import { useI18n } from "~/lib/i18n";
 import { loadNick, loadPlayerId, saveNick } from "~/lib/nick";
 import { setNick } from "~/lib/raceSession";
 import { getSocket } from "~/lib/socket";
-import { C, F, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, T } from "~/lib/theme";
 
 const TIMEOUT_MS = 6000;
 
@@ -86,7 +86,7 @@ export function OnlineLobby({
       <Text style={[T.body, { marginTop: 4 }]}>{t("htOnlineDesc")}</Text>
 
       <SectionLabel>{t("yourName")}</SectionLabel>
-      <TextInput value={nick} onChangeText={setNickInput} placeholder={t("yourName")} placeholderTextColor={C.text3} maxLength={20} style={styles.input} />
+      <TextInput value={nick} onChangeText={setNickInput} placeholder={t("yourName")} placeholderTextColor={C.text3} maxLength={20} style={[styles.input, INPUT_ALIGN]} />
 
       <Card style={styles.block}>
         <View style={styles.blockHead}>

@@ -8,7 +8,7 @@ import { normalizeAnswer } from "@/lib/wordle";
 import { Text } from "~/components/Text";
 import { Card, Icon, Page, SectionLabel, Tap } from "~/components/ui";
 import { useI18n } from "~/lib/i18n";
-import { C, R, T } from "~/lib/theme";
+import { C, INPUT_ALIGN, R, T } from "~/lib/theme";
 
 /** Searchable list of every team with enough matches; tap → practice with that team. */
 export default function TeamPicker() {
@@ -56,7 +56,7 @@ export default function TeamPicker() {
           placeholderTextColor={C.text3}
           autoCorrect={false}
           clearButtonMode="while-editing"
-          style={styles.searchInput}
+          style={[styles.searchInput, INPUT_ALIGN]}
         />
       </View>
 

@@ -200,8 +200,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `src/lib/names-ar.ts` (`pick` finds them by id, then English text, so seeded data is untouched). RTL: `syncDirection`
   (mobile/src/lib/i18n.tsx) flips `I18nManager` and reloads, one try per direction; never set the expo-localization plugin's
   `supportsRTL`: it would reset the flip from the device language at every launch. Expo Go ignores RTL, test on a dev build.
-  Boards, pitches and letter rows carry `LTR` (theme.ts); `F` runs on Cairo in RTL, `Text` drops tracking and opens line height,
-  `Icon` turns reading-direction arrows. Players: `src/lib/playersAr.ts` (`searchPlayers`, `latinGuess`) turns an Arabic name into
+  Boards, pitches, letter rows and the score row carry `LTR` (theme.ts); `F` runs on Cairo in RTL, `Text` drops tracking, opens line
+  height and sets `textAlign: "left"` (RN swaps it to the right in RTL; natural alignment follows the phone language, not the app's),
+  `TextInput`s take `INPUT_ALIGN`, `Icon` turns reading-direction arrows. `reloadAsync` does nothing in a debug build (`DevSettings.reload` there). Players: `src/lib/playersAr.ts` (`searchPlayers`, `latinGuess`) turns an Arabic name into
   the Latin one on the phone, so the server and daily puzzles never see Arabic; data `src/data/players-ar.ts` ←
   `scripts/ar-names-fetch.mjs` (Wikidata, CC0). Missing 11 and Dribbling Rush letters stay Latin. Quiz questions carry `ar`.
 - Android (started 2026-10-17): `Icon` (ui.tsx) maps every SF Symbol to a Material Symbol (`MATERIAL`; filled font for

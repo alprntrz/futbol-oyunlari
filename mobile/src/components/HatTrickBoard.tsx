@@ -13,7 +13,7 @@ import { play } from "~/lib/sound";
 import { answersFor } from "~/lib/htBot";
 import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
-import { C, F, LTR, R, shadow, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, LTR, R, shadow, T } from "~/lib/theme";
 
 import { initials, PlayerLine, PlayerToken } from "./PlayerRow";
 import { Flag } from "./Flag";
@@ -425,7 +425,7 @@ export function HatTrickBoard({
                 autoCorrect={false}
                 autoCapitalize="words"
                 returnKeyType="done"
-                style={styles.input}
+                style={[styles.input, INPUT_ALIGN]}
               />
             </View>
             {input.trim().length >= 2 && (

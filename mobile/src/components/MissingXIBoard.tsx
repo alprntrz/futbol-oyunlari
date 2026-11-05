@@ -123,7 +123,7 @@ export function MissingXIBoard({
           <Text style={T.caption}>{match.date}</Text>
         </View>
         {/* both sides the same way: shirt over name; one-word names shrink to fit instead of breaking */}
-        <View style={styles.scoreRow}>
+        <View style={[styles.scoreRow, LTR]}>
           <View style={styles.side}>
             <Jersey body={match.kit.body} sleeves={match.kit.sleeves} numberColor={match.kit.number} number={11} variant={style} size={30} hideNumber />
             <TeamName name={teamName(match.team, locale)} />

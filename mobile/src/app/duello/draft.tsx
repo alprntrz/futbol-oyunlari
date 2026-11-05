@@ -13,7 +13,7 @@ import { Button, Icon, Page, Tap } from "~/components/ui";
 import { saveHand, useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, R, T } from "~/lib/theme";
 
 /** With nothing typed: a few players from today's theme, a mix of tiers (Shuffle for others). */
 function dealSuggestions(theme: Theme) {
@@ -148,7 +148,7 @@ export default function DuelDraft() {
             placeholderTextColor={C.text3}
             autoCorrect={false}
             autoCapitalize="words"
-            style={styles.input}
+            style={[styles.input, INPUT_ALIGN]}
           />
           {left === 0 && <Text style={[T.caption, { color: C.red, marginTop: 6 }]}>{t("dzTimeUp")}</Text>}
           <View ref={tour.ref("list")} collapsable={false} style={{ marginTop: 8, gap: 6 }}>

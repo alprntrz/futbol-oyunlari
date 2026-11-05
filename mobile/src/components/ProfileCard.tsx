@@ -13,7 +13,7 @@ import { BRAND, ROZET, TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { loadNick, saveNick } from "~/lib/nick";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, R, T } from "~/lib/theme";
 import { loadTrophies } from "~/lib/trophies";
 import { loadXp, type XpGame } from "~/lib/xp";
 
@@ -249,7 +249,7 @@ function EditProfile({
           autoCapitalize="none"
           placeholder={t("nickname")}
           placeholderTextColor={C.text3}
-          style={styles.input}
+          style={[styles.input, INPUT_ALIGN]}
         />
 
         <SectionLabel>{t("avatarLabel")}</SectionLabel>
