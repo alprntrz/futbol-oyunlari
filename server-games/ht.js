@@ -25,6 +25,8 @@ const canDraw = (s, grid) => gridNeeds(grid).every((k) => !!s?.data.caps?.includ
 /** knows every criterion kind the app can deal (so the host may use them all) */
 const knowsMates = (s) => ["mate", "coach", "hon"].every((k) => !!s?.data.caps?.includes(k));
 const htAllKnowMates = (room) => room.players.every((p) => knowsMates(socketOf(p.id)));
+/** both phones can show and answer a rematch request (older apps: the host's tap starts it at once) */
+const htRematchOpen = (room) => room.players.length === 2 && room.players.every((p) => !!socketOf(p.id)?.data.caps?.includes("rematch"));
 
 const HT_TURN_MS = 45_000;
 /** a match is a series: first to this many game wins takes it */
@@ -76,6 +78,8 @@ function view(room) {
     league: room.league || "all",
     // every phone in the room can draw "played with" criteria: the host may deal them
     mates: htAllKnowMates(room),
+    // after a finished series: who asked for a rematch, whether it was turned down, whether asking works here
+    rematch: { from: room.rematchFrom ?? null, declined: !!room.rematchDeclined, open: htRematchOpen(room) },
     players: room.players.map((p) => ({ id: p.id, ref: seatRef(p), nick: seatNick(p), mark: p.mark, tier: p.tier ?? null, avatar: p.avatar ?? null, frame: p.frame ?? null })),
   };
 }
@@ -378,12 +382,8 @@ function attach(socket, ctx) {
     htEnd(room, me.mark === "X" ? "O" : "X", "forfeit");
   });
 
-  // Host deals a new grid; marks swap so the other player starts
-  socket.on("ht:rematch", ({ grid }) => {
-    const room = rooms.get(socket.data.htCode);
-    if (!room || !room.winner || room.players.length < 2 || room.players[0].id !== socket.id || !htGridOk(grid)) return;
-    // every phone in the room must be able to draw the next grid (newer criteria)
-    if (!room.players.every((p) => canDraw(socketOf(p.id), grid))) return;
+  // Marks swap so the other player starts
+  const htNextGame = (room, grid) => {
     // next game of the series, or a fresh series once it's decided
     if (htSeries(room).over) {
       room.wins = {};
@@ -396,6 +396,8 @@ function attach(socket, ctx) {
     room.flash = null;
     room.drawOffer = null;
     room.endReason = null;
+    room.rematchFrom = null;
+    room.rematchDeclined = false;
     for (const p of room.players) p.mark = p.mark === "X" ? "O" : "X";
     if (room.steals) room.steals = { X: 3, O: 3 };
     room.jokers = null;
@@ -403,6 +405,42 @@ function attach(socket, ctx) {
     room.turn = "X";
     htStartTurn(room);
     htEmit(room);
+  };
+  const htDrawable = (room, grid) => htGridOk(grid) && room.players.every((p) => canDraw(socketOf(p.id), grid));
+
+  // After a finished series either player can ask; one no ends the asking in this room
+  socket.on("ht:rematch-ask", ({ grid }) => {
+    const room = rooms.get(socket.data.htCode);
+    const me = room?.players.find((p) => p.id === socket.id);
+    if (!room || !me || !htSeries(room).over || room.players.length < 2 || room.rematchFrom || room.rematchDeclined) return;
+    if (htRematchOpen(room)) {
+      room.rematchFrom = me.mark;
+      return htEmit(room);
+    }
+    if (room.players[0].id === socket.id && htDrawable(room, grid)) htNextGame(room, grid);
+  });
+
+  // The phone that says yes deals the grid
+  socket.on("ht:rematch-reply", ({ accept, grid }) => {
+    const room = rooms.get(socket.data.htCode);
+    const me = room?.players.find((p) => p.id === socket.id);
+    if (!room || !me || !room.rematchFrom || room.rematchFrom === me.mark || room.players.length < 2) return;
+    if (accept === true) {
+      if (htDrawable(room, grid)) htNextGame(room, grid);
+      return;
+    }
+    room.rematchFrom = null;
+    room.rematchDeclined = true;
+    htEmit(room);
+  });
+
+  // Host deals a new grid: the next game of a series, or a rematch from an older app
+  socket.on("ht:rematch", ({ grid }) => {
+    const room = rooms.get(socket.data.htCode);
+    if (!room || !room.winner || room.players.length < 2 || room.players[0].id !== socket.id || !htGridOk(grid)) return;
+    // every phone in the room must be able to draw the next grid (newer criteria)
+    if (!room.players.every((p) => canDraw(socketOf(p.id), grid))) return;
+    htNextGame(room, grid);
   });
 
   /** Takes socket `s` out of its room: it stops getting that room's events, and a room left
@@ -420,6 +458,7 @@ function attach(socket, ctx) {
       rateDuel("ht", room, leaver.mark === "X" ? "O" : "X");
     }
     room.players = room.players.filter((p) => p.id !== s.id);
+    room.rematchFrom = null;
     if (room.players.length === 0) {
       clearTimeout(room.timer);
       rooms.delete(room.code);

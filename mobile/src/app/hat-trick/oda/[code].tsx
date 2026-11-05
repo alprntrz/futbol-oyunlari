@@ -54,6 +54,8 @@ interface HtRoom {
   comeback?: Mark | null;
   /** every phone here knows "played with" criteria (server.js htAllKnowMates) */
   mates?: boolean;
+  /** after a finished series; missing on an older server, where the host's tap starts the rematch */
+  rematch?: { from: Mark | null; declined: boolean; open: boolean };
   players: HtPlayer[];
 }
 
@@ -267,6 +269,15 @@ export default function HatTrickRoom() {
           : `${winnerName} ${t("htTookGame")}`;
   const winnerSub = series.over ? score : `${score}, ${t("htNextGame")}`;
   const draw = !room.drawOffer || !me ? null : room.drawOffer === me.mark ? "sent" : "received";
+  const deal = () => gridToIds(dealGrid(room.league, room.mates !== false));
+  const rm = room.rematch;
+  const incoming = !!rm?.from && rm.from !== me?.mark && !peerLeft;
+  const outgoing = !!rm?.from && rm.from === me?.mark && !peerLeft;
+  const canAsk = !peerLeft && !rm?.from && !rm?.declined && (isHost || !!rm?.open);
+  const askRematch = () => getSocket().emit(rm ? "ht:rematch-ask" : "ht:rematch", { grid: deal() });
+  const acceptRematch = () => getSocket().emit("ht:rematch-reply", { accept: true, grid: deal() });
+  const declineRematch = () => getSocket().emit("ht:rematch-reply", { accept: false });
+  const askedLine = t("htRematchAsked").replace("{name}", room.players.find((p) => p.id !== myId)?.nick || t("opponent"));
 
   return (
     <>
@@ -305,10 +316,16 @@ export default function HatTrickRoom() {
           footer={
             room.winner && !series.over ? null : room.winner ? (
               <View style={{ marginTop: 18, gap: 10 }}>
-                {isHost ? (
-                  <Button title={t("htRematch")} icon="arrow.clockwise" onPress={() => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) })} />
+                {incoming ? (
+                  <>
+                    <Text style={[T.body, { textAlign: "center" }]}>{askedLine}</Text>
+                    <Button title={t("htAccept")} icon="checkmark" onPress={acceptRematch} />
+                    <Button title={t("htDecline")} kind="secondary" onPress={declineRematch} />
+                  </>
+                ) : canAsk ? (
+                  <Button title={t("htRematch")} icon="arrow.clockwise" onPress={askRematch} />
                 ) : (
-                  <Text style={[T.body, { textAlign: "center" }]}>{t("htWaitRematch")}</Text>
+                  <Text style={[T.body, { textAlign: "center" }]}>{t(outgoing ? "htRematchWaiting" : rm?.declined ? "htRematchDeclined" : "htWaitRematch")}</Text>
                 )}
                 {params.random && <Button title={t("htNewGame")} kind="secondary" icon="play.fill" onPress={() => router.replace("/hat-trick/rastgele")} />}
               </View>
@@ -331,7 +348,10 @@ export default function HatTrickRoom() {
           won={iWon}
           mine={me ? series[me.mark] : 0}
           theirs={me ? series[me.mark === "X" ? "O" : "X"] : 0}
-          onRematch={isHost ? () => getSocket().emit("ht:rematch", { grid: gridToIds(dealGrid(room.league, room.mates !== false)) }) : null}
+          onRematch={incoming ? acceptRematch : canAsk ? askRematch : null}
+          rematchTitle={incoming ? t("htAccept") : undefined}
+          onDecline={incoming ? declineRematch : undefined}
+          note={incoming ? askedLine : undefined}
         />
         <EmoteLayer e={emotes} top={4} />
       </Page>

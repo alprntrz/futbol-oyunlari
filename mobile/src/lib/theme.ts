@@ -57,6 +57,7 @@ export const GAME = {
   rush: { bg: "#FFEDD5", ink: "#9A3412" },
   rd: { bg: "#E0E7FF", ink: "#3730A3" },
   wm: { bg: "#FAE8FF", ink: "#86198F" },
+  sp: { bg: "#CCFBF1", ink: "#115E59" },
 } as const;
 
 export const R = { card: 22, inner: 12, button: 14, chip: 999 };

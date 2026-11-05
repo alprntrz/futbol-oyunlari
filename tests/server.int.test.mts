@@ -60,7 +60,7 @@ after(() => {
   server?.kill();
 });
 
-const CAPS = ["mate", "coach", "arab", "hon", "rdpair"];
+const CAPS = ["mate", "coach", "arab", "hon", "rdpair", "rematch"];
 function client(auth: Record<string, unknown> = {}): Promise<Socket> {
   const s = io(URL, { transports: ["websocket"], forceNew: true, reconnectionDelay: 100, auth: { caps: CAPS, ...auth } });
   open.push(s);
@@ -109,6 +109,62 @@ test("Tic-Tac-Toe: room, turn order, jokers, forfeit", async () => {
   assert.equal(st.v?.winner, "X");
 });
 
+/** Two players, a series ended by b's forfeit; `st` follows what a's phone sees. */
+async function forfeitedSeries(guestCaps?: string[]) {
+  const [a, b] = await Promise.all([client(), client(guestCaps ? { caps: guestCaps } : {})]);
+  const st = latest<{ winner: string | null; series: { over: boolean; X: number; O: number }; rematch?: { from: string | null; declined: boolean; open: boolean } }>(a, "ht:update");
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "ht:create", { nick: "a", grid: grid() });
+  await ask(b, "ht:join", { code: c.room.code, nick: "b" });
+  a.emit("ht:start");
+  await wait(300);
+  b.emit("ht:forfeit");
+  await wait(300);
+  assert.equal(st.v?.series.over, true);
+  return { a, b, st };
+}
+
+test("Tic-Tac-Toe: after a forfeit a rematch waits for the other player's yes", async () => {
+  const { a, b, st } = await forfeitedSeries();
+  assert.equal(st.v?.rematch?.open, true);
+  a.emit("ht:rematch-ask", { grid: grid() });
+  await wait(200);
+  assert.equal(st.v?.rematch?.from, "X", "the request reaches the room");
+  assert.equal(st.v?.series.over, true, "nothing starts on the asker's tap");
+  b.emit("ht:rematch-reply", { accept: true, grid: grid() });
+  await wait(200);
+  assert.equal(st.v?.winner, null, "a new series is on");
+  assert.equal(st.v?.series.over, false);
+  assert.equal(st.v?.rematch?.from, null);
+});
+
+test("Tic-Tac-Toe: the player who forfeited can ask too; a no ends the asking", async () => {
+  const { a, b, st } = await forfeitedSeries();
+  b.emit("ht:rematch-ask", { grid: grid() });
+  await wait(200);
+  assert.equal(st.v?.rematch?.from, "O");
+  b.emit("ht:rematch-reply", { accept: true, grid: grid() });
+  await wait(200);
+  assert.equal(st.v?.series.over, true, "you can't accept your own request");
+  a.emit("ht:rematch-reply", { accept: false });
+  await wait(200);
+  assert.equal(st.v?.rematch?.from, null);
+  assert.equal(st.v?.rematch?.declined, true);
+  b.emit("ht:rematch-ask", { grid: grid() });
+  await wait(200);
+  assert.equal(st.v?.rematch?.from, null, "no asking again after a no");
+});
+
+test("Tic-Tac-Toe: an app that can't answer a request gets the old instant rematch from the host", async () => {
+  const { a, b, st } = await forfeitedSeries(["mate", "coach", "arab", "hon"]);
+  assert.equal(st.v?.rematch?.open, false);
+  b.emit("ht:rematch-ask", { grid: grid() });
+  await wait(200);
+  assert.equal(st.v?.series.over, true, "the guest has no say on such a phone pair");
+  a.emit("ht:rematch-ask", { grid: grid() });
+  await wait(200);
+  assert.equal(st.v?.series.over, false);
+});
+
 test("Tic-Tac-Toe: the server judges names, a made-up or misfit one is a miss", async () => {
   const [a, b] = await Promise.all([client(), client()]);
   type Cell = { mark: string; name: string } | null;
@@ -137,6 +193,38 @@ test("Tic-Tac-Toe: the server judges names, a made-up or misfit one is a miss", 
   assert.equal(st.v?.flash?.reason, "wrong");
 });
 
+test("The Spot: picks stay hidden, a matching side is a save, five kicks each decide it", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  type Kick = { kicker: string; shot: string | null; dive: string | null; goal: boolean };
+  const st = latest<{ kicks: Kick[]; phase: string; picked: Record<string, boolean>; winner: string | null; again: string[]; players: { mark: string }[] }>(b, "sp:update");
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "sp:create", { nick: "a" });
+  assert.ok(c.ok);
+  await ask(b, "sp:join", { code: c.room.code, nick: "b" });
+  a.emit("sp:start");
+  await wait(200);
+  assert.equal(st.v?.phase, "pick");
+  a.emit("sp:pick", { dir: "l" });
+  a.emit("sp:pick", { dir: "r" });
+  a.emit("sp:pick", { dir: "nowhere" });
+  await wait(200);
+  assert.deepEqual(st.v?.picked, { X: true, O: false });
+  assert.equal(JSON.stringify(st.v).includes('"l"'), false, "the rival never sees the pick");
+  b.emit("sp:pick", { dir: "l" });
+  await wait(200);
+  assert.deepEqual(st.v?.kicks[0], { kicker: "X", shot: "l", dive: "l", goal: false }, "the first pick stands; same side is a save");
+  assert.equal(st.v?.phase, "reveal");
+  a.emit("sp:forfeit");
+  await wait(200);
+  assert.equal(st.v?.winner, "O");
+  a.emit("sp:rematch");
+  await wait(200);
+  assert.deepEqual(st.v?.again, ["X"], "a rematch waits for the other player");
+  b.emit("sp:rematch");
+  await wait(200);
+  assert.equal(st.v?.winner, null);
+  assert.equal(st.v?.kicks.length, 0);
+});
+
 test("Possession: the server works out the claimed hexes", async () => {
   const [a, b] = await Promise.all([client(), client()]);
   type Cell = { mark: string; name: string } | null;
@@ -158,6 +246,25 @@ test("Possession: the server works out the claimed hexes", async () => {
   b.emit("pp:move", { name: p.name, claims: [0, 1, 4, 5] });
   await wait(200);
   assert.deepEqual(st.v?.owners.map((o, i) => (o ? i : -1)).filter((i) => i >= 0), [0]);
+});
+
+test("Possession: Kolo Muani takes PSG and Juventus, never the England hex beside them", async () => {
+  const [a, b] = await Promise.all([client(), client()]);
+  type Cell = { mark: string; name: string } | null;
+  const st = latest<{ owners: Cell[] }>(a, "pp:update");
+  // the reported board: Juventus 9, PSG 13, England 14 all touch; the rest can't fit him
+  const board = Array.from({ length: 31 }, () => "brazil");
+  board[9] = "juventus";
+  board[13] = "psg";
+  board[14] = "england";
+  const c = await ask<{ ok: boolean; room: { code: string } }>(a, "pp:create", { nick: "a", board });
+  assert.ok(c.ok);
+  await ask(b, "pp:join", { code: c.room.code, nick: "b" });
+  a.emit("pp:start");
+  await wait(300);
+  a.emit("pp:move", { name: "Randal Kolo Muani", claims: [13, 9, 14] });
+  await wait(200);
+  assert.deepEqual(st.v?.owners.map((o, i) => (o ? i : -1)).filter((i) => i >= 0), [9, 13]);
 });
 
 test("Possession: the same footballer in another spelling cannot be claimed twice", async () => {

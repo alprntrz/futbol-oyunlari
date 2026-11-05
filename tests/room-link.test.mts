@@ -6,6 +6,7 @@ import { roomOfLink } from "@/../mobile/src/lib/roomLinkPath"; // the app's pure
 test("room links name the room they would join", () => {
   assert.equal(roomOfLink("tiktako://hat-trick/oda/ab12c"), "hat-trick/oda/AB12C");
   assert.equal(roomOfLink("tiktako://possession/oda/XY9?random=1"), "possession/oda/XY9");
+  assert.equal(roomOfLink("tiktako://nokta/oda/AB2"), "nokta/oda/AB2");
   assert.equal(roomOfLink("exp://192.168.1.2:8081/--/rondo/oda/QQ1"), "rondo/oda/QQ1");
   assert.equal(roomOfLink("tiktako://taktik/lobi?coach=bus&code=k7"), "taktik/lobi/K7");
 });

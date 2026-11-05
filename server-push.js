@@ -51,6 +51,7 @@ const GAME_NAMES = {
   tt: { tr: "Taktik Tahtası", en: "Pitch Chess" },
   rd: { tr: "Rondo", en: "Rondo" },
   wm: { tr: "Ben Kimim?", en: "Who Am I?" },
+  sp: { tr: "Beyaz Nokta", en: "The Spot" },
 };
 
 /** "<nick> invited you to play <game>" in the phone's language. */

@@ -13,6 +13,7 @@ const { attachTaktik, ttRooms } = require("./server-taktik");
 // the online games moved to their own files (server-games/), after server-taktik: it registers the "@/" resolver they load rules with
 const ht = require("./server-games/ht");
 const wm = require("./server-games/wm");
+const sp = require("./server-games/sp");
 const pp = require("./server-games/pp");
 const dz = require("./server-games/dz");
 const rd = require("./server-games/rd");
@@ -51,6 +52,7 @@ const GAMES = [
   dz,
   rd,
   wm,
+  sp,
 ];
 const gameById = (id) => GAMES.find((g) => g.id === id);
 
@@ -243,6 +245,8 @@ const gameById = (id) => GAMES.find((g) => g.id === id);
 
     // ── Who Am I? (server-games/wm.js) ──
     wm.attach(socket, { io, dropLater, dropLoneRoom, matchQueues });
+    // ── The Spot (server-games/sp.js) ──
+    sp.attach(socket, { io, dropLater, dropLoneRoom, matchQueues });
 
     // ── Live Activity: the token of this phone's activity for the match it's in, and whether the app is open
     socket.on("la:token", ({ game, token, s }) => {
