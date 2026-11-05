@@ -24,6 +24,7 @@ const MATERIAL: Record<string, AndroidSymbol> = {
   "arrow.down.circle.fill": "download",
   "arrow.down": "arrow_downward",
   "arrow.left.arrow.right": "swap_horiz",
+  "arrow.left": "arrow_back",
   "arrow.right": "arrow_forward",
   "arrow.right.circle.fill": "arrow_circle_right",
   "arrow.triangle.2.circlepath": "sync",

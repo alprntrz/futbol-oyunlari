@@ -16,4 +16,4 @@ Seçimler ikisi de gelene kadar sunucuda kalır; telefon yalnız kimin seçtiği
 
 ## Görsel
 
-`scripts/nokta-assets.py` şimdilik kodla çiziyor. ChatGPT sanatı gelince aynı dosya adları ve boyutlarla `mobile/assets/brand/nokta/` altına koy.
+Codex görsel üretimiyle yapıldı. Kaleci, top ve amblem düz magenta (#FF00FF) zeminde üretilir; `python3 scripts/nokta-assets.py <klasör>` zemini silip `mobile/assets/brand/nokta/` altına yazar. Stadyumu değiştirirsen `SpotBoard.tsx` içindeki `GOAL` ve `SPOT` oranlarını güncelle. Orijinaller commit edilmez.
