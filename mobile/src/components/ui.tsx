@@ -125,8 +125,9 @@ const MIRRORED: Record<string, SymbolName> = {
   "arrow.up.right": "arrow.up.left",
 };
 
-export function Icon({ name: given, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {
-  const name = (I18nManager.isRTL && typeof given === "string" && MIRRORED[given]) || given;
+/** `physical`: the arrow means a real side (a corner of the goal), so it stays as it is in Arabic. */
+export function Icon({ name: given, size = 20, color = C.text, fallback, physical }: { name: SymbolName; size?: number; color?: string; fallback?: string; physical?: boolean }) {
+  const name = (I18nManager.isRTL && !physical && typeof given === "string" && MIRRORED[given]) || given;
   const android = typeof name === "string" ? MATERIAL[name] : undefined;
   return (
     <SymbolView

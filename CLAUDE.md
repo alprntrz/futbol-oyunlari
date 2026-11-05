@@ -257,7 +257,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `python3 scripts/rondo-assets.py docs/design/rondo-art/originals` → `mobile/assets/brand/rondo/` (`RONDO` in brand.ts).
 - The Spot / Beyaz Nokta (`sp:*`, server-games/sp.js, rules `src/lib/spot.ts`, docs/design/beyaz-nokta.md): one-on-one penalties, both pick a side in secret (same side = save), 5 each then
   sudden death, 8 s a pick; picks stay on the server until both are in; a rematch needs both. House player `useSpotHouse` (lib/spotMatch.ts, same shape as `useSpotOnline`); screens `app/nokta/`,
-  board `components/SpotBoard.tsx` (flat transforms only: no perspective / rotateY next to sibling views, iOS sorts them in 3D). Elo board / XP "sp". Art is a stand-in from `scripts/nokta-assets.py`.
+  board `components/SpotBoard.tsx` (flat transforms only: no perspective / rotateY next to sibling views, iOS sorts them in 3D). Elo board / XP "sp". Art: Codex images → `python3 scripts/nokta-assets.py <dir>` (keys out magenta) → `mobile/assets/brand/nokta/`.
 - Jokers (fair by design: the same for both players each game / match, never bought, never saved): Tic-Tac-Toe online +
   house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
   well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50

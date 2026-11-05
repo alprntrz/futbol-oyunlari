@@ -225,12 +225,17 @@ export const RONDO = {
   turn: require("../../assets/brand/rondo/rondo-turn.png"),
 };
 
-/** The Spot: drawn by scripts/nokta-assets.py until ChatGPT art replaces it */
+/** The Spot (docs/design/beyaz-nokta.md → scripts/nokta-assets.py) */
 export const NOKTA = {
-  /** a goal with the ball on the white spot: Games tab, Settings */
+  /** toy keeper in a goal on a grass island: Games tab, Settings */
   icon: require("../../assets/brand/nokta/nokta-icon.png"),
-  /** the same goal on grass: the game's hub */
+  /** the same, larger: the game's hub */
   hero: require("../../assets/brand/nokta/nokta-hero.png"),
+  /** the empty stadium behind the match; SpotBoard knows where the goal and the spot are in it */
+  pitch: require("../../assets/brand/nokta/nokta-pitch.jpg"),
+  /** the keeper in each player's colour */
+  keeper: { X: require("../../assets/brand/nokta/nokta-keeper-x.png"), O: require("../../assets/brand/nokta/nokta-keeper-o.png") },
+  ball: require("../../assets/brand/nokta/nokta-ball.png"),
 };
 
 /** Who Am I? (docs/design/kimim-brief.md → scripts/kimim-assets.py) */
