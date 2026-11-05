@@ -40,8 +40,10 @@ function qzPoints(ms, limit) {
   return Math.round(5 + 5 * left);
 }
 
-/** A {tr, en} pair of short strings: questions come from a phone and go to other phones. */
-const qzText = (l, max) => l && typeof l.tr === "string" && typeof l.en === "string" && l.tr.length <= max && l.en.length <= max;
+/** A {tr, en, ar?} set of short strings: questions come from a phone and go to other phones. */
+const qzText = (l, max) =>
+  l && typeof l.tr === "string" && typeof l.en === "string" && l.tr.length <= max && l.en.length <= max &&
+  (l.ar == null || (typeof l.ar === "string" && l.ar.length <= max));
 
 function qzValidQuestions(qs) {
   return (

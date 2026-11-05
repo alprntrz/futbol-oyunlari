@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 
 import { XI_CATEGORIES } from "@/lib/leagues";
+import { pick } from "@/lib/strings";
 
 import { ChoiceSheet, GameHub, HubSetting } from "~/components/GameHub";
 import { MissingXISteps } from "~/components/HowTo";
@@ -30,7 +31,7 @@ export default function MissingXIHome() {
         { label: t("archiveTitle"), icon: "archivebox.fill", fallback: "🗄", onPress: () => router.push("/arsiv") },
       ]}
       settings={
-        <HubSetting label={t("xiMatchesFrom")} value={`${current.name[locale]} · ${current.matches().length}`} onPress={() => setPicking(true)} />
+        <HubSetting label={t("xiMatchesFrom")} value={`${pick(current.name, locale)} · ${current.matches().length}`} onPress={() => setPicking(true)} />
       }
       rules={<MissingXISteps />}
     >
@@ -38,7 +39,7 @@ export default function MissingXIHome() {
         visible={picking}
         title={t("xiMatchesFrom")}
         value={cat}
-        options={XI_CATEGORIES.map((c) => ({ value: c.id, label: c.name[locale], hint: `${c.matches().length} ${t("matchesWord")}`, left: <LeagueBadge item={c} size={30} /> }))}
+        options={XI_CATEGORIES.map((c) => ({ value: c.id, label: pick(c.name, locale), hint: `${c.matches().length} ${t("matchesWord")}`, left: <LeagueBadge item={c} size={30} /> }))}
         onPick={setCat}
         onClose={() => setPicking(false)}
       />

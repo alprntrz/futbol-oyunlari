@@ -4,14 +4,16 @@ import Animated, { Keyframe } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { playerInfo } from "@/lib/playerInfo";
-import { searchPlayers, validateCell, type Criterion, type Grid } from "@/lib/tiki";
+import { latinGuess, searchPlayers } from "@/lib/playersAr";
+import { validateCell, type Criterion, type Grid } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { haptic, useClockTicks } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { answersFor } from "~/lib/htBot";
 import { SERIES_TARGET, TURN_SECONDS, winningLine, type HtCell, type Mark, type Winner } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
-import { C, F, R, shadow, T } from "~/lib/theme";
+import { C, F, LTR, R, shadow, T } from "~/lib/theme";
 
 import { initials, PlayerLine, PlayerToken } from "./PlayerRow";
 import { Flag } from "./Flag";
@@ -183,7 +185,7 @@ export function HatTrickBoard({
   const cellW = gridW ? (gridW - 3 * 6) / 4.1 : 0;
   const size = (n: number) => (cellW ? { width: cellW * n, height: cellW } : null);
 
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const label = (c: Criterion) => pick(c, locale);
   const used = useMemo(() => new Set([...(usedNames ?? []), ...board.filter(Boolean).map((c) => c!.name)]), [board, usedNames]);
   // A rival's square can be taken while the player to move still has steals
   const canSteal = (cell: HtCell) => !!steals && cell.mark !== turn && steals[turn] > 0;
@@ -209,7 +211,7 @@ export function HatTrickBoard({
   const submit = (text?: string) => {
     const guess = (text ?? input).trim();
     if (openCell === null || !guess) return;
-    const player = validateCell(guess, grid.rows[Math.floor(openCell / 3)], grid.cols[openCell % 3], used);
+    const player = validateCell(latinGuess(guess), grid.rows[Math.floor(openCell / 3)], grid.cols[openCell % 3], used);
     if (player) {
       haptic.success();
       play("correct");
@@ -310,7 +312,7 @@ export function HatTrickBoard({
         </Card>
       )}
 
-      <View style={styles.grid} onLayout={(e) => setGridW(e.nativeEvent.layout.width)}>
+      <View style={[styles.grid, LTR]} onLayout={(e) => setGridW(e.nativeEvent.layout.width)}>
         {/* a new grid deals in row by row */}
         <Animated.View key={`${gridKey}-head`} entering={softIn(0)} style={styles.row}>
           <View style={[styles.corner, size(1.1)]} />
@@ -471,13 +473,13 @@ function CriteriaPair({ row, col, color }: { row: Criterion; col: Criterion; col
         <CriterionBadge c={c} size={34} />
       </View>
       <Text style={styles.critName} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
-        {locale === "tr" ? c.tr : c.en}
+        {pick(c, locale)}
       </Text>
       <Text style={styles.critKind}>{kind(c)}</Text>
     </View>
   );
   return (
-    <View style={styles.critRow} accessible accessibilityLabel={`${locale === "tr" ? row.tr : row.en} ${t("critAnd")} ${locale === "tr" ? col.tr : col.en}`}>
+    <View style={styles.critRow} accessible accessibilityLabel={`${pick(row, locale)} ${t("critAnd")} ${pick(col, locale)}`}>
       {tile(row)}
       {tile(col)}
       <View style={[styles.critJoin, { backgroundColor: color }]} pointerEvents="none">

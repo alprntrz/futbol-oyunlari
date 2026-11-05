@@ -1,7 +1,7 @@
 import { MaterialSymbols_600SemiBold_Filled } from "@expo-google-fonts/material-symbols/600SemiBold_Filled";
 import { SymbolView, type AndroidSymbol, type SymbolViewProps } from "expo-symbols";
 import semiBold from "expo-symbols/androidWeights/semiBold";
-import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import { I18nManager, Image, Platform, Pressable, ScrollView, StyleSheet, Switch, View, type ImageSourcePropType, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -24,6 +24,7 @@ const MATERIAL: Record<string, AndroidSymbol> = {
   "arrow.down.circle.fill": "download",
   "arrow.down": "arrow_downward",
   "arrow.left.arrow.right": "swap_horiz",
+  "arrow.left": "arrow_back",
   "arrow.right": "arrow_forward",
   "arrow.right.circle.fill": "arrow_circle_right",
   "arrow.triangle.2.circlepath": "sync",
@@ -114,7 +115,16 @@ const MATERIAL: Record<string, AndroidSymbol> = {
 const FILLED = { name: "MaterialSymbols_600SemiBold_Filled", font: MaterialSymbols_600SemiBold_Filled };
 
 /** SF Symbol on iOS, the matching Material Symbol on Android, else the emoji/text fallback. */
-export function Icon({ name, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {
+/** Arrows that point along the reading direction turn round in Arabic. */
+const MIRRORED: Record<string, SymbolName> = {
+  "chevron.left": "chevron.right",
+  "chevron.right": "chevron.left",
+  "arrow.right": "arrow.left",
+  "arrow.left": "arrow.right",
+};
+
+export function Icon({ name: given, size = 20, color = C.text, fallback }: { name: SymbolName; size?: number; color?: string; fallback?: string }) {
+  const name = (I18nManager.isRTL && typeof given === "string" && MIRRORED[given]) || given;
   const android = typeof name === "string" ? MATERIAL[name] : undefined;
   return (
     <SymbolView

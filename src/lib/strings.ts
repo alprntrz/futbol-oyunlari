@@ -1,10 +1,13 @@
 /**
  * UI copy for both apps (web: src/lib/i18n.tsx, mobile: mobile/src/lib/i18n.tsx).
- * Every key must exist in both `tr` and `en`.
+ * Every key must exist in both `tr` and `en`; Arabic lives in strings-ar.ts (mobile only).
  */
-export type Locale = "tr" | "en";
+import { AR_LABELS, AR_NAMES } from "./names-ar";
+import { ar } from "./strings-ar";
 
-export const dict = {
+export type Locale = "tr" | "en" | "ar";
+
+const base = {
   tr: {
     appName: "Tiktako",
     privacyTitle: "Gizlilik",
@@ -2571,11 +2574,33 @@ export const dict = {
   },
 } as const;
 
-export type TKey = keyof (typeof dict)["tr"];
+export type TKey = keyof (typeof base)["tr"];
+
+export const dict = { ...base, ar };
+
+/**
+ * A `{ tr, en }` label in the player's language. Arabic comes from names-ar.ts (by id, else by the
+ * English text), so the seeded data stays as it is; a label without Arabic shows the English.
+ */
+export function pick(label: { tr: string; en: string; ar?: string; id?: string }, locale: Locale): string {
+  if (locale !== "ar") return label[locale];
+  return label.ar ?? (label.id ? AR_NAMES[label.id] : undefined) ?? AR_LABELS[label.en] ?? label.en;
+}
+
+/** The app language for a system language tag ("ar-SA" → "ar"); anything we don't have reads English. */
+export function localeOfTag(tag: string): Locale {
+  return tag.startsWith("tr") ? "tr" : tag.startsWith("ar") ? "ar" : "en";
+}
+
+/** Locale tag for dates. Bare `ar-SA` would give the Hijri calendar and Eastern digits. */
+export function dateLocale(locale: Locale): string {
+  return { tr: "tr-TR", en: "en-GB", ar: "ar-u-nu-latn-ca-gregory" }[locale];
+}
 
 /** A place as shown in text: "3." in Turkish, "3rd" in English (11th, 12th, 13th, 21st…). */
 export function ordinal(n: number, locale: Locale): string {
   if (locale === "tr") return `${n}.`;
+  if (locale === "ar") return String(n);
   const teen = n % 100 >= 11 && n % 100 <= 13;
   return `${n}${teen ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th")}`;
 }

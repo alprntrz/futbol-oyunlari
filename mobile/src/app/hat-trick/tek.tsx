@@ -7,7 +7,9 @@ import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 import type { GridPlayer } from "@/data/players";
 import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
-import { generateGrid, GRID_PLAYERS, searchPlayers, seededRandom, withHonour, withLink, type Criterion } from "@/lib/tiki";
+import { searchPlayers } from "@/lib/playersAr";
+import { generateGrid, GRID_PLAYERS, seededRandom, withHonour, withLink, type Criterion } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { PlayerLine, PlayerToken } from "~/components/PlayerRow";
 import { CriterionBadge } from "~/components/HatTrickBoard";
@@ -138,7 +140,7 @@ export default function HatTrickSolo() {
     setRun({ cells: Array.from({ length: 9 }, () => []), limit: run?.limit ?? limit === "3", deadline: (run?.limit ?? limit === "3") ? Date.now() + TIME_LIMIT * 1000 : null, finished: false });
   };
 
-  const pick = (p: GridPlayer) => {
+  const place = (p: GridPlayer) => {
     if (!run) return;
     setQuery("");
     const fits = Array.from({ length: 9 }, (_, i) => i).filter((i) => {
@@ -159,7 +161,7 @@ export default function HatTrickSolo() {
     setRun({ ...run, cells: run.cells.map((names, i) => (fresh.includes(i) ? [...names, p.name] : names)) });
   };
 
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const label = (c: Criterion) => pick(c, locale);
 
   // ── Start screen
   if (!run) {
@@ -245,7 +247,7 @@ export default function HatTrickSolo() {
               <TextInput
                 value={query}
                 onChangeText={setQuery}
-                onSubmitEditing={() => suggestions[0] && pick(suggestions[0])}
+                onSubmitEditing={() => suggestions[0] && place(suggestions[0])}
                 placeholder={t("bbSearch")}
                 placeholderTextColor={C.text3}
                 autoCorrect={false}
@@ -262,7 +264,7 @@ export default function HatTrickSolo() {
                 <Text style={[T.body, { textAlign: "center", padding: 14 }]}>{t("ttNoResult")}</Text>
               ) : (
                 suggestions.map((p, i) => (
-                  <Tap key={p.name} onPress={() => pick(p)} style={[styles.suggestion, i > 0 && styles.divider]}>
+                  <Tap key={p.name} onPress={() => place(p)} style={[styles.suggestion, i > 0 && styles.divider]}>
                     <PlayerToken p={p} />
                     <PlayerLine p={p} />
                   </Tap>

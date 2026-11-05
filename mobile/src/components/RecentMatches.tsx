@@ -2,6 +2,7 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
+import { dateLocale } from "@/lib/strings";
 import { loadHistory, type MatchRecord } from "~/lib/history";
 import { useI18n } from "~/lib/i18n";
 import { C, F, T } from "~/lib/theme";
@@ -23,7 +24,7 @@ export function RecentMatches() {
   if (list.length === 0) return null;
 
   const game = { ht: t("tikiTakaName"), pp: t("ppName"), dz: t("dzName"), rd: "Rondo", wm: t("wmName") };
-  const date = (at: number) => new Date(at).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "short" });
+  const date = (at: number) => new Date(at).toLocaleDateString(dateLocale(locale), { day: "numeric", month: "short" });
 
   return (
     <>

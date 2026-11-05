@@ -4,7 +4,7 @@ import type { TileMark } from "@/lib/types";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F } from "~/lib/theme";
+import { C, F, LTR } from "~/lib/theme";
 
 import { Text } from "./Text";
 import { Icon } from "./ui";
@@ -30,7 +30,7 @@ export function Keyboard({ onKey, marks }: { onKey: (key: string) => void; marks
   };
 
   return (
-    <View style={{ gap: 8 }}>
+    <View style={[{ gap: 8 }, LTR]}>
       {ROWS.map((row, ri) => (
         <View key={row} style={styles.row}>
           {ri === 2 && (

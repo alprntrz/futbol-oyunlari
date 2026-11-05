@@ -47,13 +47,14 @@ export default function Onboarding() {
 
       <View style={styles.top}>
         <Image source={BRAND.wordmark} style={styles.logo} resizeMode="contain" />
-        <View style={{ width: 120 }}>
+        <View style={{ width: 150 }}>
           <Segmented
             value={locale}
             onChange={setLocale}
             options={[
               { value: "tr", label: "TR" },
               { value: "en", label: "EN" },
+              { value: "ar", label: "ع" },
             ]}
           />
         </View>

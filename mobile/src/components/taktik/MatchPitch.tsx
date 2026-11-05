@@ -19,7 +19,7 @@ import type { MatchEvent, Unit } from "@/lib/taktik/types";
 
 import { TAKTIK } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
-import { C, F } from "~/lib/theme";
+import { C, F, LTR } from "~/lib/theme";
 
 import { CLUB_KITS, type Kit } from "../HatTrickBoard";
 import { Jersey } from "../Jersey";
@@ -192,7 +192,7 @@ export function MatchPitch({
 
   const shirt = Math.min(40, width * 0.095);
   return (
-    <View style={{ width, height, alignSelf: "center" }}>
+    <View style={[{ width, height, alignSelf: "center" }, LTR]}>
       {/* explicit size: absoluteFill on an Image misrenders in RN */}
       <Image source={TAKTIK.pitch.full} style={{ position: "absolute", left: 0, top: 0, width, height }} />
       {shot && <ShotTrail key={shot.id} shot={shot} width={width} height={height} fw={fw} fh={fh} ms={sliceMs / 3} />}

@@ -16,7 +16,7 @@ export default function TeamPicker() {
   const teams = useMemo(() => teamsWithMatches(3), []);
   const [query, setQuery] = useState("");
 
-  const label = (team: Team) => (locale === "en" ? team.en : team.name);
+  const label = (team: Team) => (locale === "tr" ? team.name : team.en);
   const q = normalizeAnswer(query);
   const shown = q ? teams.filter((tm) => normalizeAnswer(tm.name).includes(q) || normalizeAnswer(tm.en).includes(q)) : teams;
   const clubs = shown.filter((tm) => !tm.national);

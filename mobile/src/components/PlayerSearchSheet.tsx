@@ -3,7 +3,8 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { GridPlayer } from "@/data/players";
-import { matchPlayers, searchPlayers } from "@/lib/tiki";
+import { latinGuess, searchPlayers } from "@/lib/playersAr";
+import { matchPlayers } from "@/lib/tiki";
 
 import { useI18n } from "~/lib/i18n";
 import { C, R, T } from "~/lib/theme";
@@ -58,7 +59,7 @@ export function PlayerSearchSheet({
   const submit = (picked?: GridPlayer) => {
     const text = input.trim();
     if (!picked && !text) return;
-    const candidates = picked ? [picked] : matchPlayers(text);
+    const candidates = picked ? [picked] : matchPlayers(latinGuess(text));
     const player = candidates.find((p) => !used.has(p.name) && accept(p)) ?? null;
     setInput("");
     onSubmit(player, text);

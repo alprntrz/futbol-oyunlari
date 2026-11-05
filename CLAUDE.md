@@ -196,6 +196,14 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   the server judges the name and works out the claimed hexes itself, `ppClaims`, same rule as `claimsFor`). Football Bingo is offline (daily
   seeded card, `mobile/src/lib/bingo.ts`; `/bingo?practice=1` deals unsaved random cards, XP under the practice cap). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
+- Arabic (mobile only, the web stays tr / en): copy in `src/lib/strings-ar.ts`, names of clubs / countries / competitions in
+  `src/lib/names-ar.ts` (`pick` finds them by id, then English text, so seeded data is untouched). RTL: `syncDirection`
+  (mobile/src/lib/i18n.tsx) flips `I18nManager` and reloads, one try per direction; never set the expo-localization plugin's
+  `supportsRTL`: it would reset the flip from the device language at every launch. Expo Go ignores RTL, test on a dev build.
+  Boards, pitches and letter rows carry `LTR` (theme.ts); `F` runs on Cairo in RTL, `Text` drops tracking and opens line height,
+  `Icon` turns reading-direction arrows. Players: `src/lib/playersAr.ts` (`searchPlayers`, `latinGuess`) turns an Arabic name into
+  the Latin one on the phone, so the server and daily puzzles never see Arabic; data `src/data/players-ar.ts` ←
+  `scripts/ar-names-fetch.mjs` (Wikidata, CC0). Missing 11 and Dribbling Rush letters stay Latin. Quiz questions carry `ar`.
 - Android (started 2026-10-17): `Icon` (ui.tsx) maps every SF Symbol to a Material Symbol (`MATERIAL`; filled font for
   ".fill" names) — add new icons there too; tabs pass `md` icons (Android tints tab icons); `Page topInset` pads under the
   status bar on Android; Pitch Chess handles the hardware back (`BackHandler`). Google sign-in on Android needs
@@ -309,6 +317,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
     `scripts/leagues-to-ts.mjs`
 - The daily puzzle is `MATCHES[hash(day) % MATCHES.length]`: adding or removing
   matches reshuffles future days.
-- Every new UI string goes into both `tr` and `en` in `src/lib/strings.ts`.
+- Every new UI string goes into both `tr` and `en` in `src/lib/strings.ts`, and into `ar` in `src/lib/strings-ar.ts` (tsc fails
+  without it; `tests/arabic.test.mts` checks the placeholders).
+- Data labels go through `pick(label, locale)` (strings.ts), never `locale === "tr" ? x.tr : x.en`: such a ternary shows Arabic
+  phones English and tsc can't see it. Dates use `dateLocale(locale)`.
 - Scrapers hit Transfermarkt; keep the request gap (`TM_GAP_MS`, ≥ 2.2 s) and the
   on-disk cache. Their data is under Transfermarkt's terms — see README.

@@ -5,6 +5,7 @@ import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withRep
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { dailyMatch, dayNumber } from "@/lib/daily";
+import { dateLocale } from "@/lib/strings";
 
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { BRAND, ROZET } from "~/lib/brand";
@@ -91,7 +92,7 @@ export function HomeNext() {
   );
   const hero = heroIndex >= 0 ? dailies[heroIndex] : dailies.find((d) => d.p.state === "new");
   const rest = dailies.filter((d) => d !== hero);
-  const date = new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", weekday: "long" });
+  const date = new Date().toLocaleDateString(dateLocale(locale), { day: "numeric", month: "long", weekday: "long" });
   const go = (href: Href) => {
     haptic.tap();
     router.push(href);
@@ -102,7 +103,7 @@ export function HomeNext() {
       {/* today at a glance */}
       <View style={styles.headRow}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.kicker}>{date.toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB")}</Text>
+          <Text style={styles.kicker}>{date.toLocaleUpperCase(dateLocale(locale))}</Text>
           <Text style={styles.headTitle}>{t("homeYourMatches")}</Text>
         </View>
         <View style={{ alignItems: "flex-end" }}>
@@ -126,7 +127,7 @@ export function HomeNext() {
             <View style={{ flex: 1, gap: 4 }}>
               <View style={styles.eyebrow}>
                 <Icon name={hero.p.state === "started" ? "clock.arrow.circlepath" : "flag.fill"} size={13} color="rgba(255,255,255,0.85)" fallback="•" />
-                <Text style={styles.eyebrowText}>{`${t(hero.p.state === "started" ? "homeHalfway" : "homeNextUp")} · ${hero.kind}`.toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB")}</Text>
+                <Text style={styles.eyebrowText}>{`${t(hero.p.state === "started" ? "homeHalfway" : "homeNextUp")} · ${hero.kind}`.toLocaleUpperCase(dateLocale(locale))}</Text>
               </View>
               <Text style={styles.heroTitle} numberOfLines={1} adjustsFontSizeToFit>
                 {hero.title}
@@ -162,7 +163,7 @@ export function HomeNext() {
                 <Image source={d.image} style={{ width: 30, height: 30 }} resizeMode="contain" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.kind}>{d.kind.toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB")}</Text>
+                <Text style={styles.kind}>{d.kind.toLocaleUpperCase(dateLocale(locale))}</Text>
                 <Text style={[styles.rowTitle, isDone && { color: C.text2 }]}>{d.title}</Text>
                 <Text style={T.caption}>{isDone ? t("homeDoneToday") : d.p.state === "started" ? d.detail : t("homeNotPlayed")}</Text>
               </View>

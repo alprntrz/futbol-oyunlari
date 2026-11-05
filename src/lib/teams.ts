@@ -1,4 +1,5 @@
 import { MATCHES } from "@/data/matches";
+import type { Locale } from "./strings";
 import type { Match } from "./types";
 
 /**
@@ -106,10 +107,10 @@ const CLUB_EN: Record<string, string> = { "Bayern Münih": "Bayern Munich" };
 const CLUB_TR: Record<string, string> = { "Bayern Munich": "Bayern Münih" };
 
 /** A team name as shown in the UI language (match data mixes Turkish and English names). */
-export function teamName(name: string, locale: "tr" | "en"): string {
+export function teamName(name: string, locale: Locale): string {
   const clean = name.replace(/\s*\(-\s*\d{4}\)$/, ""); // "Dnipro Dnipropetrovsk (- 2020)"
-  if (locale === "en") return NATIONAL_EN[clean] ?? CLUB_EN[clean] ?? clean;
-  return NATIONAL_TR[clean] ?? CLUB_TR[clean] ?? clean;
+  if (locale === "tr") return NATIONAL_TR[clean] ?? CLUB_TR[clean] ?? clean;
+  return NATIONAL_EN[clean] ?? CLUB_EN[clean] ?? clean;
 }
 
 export const canonicalTeam = (name: string) => ALIASES[name] ?? name;

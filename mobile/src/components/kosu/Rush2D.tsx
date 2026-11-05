@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { LANE, multOf, newRun, nextGoalOf, obstacleX, POWER_S, scoreOf, step, type Input, type PowerKind, type RunState } from "@/lib/kosu/engine";
 import { quizQuestions } from "@/lib/quiz";
+import { pick } from "@/lib/strings";
 
 import { CLUB_KITS } from "~/components/HatTrickBoard";
 import { FocusStatusBar } from "~/components/StadiumHeader";
@@ -18,7 +19,7 @@ import { recordRun, useFavClub } from "~/lib/kosu";
 import { questEvent } from "~/lib/quests";
 import { KOSU } from "~/lib/brand";
 import { play } from "~/lib/sound";
-import { C, F, R, shadow } from "~/lib/theme";
+import { C, F, LTR, R, shadow } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
 /** camera: this far behind the runner, this high; FX = pixels per metre at 1 m (× screen width) */
@@ -231,12 +232,12 @@ export default function Rush2D() {
 
   const start = () => {
     // goal questions for this run (easy quiz, three options): the right one in a random lane
-    const pick = (l: { tr: string; en: string }) => (locale === "tr" ? l.tr : l.en);
+    const label = (l: { tr: string; en: string }) => pick(l, locale);
     const qs = quizQuestions(30, "players", "easy").map((q) => {
       const lane = Math.floor(Math.random() * 3);
       const wrong = q.options.filter((_, i) => i !== q.answer).slice(0, 2);
-      const lanes = [0, 1, 2].map((i) => (i === lane ? pick(q.options[q.answer]) : pick(wrong[i < lane ? i : i - 1])));
-      return { text: pick(q.text), lanes, answer: lane - 1 };
+      const lanes = [0, 1, 2].map((i) => (i === lane ? label(q.options[q.answer]) : label(wrong[i < lane ? i : i - 1])));
+      return { text: label(q.text), lanes, answer: lane - 1 };
     });
     setQuestions(qs);
     setMult(1);
@@ -275,7 +276,7 @@ export default function Rush2D() {
   });
 
   return (
-    <View style={[styles.screen, { backgroundColor: "#7CC6F2" }]}>
+    <View style={[styles.screen, LTR, { backgroundColor: "#7CC6F2" }]}>
       <Stack.Screen options={{ headerShown: false, gestureEnabled: phase !== "run" }} />
       <FocusStatusBar style="dark" />
       <Animated.View style={[StyleSheet.absoluteFill, world]} onTouchStart={onStart} onTouchMove={onMove} onTouchEnd={() => (touch.current = null)}>

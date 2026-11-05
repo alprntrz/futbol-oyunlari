@@ -47,28 +47,29 @@ const flag = (v, fallback) => (typeof v === "boolean" ? v : fallback);
 
 /** Game names as the phones show them (src/lib/strings.ts), for invite texts. */
 const GAME_NAMES = {
-  ht: { tr: "Tic-Tac-Toe", en: "Tic-Tac-Toe" },
-  tt: { tr: "Taktik Tahtası", en: "Pitch Chess" },
-  rd: { tr: "Rondo", en: "Rondo" },
-  wm: { tr: "Ben Kimim?", en: "Who Am I?" },
+  ht: { tr: "Tic-Tac-Toe", en: "Tic-Tac-Toe", ar: "إكس-أو" },
+  tt: { tr: "Taktik Tahtası", en: "Pitch Chess", ar: "شطرنج الملعب" },
+  rd: { tr: "Rondo", en: "Rondo", ar: "روندو" },
+  wm: { tr: "Ben Kimim?", en: "Who Am I?", ar: "من أنا؟" },
 };
 
 /** "<nick> invited you to play <game>" in the phone's language. */
 function invitePush(nick, game) {
   return (lang) => {
-    const name = (GAME_NAMES[game] ?? GAME_NAMES.ht)[lang === "tr" ? "tr" : "en"];
-    return lang === "tr"
-      ? { title: "Tiktako", body: `${nick || "Bir arkadaşın"} seni ${name} oynamaya çağırıyor` }
-      : { title: "Tiktako", body: `${nick || "A friend"} invited you to play ${name}` };
+    const names = GAME_NAMES[game] ?? GAME_NAMES.ht;
+    if (lang === "tr") return { title: "Tiktako", body: `${nick || "Bir arkadaşın"} seni ${names.tr} oynamaya çağırıyor` };
+    if (lang === "ar") return { title: "Tiktako", body: `${nick || "صديقك"} يدعوك للعب ${names.ar ?? names.en}` };
+    return { title: "Tiktako", body: `${nick || "A friend"} invited you to play ${names.en}` };
   };
 }
 
 /** "<nick> added you as a friend" in the phone's language. */
 function friendPush(nick) {
-  return (lang) =>
-    lang === "tr"
-      ? { title: "Tiktako", body: `${nick || "Biri"} seni arkadaş olarak ekledi` }
-      : { title: "Tiktako", body: `${nick || "Someone"} added you as a friend` };
+  return (lang) => {
+    if (lang === "tr") return { title: "Tiktako", body: `${nick || "Biri"} seni arkadaş olarak ekledi` };
+    if (lang === "ar") return { title: "Tiktako", body: `${nick || "أحدهم"} أضافك صديقًا` };
+    return { title: "Tiktako", body: `${nick || "Someone"} added you as a friend` };
+  };
 }
 
 function safeEqual(a, b) {

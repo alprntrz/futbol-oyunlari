@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PLAYERS_SEASON, PLAYERS_UPDATED } from "@/data/players";
 import { LEAGUES, leagueById, type LeagueId } from "@/lib/leagues";
 import { GRID_CATEGORIES } from "@/lib/tiki";
+import { pick, dateLocale } from "@/lib/strings";
 
 import { ChoiceSheet, GameHub, HubSetting, ToggleSheet } from "~/components/GameHub";
 import { TikiSteps } from "~/components/HowTo";
@@ -22,7 +23,7 @@ export default function HatTrickHome() {
   const [cats, setCats] = useHtCategories();
   const [pickingCats, setPickingCats] = useState(false);
   const catsLabel = cats.length >= GRID_CATEGORIES.length ? t("htCategoriesAll") : `${cats.length + 1}/${GRID_CATEGORIES.length + 1}`;
-  const name = (l: (typeof LEAGUES)[number]) => (locale === "tr" ? l.name.tr : l.name.en);
+  const name = (l: (typeof LEAGUES)[number]) => pick(l.name, locale);
 
   return (
     <GameHub
@@ -68,7 +69,7 @@ export default function HatTrickHome() {
       {/* when the squads were last scraped, so players know new transfers are in */}
       <Text style={[T.caption, { textAlign: "center", marginTop: 16 }]}>
         {t("htDataUpdated")
-          .replace("{date}", new Date(`${PLAYERS_UPDATED}T12:00:00`).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" }))
+          .replace("{date}", new Date(`${PLAYERS_UPDATED}T12:00:00`).toLocaleDateString(dateLocale(locale), { day: "numeric", month: "long", year: "numeric" }))
           .replace("{season}", `${PLAYERS_SEASON}/${String(PLAYERS_SEASON + 1).slice(2)}`)}
       </Text>
     </GameHub>

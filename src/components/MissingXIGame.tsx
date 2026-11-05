@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import type { Difficulty, Match, SlotState } from "@/lib/types";
 import { GuessModal } from "./GuessModal";
 import { Jersey } from "./Jersey";
+import { pick } from "@/lib/strings";
 
 export interface GameProgress {
   solved: number;
@@ -91,7 +92,7 @@ export function MissingXIGame({
     }
   }, [slots, openSlot]);
 
-  const comp = match.competition[locale];
+  const comp = pick(match.competition, locale);
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col items-center">

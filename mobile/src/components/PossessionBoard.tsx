@@ -5,13 +5,14 @@ import Svg, { Polygon } from "react-native-svg";
 
 import type { GridPlayer } from "@/data/players";
 import type { Criterion } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { haptic, useClockTicks } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { POS, ROWS, type PpCell } from "~/lib/possession";
-import { C, F, shadow, T } from "~/lib/theme";
+import { C, F, LTR, shadow, T } from "~/lib/theme";
 
 import { CriterionBadge, MARK } from "./HatTrickBoard";
 import { Confetti, SOFT_IN } from "./motion";
@@ -80,7 +81,7 @@ export function PossessionBoard({
 
   const used = new Set(usedNames);
   const count = (m: Mark) => owners.filter((o) => o?.mark === m).length;
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const label = (c: Criterion) => pick(c, locale);
 
   // Close the sheet if the turn moves on under it
   const sheetTurn = useRef(turn);
@@ -164,7 +165,7 @@ export function PossessionBoard({
       </View>
 
       {/* Hexes */}
-      <View style={{ width: "100%", height: height || undefined }} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <View style={[{ width: "100%", height: height || undefined }, LTR]} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
         {width > 0 && (
           <>
             <Svg width={width} height={height} style={StyleSheet.absoluteFill}>

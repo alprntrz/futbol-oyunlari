@@ -5,11 +5,15 @@ import {
   BarlowCondensed_900Black,
   useFonts,
 } from "@expo-google-fonts/barlow-condensed";
+import { Cairo_600SemiBold } from "@expo-google-fonts/cairo/600SemiBold";
+import { Cairo_800ExtraBold } from "@expo-google-fonts/cairo/800ExtraBold";
+import { Cairo_900Black } from "@expo-google-fonts/cairo/900Black";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { I18nManager } from "react-native";
 
 import { AppErrorScreen, UpdateRequired } from "~/components/AppError";
 import { EloToast } from "~/components/EloToast";
@@ -34,6 +38,8 @@ import { initSounds } from "~/lib/sound";
 import { loadXp } from "~/lib/xp";
 import { C, F } from "~/lib/theme";
 
+const CAIRO = { Cairo_600SemiBold, Cairo_800ExtraBold, Cairo_900Black };
+
 initSentry();
 SplashScreen.preventAutoHideAsync();
 
@@ -45,6 +51,7 @@ export default wrapRoot(RootLayout);
 
 function RootLayout() {
   const [loaded] = useFonts({
+    ...(I18nManager.isRTL ? CAIRO : null),
     BarlowCondensed_600SemiBold,
     BarlowCondensed_800ExtraBold,
     BarlowCondensed_800ExtraBold_Italic,

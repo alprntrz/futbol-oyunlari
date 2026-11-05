@@ -6,6 +6,7 @@ import { xiCategoryById } from "@/lib/leagues";
 import { XP } from "@/lib/levels";
 import { matchesOfTeam, teamsWithMatches } from "@/lib/teams";
 import type { Difficulty, Match } from "@/lib/types";
+import { pick } from "@/lib/strings";
 
 import { GameIntro } from "~/components/GameIntro";
 import { HelpButton } from "~/components/HelpButton";
@@ -29,10 +30,10 @@ export default function PracticeScreen() {
   const teamLabel = useMemo(() => {
     if (!takim) return null;
     const team = teamsWithMatches(1).find((tm) => tm.name === takim);
-    return locale === "en" ? (team?.en ?? takim) : takim;
+    return locale === "tr" ? takim : (team?.en ?? takim);
   }, [takim, locale]);
   const [game, setGame] = useState<{ match: Match; difficulty: Difficulty; key: number } | null>(null);
-  const title = teamLabel ?? (category ? category.name[locale] : t("practice"));
+  const title = teamLabel ?? (category ? pick(category.name, locale) : t("practice"));
 
   const start = (difficulty: Difficulty) =>
     setGame((g) => ({ match: randomMatch(g?.match.id, pool), difficulty, key: (g?.key ?? 0) + 1 }));

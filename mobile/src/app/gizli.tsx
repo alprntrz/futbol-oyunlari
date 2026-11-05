@@ -6,7 +6,9 @@ import Animated, { Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
-import { searchPlayers, type Criterion } from "@/lib/tiki";
+import { searchPlayers } from "@/lib/playersAr";
+import type { Criterion } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { PlayerLine, PlayerToken } from "~/components/PlayerRow";
 import { SOFT_IN } from "~/components/motion";
@@ -55,7 +57,7 @@ export default function MysteryPlayer() {
   const left = MAX_GUESSES - spent;
   const over = won || left <= 0;
   const open = over ? puzzle.clues.length : Math.min(START_CLUES + spent, puzzle.clues.length);
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const label = (c: Criterion) => pick(c, locale);
 
   // the daily puzzle pays once a day; free puzzles count towards the practice cap
   useXpAward(

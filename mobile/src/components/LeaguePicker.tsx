@@ -1,4 +1,5 @@
 import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { pick } from "@/lib/strings";
 
 import { BRAND } from "~/lib/brand";
 import { useI18n } from "~/lib/i18n";
@@ -44,10 +45,10 @@ export function LeaguePicker({ items, value, onChange }: { items: PickerItem[]; 
             style={[styles.chip, on && styles.chipOn]}
             accessibilityRole="tab"
             accessibilityState={{ selected: on }}
-            accessibilityLabel={it.name[locale]}
+            accessibilityLabel={pick(it.name, locale)}
           >
             <LeagueBadge item={it} size={24} />
-            <Text style={[styles.chipText, on && { color: "white" }]}>{it.name[locale]}</Text>
+            <Text style={[styles.chipText, on && { color: "white" }]}>{pick(it.name, locale)}</Text>
           </Tap>
         );
       })}

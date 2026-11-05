@@ -20,7 +20,7 @@ import { useI18n } from "~/lib/i18n";
 import { recordRun, useFavClub } from "~/lib/kosu";
 import { questEvent } from "~/lib/quests";
 import { play } from "~/lib/sound";
-import { C, F, R, shadow } from "~/lib/theme";
+import { C, F, LTR, R, shadow } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
 /** what the game (unity/DribblingRush, Bridge.cs) sends */
@@ -193,7 +193,7 @@ export default function Rush3D() {
 
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, LTR]}>
       <Stack.Screen options={{ headerShown: false, gestureEnabled: phase !== "run" }} />
       <FocusStatusBar style="dark" />
       <GameView ref={unity} fullScreen={false} style={StyleSheet.absoluteFill} onUnityMessage={(e) => onMessage(e.nativeEvent.message)} />

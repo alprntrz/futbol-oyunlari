@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 
 import { ALL_CRITERIA } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { ChoiceSheet, GameHub, HubSetting } from "~/components/GameHub";
 import { ClubShirt } from "~/components/HatTrickBoard";
@@ -22,7 +23,7 @@ export default function RushHome() {
   const [picking, setPicking] = useState(false);
   const name = (id: string) => {
     const c = CLUBS.find((x) => x.id === id);
-    return c ? (locale === "tr" ? c.tr : c.en) : id;
+    return c ? pick(c, locale) : id;
   };
   return (
     <GameHub
@@ -39,7 +40,7 @@ export default function RushHome() {
         visible={picking}
         title={t("rushClub")}
         value={club}
-        options={CLUBS.map((c) => ({ value: c.id, label: locale === "tr" ? c.tr : c.en, left: <ClubShirt c={c} size={30} /> }))}
+        options={CLUBS.map((c) => ({ value: c.id, label: pick(c, locale), left: <ClubShirt c={c} size={30} /> }))}
         onPick={setClub}
         onClose={() => setPicking(false)}
       />

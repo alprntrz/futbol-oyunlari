@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { Locale, TKey } from "@/lib/strings";
 import { WM_CLUBS, WM_COUNTRIES, WM_DECADES, WM_HONOURS, WM_LEAGUES, WM_MAX_TURNS, WM_POSITIONS, type WmKind, type WmQuestion } from "@/lib/whoami";
+import { pick } from "@/lib/strings";
 
 import { KIMIM } from "~/lib/brand";
 import { haptic, useClockTicks, useTurnCue } from "~/lib/haptics";
@@ -22,7 +23,7 @@ const KINDS: WmKind[] = ["club", "country", "league", "pos", "honour", "born"];
 
 /** The menu entries of a kind: [question, label on the chip]. */
 function optionsOf(kind: WmKind, locale: Locale, t: (k: TKey) => string): { q: WmQuestion; label: string }[] {
-  const L = (x: { tr: string; en: string }) => (locale === "tr" ? x.tr : x.en);
+  const L = (x: { tr: string; en: string }) => pick(x, locale);
   switch (kind) {
     case "club":
       return WM_CLUBS.map((c) => ({ q: { kind, id: c.id }, label: L(c) })).sort((a, b) => a.label.localeCompare(b.label));

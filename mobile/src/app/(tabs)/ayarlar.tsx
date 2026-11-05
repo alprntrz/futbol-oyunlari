@@ -100,6 +100,7 @@ export default function SettingsTab() {
         options={[
           { value: "tr", label: "Türkçe" },
           { value: "en", label: "English" },
+          { value: "ar", label: "العربية" },
         ]}
       />
 

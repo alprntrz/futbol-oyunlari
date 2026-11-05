@@ -11,6 +11,7 @@ import { INCOME, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, stre
 import { sheet } from "@/lib/taktik/sim";
 import { effectsOf, STYLES, type EffectKey, type TraitState } from "@/lib/taktik/traits";
 import type { Manager, ShopCard, Unit } from "@/lib/taktik/types";
+import { pick } from "@/lib/strings";
 
 import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
@@ -142,11 +143,11 @@ export default function TaktikGame() {
   const traitLabel = (x: TraitState) => {
     if (x.kind === "club") {
       const c = clubCriterion(x.id);
-      return c ? (locale === "tr" ? c.tr : c.en) : x.id;
+      return c ? pick(c, locale) : x.id;
     }
     if (x.kind === "country") {
       const c = COUNTRY.get(x.id);
-      return c ? (locale === "tr" ? c.tr : c.en) : x.id.charAt(0).toUpperCase() + x.id.slice(1);
+      return c ? pick(c, locale) : x.id.charAt(0).toUpperCase() + x.id.slice(1);
     }
     return t(`ttkHonour_${x.id as "wc"}`);
   };
