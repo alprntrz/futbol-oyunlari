@@ -5,10 +5,10 @@ Kod: `npm run build:web` → `out/`. Hesap açma, harcama, deploy ve reklam baş
 
 ## Yayından önce
 
-1. Metni anadil konuşan birine okut: site, `src/app/privacy/page.web.tsx`, aşağıdaki reklam metinleri.
-2. PostHog'da ayrı proje aç. "Discard client IP data" açık olsun, GeoIP kapalı kalsın.
-3. Cloudflare hesabı aç. Alan adı al (`tiktako.com` ve `tiktako.app` kayıtlı; `tiktako.net` ve `tiktako.gg` RDAP'ta 404 verdi, kayıt ekranında doğrula).
-4. Transfermarkt kaynaklı verinin reklamlı açık sitede durmasına karar ver (2026-10-19 kabulü uygulama içindi).
+1. Arapça metin anadil kontrolünden geçmedi (2026-11-06, kullanıcı atladı). Sonuç kötüyse önce metni şüphelen.
+2. PostHog: uygulamanın projesi 684160 kullanılır ("Discard client IP data" açık). Web olayları ayrı adlar taşır.
+3. Deneme linki Vercel'de. Vercel Hobby ticari kullanıma kapalı: ücretli reklamdan önce Cloudflare Pages ya da Vercel Pro'ya geç. Alan adı için (`tiktako.com` ve `tiktako.app` kayıtlı; `tiktako.net` ve `tiktako.gg` RDAP'ta 404 verdi, kayıt ekranında doğrula).
+4. Transfermarkt kaynaklı verinin açık sitede durması kabul edildi (2026-11-06, kullanıcı).
 5. Derle ve yayınla:
 
 ```bash

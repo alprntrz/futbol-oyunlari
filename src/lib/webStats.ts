@@ -2,7 +2,8 @@
  * Anonymous funnel counts for the web test site, same limits as the app's analytics: typed events
  * only, no cookies, no stored id (a new random id per page load), no GeoIP, no person profiles.
  * Return visits come from `days_since_first`, a number the browser works out for itself.
- * Off without NEXT_PUBLIC_POSTHOG_KEY. Use a separate PostHog project with "Discard client IP data" on.
+ * Off without NEXT_PUBLIC_POSTHOG_KEY. The project must have "Discard client IP data" on; the app's project 684160 has it,
+ * and these event names don't clash with the app's.
  */
 
 export type WebEvent = "landing_view" | "game_start" | "first_guess" | "search" | "game_finish" | "share_tap" | "store_click";
