@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
 
-import { XI_CATEGORIES } from "@/lib/leagues";
+import { XI_CATEGORIES } from "@/lib/xiCategories";
 import { pick } from "@/lib/strings";
 
 import { ChoiceSheet, GameHub, HubSetting } from "~/components/GameHub";

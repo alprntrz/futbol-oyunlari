@@ -1,6 +1,6 @@
 /**
  * UI copy for both apps (web: src/lib/i18n.tsx, mobile: mobile/src/lib/i18n.tsx).
- * Every key must exist in both `tr` and `en`; Arabic lives in strings-ar.ts (mobile only).
+ * Every key must exist in both `tr` and `en`; Arabic lives in strings-ar.ts (mobile, and the web test site in SaudiGridSite).
  */
 import { AR_LABELS, AR_NAMES } from "./names-ar";
 import { ar } from "./strings-ar";
@@ -10,6 +10,11 @@ export type Locale = "tr" | "en" | "ar";
 const base = {
   tr: {
     appName: "Tiktako",
+    gulfTitle: "Suudi Ligi'nden kaç futbolcu sayabilirsin?",
+    gulfLead: "Her gün yeni bir grid. Üç dakika. İndirme ve kayıt yok.",
+    gulfStoreCta: "Daha fazla oyun Tiktako uygulamasında",
+    gulfStatsNote: "Anonim istatistik, çerez yok.",
+    gulfDisclaimer: "Bağımsız bir oyundur; hiçbir kulüp veya ligle bağlantısı yoktur.",
     privacyTitle: "Gizlilik",
     privacyPolicy: "Gizlilik politikası",
     support: "Destek",
@@ -1318,6 +1323,11 @@ const base = {
   },
   en: {
     appName: "Tiktako",
+    gulfTitle: "How many Saudi League players can you name?",
+    gulfLead: "A new grid every day. Three minutes. No download, no sign-up.",
+    gulfStoreCta: "More games in the Tiktako app",
+    gulfStatsNote: "Anonymous stats, no cookies.",
+    gulfDisclaimer: "An independent game, not linked to any club or league.",
     privacyTitle: "Privacy",
     privacyPolicy: "Privacy policy",
     support: "Support",

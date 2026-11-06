@@ -2,7 +2,7 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 
 import { randomMatch, recentMatches } from "@/lib/daily";
-import { xiCategoryById } from "@/lib/leagues";
+import { xiCategoryById } from "@/lib/xiCategories";
 import { XP } from "@/lib/levels";
 import { matchesOfTeam, teamsWithMatches } from "@/lib/teams";
 import type { Difficulty, Match } from "@/lib/types";

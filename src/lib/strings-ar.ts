@@ -3,6 +3,11 @@ import type { TKey } from "./strings";
 /** Arabic UI copy. Every key of strings.ts must exist here (tsc enforces it). */
 export const ar: Record<TKey, string> = {
   appName: "Tiktako",
+  gulfTitle: "كم لاعبًا تعرف من الدوري السعودي؟",
+  gulfLead: "شبكة جديدة كل يوم. ثلاث دقائق. بدون تحميل أو تسجيل.",
+  gulfStoreCta: "المزيد من الألعاب في تطبيق Tiktako",
+  gulfStatsNote: "إحصاءات مجهولة الهوية، بدون ملفات تعريف الارتباط.",
+  gulfDisclaimer: "لعبة مستقلة، غير مرتبطة بأي نادٍ أو رابطة.",
   privacyTitle: "الخصوصية",
   privacyPolicy: "سياسة الخصوصية",
   support: "الدعم",

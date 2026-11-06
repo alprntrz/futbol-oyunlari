@@ -30,6 +30,13 @@ server.js, which drives reconnect, sweep, queues, emotes and invites: a new two-
 there. "server.js" below means this whole set. Plan / history: `docs/server-bolme-plani.md`. `npm test` starts the
 server (`tests/server.int.test.mts`) and plays every online game; it must pass after any server change.
 
+## Web test site (Saudi grid)
+
+`npm run build:web` (`WEB_TEST=1`, next.config.ts) builds only `src/app/**/*.web.tsx` into a static `out/`: the daily Saudi grid in Arabic / English
+(`components/SaudiGridSite.tsx`, rules `src/lib/saudiGrid.ts`), for testing the Gulf audience with ads. It is not the Fly web app and needs no server.
+Stats `src/lib/webStats.ts`: typed events only, no cookies, no stored id, no ad pixels, GeoIP off; `NEXT_PUBLIC_POSTHOG_KEY` at build time (a separate PostHog
+project with "Discard client IP data" on; off without it). Its privacy page is `src/app/privacy/page.web.tsx`; keep it true. Keep match data out of this bundle. Launch steps, links and pass / fail numbers: `docs/release/korfez-web-testi.md`.
+
 ## Mobile app (`mobile/`), released as Tiktako
 
 Native iOS/Android app in Expo (SDK 57, Expo Router, React Native) — real native
