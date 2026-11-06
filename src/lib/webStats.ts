@@ -6,7 +6,7 @@
  * and these event names don't clash with the app's.
  */
 
-export type WebEvent = "landing_view" | "game_start" | "first_guess" | "search" | "game_finish" | "share_tap" | "store_click" | "friend_create" | "friend_join" | "friend_series_end";
+export type WebEvent = "landing_view" | "game_start" | "first_guess" | "search" | "game_finish" | "share_tap" | "store_click" | "friend_create" | "friend_join" | "friend_series_end" | "bot_start" | "bot_series_end";
 
 export interface WebEventProps {
   practice?: boolean;

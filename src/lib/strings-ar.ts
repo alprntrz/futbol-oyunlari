@@ -9,6 +9,8 @@ export const ar: Record<TKey, string> = {
   gulfStatsNote: "إحصاءات مجهولة الهوية، بدون ملفات تعريف الارتباط.",
   gulfDisclaimer: "لعبة مستقلة، غير مرتبطة بأي نادٍ أو رابطة.",
   gulfPlayFriend: "العب مع صديق",
+  gulfPlayBot: "العب ضد الكمبيوتر",
+  gulfComputer: "الكمبيوتر",
   gulfInvite: "أتحداك في شبكة الدوري السعودي:",
   gulfSendLink: "أرسل الرابط إلى صديقك",
   gulfLinkCopied: "تم نسخ الرابط",

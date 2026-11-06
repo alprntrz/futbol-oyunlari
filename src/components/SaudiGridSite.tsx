@@ -13,6 +13,7 @@ import { track, type WebEvent, type WebEventProps } from "@/lib/webStats";
 import { NamesSquare, SaudiGridBoard } from "./SaudiGridBoard";
 
 const FriendRoom = dynamic(() => import("./FriendRoom").then((m) => m.FriendRoom), { ssr: false });
+const BotRoom = dynamic(() => import("./BotRoom").then((m) => m.BotRoom), { ssr: false });
 
 type SiteLocale = "ar" | "en";
 
@@ -96,6 +97,8 @@ export function SaudiGridSite() {
     const code = roomCodeOf(location.search);
     return code ? { code } : null;
   });
+  const [bot, setBot] = useState(false);
+  const solo = !friend && !bot;
   // set at once: the clock or a tap can land before the finished run is rendered
   const ended = useRef(false);
   const send = (event: WebEvent, props: WebEventProps = {}) => track(event, props, locale, day);
@@ -124,10 +127,10 @@ export function SaudiGridSite() {
   // a tab left open past midnight moves to the new day, never in the middle of a game
   useEffect(() => {
     const id = setInterval(() => {
-      if (localDay() !== day && (!run || run.finished)) location.reload();
+      if (solo && localDay() !== day && (!run || run.finished)) location.reload();
     }, DAY_CHECK_MS);
     return () => clearInterval(id);
-  }, [day, run]);
+  }, [day, run, solo]);
 
   useEffect(() => {
     if (!run || run.finished) return;
@@ -222,17 +225,19 @@ export function SaudiGridSite() {
             }}
           />
         )}
-        {!friend && !run && (
+        {bot && <BotRoom locale={locale} onEvent={(event) => send(event)} onClose={() => setBot(false)} />}
+        {solo && !run && (
           <section className="py-4 text-center">
             <h1 className="text-3xl font-black leading-snug">{t("gulfTitle")}</h1>
             <p className="mt-2 text-[#56645c]">{t("gulfLead")}</p>
             <button type="button" onClick={() => begin(null)} className="mt-4 min-h-13 w-full rounded-2xl bg-[#15803d] text-lg font-black text-white">{t("bbKickOff")}</button>
             <button type="button" onClick={() => setFriend({ code: null })} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("gulfPlayFriend")}</button>
+            <button type="button" onClick={() => setBot(true)} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("gulfPlayBot")}</button>
             <p className="mt-3 text-start text-sm text-[#56645c]">{t("bbIntro")}</p>
           </section>
         )}
 
-        {!friend && run && (
+        {solo && run && (
           <div className="mt-2 flex rounded-2xl bg-white p-3 shadow-sm">
             <Stat value={fmt(left)} label={run.finished && left === 0 ? t("bbTimeUp") : t("bbTime")} />
             <Stat value={`${boxes}/9`} label={t("bbBoxes")} />
@@ -241,7 +246,7 @@ export function SaudiGridSite() {
           </div>
         )}
 
-        {!friend && run && !run.finished && (
+        {solo && run && !run.finished && (
           <div className="relative z-10 mt-3">
             <div className="flex gap-2">
               <input
@@ -269,18 +274,19 @@ export function SaudiGridSite() {
           </div>
         )}
 
-        {!friend && <div aria-live="polite" className="flex min-h-10 items-center justify-center">
+        {solo && <div aria-live="polite" className="flex min-h-10 items-center justify-center">
           {toast && <span className={`rounded-xl px-3 py-1 text-sm font-bold ${toast.ok ? "bg-[#ddf5e4] text-[#14532d]" : "bg-red-100 text-red-700"}`}>{toast.text}</span>}
         </div>}
 
-        {!friend && <SaudiGridBoard grid={grid} locale={locale} square={(i) => <NamesSquare names={run?.cells[i] ?? []} shown={surname} />} />}
+        {solo && <SaudiGridBoard grid={grid} locale={locale} square={(i) => <NamesSquare names={run?.cells[i] ?? []} shown={surname} />} />}
 
-        {!friend && run?.finished && (
+        {solo && run?.finished && (
           <section className="mt-4 rounded-2xl bg-white p-5 text-center shadow-sm">
             <div className="text-5xl font-black">{players}</div>
             <div className="text-sm text-[#56645c]">{t("bbPlayersFound")}</div>
             <button type="button" onClick={() => begin(Math.floor(Math.random() * 1e9))} className="mt-4 min-h-12 w-full rounded-2xl bg-[#15803d] font-black text-white">{t("ttNewGrid")}</button>
             <button type="button" onClick={() => setFriend({ code: null })} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("gulfPlayFriend")}</button>
+            <button type="button" onClick={() => setBot(true)} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("gulfPlayBot")}</button>
             {seed === null && <button type="button" onClick={share} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("share")}</button>}
             {seed === null && <p className="mt-2 text-xs text-[#56645c]">{t("htSoloExtraLine")}</p>}
             {!/Android/.test(navigator.userAgent) && (

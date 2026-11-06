@@ -70,6 +70,7 @@ Maliyet varsayımı ($0,50 tıklama) doğrulanmadı; ilk gün gerçek rakamla d�
 ## Sınırlar
 
 - Kurulum, uygulama içi tutunma ve gelir ölçülmez.
+- Arkadaş ve bilgisayar maçları `game_start` / `first_guess` saymaz; `friend_*` ve `bot_*` olaylarıyla ayrı okunur.
 - `days_since_first` tarayıcı başınadır: site verisi silinirse kişi yeni sayılır.
 - Ülke verisi yoktur; kampanya hedefi ve `time_zone` ile okunur.
 - App Store linki şu an Arapçasız uygulamaya gider. Mağaza tıklaması yalnız niyet gösterir.
