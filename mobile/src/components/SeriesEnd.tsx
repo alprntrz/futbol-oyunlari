@@ -21,6 +21,8 @@ export function SeriesEnd({
   theirs,
   onRematch,
   rematchTitle,
+  onDecline,
+  note,
   title,
   countTrophy = true,
   payXp = true,
@@ -33,6 +35,10 @@ export function SeriesEnd({
   /** null: this player can't start the rematch (the host does) */
   onRematch: (() => void) | null;
   rematchTitle?: string;
+  /** the other player asked for a rematch: the second button turns it down */
+  onDecline?: () => void;
+  /** small line under the title */
+  note?: string;
   /** replaces the won/lost title (same-screen play names the winning mark) */
   title?: string;
   /** false on a shared phone: nobody's trophy to count */
@@ -75,6 +81,7 @@ export function SeriesEnd({
       visible={over && !closed && trophies !== null}
       won={won}
       title={title ?? (won ? t("vcWon") : t("vcLost"))}
+      subtitle={note}
       medal={countTrophy ? (trophies ?? 0) : mine}
       panelTitle={t("vcSummary")}
       rewards={[
@@ -84,7 +91,7 @@ export function SeriesEnd({
         ...(countTrophy ? [{ image: REWARD.trophy, value: trophies ?? 0, label: won ? t("vcTrophyNew") : t("vcTrophies") }] : []),
       ]}
       primary={onRematch ? { title: rematchTitle ?? t("htRematch"), icon: "arrow.clockwise", onPress: () => (setClosed(true), onRematch()) } : { title: t("vcContinue"), onPress: () => setClosed(true) }}
-      secondary={onRematch ? { title: t("vcContinue"), onPress: () => setClosed(true) } : undefined}
+      secondary={onRematch ? { title: onDecline ? t("htDecline") : t("vcContinue"), onPress: () => (setClosed(true), onDecline?.()) } : undefined}
     />
   );
 }

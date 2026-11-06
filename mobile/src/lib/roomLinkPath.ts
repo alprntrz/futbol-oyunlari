@@ -1,4 +1,4 @@
-const ROOM = /(?:^|\/)(hat-trick|possession|rondo|kimim|bilgi|duello)\/oda\/([A-Za-z0-9]+)\/?(?:[?#]|$)/;
+const ROOM = /(?:^|\/)(hat-trick|possession|rondo|kimim|nokta|bilgi|duello)\/oda\/([A-Za-z0-9]+)\/?(?:[?#]|$)/;
 const LOBBY = /(?:^|\/)taktik\/lobi\/?\?(?:[^#]*&)?code=([A-Za-z0-9]+)/;
 
 /**

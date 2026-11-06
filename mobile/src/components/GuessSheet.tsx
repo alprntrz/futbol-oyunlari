@@ -8,7 +8,7 @@ import { answerLetters, evaluateGuess, keyboardState } from "@/lib/wordle";
 
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F, T } from "~/lib/theme";
+import { C, F, LTR, T } from "~/lib/theme";
 
 import { TileLegend } from "./HowTo";
 import { Tile } from "./LetterTile";
@@ -123,7 +123,7 @@ export function GuessSheet({
           </Pressable>
         </View>
 
-        <View style={styles.rows}>
+        <View style={[styles.rows, LTR]}>
           {pastGuesses.map((g, i) => (
             <View key={`${player?.number}-${i}`} style={styles.row}>
               {row(g, evaluateGuess(g, answer), false, i === flipRow)}

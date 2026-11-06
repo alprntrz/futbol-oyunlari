@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
+import { dateLocale } from "@/lib/strings";
 import { QuestsCard } from "~/components/DailyCards";
 import { HomeBoard, Wordmark } from "~/components/HomeBoard";
 import { HomeFixtures } from "~/components/HomeFixtures";
@@ -24,7 +25,7 @@ const enter = (i: number) => FadeIn.duration(180).delay(i * 25);
 /** Home: status strip, quick play, today's puzzles and quests, then the versus modes. */
 export default function Home() {
   const { t, locale } = useI18n();
-  const date = new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", weekday: "long" });
+  const date = new Date().toLocaleDateString(dateLocale(locale), { day: "numeric", month: "long", weekday: "long" });
 
   const versus: Mode[] = [
     {

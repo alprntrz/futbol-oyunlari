@@ -7,6 +7,7 @@ import Animated, { FadeIn, Keyframe } from "react-native-reanimated";
 import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
 import type { Criterion } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { GameHub } from "~/components/GameHub";
 import { BingoSteps } from "~/components/HowTo";
@@ -123,7 +124,7 @@ export default function Bingo() {
     router.push("/bingo?practice=1");
   };
 
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const label = (c: Criterion) => pick(c, locale);
 
   if (past !== null && !plus) return <Redirect href="/plus" />;
   if (run === undefined) return <Page>{null}</Page>;

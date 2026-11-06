@@ -4,6 +4,7 @@ import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native"
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { dailyMatch, dayNumber } from "@/lib/daily";
+import { dateLocale } from "@/lib/strings";
 
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { BRAND, ROZET } from "~/lib/brand";
@@ -36,7 +37,7 @@ export function HomeFixtures() {
     }, [day, xiMatchId, bingoLength])
   );
 
-  const date = new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", weekday: "long" });
+  const date = new Date().toLocaleDateString(dateLocale(locale), { day: "numeric", month: "long", weekday: "long" });
   const NEW: Progress = { state: "new", count: 0 };
   const duelP: Progress = duel.daily ? { state: "done", count: duel.daily.mine } : NEW;
   const fixtures: Fixture[] = [

@@ -6,6 +6,7 @@ import { xiCategoryById } from "@/lib/leagues";
 import { XP } from "@/lib/levels";
 import { matchesOfTeam, teamsWithMatches } from "@/lib/teams";
 import type { Difficulty, Match } from "@/lib/types";
+import { pick } from "@/lib/strings";
 
 import { GameIntro } from "~/components/GameIntro";
 import { HelpButton } from "~/components/HelpButton";
@@ -29,10 +30,10 @@ export default function PracticeScreen() {
   const teamLabel = useMemo(() => {
     if (!takim) return null;
     const team = teamsWithMatches(1).find((tm) => tm.name === takim);
-    return locale === "en" ? (team?.en ?? takim) : takim;
+    return locale === "tr" ? takim : (team?.en ?? takim);
   }, [takim, locale]);
   const [game, setGame] = useState<{ match: Match; difficulty: Difficulty; key: number } | null>(null);
-  const title = teamLabel ?? (category ? category.name[locale] : t("practice"));
+  const title = teamLabel ?? (category ? pick(category.name, locale) : t("practice"));
 
   const start = (difficulty: Difficulty) =>
     setGame((g) => ({ match: randomMatch(g?.match.id, pool), difficulty, key: (g?.key ?? 0) + 1 }));
@@ -56,15 +57,17 @@ export default function PracticeScreen() {
 
 function PracticeGame({ match, difficulty, onNext }: { match: Match; difficulty: Difficulty; onNext: () => void }) {
   const { t } = useI18n();
-  const { slots, progress, guess, giveUp } = useMissingXI(match, difficulty);
+  const { slots, gaveUp, progress, guess, giveUp } = useMissingXI(match, difficulty);
   const [gameId] = useState(() => `xi-p-${match.id}-${Date.now()}`);
   const { combo, best } = useCombo(progress.totalGuesses, progress.solved);
-  useXpAward(progress.done, gameId, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0) + best * XP.comboStep, {
+  // giving up pays nothing and moves no quest
+  const finished = progress.done && !gaveUp;
+  useXpAward(finished, gameId, "xi", progress.solved * XP.xiPerPlayer + (progress.won ? XP.xiFullTeam : 0) + best * XP.comboStep, {
     practice: true,
     title: progress.won ? t("rwFullXi") : t("rwDone"),
     stats: xiStats(t, progress.solved, progress.totalGuesses, best),
   });
-  useQuestOnce(progress.done, gameId, [
+  useQuestOnce(finished, gameId, [
     ["xi_finish", 1],
     ["xi_players", progress.solved],
   ]);

@@ -83,7 +83,7 @@ export function InviteBanner() {
             {t(invite.kind === "invite" ? "inviteTitle" : "friendAddedTitle").replace("{nick}", nick)}
           </Text>
           <Text style={T.caption} numberOfLines={1}>
-            {invite.kind === "invite" ? t(invite.game === "tt" ? "inviteBodyTt" : invite.game === "rd" ? "inviteBodyRd" : invite.game === "wm" ? "inviteBodyWm" : "inviteBody").replace("{code}", invite.room) : t("friendAddedBody")}
+            {invite.kind === "invite" ? t(invite.game === "tt" ? "inviteBodyTt" : invite.game === "rd" ? "inviteBodyRd" : invite.game === "wm" ? "inviteBodyWm" : invite.game === "sp" ? "inviteBodySp" : "inviteBody").replace("{code}", invite.room) : t("friendAddedBody")}
           </Text>
         </View>
         <Tap onPress={() => setInvite(null)} style={styles.later} accessibilityLabel={t("inviteLater")}>

@@ -8,7 +8,7 @@ import { AD_RULES } from "@/lib/plus";
 import { plusActive } from "./plus";
 
 /** Which game an award came from (per-game totals on the profile). */
-export type XpGame = "xi" | "ht" | "qz" | "mystery" | "bingo" | "pp" | "tt" | "dz" | "rd" | "wm";
+export type XpGame = "xi" | "ht" | "qz" | "mystery" | "bingo" | "pp" | "tt" | "dz" | "rd" | "wm" | "sp";
 /** "bonus" = the daily sign-in bonus (adds to the total, not to a game) */
 export type XpSource = XpGame | "bonus";
 

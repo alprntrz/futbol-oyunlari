@@ -22,7 +22,7 @@ for the online race). UI copy is Turkish + English. The full guide is `README.md
 `server.js` is the HTTP / Next server plus the shared Socket.IO plumbing (guarded handlers, reconnect, room
 sweep, matchmaking, report / block, invites, emotes, Live Activity tokens). Each online game is its own file in
 `server-games/` (`ht.js` Tic-Tac-Toe, `pp.js` Possession, `dz.js` Card Duel, `rd.js` Rondo, `wm.js` Who Am I?,
-`qz.js` Quiz, `race.js` web Missing 11 race; Pitch Chess stays in `server-taktik.js`). Shared helpers (nicks, rank
+`qz.js` Quiz, `sp.js` The Spot, `race.js` web Missing 11 race; Pitch Chess stays in `server-taktik.js`). Shared helpers (nicks, rank
 pairing `takePairs` / `tierGap`, room codes `codeFor`, refs, `rateDuel` / `tellElo`, `INTRO_MS`) are in
 `server-core.js`; Live Activity building blocks in `server-live.js`. The two-player games export
 `{ id, rooms, view, queue, setQueue, pairOk?, invitable?, live?, attach(socket, ctx) }` and are listed in `GAMES` in
@@ -51,7 +51,7 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   mirrors the online room: random nickname, human-like timing; `ht:draw-offer` / `ht:draw-reply` /
   `ht:forfeit` (concedes the whole series) end early; a match is a series, first to `HT_TARGET` = 3 game wins,
   the loser of the last game gets `HT_COMEBACK_MS` = +10 s a turn,
-  wins kept per player id; the host's phone deals the next game via `ht:rematch`; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
+  wins kept per player id; the host's phone deals the next game via `ht:rematch`; after a finished series either player asks (`ht:rematch-ask`, cap "rematch"), the other answers `ht:rematch-reply` and the phone that says yes deals; older apps keep the host's instant rematch; `ht:skip` passes). Mystery Player (`mobile/src/app/gizli.tsx`, `lib/mystery.ts`) is offline.
 - Saudi / Egyptian leagues ("sa", "eg"): `ARAB_CRITERIA` in tiki.ts (ids "arab-…", never in ALL_CRITERIA so seeded daily
   grids / Bingo / Mystery / Pitch Chess don't change), players in `src/data/players-arab.ts` ← `ONLY=arab-… FROM=2000 node
   scripts/tiki-scrape-squads.mjs` → `scripts/arab-build-players.mjs`; answers search `GRID_PLAYERS` (PLAYERS + those). Phones send
@@ -196,6 +196,15 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   the server judges the name and works out the claimed hexes itself, `ppClaims`, same rule as `claimsFor`). Football Bingo is offline (daily
   seeded card, `mobile/src/lib/bingo.ts`; `/bingo?practice=1` deals unsaved random cards, XP under the practice cap). The Missing 11 race (`room:*`, `race:*`) is still served for
   the web app but has no screen in the mobile app.
+- Arabic (mobile only, the web stays tr / en): copy in `src/lib/strings-ar.ts`, names of clubs / countries / competitions in
+  `src/lib/names-ar.ts` (`pick` finds them by id, then English text, so seeded data is untouched). RTL: `syncDirection`
+  (mobile/src/lib/i18n.tsx) flips `I18nManager` and reloads, one try per direction; never set the expo-localization plugin's
+  `supportsRTL`: it would reset the flip from the device language at every launch. Expo Go ignores RTL, test on a dev build.
+  Boards, pitches, letter rows and the score row carry `LTR` (theme.ts); `F` runs on Cairo in RTL, `Text` drops tracking, opens line
+  height and sets `textAlign: "left"` (RN swaps it to the right in RTL; natural alignment follows the phone language, not the app's),
+  `TextInput`s take `INPUT_ALIGN`, `Icon` turns reading-direction arrows. `reloadAsync` does nothing in a debug build (`DevSettings.reload` there). Players: `src/lib/playersAr.ts` (`searchPlayers`, `latinGuess`) turns an Arabic name into
+  the Latin one on the phone, so the server and daily puzzles never see Arabic; data `src/data/players-ar.ts` ←
+  `scripts/ar-names-fetch.mjs` (Wikidata, CC0). Missing 11 and Dribbling Rush letters stay Latin. Quiz questions carry `ar`.
 - Android (started 2026-10-17): `Icon` (ui.tsx) maps every SF Symbol to a Material Symbol (`MATERIAL`; filled font for
   ".fill" names) — add new icons there too; tabs pass `md` icons (Android tints tab icons); `Page topInset` pads under the
   status bar on Android; Pitch Chess handles the hardware back (`BackHandler`). Google sign-in on Android needs
@@ -246,6 +255,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
   `target` hands (2/3/4 = best of 3/5/7, `rd:create {mode, target}`; the queue plays best of 5 and pairs only same-mode players, `pairOk`);
   every hand ends with the best-known fits (`rondoPairAnswers`). House player `useRondoPairHouse` (lib/rondoPairHouse.ts). Same Elo / XP "rd". Art: `docs/design/rondo-brief.md` →
   `python3 scripts/rondo-assets.py docs/design/rondo-art/originals` → `mobile/assets/brand/rondo/` (`RONDO` in brand.ts).
+- The Spot / Beyaz Nokta (`sp:*`, server-games/sp.js, rules `src/lib/spot.ts`, docs/design/beyaz-nokta.md): one-on-one penalties, both pick a side in secret (same side = save), 5 each then
+  sudden death, 8 s a pick; picks stay on the server until both are in; a rematch needs both. House player `useSpotHouse` (lib/spotMatch.ts, same shape as `useSpotOnline`); screens `app/nokta/`,
+  board `components/SpotBoard.tsx` (flat transforms only: no perspective / rotateY next to sibling views, iOS sorts them in 3D). Elo board / XP "sp". Art: Codex images → `python3 scripts/nokta-assets.py <dir>` (keys out magenta) → `mobile/assets/brand/nokta/`.
 - Jokers (fair by design: the same for both players each game / match, never bought, never saved): Tic-Tac-Toe online +
   house player `{ time: 1, hint: 1 }` per game (`ht:joker`; time = +15 s on the server clock, hint = initials + position of a
   well-known answer shown on the mover's phone, the server only counts it and flashes it to the other player); Quiz one 50/50
@@ -309,6 +321,9 @@ UI, not a WebView. It reuses the web project's game logic and data directly:
     `scripts/leagues-to-ts.mjs`
 - The daily puzzle is `MATCHES[hash(day) % MATCHES.length]`: adding or removing
   matches reshuffles future days.
-- Every new UI string goes into both `tr` and `en` in `src/lib/strings.ts`.
+- Every new UI string goes into both `tr` and `en` in `src/lib/strings.ts`, and into `ar` in `src/lib/strings-ar.ts` (tsc fails
+  without it; `tests/arabic.test.mts` checks the placeholders).
+- Data labels go through `pick(label, locale)` (strings.ts), never `locale === "tr" ? x.tr : x.en`: such a ternary shows Arabic
+  phones English and tsc can't see it. Dates use `dateLocale(locale)`.
 - Scrapers hit Transfermarkt; keep the request gap (`TM_GAP_MS`, ≥ 2.2 s) and the
   on-disk cache. Their data is under Transfermarkt's terms — see README.

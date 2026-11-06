@@ -11,6 +11,7 @@ import { play } from "~/lib/sound";
 import { C, F } from "~/lib/theme";
 import { setOverlayOpen } from "~/lib/xp";
 
+import { RewardBackdrop } from "./RewardBackdrop";
 import { Confetti, useCountUp } from "./motion";
 import { Text } from "./Text";
 import { Button } from "./ui";
@@ -174,12 +175,8 @@ export function Victory({
 
   return (
     <Modal visible={visible} animationType="fade" transparent statusBarTranslucent onRequestClose={secondary?.onPress ?? primary.onPress}>
-      <ImageBackground
-        source={REWARD.stars}
-        resizeMode="repeat"
-        imageStyle={{ opacity: won ? 1 : 0.6 }}
-        style={[styles.screen, { backgroundColor: won ? PITCH : C.greenDark, paddingTop: insets.top + 18, paddingBottom: insets.bottom + 20 }]}
-      >
+      <View style={[styles.screen, { backgroundColor: won ? PITCH : C.greenDark, paddingTop: insets.top + 18, paddingBottom: insets.bottom + 20 }]}>
+        <RewardBackdrop color={PITCH_DEEP} glow={won ? PITCH : C.greenDark} />
         <StatusBar style="light" />
 
         <Animated.View entering={STAMP} style={{ alignItems: "center" }}>
@@ -223,7 +220,7 @@ export function Victory({
           <Button title={primary.title} icon={primary.icon} onPress={primary.onPress} style={{ alignSelf: "stretch" }} />
           {secondary && <Button title={secondary.title} kind="secondary" onPress={secondary.onPress} style={{ alignSelf: "stretch" }} />}
         </Animated.View>
-      </ImageBackground>
+      </View>
       <Confetti fire={fire} />
     </Modal>
   );

@@ -16,7 +16,8 @@ import Animated, {
   ZoomIn,
 } from "react-native-reanimated";
 
-import { searchPlayers } from "@/lib/tiki";
+import { latinGuess, searchPlayers } from "@/lib/playersAr";
+import { pick } from "@/lib/strings";
 
 import { RONDO } from "~/lib/brand";
 import { haptic, useClockTicks, useTurnCue } from "~/lib/haptics";
@@ -93,7 +94,7 @@ export function RondoBoard({
     () => (m.myTurn && input.trim().length >= 2 ? searchPlayers(input, 6) : []),
     [input, m.myTurn],
   );
-  const nameOf = (c: { tr: string; en: string }) => (locale === "tr" ? c.tr : c.en);
+  const nameOf = (c: { tr: string; en: string }) => pick(c, locale);
   const clubName = pair ? (m.pair ? `${nameOf(m.pair[0])} + ${nameOf(m.pair[1])}` : "…") : m.club ? nameOf(m.club) : "…";
 
   // the wrong banner belongs to the hand it happened in
@@ -103,7 +104,7 @@ export function RondoBoard({
 
   const send = (name: string) => {
     if (!name.trim() || !m.myTurn) return;
-    m.answer(name);
+    m.answer(latinGuess(name));
     setInput("");
   };
 

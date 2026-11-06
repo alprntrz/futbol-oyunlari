@@ -7,10 +7,11 @@ import { FORMATIONS } from "@/lib/formations";
 import { teamName } from "@/lib/teams";
 import type { Difficulty, LineupPlayer, Match, SlotState } from "@/lib/types";
 import { answerLetters } from "@/lib/wordle";
+import { pick } from "@/lib/strings";
 
 import { useI18n } from "~/lib/i18n";
 import { jerseyStyle, keeperKit, teamKit } from "~/lib/kits";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F, LTR, R, T } from "~/lib/theme";
 
 import { GuessSheet } from "./GuessSheet";
 import { Jersey } from "./Jersey";
@@ -117,12 +118,12 @@ export function MissingXIBoard({
       <Card style={{ paddingVertical: 10, paddingHorizontal: 14 }}>
         <View style={styles.metaRow}>
           <Text style={T.caption} numberOfLines={1}>
-            {match.competition[locale]}
+            {pick(match.competition, locale)}
           </Text>
           <Text style={T.caption}>{match.date}</Text>
         </View>
         {/* both sides the same way: shirt over name; one-word names shrink to fit instead of breaking */}
-        <View style={styles.scoreRow}>
+        <View style={[styles.scoreRow, LTR]}>
           <View style={styles.side}>
             <Jersey body={match.kit.body} sleeves={match.kit.sleeves} numberColor={match.kit.number} number={11} variant={style} size={30} hideNumber />
             <TeamName name={teamName(match.team, locale)} />
@@ -149,7 +150,7 @@ export function MissingXIBoard({
       {/* Pitch */}
       <View
         ref={pitchRef}
-        style={[styles.pitch, pitchH ? { height: pitchH } : { aspectRatio: 3 / 4 }]}
+        style={[styles.pitch, LTR, pitchH ? { height: pitchH } : { aspectRatio: 3 / 4 }]}
         onLayout={(e) => {
           setPitchW(e.nativeEvent.layout.width);
           pitchRef.current?.measureInWindow((_x, y) => setPitchTop(y));

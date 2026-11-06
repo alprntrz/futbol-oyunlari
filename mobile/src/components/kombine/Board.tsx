@@ -7,7 +7,7 @@ import { Icon } from "~/components/ui";
 import { haptic } from "~/lib/haptics";
 import { adjacent, swap, type Game, type Grid, type Phase, type Pos, type Tile } from "~/lib/kombine/engine";
 import { TILE_LOOK } from "~/lib/kombine/look";
-import { F } from "~/lib/theme";
+import { F, LTR } from "~/lib/theme";
 
 const GAP = 3;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -112,7 +112,7 @@ export function Board({ game, width, disabled, onTurn }: { game: Game; width: nu
   grid.forEach((row, r) => row.forEach((t, c) => t && tiles.push({ tile: t, r, c })));
 
   return (
-    <View style={[styles.board, { width, height: size * game.rows + GAP }]} {...responder}>
+    <View style={[styles.board, LTR, { width, height: size * game.rows + GAP }]} {...responder}>
       {/* pitch cells */}
       {mud.map((row, r) =>
         row.map((_, c) => (

@@ -1,3 +1,5 @@
+import { I18nManager } from "react-native";
+
 /**
  * Light theme with one UI accent (pitch green). Other colours only carry game
  * meaning: tile feedback (green/yellow/grey), X/O players (blue/coral), the
@@ -36,13 +38,21 @@ export const C = {
   pitchLine: "rgba(255,255,255,0.55)",
 };
 
-/** Barlow Condensed: sporty display face for titles and every number. */
-export const F = {
-  display: "BarlowCondensed_800ExtraBold",
-  displayItalic: "BarlowCondensed_800ExtraBold_Italic",
-  black: "BarlowCondensed_900Black",
-  semi: "BarlowCondensed_600SemiBold",
-};
+/** Barlow Condensed: sporty display face for titles and every number. It has no Arabic, so RTL runs on Cairo (no italics either). */
+export const F = I18nManager.isRTL
+  ? { display: "Cairo_800ExtraBold", displayItalic: "Cairo_800ExtraBold", black: "Cairo_900Black", semi: "Cairo_600SemiBold" }
+  : {
+      display: "BarlowCondensed_800ExtraBold",
+      displayItalic: "BarlowCondensed_800ExtraBold_Italic",
+      black: "BarlowCondensed_900Black",
+      semi: "BarlowCondensed_600SemiBold",
+    };
+
+/** Boards, pitches and letter rows keep their shape in Arabic: put this on their root view. */
+export const LTR = { direction: "ltr" } as const;
+
+/** Text inputs align by the phone's language, not the one picked in the app; RN swaps "left" to the right in RTL. */
+export const INPUT_ALIGN = I18nManager.isRTL ? ({ textAlign: "left" } as const) : null;
 
 /** Each game's own colour pair (soft background, dark ink): Games tab, game hubs, the Play online picker. */
 export const GAME = {
@@ -57,6 +67,7 @@ export const GAME = {
   rush: { bg: "#FFEDD5", ink: "#9A3412" },
   rd: { bg: "#E0E7FF", ink: "#3730A3" },
   wm: { bg: "#FAE8FF", ink: "#86198F" },
+  sp: { bg: "#CCFBF1", ink: "#115E59" },
 } as const;
 
 export const R = { card: 22, inner: 12, button: 14, chip: 999 };

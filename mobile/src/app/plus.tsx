@@ -5,6 +5,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PLUS_FOREVER, PLUS_PERKS, type PlusPerk } from "@/lib/plus";
+import { dateLocale } from "@/lib/strings";
 
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Tap } from "~/components/ui";
@@ -68,7 +69,7 @@ export default function PlusScreen() {
     Alert.alert(ok ? t("plusRestored") : t("plusRestoreNone"));
   };
 
-  const until = plus.until && plus.until < PLUS_FOREVER ? new Date(plus.until).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric" }) : null;
+  const until = plus.until && plus.until < PLUS_FOREVER ? new Date(plus.until).toLocaleDateString(dateLocale(locale), { day: "numeric", month: "long", year: "numeric" }) : null;
 
   const canBuy = !plus.active && !!offers && offers.length > 0;
   const store = Platform.OS === "ios" ? "App Store" : "Google Play";

@@ -1,17 +1,19 @@
 import { MATCHES } from "@/data/matches";
 import { PLAYERS, type GridPlayer } from "@/data/players";
 import { CARDS, statText, type DuelCard, type StatId } from "./duel";
+import { pick as inLocale } from "./strings";
 import { ALL_CRITERIA, type Criterion } from "./tiki";
 import type { Match } from "./types";
 
 /**
  * Football quiz questions, generated from the bundled data (players, clubs,
  * historic matches) so there's no question bank to maintain. Each question has
- * exactly one right option among four, both languages included, so a room can
+ * exactly one right option among four, every language included, so a room can
  * be dealt by one phone and played on any.
  */
 
-type L = { tr: string; en: string };
+/** `ar` is optional: a set dealt by an older phone has none, and the app then shows the English. */
+type L = { tr: string; en: string; ar?: string };
 export interface QuizQuestion {
   text: L;
   /** match context line shown above the question, if any */
@@ -31,10 +33,11 @@ export type QuizCategory = "mixed" | "players" | "matches";
  */
 export type QuizDifficulty = "easy" | "normal" | "hard";
 
-const same = (s: string): L => ({ tr: s, en: s });
+const same = (s: string): L => ({ tr: s, en: s, ar: s });
 const crits = (kind: Criterion["kind"]) => ALL_CRITERIA.filter((c) => c.kind === kind);
 const crit = (kind: Criterion["kind"], id: string) => ALL_CRITERIA.find((c) => c.kind === kind && c.id === id);
-const label = (c: Criterion): L => ({ tr: c.tr, en: c.en });
+const arOf = (l: { tr: string; en: string; id?: string }) => inLocale(l, "ar");
+const label = (c: Criterion): L => ({ tr: c.tr, en: c.en, ar: arOf(c) });
 
 /**
  * Well-known players only, so questions stay fair (the list is sorted by fame).
@@ -102,7 +105,7 @@ function nationality(rand: () => number) {
   const p = pick(FAMOUS.filter((x) => crit("country", x.country)), rand);
   const right = crit("country", p.country)!;
   const wrong = sample(crits("country").filter((c) => c.id !== p.country), 3, rand);
-  return build({ tr: `${p.name} hangi ülkenin milli takımında oynadı?`, en: `Which country did ${p.name} play for?` }, label(right), wrong.map(label), rand);
+  return build({ tr: `${p.name} hangi ülkenin milli takımında oynadı?`, en: `Which country did ${p.name} play for?`, ar: `مع أي منتخب لعب ${p.name}؟` }, label(right), wrong.map(label), rand);
 }
 
 function playedFor(rand: () => number) {
@@ -110,7 +113,7 @@ function playedFor(rand: () => number) {
   const right = crit("club", pick(p.clubs, rand));
   if (!right) return null;
   const wrong = sample(crits("club").filter((c) => !p.clubs.includes(c.id)), 3, rand);
-  return build({ tr: `${p.name} bu kulüplerden hangisinde forma giydi?`, en: `Which of these clubs did ${p.name} play for?` }, label(right), wrong.map(label), rand);
+  return build({ tr: `${p.name} bu kulüplerden hangisinde forma giydi?`, en: `Which of these clubs did ${p.name} play for?`, ar: `مع أي من هذه الأندية لعب ${p.name}؟` }, label(right), wrong.map(label), rand);
 }
 
 function neverPlayed(rand: () => number) {
@@ -120,7 +123,7 @@ function neverPlayed(rand: () => number) {
   if (inClub.length < 3) return null;
   const right = pick(out, rand);
   const wrong = sample(inClub, 3, rand);
-  return build({ tr: `Hangisi hiç ${club.tr} forması giymedi?`, en: `Who never played for ${club.en}?` }, same(right.name), wrong.map((p) => same(p.name)), rand);
+  return build({ tr: `Hangisi hiç ${club.tr} forması giymedi?`, en: `Who never played for ${club.en}?`, ar: `من منهم لم يلعب قط مع ${arOf(club)}؟` }, same(right.name), wrong.map((p) => same(p.name)), rand);
 }
 
 function honour(rand: () => number) {
@@ -129,7 +132,7 @@ function honour(rand: () => number) {
   const others = FAMOUS.slice(0, 400).filter((p) => !p.badges?.includes(badge.id));
   if (!winners.length) return null;
   const right = pick(winners, rand);
-  return build({ tr: `Hangisi ${badge.tr}?`, en: `Who is a ${badge.en}?` }, same(right.name), sample(others, 3, rand).map((p) => same(p.name)), rand);
+  return build({ tr: `Hangisi ${badge.tr}?`, en: `Who is a ${badge.en}?`, ar: `من منهم ${arOf(badge)}؟` }, same(right.name), sample(others, 3, rand).map((p) => same(p.name)), rand);
 }
 
 function sharedClub(rand: () => number) {
@@ -138,7 +141,7 @@ function sharedClub(rand: () => number) {
   const strangers = FAMOUS.filter((x) => x !== p && !x.clubs.some((c) => p.clubs.includes(c)) && x.clubs.length > 0);
   if (!mates.length) return null;
   return build(
-    { tr: `Hangisi ${p.name} ile aynı kulüpte forma giydi?`, en: `Who played for one of the same clubs as ${p.name}?` },
+    { tr: `Hangisi ${p.name} ile aynı kulüpte forma giydi?`, en: `Who played for one of the same clubs as ${p.name}?`, ar: `من منهم لعب في أحد أندية ${p.name}؟` },
     same(pick(mates, rand).name),
     sample(strangers, 3, rand).map((x) => same(x.name)),
     rand
@@ -152,6 +155,7 @@ const comp = (s: string) => s.replace(/\s+·\s+/g, ", ");
 const matchLine = (m: Match): L => ({
   tr: `${m.team} – ${m.opponent}\n${comp(m.competition.tr)}, ${m.season}`,
   en: `${m.team} – ${m.opponent}\n${comp(m.competition.en)}, ${m.season}`,
+  ar: `${m.team} – ${m.opponent}\n${comp(arOf(m.competition))}، ${m.season}`,
 });
 
 function score(rand: () => number) {
@@ -163,7 +167,7 @@ function score(rand: () => number) {
   const wrong = new Set<string>();
   const tries = [`${b}-${a}`, `${a + 1}-${b}`, `${a}-${b + 1}`, `${Math.max(0, a - 1)}-${b}`, `${a + 1}-${b + 1}`, `${a}-${Math.max(0, b - 1)}`, `${a + 2}-${b}`];
   for (const s of sample(tries, tries.length, rand)) if (s !== right) wrong.add(s);
-  return build({ tr: "Bu maç kaç kaç bitti?", en: "What was the score?" }, same(right), [...wrong].map(same), rand, matchLine(m));
+  return build({ tr: "Bu maç kaç kaç bitti?", en: "What was the score?", ar: "كم كانت نتيجة هذه المباراة؟" }, same(right), [...wrong].map(same), rand, matchLine(m));
 }
 
 function starter(rand: () => number) {
@@ -172,7 +176,7 @@ function starter(rand: () => number) {
   const right = pick(m.lineup, rand).name;
   const others = [...new Set(MATCHES.filter((x) => x.team !== m.team).flatMap((x) => x.lineup.map((p) => p.name)))].filter((n) => !names.has(n));
   return build(
-    { tr: `Hangisi bu maçta ${m.team} ilk 11'indeydi?`, en: `Who started this match for ${m.team}?` },
+    { tr: `Hangisi bu maçta ${m.team} ilk 11'indeydi?`, en: `Who started this match for ${m.team}?`, ar: `من منهم بدأ هذه المباراة أساسيًا مع ${m.team}؟` },
     same(right),
     sample(others, 3, rand).map(same),
     rand,
@@ -185,7 +189,7 @@ function scorer(rand: () => number) {
   if (!m) return null;
   const right = pick(m.lineup.filter((p) => p.goals), rand).name;
   const wrong = m.lineup.filter((p) => !p.goals && p.number !== 1).map((p) => p.name);
-  return build({ tr: `Bu maçta ${m.team} için kim gol attı?`, en: `Who scored for ${m.team} in this match?` }, same(right), sample(wrong, 3, rand).map(same), rand, matchLine(m));
+  return build({ tr: `Bu maçta ${m.team} için kim gol attı?`, en: `Who scored for ${m.team} in this match?`, ar: `من سجّل لفريق ${m.team} في هذه المباراة؟` }, same(right), sample(wrong, 3, rand).map(same), rand, matchLine(m));
 }
 
 // ── "who has more" questions: the Card Duel numbers (Wikidata, src/data/duel.ts) ──
@@ -198,13 +202,13 @@ const CARD_POOL: Record<QuizDifficulty, DuelCard[]> = {
 };
 let CARDS_NOW = CARD_POOL.normal;
 
-const MORE: { stat: StatId; tr: string; en: string }[] = [
-  { stat: "goals", tr: "Hangisi kulüplerinde daha çok gol attı?", en: "Who scored more club goals?" },
-  { stat: "apps", tr: "Hangisi kulüplerinde daha çok maça çıktı?", en: "Who made more club appearances?" },
-  { stat: "caps", tr: "Hangisi milli takımda daha çok maça çıktı?", en: "Who won more national-team caps?" },
-  { stat: "intGoals", tr: "Hangisi milli takımda daha çok gol attı?", en: "Who scored more national-team goals?" },
-  { stat: "height", tr: "Hangisi daha uzun?", en: "Who is the tallest?" },
-  { stat: "clubs", tr: "Hangisi daha çok kulüpte oynadı?", en: "Who played for more clubs?" },
+const MORE: { stat: StatId; tr: string; en: string; ar: string }[] = [
+  { stat: "goals", tr: "Hangisi kulüplerinde daha çok gol attı?", en: "Who scored more club goals?", ar: "من منهم سجّل أهدافًا أكثر مع الأندية؟" },
+  { stat: "apps", tr: "Hangisi kulüplerinde daha çok maça çıktı?", en: "Who made more club appearances?", ar: "من منهم خاض مباريات أكثر مع الأندية؟" },
+  { stat: "caps", tr: "Hangisi milli takımda daha çok maça çıktı?", en: "Who won more national-team caps?", ar: "من منهم خاض مباريات دولية أكثر؟" },
+  { stat: "intGoals", tr: "Hangisi milli takımda daha çok gol attı?", en: "Who scored more national-team goals?", ar: "من منهم سجّل أهدافًا دولية أكثر؟" },
+  { stat: "height", tr: "Hangisi daha uzun?", en: "Who is the tallest?", ar: "من منهم الأطول؟" },
+  { stat: "clubs", tr: "Hangisi daha çok kulüpte oynadı?", en: "Who played for more clubs?", ar: "من منهم لعب لأندية أكثر؟" },
 ];
 
 /**
@@ -224,7 +228,7 @@ function mostOf(rand: () => number) {
     const best = sorted[0];
     const rest = four.filter((c) => c !== best);
     const v = (c: DuelCard) => same(statText(m.stat, c.stats[m.stat]));
-    return buildWithValues({ tr: m.tr, en: m.en }, same(best.name), rest.map((c) => same(c.name)), v(best), rest.map(v), rand);
+    return buildWithValues({ tr: m.tr, en: m.en, ar: m.ar }, same(best.name), rest.map((c) => same(c.name)), v(best), rest.map(v), rand);
   }
   return null;
 }

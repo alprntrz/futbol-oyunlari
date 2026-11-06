@@ -34,7 +34,7 @@ export interface Account {
   plusUntil?: number;
 }
 
-export type RatedGame = "ht" | "qz" | "pp" | "dz" | "rd" | "wm";
+export type RatedGame = "ht" | "qz" | "pp" | "dz" | "rd" | "wm" | "sp";
 export type Board = "xp" | RatedGame;
 export interface BoardRow {
   rank: number;

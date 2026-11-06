@@ -7,6 +7,9 @@
       "android"
     ],
     "version": "1.2.0",
+    "locales": {
+      "ar": "./locales/ar.json"
+    },
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -25,11 +28,7 @@
       "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleDisplayName": "Tiktako",
-        "CFBundleLocalizations": [
-          "tr",
-          "en"
-        ]
+        "CFBundleDisplayName": "Tiktako"
       },
       "usesAppleSignIn": true
     },
@@ -121,7 +120,15 @@
           "project": "tiktako-app"
         }
       ],
-      "expo-localization",
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": ["tr", "en", "ar"],
+            "android": ["tr", "en", "ar"]
+          }
+        }
+      ],
       [
         "react-native-google-mobile-ads",
         {

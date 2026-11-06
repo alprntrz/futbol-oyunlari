@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { Keyframe } from "react-native-reanimated";
+import Animated, { Easing, Keyframe, useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import Svg, { Polygon } from "react-native-svg";
 
 import type { GridPlayer } from "@/data/players";
 import type { Criterion } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { haptic, useClockTicks } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import type { Mark } from "~/lib/hattrick";
 import { useI18n } from "~/lib/i18n";
 import { POS, ROWS, type PpCell } from "~/lib/possession";
-import { C, F, shadow, T } from "~/lib/theme";
+import { C, F, LTR, shadow, T } from "~/lib/theme";
 
 import { CriterionBadge, MARK } from "./HatTrickBoard";
 import { Confetti, SOFT_IN } from "./motion";
@@ -25,15 +26,42 @@ const POP = new Keyframe({
   100: { transform: [{ scale: 1 }] },
 }).duration(260);
 
-// a claimed hex turns over to its new owner's colour (steals turn over again)
-const FLIP = new Keyframe({
-  0: { opacity: 0.4, transform: [{ perspective: 500 }, { rotateY: "90deg" }, { scale: 1.1 }] },
-  60: { opacity: 1, transform: [{ perspective: 500 }, { rotateY: "-12deg" }, { scale: 1.06 }] },
-  100: { opacity: 1, transform: [{ perspective: 500 }, { rotateY: "0deg" }, { scale: 1 }] },
-}).duration(420);
+// a claimed hex turns over to its new owner's colour (steals turn over again) and shows the
+// footballer for a moment, then its own club / country again
+const FLIP_MS = 420;
+const NAME_MS = 1200;
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, "0")}`;
 const surname = (name: string) => name.trim().split(/\s+/).slice(-1)[0];
+
+/**
+ * One claimed hex: the screen's key changes with the owner, so each claim mounts a new one. The
+ * flip is a flat scaleX on purpose: with perspective + rotateY iOS sorts the hex in 3D against its
+ * neighbours and half of it (or of them) disappears behind the board.
+ */
+function ClaimedHex({ c, cell, text, left, top, w, h, points }: { c: Criterion; cell: PpCell; text: string; left: number; top: number; w: number; h: number; points: string }) {
+  const [showName, setShowName] = useState(true);
+  const turn = useSharedValue(1);
+  const flip = useAnimatedStyle(() => ({ transform: [{ scaleX: turn.get() }] }));
+  useEffect(() => {
+    turn.set(withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: FLIP_MS, easing: Easing.out(Easing.back(1.6)) })));
+    const id = setTimeout(() => setShowName(false), NAME_MS);
+    return () => clearTimeout(id);
+  }, [turn]);
+  return (
+    <Animated.View pointerEvents="none" style={[{ position: "absolute", left, top, width: w, height: h }, flip]}>
+      <Svg width={w} height={h} style={StyleSheet.absoluteFill}>
+        <Polygon points={points} fill={MARK[cell.mark].color} stroke="white" strokeWidth={2} />
+      </Svg>
+      <View style={[StyleSheet.absoluteFill, styles.hexInner]}>
+        <CriterionBadge c={c} size={16} />
+        <Text style={showName ? styles.hexOwner : styles.hexOwnerLabel} numberOfLines={showName ? 1 : 2}>
+          {showName ? surname(cell.name) : text}
+        </Text>
+      </View>
+    </Animated.View>
+  );
+}
 
 /**
  * Possession Play board: two chess clocks, 31 hexes, and the guess sheet.
@@ -80,7 +108,7 @@ export function PossessionBoard({
 
   const used = new Set(usedNames);
   const count = (m: Mark) => owners.filter((o) => o?.mark === m).length;
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const label = (c: Criterion) => pick(c, locale);
 
   // Close the sheet if the turn moves on under it
   const sheetTurn = useRef(turn);
@@ -164,7 +192,7 @@ export function PossessionBoard({
       </View>
 
       {/* Hexes */}
-      <View style={{ width: "100%", height: height || undefined }} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <View style={[{ width: "100%", height: height || undefined }, LTR]} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
         {width > 0 && (
           <>
             <Svg width={width} height={height} style={StyleSheet.absoluteFill}>
@@ -205,28 +233,23 @@ export function PossessionBoard({
                 </Tap>
               );
             })}
-            {/* claimed hexes: solid owner colour, flipped in when taken */}
+            {/* claimed hexes: solid owner colour, the criterion stays readable */}
             {board.map((c, i) => {
               const o = owners[i];
               if (!o) return null;
               const { x, y } = center(i);
               return (
-                <Animated.View
+                <ClaimedHex
                   key={`${i}-${o.mark}-${o.name}`}
-                  entering={FLIP}
-                  pointerEvents="none"
-                  style={{ position: "absolute", left: x - w / 2, top: y - h / 2, width: w, height: h }}
-                >
-                  <Svg width={w} height={h} style={StyleSheet.absoluteFill}>
-                    <Polygon points={hexPoints(w / 2, h / 2)} fill={MARK[o.mark].color} stroke="white" strokeWidth={2} />
-                  </Svg>
-                  <View style={[StyleSheet.absoluteFill, styles.hexInner]}>
-                    <CriterionBadge c={c} size={16} />
-                    <Text style={styles.hexOwner} numberOfLines={1}>
-                      {surname(o.name)}
-                    </Text>
-                  </View>
-                </Animated.View>
+                  c={c}
+                  cell={o}
+                  text={label(c)}
+                  left={x - w / 2}
+                  top={y - h / 2}
+                  w={w}
+                  h={h}
+                  points={hexPoints(w / 2, h / 2)}
+                />
               );
             })}
           </>
@@ -280,6 +303,7 @@ const styles = StyleSheet.create({
   hexInner: { alignItems: "center", justifyContent: "center", gap: 2, paddingHorizontal: 2 },
   hexLabel: { color: C.text2, fontSize: 8, lineHeight: 10, fontWeight: "700", textAlign: "center" },
   hexOwner: { fontSize: 9, fontWeight: "800", textAlign: "center", color: "white" },
+  hexOwnerLabel: { fontSize: 8, lineHeight: 10, fontWeight: "700", textAlign: "center", color: "white" },
   turn: { flexDirection: "row", alignItems: "center", alignSelf: "center", gap: 8, marginTop: 10, borderRadius: 999, paddingLeft: 6, paddingRight: 16, paddingVertical: 5 },
   turnMark: { width: 26, height: 26, borderRadius: 13, backgroundColor: "white", alignItems: "center", justifyContent: "center" },
   turnMarkText: { fontFamily: F.black, fontSize: 16, lineHeight: 18 },

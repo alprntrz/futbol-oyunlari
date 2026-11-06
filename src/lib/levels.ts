@@ -59,6 +59,10 @@ export const XP = {
   wmWin: 25,
   wmDraw: 12,
   wmLoss: 8,
+  /** The Spot (online / house player) */
+  spWin: 25,
+  spDraw: 12,
+  spLoss: 8,
   dzDraw: 15,
   dzLoss: 10,
   dzDaily: 20,

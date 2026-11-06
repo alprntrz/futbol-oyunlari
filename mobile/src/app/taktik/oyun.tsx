@@ -11,6 +11,7 @@ import { INCOME, planSeconds, REROLL_COST, SCOUT_DISCOUNT, SLOTS, START_HP, stre
 import { sheet } from "@/lib/taktik/sim";
 import { effectsOf, STYLES, type EffectKey, type TraitState } from "@/lib/taktik/traits";
 import type { Manager, ShopCard, Unit } from "@/lib/taktik/types";
+import { pick } from "@/lib/strings";
 
 import { FocusStatusBar } from "~/components/StadiumHeader";
 import { Flag } from "~/components/Flag";
@@ -30,7 +31,7 @@ import { TAKTIK } from "~/lib/brand";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
 import { expireTaktik, kickOff, leaveRoom, loadTaktik, markTaktikSeen, play, quitTaktik, useTaktik } from "~/lib/taktik";
-import { C, F, GAME, R, shadow, T } from "~/lib/theme";
+import { C, F, GAME, INPUT_ALIGN, R, shadow, T } from "~/lib/theme";
 import { useXpAward } from "~/lib/xp";
 
 type Sel = { kind: "unit"; uid: string } | { kind: "item"; index: number } | null;
@@ -142,11 +143,11 @@ export default function TaktikGame() {
   const traitLabel = (x: TraitState) => {
     if (x.kind === "club") {
       const c = clubCriterion(x.id);
-      return c ? (locale === "tr" ? c.tr : c.en) : x.id;
+      return c ? pick(c, locale) : x.id;
     }
     if (x.kind === "country") {
       const c = COUNTRY.get(x.id);
-      return c ? (locale === "tr" ? c.tr : c.en) : x.id.charAt(0).toUpperCase() + x.id.slice(1);
+      return c ? pick(c, locale) : x.id.charAt(0).toUpperCase() + x.id.slice(1);
     }
     return t(`ttkHonour_${x.id as "wc"}`);
   };
@@ -839,7 +840,7 @@ export default function TaktikGame() {
               placeholderTextColor={C.text3}
               autoCorrect={false}
               autoFocus
-              style={styles.input}
+              style={[styles.input, INPUT_ALIGN]}
             />
             {scoutMsg && <Text style={[T.caption, { color: C.red, fontWeight: "700", textAlign: "center" }]}>{scoutMsg}</Text>}
             <Button title={`${t("ttkScoutTry")} · ${priceOf(lobby, scoutPlayer.pid, true)}`} kind="gold" onPress={tryScout} />

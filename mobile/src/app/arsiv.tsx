@@ -6,6 +6,7 @@ import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native"
 import { dailyMatchFor, dateOfDay, dayNumber } from "@/lib/daily";
 import { ARCHIVE_DAYS } from "@/lib/plus";
 import { teamName } from "@/lib/teams";
+import { dateLocale } from "@/lib/strings";
 
 import { Text } from "~/components/Text";
 import { Button, Card, Icon, Page, Tap } from "~/components/ui";
@@ -59,7 +60,7 @@ export default function Archive() {
 
   const fmt = (day: number) => {
     if (day === today - 1) return t("archiveYesterday");
-    return dateOfDay(day).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-GB", { weekday: "short", day: "numeric", month: "short" });
+    return dateOfDay(day).toLocaleDateString(dateLocale(locale), { weekday: "short", day: "numeric", month: "short" });
   };
   const open = (href: string, day: number) => {
     haptic.tap();

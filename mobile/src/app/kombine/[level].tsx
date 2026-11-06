@@ -4,6 +4,7 @@ import { Modal, ScrollView, StyleSheet, useWindowDimensions, View } from "react-
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 
 import { ALL_CRITERIA } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { Board, TileFace } from "~/components/kombine/Board";
@@ -73,7 +74,7 @@ function KombineMatch({ index }: { index: number }) {
         <View style={styles.vs}>
           {rival && <ClubShirt c={rival} size={24} />}
           <Text style={T.caption} numberOfLines={1}>
-            {rival ? (locale === "tr" ? rival.tr : rival.en) : ""}
+            {rival ? pick(rival, locale) : ""}
           </Text>
         </View>
         <View style={styles.moves}>
@@ -95,7 +96,7 @@ function KombineMatch({ index }: { index: number }) {
         <View style={styles.backdrop}>
           <Animated.View entering={ZoomIn.duration(220)}>
             <Card style={styles.result}>
-              <Text style={T.caption}>{rival ? (locale === "tr" ? rival.tr : rival.en) : ""}</Text>
+              <Text style={T.caption}>{rival ? pick(rival, locale) : ""}</Text>
               <Text style={styles.resultTitle}>{result === "won" ? t("kbWon") : t("kbLost")}</Text>
               {result === "won" && (
                 <View style={{ flexDirection: "row", gap: 6, marginVertical: 4 }}>

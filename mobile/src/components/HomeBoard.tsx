@@ -4,6 +4,7 @@ import { Image, StyleSheet, View, type ImageSourcePropType } from "react-native"
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
 import { dailyMatch, dayNumber } from "@/lib/daily";
+import { dateLocale } from "@/lib/strings";
 
 import { bingoForDay, CARD_SIZE } from "~/lib/bingo";
 import { BRAND, ROZET } from "~/lib/brand";
@@ -68,7 +69,7 @@ export function HomeBoard() {
     pulse.set(withRepeat(withSequence(withTiming(1.03, { duration: 800 }), withTiming(1, { duration: 800 })), -1));
   }, [pulse]);
   const pulseStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.get() }] }));
-  const upper = (s: string) => s.toLocaleUpperCase(locale === "tr" ? "tr-TR" : "en-GB");
+  const upper = (s: string) => s.toLocaleUpperCase(dateLocale(locale));
 
   return (
     <View style={{ marginTop: 18 }}>

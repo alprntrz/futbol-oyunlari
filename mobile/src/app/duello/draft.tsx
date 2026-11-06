@@ -2,7 +2,7 @@ import { router, Stack } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextInput, useWindowDimensions, View } from "react-native";
 
-import { BUDGET, CARDS, cardById, DRAFT_SECONDS, HAND_SIZE, handCost, searchCards, type DuelCard } from "@/lib/duel";
+import { BUDGET, CARDS, cardById, DRAFT_SECONDS, HAND_SIZE, handCost, searchCards, type DuelCard, type Theme } from "@/lib/duel";
 
 import { DuelCardView } from "~/components/duel/DuelCardView";
 import { Flag } from "~/components/Flag";
@@ -13,7 +13,18 @@ import { Button, Icon, Page, Tap } from "~/components/ui";
 import { saveHand, useDuel } from "~/lib/duel";
 import { haptic } from "~/lib/haptics";
 import { useI18n } from "~/lib/i18n";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, R, T } from "~/lib/theme";
+
+/** With nothing typed: a few players from today's theme, a mix of tiers (Shuffle for others). */
+function dealSuggestions(theme: Theme) {
+  const pool = CARDS.filter(theme.test);
+  const pick = (tier: number, n: number) =>
+    pool
+      .filter((c) => c.tier === tier)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, n);
+  return [...pick(3, 3), ...pick(2, 4), ...pick(1, 3)];
+}
 
 /** Draft: 7 cards under the budget from today's theme; tap a card in the hand to take it out. */
 export default function DuelDraft() {
@@ -30,7 +41,8 @@ export default function DuelDraft() {
     { target: "hand", title: t("dzTour3T"), body: t("dzTour3") },
     { target: "list", title: t("dzTour4T"), body: t("dzTour4") },
   ]);
-  const [shuffle, setShuffle] = useState(0);
+  // a state, not a memo on a counter: React Compiler dropped the unread counter and Shuffle did nothing
+  const [suggestions, setSuggestions] = useState(() => dealSuggestions(theme));
   const { width } = useWindowDimensions();
   const slotW = (width - 32 - 6 * (HAND_SIZE - 1)) / HAND_SIZE;
 
@@ -49,17 +61,6 @@ export default function DuelDraft() {
 
   const cost = handCost(picked);
   const results = useMemo(() => searchCards(query, theme), [query, theme]);
-  // with nothing typed: a few players from today's theme, a mix of tiers (Shuffle for others)
-  const suggestions = useMemo(() => {
-    void shuffle;
-    const pool = CARDS.filter(theme.test);
-    const pick = (tier: number, n: number) =>
-      pool
-        .filter((c) => c.tier === tier)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, n);
-    return [...pick(3, 3), ...pick(2, 4), ...pick(1, 3)];
-  }, [theme, shuffle]);
   const full = picked.length >= HAND_SIZE;
 
   const add = (c: DuelCard) => {
@@ -76,6 +77,10 @@ export default function DuelDraft() {
   const remove = (id: number) => {
     haptic.tap();
     setPicked(picked.filter((x) => x !== id));
+  };
+  const reset = () => {
+    haptic.tap();
+    setPicked([]);
   };
   const save = () => {
     haptic.success();
@@ -129,6 +134,9 @@ export default function DuelDraft() {
 
       <View style={styles.noteSlot}>{note && <Text style={styles.note}>{note}</Text>}</View>
 
+      {/* only the screen's picks: the saved squad stays until a new one is saved */}
+      {picked.length > 0 && <Button title={t("dzResetSquad")} kind="secondary" icon="arrow.clockwise" onPress={reset} style={{ marginBottom: 10 }} />}
+
       {full ? (
         <Button title={t("dzSave")} icon="checkmark" onPress={save} />
       ) : (
@@ -140,7 +148,7 @@ export default function DuelDraft() {
             placeholderTextColor={C.text3}
             autoCorrect={false}
             autoCapitalize="words"
-            style={styles.input}
+            style={[styles.input, INPUT_ALIGN]}
           />
           {left === 0 && <Text style={[T.caption, { color: C.red, marginTop: 6 }]}>{t("dzTimeUp")}</Text>}
           <View ref={tour.ref("list")} collapsable={false} style={{ marginTop: 8, gap: 6 }}>
@@ -153,7 +161,7 @@ export default function DuelDraft() {
                 {query.trim().length === 0 && (
                   <View style={styles.suggestHead}>
                     <Text style={[T.caption, { fontWeight: "700" }]}>{t("dzSuggested")}</Text>
-                    <Tap onPress={() => setShuffle(shuffle + 1)} style={styles.shuffle} accessibilityLabel={t("dzShuffle")}>
+                    <Tap onPress={() => setSuggestions(dealSuggestions(theme))} style={styles.shuffle} accessibilityLabel={t("dzShuffle")}>
                       <Icon name="shuffle" size={13} color={C.greenDark} fallback="⇄" />
                       <Text style={styles.shuffleText}>{t("dzShuffle")}</Text>
                     </Tap>

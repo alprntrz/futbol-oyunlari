@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { ALL_CRITERIA } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { ClubShirt } from "~/components/HatTrickBoard";
 import { TileFace } from "~/components/kombine/Board";
@@ -72,13 +73,13 @@ export default function KombineSeason() {
               disabled={locked}
               onPress={() => router.push({ pathname: "/kombine/[level]", params: { level: String(i) } })}
               style={[styles.day, current && styles.dayCurrent, locked && { opacity: 0.45 }]}
-              accessibilityLabel={`${t("kbWeek")} ${i + 1}, ${rival ? (locale === "tr" ? rival.tr : rival.en) : ""}${s ? `, ${s} ★` : ""}`}
+              accessibilityLabel={`${t("kbWeek")} ${i + 1}, ${rival ? pick(rival, locale) : ""}${s ? `, ${s} ★` : ""}`}
             >
               <Text style={[styles.week, current && { color: "white" }]}>{i + 1}</Text>
               {rival && <ClubShirt c={rival} size={26} />}
               <View style={{ flex: 1 }}>
                 <Text style={[T.headline, current && { color: "white" }]} numberOfLines={1}>
-                  {rival ? (locale === "tr" ? rival.tr : rival.en) : ""}
+                  {rival ? pick(rival, locale) : ""}
                 </Text>
                 <Text style={[T.caption, current && { color: "#DDEFE3" }]}>
                   {t("kbWeek")} {i + 1}

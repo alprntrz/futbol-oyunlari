@@ -6,7 +6,9 @@ import Animated, { Keyframe } from "react-native-reanimated";
 
 import { dayNumber } from "@/lib/daily";
 import { XP } from "@/lib/levels";
-import { searchPlayers, type Criterion } from "@/lib/tiki";
+import { searchPlayers } from "@/lib/playersAr";
+import type { Criterion } from "@/lib/tiki";
+import { pick } from "@/lib/strings";
 
 import { PlayerLine, PlayerToken } from "~/components/PlayerRow";
 import { SOFT_IN } from "~/components/motion";
@@ -18,7 +20,7 @@ import { haptic } from "~/lib/haptics";
 import { play } from "~/lib/sound";
 import { useI18n } from "~/lib/i18n";
 import { compare, findPlayer, MAX_GUESSES, mysteryForDay, randomMystery, START_CLUES, type Clue, type Puzzle } from "~/lib/mystery";
-import { C, F, R, T } from "~/lib/theme";
+import { C, F, INPUT_ALIGN, R, T } from "~/lib/theme";
 import { useQuestOnce } from "~/lib/quests";
 import { useXpAward } from "~/lib/xp";
 
@@ -55,7 +57,7 @@ export default function MysteryPlayer() {
   const left = MAX_GUESSES - spent;
   const over = won || left <= 0;
   const open = over ? puzzle.clues.length : Math.min(START_CLUES + spent, puzzle.clues.length);
-  const label = (c: Criterion) => (locale === "tr" ? c.tr : c.en);
+  const label = (c: Criterion) => pick(c, locale);
 
   // the daily puzzle pays once a day; free puzzles count towards the practice cap
   useXpAward(
@@ -207,7 +209,7 @@ export default function MysteryPlayer() {
               autoCorrect={false}
               autoCapitalize="words"
               returnKeyType="done"
-              style={styles.input}
+              style={[styles.input, INPUT_ALIGN]}
             />
           </View>
           {input.trim().length >= 2 && (

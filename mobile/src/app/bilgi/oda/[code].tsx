@@ -8,7 +8,7 @@ import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg"
 
 import { quizQuestions, type QuizCategory, type QuizDifficulty } from "@/lib/quiz";
 import { XP } from "@/lib/levels";
-import { ordinal } from "@/lib/strings";
+import { ordinal, pick } from "@/lib/strings";
 
 import { openPlayerMenu } from "~/components/PlayerMenu";
 import { Avatar as PlayerAvatar } from "~/components/Avatar";
@@ -31,7 +31,7 @@ import { C, F } from "~/lib/theme";
 import { questEvent } from "~/lib/quests";
 import { awardXp } from "~/lib/xp";
 
-type L = { tr: string; en: string };
+type L = { tr: string; en: string; ar?: string };
 interface QzPlayer {
   id: string;
   ref?: string | null;
@@ -257,7 +257,7 @@ export default function QuizRoom() {
     return () => clearInterval(id);
   }, [ticking]);
 
-  const tx = (l: L) => (locale === "tr" ? l.tr : l.en);
+  const tx = (l: L) => pick(l, locale);
   const me = room?.players.find((p) => p.id === myId);
   const nameOf = (p: QzPlayer) => (p.id === myId ? t("you") : p.nick || t("opponent"));
   const standings = room ? [...room.players].sort((a, b) => b.score - a.score) : [];

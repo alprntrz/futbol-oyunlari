@@ -2,7 +2,7 @@ import Constants from "expo-constants";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 
-import { dict, type Locale } from "@/lib/strings";
+import { dict, localeOfTag, type Locale } from "@/lib/strings";
 
 import { SOCKET_URL } from "./socket";
 
@@ -61,7 +61,7 @@ export function useUpdateRequired(): string | null {
 export function rootStrings() {
   let locale: Locale = "tr";
   try {
-    locale = Intl.DateTimeFormat().resolvedOptions().locale.startsWith("tr") ? "tr" : "en";
+    locale = localeOfTag(Intl.DateTimeFormat().resolvedOptions().locale);
   } catch {}
   return dict[locale];
 }
