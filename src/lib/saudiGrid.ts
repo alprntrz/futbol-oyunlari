@@ -1,6 +1,6 @@
 import type { GridPlayer } from "@/data/players";
 import { leagueGrid } from "./leagues";
-import { seededRandom, type Criterion, type Grid } from "./tiki";
+import { criterionById, seededRandom, type Criterion, type Grid } from "./tiki";
 
 /** Rules of the web test site's daily Saudi grid: the app's solo grid, on `leagueGrid("sa")`. */
 
@@ -31,3 +31,23 @@ export function placePlayer(cells: Cells, grid: Grid, player: GridPlayer): { cel
 }
 
 export const scoreOf = (cells: Cells) => ({ boxes: cells.filter((c) => c.length > 0).length, players: cells.reduce((n, c) => n + c.length, 0) });
+
+/** Friend rooms: the grid travels as criterion ids, the room as a code in the invite link. */
+export type GridIds = { rows: string[]; cols: string[] };
+
+const ROOM_CODE = /^[A-HJ-NP-Z2-9]{5}$/;
+
+export function roomCodeOf(search: string): string | null {
+  const code = (new URLSearchParams(search).get("room") ?? "").toUpperCase();
+  return ROOM_CODE.test(code) ? code : null;
+}
+
+export const gridToIds = (grid: Grid): GridIds => ({ rows: grid.rows.map((c) => c.id), cols: grid.cols.map((c) => c.id) });
+
+export function gridFromIds(ids: GridIds): Grid | null {
+  const rows = ids.rows.map(criterionById);
+  const cols = ids.cols.map(criterionById);
+  return [...rows, ...cols].every(Boolean) ? { rows: rows as Criterion[], cols: cols as Criterion[] } : null;
+}
+
+export const dealRoomGrid = (rand: () => number = Math.random): GridIds => gridToIds(saudiGrid(Math.floor(rand() * 1e9)));

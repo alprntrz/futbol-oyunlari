@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import { pick, type Locale } from "@/lib/strings";
-import type { Cells } from "@/lib/saudiGrid";
 import type { Criterion, Grid } from "@/lib/tiki";
 
 function Badge({ c }: { c: Criterion }) {
@@ -20,7 +20,7 @@ function Header({ c, locale }: { c: Criterion; locale: Locale }) {
   );
 }
 
-function Square({ names, shown }: { names: string[]; shown: (name: string) => string }) {
+export function NamesSquare({ names, shown }: { names: string[]; shown: (name: string) => string }) {
   const last = names[names.length - 1];
   if (!last) return <div className="flex aspect-square items-center justify-center rounded-2xl border-2 border-dashed border-[#d5dbd6] bg-white text-xl text-[#c3c9d3]">+</div>;
   return (
@@ -31,14 +31,14 @@ function Square({ names, shown }: { names: string[]; shown: (name: string) => st
   );
 }
 
-export function SaudiGridBoard({ grid, cells, locale, shown }: { grid: Grid; cells: Cells; locale: Locale; shown: (name: string) => string }) {
+export function SaudiGridBoard({ grid, locale, square }: { grid: Grid; locale: Locale; square: (i: number) => ReactNode }) {
   return (
     <div className="grid grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,1fr))] gap-1.5">
       <div />
       {grid.cols.map((c) => <Header key={c.id} c={c} locale={locale} />)}
       {grid.rows.flatMap((r, ri) => [
         <Header key={r.id} c={r} locale={locale} />,
-        ...grid.cols.map((c, ci) => <Square key={`${r.id}-${c.id}`} names={cells[ri * 3 + ci]} shown={shown} />),
+        ...grid.cols.map((c, ci) => <div key={`${r.id}-${c.id}`}>{square(ri * 3 + ci)}</div>),
       ])}
     </div>
   );

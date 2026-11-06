@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { GRID_PLAYERS, cellSolvable } from "@/lib/tiki";
-import { dailySeed, emptyCells, localDay, placePlayer, saudiGrid, scoreOf, squareCriteria } from "@/lib/saudiGrid";
+import { dailySeed, dealRoomGrid, emptyCells, gridFromIds, gridToIds, localDay, placePlayer, roomCodeOf, saudiGrid, scoreOf, squareCriteria } from "@/lib/saudiGrid";
 import { statsBody, utmOf, type WebContext } from "@/lib/webStats";
 
 test("a year of daily Saudi grids: solvable, three Saudi clubs at least, no World Cup square", () => {
@@ -44,6 +44,19 @@ test("a player who fits nowhere changes nothing", () => {
   const result = placePlayer(cells, grid, nobody);
   assert.equal(result.fits, 0);
   assert.deepEqual(result.cells, cells);
+});
+
+test("a room grid survives the trip as ids", () => {
+  const ids = dealRoomGrid(() => 0.5);
+  assert.deepEqual(gridToIds(gridFromIds(ids)!), ids);
+  assert.equal(gridFromIds({ rows: ["nope"], cols: [] }), null);
+});
+
+test("an invite link gives a room code only in the server's alphabet", () => {
+  assert.equal(roomCodeOf("?room=ab2cd"), "AB2CD");
+  assert.equal(roomCodeOf("?room=AB1CD"), null);
+  assert.equal(roomCodeOf("?room=<x>"), null);
+  assert.equal(roomCodeOf(""), null);
 });
 
 test("stats keep only plain campaign tags", () => {

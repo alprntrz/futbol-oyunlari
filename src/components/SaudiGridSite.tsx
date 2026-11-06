@@ -1,14 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { GridPlayer } from "@/data/players";
-import { dailySeed, emptyCells, localDay, placePlayer, SA_TIME_LIMIT_MS, saudiGrid, scoreOf, squareCriteria, type Cells } from "@/lib/saudiGrid";
+import { dailySeed, emptyCells, localDay, placePlayer, roomCodeOf, SA_TIME_LIMIT_MS, saudiGrid, scoreOf, squareCriteria, type Cells } from "@/lib/saudiGrid";
 import { dict, type TKey } from "@/lib/strings";
-import { GRID_PLAYERS, searchPlayers as searchLatin } from "@/lib/tiki";
+import { GRID_PLAYERS } from "@/lib/tiki";
+import { useArabicNames } from "@/lib/useArabicNames";
 import { track, type WebEvent, type WebEventProps } from "@/lib/webStats";
-import { SaudiGridBoard } from "./SaudiGridBoard";
+import { NamesSquare, SaudiGridBoard } from "./SaudiGridBoard";
+
+const FriendRoom = dynamic(() => import("./FriendRoom").then((m) => m.FriendRoom), { ssr: false });
 
 type SiteLocale = "ar" | "en";
 
@@ -17,12 +21,6 @@ interface Run {
   deadline: number;
   finished: boolean;
   guessed: boolean;
-}
-
-/** The Arabic search and names load apart from the page (about 170 KB gzipped). */
-interface ArabicNames {
-  search: (query: string, limit?: number) => GridPlayer[];
-  names: Record<string, string>;
 }
 
 const APP_STORE_URL = "https://apps.apple.com/app/id6821740252";
@@ -92,7 +90,12 @@ export function SaudiGridSite() {
   const [query, setQuery] = useState("");
   const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
   const [now, setNow] = useState(() => Date.now());
-  const [arabic, setArabic] = useState<ArabicNames | null>(null);
+  const { search, shown, ready } = useArabicNames(locale);
+  // null = solo; code null = a room being created; a code = joining from an invite link
+  const [friend, setFriend] = useState<{ code: string | null } | null>(() => {
+    const code = roomCodeOf(location.search);
+    return code ? { code } : null;
+  });
   // set at once: the clock or a tap can land before the finished run is rendered
   const ended = useRef(false);
   const send = (event: WebEvent, props: WebEventProps = {}) => track(event, props, locale, day);
@@ -104,10 +107,7 @@ export function SaudiGridSite() {
   }, [locale]);
 
   useEffect(() => {
-    track("landing_view", {}, firstLocale(), day);
-    Promise.all([import("@/lib/playersAr"), import("@/data/players-ar")])
-      .then(([search, data]) => setArabic({ search: search.searchPlayers, names: data.AR_PLAYERS }))
-      .catch((e: unknown) => console.warn("Arabic names not loaded, Latin search only", e));
+    track("landing_view", { invited: !!roomCodeOf(location.search) }, firstLocale(), day);
   }, [day]);
 
   useEffect(() => {
@@ -145,27 +145,22 @@ export function SaudiGridSite() {
     return () => clearTimeout(id);
   }, [toast]);
 
-  const suggestions = useMemo(() => (arabic?.search ?? searchLatin)(query, SEARCH_LIMIT), [arabic, query]);
+  const suggestions = useMemo(() => search(query, SEARCH_LIMIT), [search, query]);
 
   // once the typing stops: was the name there? (never what was typed)
   useEffect(() => {
     if (query.trim().length < MIN_QUERY) return;
-    if (ARABIC.test(query) && !arabic) return; // Arabic names still loading: "not found" would be false
+    if (ARABIC.test(query) && !ready) return; // Arabic names still loading: "not found" would be false
     const id = setTimeout(() => track("search", { found: suggestions.length > 0, arabic: ARABIC.test(query) }, locale, day), SEARCH_SETTLE_MS);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, suggestions, arabic, day]);
+  }, [query, suggestions, ready, day]);
 
   const totalAnswers = useMemo(
     () => Array.from({ length: 9 }, (_, i) => squareCriteria(grid, i)).reduce((n, [r, c]) => n + GRID_PLAYERS.filter((p) => r.test(p) && c.test(p)).length, 0),
     [grid],
   );
 
-  const shown = (name: string) => {
-    if (locale !== "ar") return name;
-    const all = arabic?.names[name]?.split("|");
-    return all?.find((n) => n.includes(" ")) ?? all?.[0] ?? name;
-  };
   const surname = (name: string) => lastWord(shown(name));
 
   const begin = (nextSeed: number | null) => {
@@ -216,16 +211,28 @@ export function SaudiGridSite() {
       </header>
 
       <main className="flex-1">
-        {!run && (
+        {friend && (
+          <FriendRoom
+            joinCode={friend.code}
+            locale={locale}
+            onEvent={(event) => send(event)}
+            onClose={() => {
+              history.replaceState(null, "", location.pathname);
+              setFriend(null);
+            }}
+          />
+        )}
+        {!friend && !run && (
           <section className="py-4 text-center">
             <h1 className="text-3xl font-black leading-snug">{t("gulfTitle")}</h1>
             <p className="mt-2 text-[#56645c]">{t("gulfLead")}</p>
             <button type="button" onClick={() => begin(null)} className="mt-4 min-h-13 w-full rounded-2xl bg-[#15803d] text-lg font-black text-white">{t("bbKickOff")}</button>
+            <button type="button" onClick={() => setFriend({ code: null })} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("gulfPlayFriend")}</button>
             <p className="mt-3 text-start text-sm text-[#56645c]">{t("bbIntro")}</p>
           </section>
         )}
 
-        {run && (
+        {!friend && run && (
           <div className="mt-2 flex rounded-2xl bg-white p-3 shadow-sm">
             <Stat value={fmt(left)} label={run.finished && left === 0 ? t("bbTimeUp") : t("bbTime")} />
             <Stat value={`${boxes}/9`} label={t("bbBoxes")} />
@@ -234,7 +241,7 @@ export function SaudiGridSite() {
           </div>
         )}
 
-        {run && !run.finished && (
+        {!friend && run && !run.finished && (
           <div className="relative z-10 mt-3">
             <div className="flex gap-2">
               <input
@@ -262,17 +269,18 @@ export function SaudiGridSite() {
           </div>
         )}
 
-        <div aria-live="polite" className="flex min-h-10 items-center justify-center">
+        {!friend && <div aria-live="polite" className="flex min-h-10 items-center justify-center">
           {toast && <span className={`rounded-xl px-3 py-1 text-sm font-bold ${toast.ok ? "bg-[#ddf5e4] text-[#14532d]" : "bg-red-100 text-red-700"}`}>{toast.text}</span>}
-        </div>
+        </div>}
 
-        <SaudiGridBoard grid={grid} cells={run?.cells ?? emptyCells()} locale={locale} shown={surname} />
+        {!friend && <SaudiGridBoard grid={grid} locale={locale} square={(i) => <NamesSquare names={run?.cells[i] ?? []} shown={surname} />} />}
 
-        {run?.finished && (
+        {!friend && run?.finished && (
           <section className="mt-4 rounded-2xl bg-white p-5 text-center shadow-sm">
             <div className="text-5xl font-black">{players}</div>
             <div className="text-sm text-[#56645c]">{t("bbPlayersFound")}</div>
             <button type="button" onClick={() => begin(Math.floor(Math.random() * 1e9))} className="mt-4 min-h-12 w-full rounded-2xl bg-[#15803d] font-black text-white">{t("ttNewGrid")}</button>
+            <button type="button" onClick={() => setFriend({ code: null })} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("gulfPlayFriend")}</button>
             {seed === null && <button type="button" onClick={share} className="mt-2 min-h-12 w-full rounded-2xl bg-[#ddf5e4] font-black text-[#14532d]">{t("share")}</button>}
             {seed === null && <p className="mt-2 text-xs text-[#56645c]">{t("htSoloExtraLine")}</p>}
             {!/Android/.test(navigator.userAgent) && (
