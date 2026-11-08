@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, Linking, Platform, Share, View } from "react-native";
 
 import { PushSettings } from "~/components/PushSettings";
 import { BingoSteps, DuelSteps, InfoSheet, MissingXISteps, MysterySteps, PossessionSteps, QuizSteps, RondoPairSteps, RushSteps, TaktikSteps, TikiSteps, RondoSteps, WhoAmISteps } from "~/components/HowTo";
@@ -17,10 +17,17 @@ import { useI18n } from "~/lib/i18n";
 import { openPage, PRIVACY_URL, SUPPORT_URL } from "~/lib/links";
 import { deleteMyData, restartApp } from "~/lib/privacy";
 import { remindersDenied } from "~/components/ReminderAsk";
+import { SHARE_URL } from "~/components/ShareCard";
 import { remindersAvailable, setRemindersOn, useReminders } from "~/lib/reminders";
 import { haptic, hapticsOn, setHapticsOn } from "~/lib/haptics";
 import { play, setSoundsOn, soundsOn } from "~/lib/sound";
 import { C, T } from "~/lib/theme";
+
+// the store's own review page: unlike the in-app sheet it always opens, so the Settings row never looks dead
+const REVIEW_URL = Platform.select({
+  ios: "https://apps.apple.com/app/id6821740252?action=write-review",
+  default: "https://play.google.com/store/apps/details?id=com.alprntrz.tiktako",
+});
 
 export default function SettingsTab() {
   const { t, locale, setLocale } = useI18n();
@@ -182,6 +189,8 @@ export default function SettingsTab() {
         {analyticsAvailable() && <SwitchRow title={t("settingsAnalytics")} subtitle={t("settingsAnalyticsNote")} value={analyticsOn} onChange={setAnalyticsOn} />}
         <Row image={BRAND.settings.privacy} title={t("privacyPolicy")} onPress={() => openPage(PRIVACY_URL, t("linkFailed"))} />
         <Row image={BRAND.settings.support} title={t("support")} onPress={() => openPage(SUPPORT_URL, t("linkFailed"))} />
+        <Row icon="star.fill" iconFallback="⭐" color="#B45309" soft="#FEF3C7" title={t("rateApp")} onPress={() => Linking.openURL(REVIEW_URL).catch(() => openPage(REVIEW_URL, t("linkFailed")))} />
+        <Row icon="square.and.arrow.up" iconFallback="↗" color={C.greenMid} soft={C.greenSoft} title={t("shareApp")} onPress={() => Share.share({ message: `${t("shareAppMsg")} ${SHARE_URL}` }).catch(() => {})} />
         <Row icon="hand.raised.fill" iconFallback="✋" color={C.text2} soft="#EEF2EF" title={t("blockedTitle")} onPress={() => router.push("/engellenenler")} />
         {consentDone && privacyOptionsAvailable() && (
           <Row icon="lock.shield.fill" iconFallback="🛡" color={C.text2} soft="#EEF2EF" title={t("privacyOptions")} onPress={() => showPrivacyOptions()} />

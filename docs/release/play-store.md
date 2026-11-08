@@ -220,3 +220,18 @@ Alpha kanalı: 178 ülke, e-posta listesi "Tiktako testçileri", ilk sürüm 3 (
   2. [x] **Android** OAuth istemcisi "Tiktako Android (EAS upload key)": paket `com.alprntrz.tiktako` + yukarıdaki SHA-1.
   3. [x] Play App Signing anahtarının SHA-1'i (ilk yüklemeden sonra okundu, 20.10.2026): `88:29:A9:22:43:B0:4A:6F:CD:A4:00:23:1E:CA:32:86:79:A4:76:28`.
      Bunun için ikinci Android OAuth istemcisi "Tiktako Android (Play app signing)" açıldı (20.10.2026; Play'den indirilen uygulama bu anahtarla imzalanır).
+
+## Üretim erişimi başvurusu (2026-11-08)
+
+Testers Community raporlarından (geri bildirim + kendi taslak cevapları) yazıldı; taslağın gerçeğe uymayan yerleri
+düzeltildi (zorluk "Orta"; Ayarlar'daki puanla / paylaş satırları gerçekten eklendi). Her cevap 300 karakterin altında.
+
+1. **Recruit:** We used a paid testing provider (Testers Community) to reach 12+ Android testers, who installed the app from our closed test and kept it for at least 14 days.
+2. **How easy:** Neither difficult nor easy.
+3. **Engagement:** Testers played the solo and online modes on their own devices over 14+ days. They reported no crashes or broken features, and pointed out two missing basics: a way to rate the app and a way to share it from Settings.
+4. **Feedback:** Collected through the provider's written report from testers' device tests. No crashes or bugs found. Requests: a "Rate the app" entry and a "Share app" option in Settings, plus general ideas (help, onboarding, fresh content).
+5. **Audience:** Football fans aged 13+ who like quick trivia and head-to-head games, from casual players to fans who know the squads of every league.
+6. **Value:** Tiktako turns football knowledge into short games: tic-tac-toe with footballers, a quiz, Rondo, Who Am I?, card duels, daily puzzles and more, solo or online against friends and random rivals.
+7. **Installs, first year:** 10K–100K.
+8. **Changes:** Added "Rate the app" and "Tell a friend" to Settings. Since the test build we also added new Android ad units with a consent form, the optional Tiktako Plus subscription and an updated store listing in three languages.
+9. **Ready:** Testers found no crashes or blocking bugs across their devices, the requested Settings items are in place, and the data safety, ads and content rating declarations match the current build.
