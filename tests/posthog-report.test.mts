@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { reportDay, renderReport } from "../scripts/lib/posthog-report.mjs";
+import { reportDay, reportQueries, renderReport } from "../scripts/lib/posthog-report.mjs";
 
 test("the report covers yesterday in Istanbul time (UTC+3)", () => {
   // 08:00 in Istanbul on 25 Oct = 05:00 UTC
@@ -18,7 +18,35 @@ test("just after midnight in Istanbul the report is about the day that just ende
   assert.equal(reportDay(new Date("2026-10-24T21:30:00Z")).day, "2026-10-24");
 });
 
-const empty = { daily: [], games: [], screens: [], events: [], versions: [], retention: [], newScreens: [] };
+const empty = { daily: [], games: [], screens: [], events: [], versions: [], retention: [], newScreens: [], web: [] };
+
+test("app sections count only app events and the web site gets its own query", () => {
+  // Arrange: the Gulf web site writes to the same PostHog project without $app_version
+  const q = reportQueries(reportDay(new Date("2026-11-08T05:00:00Z")));
+  // Act
+  const appQueries = Object.entries(q).filter(([name]) => name !== "web");
+  // Assert
+  for (const [name, sql] of appQueries) assert.match(sql, /\$app_version is not null/, name);
+  assert.match(q.web, /\$app_version is null/);
+  assert.match(q.web, /landing_view/);
+});
+
+test("web visits are reported apart from app devices", () => {
+  // Arrange
+  const md = renderReport("2026-11-07", {
+    ...empty,
+    daily: [["2026-11-07", 0, 0, 0, 0]],
+    web: [["2026-11-07", 16, 11, 3, 1, 3, 2]],
+  });
+  // Assert
+  assert.match(md, /\*\*0\*\* cihaz/);
+  assert.match(md, /## Körfez web testi/);
+  assert.match(md, /\| 2026-11-07 \| 16 \| 11 \| 3 \| 1 \| 3 \| 2 \|/);
+});
+
+test("no web section when the site had no visits", () => {
+  assert.doesNotMatch(renderReport("2026-11-07", empty), /web testi/);
+});
 
 test("an empty day says so instead of printing empty tables", () => {
   const md = renderReport("2026-10-24", empty);

@@ -39,15 +39,28 @@ export function reportDay(now = new Date()) {
   };
 }
 
+// The Gulf web test site writes to the same project; only the app's SDK sets $app_version.
+const APP = "properties.$app_version is not null";
+const WEB = "properties.$app_version is null";
+
 /** HogQL per report section; each returns plain rows (arrays). */
 export function reportQueries({ day, from, to, weekFrom }) {
   const localDay = `toDate(timestamp + interval ${TZ_HOURS} hour)`;
-  const yesterday = `timestamp >= toDateTime('${from}') and timestamp < toDateTime('${to}')`;
-  const firstDays = `select distinct_id, min(${localDay}) as first_day, groupUniqArray(${localDay}) as days from events group by distinct_id`;
+  const yesterday = `timestamp >= toDateTime('${from}') and timestamp < toDateTime('${to}') and ${APP}`;
+  const week = `timestamp >= toDateTime('${weekFrom}') and timestamp < toDateTime('${to}')`;
+  const firstDays = `select distinct_id, min(${localDay}) as first_day, groupUniqArray(${localDay}) as days from events
+    where ${APP} group by distinct_id`;
   return {
+    web: `select ${localDay} as d,
+      count(distinct if(event = 'landing_view', distinct_id, null)),
+      count(distinct if(event = 'landing_view' and properties.locale = 'ar', distinct_id, null)),
+      count(distinct if(event in ('game_start', 'bot_start'), distinct_id, null)),
+      count(distinct if(event in ('game_finish', 'bot_series_end', 'friend_series_end'), distinct_id, null)),
+      countIf(event = 'friend_create'), countIf(event = 'friend_join')
+      from events where ${week} and ${WEB} group by d order by d`,
     daily: `select ${localDay} as d, count(distinct distinct_id), countIf(event = 'Application Installed'),
       count(distinct properties.$session_id), countIf(event = 'game_finished')
-      from events where timestamp >= toDateTime('${weekFrom}') and timestamp < toDateTime('${to}') group by d order by d`,
+      from events where ${week} and ${APP} group by d order by d`,
     games: `select properties.game as g, properties.practice as p, count() as c from events
       where event = 'game_finished' and ${yesterday} group by g, p order by c desc`,
     screens: `select properties.$screen_name as s, count(distinct distinct_id) as n, count() as c from events
@@ -113,6 +126,11 @@ export function renderReport(day, rows) {
   if (rows.retention.length) {
     const back = rows.retention.map(([d, n, came]) => [d, n, came, pct(came, n)]);
     out.push("## Ertesi gün dönenler", "", table(["İlk gün", "Yeni cihaz", "Ertesi gün döndü", "Oran"], back), "");
+  }
+  const web = rows.web ?? [];
+  if (web.length) {
+    const head = ["Gün", "Ziyaretçi", "Arapça", "Oynayan", "Bitiren", "Oda kurulan", "Odaya katılan"];
+    out.push("## Körfez web testi (son 7 gün, uygulamadan ayrı)", "", table(head, web), "");
   }
   return out.join("\n");
 }
